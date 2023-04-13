@@ -1,3 +1,12 @@
+
+
+
+'''
+this module calculate the stiffness matrix for loacal elements BDB
+'''
+
+def stiffness_matrix(eletype, r, s):
+    pass
 import numpy as np
 import material as mat
 
