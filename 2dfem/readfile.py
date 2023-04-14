@@ -13,7 +13,7 @@ def read_input(file_path = ""):
     nodes = np.loadtxt(file_path+"nodes.txt",dtype= float,ndmin= 2)
     loads = np.loadtxt(file_path+"loads.txt",dtype= float, ndmin= 2)
     mats = np.loadtxt(file_path+"mater.txt", dtype=  float, ndmin= 2)
-    return nodes, elems,loads,mats
+    return elems, nodes,loads,mats
 
 
 #nodes, elems,loads,mats = read_input("lzsfem\square-4_elements\\")

@@ -1,5 +1,6 @@
 
-
+import numpy as np
+import material as mat
 
 '''
 this module calculate the stiffness matrix for loacal elements BDB
@@ -7,8 +8,7 @@ this module calculate the stiffness matrix for loacal elements BDB
 
 def stiffness_matrix(eletype, r, s):
     pass
-import numpy as np
-import material as mat
+
 
 # 计算单元的刚度矩阵，跟单元类型，插值型函数，材料模型相关
 def elast_quad4(coord, params):
