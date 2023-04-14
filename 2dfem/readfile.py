@@ -1,11 +1,21 @@
 import numpy as np
 
 '''file format
-element : id, eletype node...
+element : id, eletype ，matType, node...
 1 1 1 2 3 4
 2 1 2 3 4 5
+
 node: id, x,y , dof bc (0 for free, -1 for restrainted) 
 1 0.5 0.5 -1 0
+
+loads:
+node_id, fx, fy
+
+mats：
+E1,nu1
+E2,nu2
+...
+
 '''
 
 def read_input(file_path = ""):

@@ -1,4 +1,5 @@
 import numpy as np
+import stiffness as stiff
 
 '''
 此模块用于单元刚度矩阵组装，应包含如何功能
@@ -46,3 +47,53 @@ def dof_mapping(elems, nodes):
         dof_map[elem_idx] = bc[elem_nodes].flatten()
 
     return dof_map
+
+def assemble(elems, nodes):
+    '''
+    组装单刚成总刚stiff_matrix
+    '''
+    #dof_map[i][0:8]
+    # 总刚的大小
+    stiff_matrix = np.array()
+    dof_map = dof_mapping(elems, nodes)
+
+    elems_num = len(elems)
+
+    for ele_idx in range(elems_num):
+        # 获取单元的单元类型，材料参数，然后计算
+        coord = []
+        param = []
+        kloc,mloc = stiff.elast_quad4(coord, param)
+
+        ele_dofs = kloc.shape[0]
+        ele_map = dof_map[ele_idx]
+
+        for i in range(ele_dofs):
+            for j in range(ele_dofs):
+                global_i = ele_map[i]
+                global_j = ele_map[j]
+                if global_i != -1 and global_j != -1:
+                    stiff_matrix[global_i][global_j] += kloc[i][j]
+
+    return stiff_matrix
+
+
+def loadasem(loads, bc_array, neq, ndof_node=2):
+    '''
+    组装载荷矩阵
+    '''
+    # 遍历载荷数组
+    load_count = loads.shape[0]
+    rhs_vec = np.zeros(neq)
+
+    for idx in range(load_count):
+        node = loads[idx,0]
+        for dof in range(ndof_node):
+            global_dof = bc_array[node,dof]
+            if global_dof != -1:
+                rhs_vec[global_dof] = loads[idx,dof+1]
+    return rhs_vec
+
+
+
+        
