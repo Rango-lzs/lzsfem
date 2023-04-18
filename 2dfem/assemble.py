@@ -25,8 +25,10 @@ def eq_counter(nodes):
             value = dof_value[dof]
             if value == 0:
                 equ += 1
-                bc[node_idx][dof] = equ   
-    return bc, equ  
+                bc[node_idx][dof] = equ
+            else:
+                bc[node_idx][dof] = -1
+    return bc, equ+1  
 
 
 def dof_mapping(elems, nodes):
@@ -37,7 +39,7 @@ def dof_mapping(elems, nodes):
     '''  
     elem_num  = len(elems)
     ndof=2
-    dof_map = np.zeros((elem_num, ndof*4))
+    dof_map = np.zeros((elem_num, ndof*4),dtype = int)
 
     bc, equ_num = eq_counter(nodes)
 
@@ -46,7 +48,7 @@ def dof_mapping(elems, nodes):
 
         dof_map[elem_idx] = bc[elem_nodes].flatten()
 
-    return dof_map
+    return dof_map, bc ,equ_num
 
 def assemble(elems, nodes):
     '''
@@ -54,16 +56,18 @@ def assemble(elems, nodes):
     '''
     #dof_map[i][0:8]
     # 总刚的大小
-    stiff_matrix = np.array()
-    dof_map = dof_mapping(elems, nodes)
+   
+    dof_map, bc, eqn = dof_mapping(elems, nodes)
+    stiff_matrix = np.zeros((eqn,eqn))
 
     elems_num = len(elems)
 
     for ele_idx in range(elems_num):
         # 获取单元的单元类型，材料参数，然后计算
-        coord = []
-        param = []
-        kloc,mloc = stiff.elast_quad4(coord, param)
+        # coord 2*4
+        coord = nodes[elems[ele_idx, 3:], 1:3]
+        param = [1,0.3]
+        kloc,mloc = stiff.elas_quad4(coord, param)
 
         ele_dofs = kloc.shape[0]
         ele_map = dof_map[ele_idx]
@@ -73,7 +77,7 @@ def assemble(elems, nodes):
                 global_i = ele_map[i]
                 global_j = ele_map[j]
                 if global_i != -1 and global_j != -1:
-                    stiff_matrix[global_i][global_j] += kloc[i][j]
+                    stiff_matrix[global_i,global_j] = stiff_matrix[global_i,global_j]+ kloc[i,j]
 
     return stiff_matrix
 
@@ -87,9 +91,9 @@ def loadasem(loads, bc_array, neq, ndof_node=2):
     rhs_vec = np.zeros(neq)
 
     for idx in range(load_count):
-        node = loads[idx,0]
+        node = int(loads[idx,0])
         for dof in range(ndof_node):
-            global_dof = bc_array[node,dof]
+            global_dof = int(bc_array[node,dof])
             if global_dof != -1:
                 rhs_vec[global_dof] = loads[idx,dof+1]
     return rhs_vec

@@ -1,5 +1,6 @@
 
 import numpy as np
+from itertools import product
 
 '''
 this module  implement the gauss quadrature 
