@@ -1,6 +1,7 @@
 import readfile as io
 import assemble as asm
 import solver
+import postprocessor as pos
 
 '''
 the main routine of fem analysis steps
@@ -22,6 +23,12 @@ load_vec = asm.loadasem(loads, bc, eqn)
 
 # 求解
 disp = solver.linear_solver(stiff_matrix, load_vec)
+
+disp_complete = pos.complete_disp(bc, nodes, disp)
+
+pos.plot_node_field(disp_complete, nodes, elems, plt_type="contourf", levels=12,
+                    savefigs=True, title=["Ux","Uy"], figtitle=["Ux","Uy"],
+                    filename=["Ux","Uy"])
 
 print(disp)
 

@@ -3,6 +3,30 @@ import material as mat
 import quadrature as gauss
 import shape_function as shape
 
+
+def stiff_func(eleType):
+    ele_func = {
+        1 : elas_tri3,
+        2 : elas_quad4,
+        3 : elas_tet4,
+        4 : elas_hex8
+    }
+
+    try:
+        return ele_func[eleType]
+    except:
+        raise ValueError("undefined element type!")
+
+
+def spring(coord, params):
+    pass
+
+def truss(coord, params):
+    pass
+
+def elas_tri3(coord, params):
+    pass
+
 # 计算单元的刚度矩阵，跟单元类型，插值型函数，材料模型相关
 def elas_quad4(coord, params):
     """Quadrilateral element with 4 nodes
@@ -22,3 +46,10 @@ def elas_quad4(coord, params):
         stiff_mat += factor * (B.T @ C @ B)
         mass_mat += dens*factor* (H.T @ H)
     return stiff_mat, mass_mat
+
+
+def elas_tet4(coord, params):
+    pass
+
+def elas_hex8(coord, params):
+    pass

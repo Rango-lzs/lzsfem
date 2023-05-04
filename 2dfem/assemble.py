@@ -67,7 +67,8 @@ def assemble(elems, nodes):
         # coord 2*4
         coord = nodes[elems[ele_idx, 3:], 1:3]
         param = [1,0.3]
-        kloc,mloc = stiff.elas_quad4(coord, param)
+        eleType = 2 #elems[ele_idx, 4]
+        kloc,mloc = stiff.stiff_func(eleType)(coord, param)
 
         ele_dofs = kloc.shape[0]
         ele_map = dof_map[ele_idx]
