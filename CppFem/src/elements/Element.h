@@ -23,22 +23,28 @@
 class Element
 {
 	public:
-		
-		virtual void print();
+		Element() = default;
+		~Element() = default;
+
+		virtual void print() = 0;
 		
 		//Setters and getters
-		static std::string getElementType();
-		static int getTotalElements();
-		int getElementNum();
-	    void setNode(Node* n, int i);
-		Vector<Node*> getElementNodes();
+		virtual std::string elementType() = 0;
+
+
+	    virtual void setNode(Node* n, int i);
+		virtual Vector<Node*> getElementNodes() = 0;
+
 		void setMaterial(Material* mat);
 		Material* getMaterial();
-		Matrix<double>& getMatrix();
-		Vector<double>& getElementSolutionVector();
-		Vector<double>& getInternalForce();
+
+		virtual Matrix<double>& getMatrix() = 0;
+		virtual Vector<double>& getElementSolutionVector() = 0;
+		virtual Vector<double>& getInternalForce() = 0;
+
 		Tensor& getStress();
 		Tensor& getStrain();
+
 		//FUNCTIONS THAT CALCULATE
 		virtual void calculateMatrix()=0;
 		void resizeElementSolutionVector(int n);
