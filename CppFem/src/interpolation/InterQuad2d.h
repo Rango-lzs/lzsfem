@@ -1,11 +1,12 @@
 #ifndef _INTER_POLATION_QUAD_2D_HH 
 #define _INTER_POLATION_QUAD_2D_HH
 
+#include "Interpolation.h"
 #include "../algebra/Matrix.h"
 
 class Element;
 
-class InterpQuad2d 
+class InterpQuad2d: public Interpolation
 {
 public:
 	InterpQuad2d(Element* elem);

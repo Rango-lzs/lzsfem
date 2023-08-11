@@ -16,6 +16,7 @@ set(SOURCES src/algebra/Vector.h
 			src/meshing/NaiveMesh.cpp
 			src/meshing/CustomMesh.cpp
 
+			src/interpolation/Interpolation.cpp
 			src/interpolation/InterQuad2d.cpp
 			
 			src/elements/Element.cpp
@@ -62,9 +63,63 @@ set(SOURCES src/algebra/Vector.h
 			src/physics/Force.cpp						
 )
 
+set(INCLUDES src/algebra/Vector.h
+			src/algebra/Matrix.h
+			
+			src/meshing/Mesh.h
+			src/meshing/NaiveMesh.h
+			src/meshing/CustomMesh.h
+
+			src/interpolation/Interpolation.h
+			src/interpolation/InterQuad2d.h
+			
+			src/elements/Element.h
+			src/elements/Quad2.h
+			src/elements/Node.h
+			
+			src/materials/ElasticMaterial.h
+			src/materials/PlaneStress.h
+			src/materials/PlaneStrain.h
+			src/materials/Material.h
+			src/materials/VonMises.h
+			src/materials/VonMisesPlaneStress.h
+			src/materials/VonMisesPlaneStrain.h
+			src/materials/ElastoPlasticMaterial.h
+			
+			src/solver/Jacobi.h
+
+			src/solver/LinearIterativeSolver.h
+			src/solver/descent/DescentMethod.h
+			src/solver/descent/GradientDescent.h
+			src/solver/descent/ConjugateGradientDescent.h
+			src/solver/descent/BiCGStab.h
+			src/solver/NLSolver.h
+			src/solver/LSolver.h
+			src/solver/NLSolverCG.h
+			src/solver/NLSolverBiCGStab.h
+			src/solver/ArcLength.h
+			
+			src/tensors/Tensor.h
+			src/tensors/Stress.h
+			
+			src/fem/Function.h
+			src/fem/TestFunction.h
+			src/fem/GaussIntegration.h
+			src/fem/Discretization.h
+			src/fem/Discretization.h
+			src/fem/ImplAssembly.h
+			
+			#src/plotter/gnuplot_i.h
+			#src/plotter/Plotter.h
+			
+			src/physics/BoundaryConditions.h
+			src/physics/MechanicalBoundaryConditions.h
+			src/physics/Force.h						
+)
+
 #location of include directories
 
-add_library(FEM ${SOURCES})
+add_library(FEM ${SOURCES} ${INCLUDES})
 
 #creation of project
 #add_executable(fem_test src/vonMisesTest.cpp)

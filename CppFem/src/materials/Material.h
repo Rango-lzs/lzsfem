@@ -1,11 +1,3 @@
-/**
-  FILE: Material.h
-  AUTHOR: J Alfonso P Escobar
-  
-  DESCRIPTION: This class is a NON INSTANTIABLE pure abstract class which is used for implementing elastic or 
-			   elastoplastic models. 
-  		   
-*/
 
 #ifndef MATERIAL_H
 #define MATERIAL_H
@@ -16,23 +8,23 @@
 #include"../algebra/Vector.h"
 #include"../tensors/Tensor.h"
 
+/*
+* Task: give the matrial constitutive matrix which related the the stress and strain status
+* 
+*/
+
 class Material
 {
 	public:
-		Material(double E, double mu=0, double yS=0, double pM=0);
+		Material()  = default;
 		//SETTERS AND GETTERS
 		/*!\brief Returns Consitutive matrix
 		 */
-	    Matrix<double>& getConstitutiveMatrix();
+	    virtual Matrix<double>& getConstitutiveMatrix() = 0;
 		/*!\brief Returns type of material for INSTANTIABLE class
 		 */
-		virtual std::string getType();
-		double getPoisson();
-		double getModulus();
-		double getYieldStress();
-		double getPlasticModulus();
-		Tensor& getPlasticStrain();
-		bool isPlastic();
+		virtual std::string getType() = 0;
+		
 		/*!\brief Receives strain as vector and modifies tensors to 6x1 results
 		 *DESCRIPTION: modifies strains and stresses tensors inside the element through reference. The stress is 
 					   calculated inside this function as a temporary Vector object then it is resized to a correct 6x1.

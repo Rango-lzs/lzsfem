@@ -1,11 +1,3 @@
-/**
-  FILE: Matrix.h
-  
-  AUTHOR: J Alfonso P Escobar
-  
-  DESCRIPTION: includes Vector, provides matrix functionalities. TEMPLATE CLASS. Overloaded operators only work with numerical types.
-			   
-*/
 #ifndef MATRIX_H
 #define MATRIX_H
 

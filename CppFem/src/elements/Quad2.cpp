@@ -25,43 +25,7 @@ void Quad2::print()
 	Element::print();
 
 }
-/*
-void Quad2::calculateMatrix()
-{
 
-	Matrix<double> Jacobian(2,2);
-	Matrix<double> G(4,8);
-	Matrix<double> A(3,4);
-	Matrix<double> B(3,8);
-	K.matrixResize(B.getColumns(),B.getColumns());
-	calculateJacobian(Jacobian);
-
-	std::cout<<"JACOBIAN MATRIX IS: \n";
-	std::cout<<Jacobian;
-	calculateG(G);
-	std::cout<<"THE G MATRIX: \n";
-	std::cout<<G;
-	assembleA(A,Jacobian);
-	std::cout<<"THE A MATRIX: \n";
-	std::cout<<A;
-	std::cout<<"THE B MATRIX IS: \n";
-	B=A*G;
-	std::cout<<B;
-	//std::cout<<~B;
-	//provisional determinant of Jacobian calculation
-	double detJ=Jacobian(0,0)*Jacobian(1,1)-Jacobian(0,1)*Jacobian(1,0);
-	std::cout<<"THE DET OF J IS: \n";
-	std::cout<<detJ<<"\n";
-	//K=(~B*material->getConstitutiveMatrix())*B;
-	std::cout<<"\n"<<~B*material->getConstitutiveMatrix();
-	K=~B*material->getConstitutiveMatrix();
-	K*=B;
-	//K*=detJ;
-	std::cout<<"THE K MATRIX: \n";
-	std::cout<<K;
-
-}
-*/
 void Quad2::calculateMatrix()
 {
 	K = 0;//Make sure it wont overlap different load step values
