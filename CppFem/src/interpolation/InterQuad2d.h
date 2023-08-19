@@ -2,7 +2,7 @@
 #define _INTER_POLATION_QUAD_2D_HH
 
 #include "Interpolation.h"
-#include "../algebra/Matrix.h"
+#include "Matrix.h"
 
 class Element;
 

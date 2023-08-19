@@ -20,7 +20,7 @@ public:
 	 *			4.-calculate B=GA
 	 *			5.-implement K=detJ*B_T*D*B
 	 */
-	virtual void calculateMatrix()override;
+	virtual Matrix<double>& stiffnessMatrix() override;
 	//Setters and getters
 	//virtual void setNode(Node* n, int i)override;
 private:

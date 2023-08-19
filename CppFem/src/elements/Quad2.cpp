@@ -26,7 +26,7 @@ void Quad2::print()
 
 }
 
-void Quad2::calculateMatrix()
+Matrix<double>& Quad2::stiffnessMatrix()
 {
 	K = 0;//Make sure it wont overlap different load step values
 	Matrix<double> Jacobian(2, 2);

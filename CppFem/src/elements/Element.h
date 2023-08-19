@@ -22,7 +22,7 @@ class Element
 		void setMaterial(Material* mat);
 		Material* getMaterial();
 
-		virtual Matrix<double>& getMatrix() = 0;
+		virtual Matrix<double>& stiffnessMatrix() = 0;
 		virtual Vector<double>& getElementSolutionVector() = 0;
 		virtual Vector<double>& getInternalForce() = 0;
 

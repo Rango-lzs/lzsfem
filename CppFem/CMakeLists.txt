@@ -21,6 +21,7 @@ set(SOURCES src/algebra/Vector.h
 			
 			src/elements/Element.cpp
 			src/elements/Quad2.cpp
+			src/elements/Bar1d.cpp
 			src/elements/Node.cpp
 			
 			src/materials/ElasticMaterial.cpp
@@ -50,7 +51,6 @@ set(SOURCES src/algebra/Vector.h
 			
 			src/fem/Function.h
 			src/fem/TestFunction.h
-			src/fem/GaussIntegration.cpp
 			src/fem/Discretization.cpp
 			src/fem/Discretization.cpp
 			src/fem/ImplAssembly.cpp
@@ -63,8 +63,21 @@ set(SOURCES src/algebra/Vector.h
 			src/physics/Force.cpp						
 )
 
+set(include_dir 
+		src/algebra
+		src/meshing
+		src/interpolation
+		src/elements
+		src/materials
+		src/solver
+		src/tensors
+		src/fem
+		src/physics
+)
+
 set(INCLUDES src/algebra/Vector.h
 			src/algebra/Matrix.h
+			src/algebra/SparseMatrix.h
 			
 			src/meshing/Mesh.h
 			src/meshing/NaiveMesh.h
@@ -75,6 +88,7 @@ set(INCLUDES src/algebra/Vector.h
 			
 			src/elements/Element.h
 			src/elements/Quad2.h
+			src/elements/Bar1d.h
 			src/elements/Node.h
 			
 			src/materials/ElasticMaterial.h
@@ -103,8 +117,7 @@ set(INCLUDES src/algebra/Vector.h
 			src/tensors/Stress.h
 			
 			src/fem/Function.h
-			src/fem/TestFunction.h
-			src/fem/GaussIntegration.h
+			src/fem/TestFunction.h			
 			src/fem/Discretization.h
 			src/fem/Discretization.h
 			src/fem/ImplAssembly.h
@@ -119,6 +132,7 @@ set(INCLUDES src/algebra/Vector.h
 
 #location of include directories
 
+include_directories(FEM ${include_dir})
 add_library(FEM ${SOURCES} ${INCLUDES})
 
 #creation of project
