@@ -1,6 +1,8 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
+#include"Matrix.h"
+
 class Node;
 class Material;
 class Tensor;
@@ -15,14 +17,13 @@ class Element
 		//Setters and getters
 		virtual std::string elementType() = 0;
 
-
 	    virtual void setNode(Node* n, int i);
 		virtual Vector<Node*> getElementNodes() = 0;
 
 		void setMaterial(Material* mat);
 		Material* getMaterial();
 
-		virtual Matrix<double>& stiffnessMatrix() = 0;
+		virtual void stiffnessMatrix(Matrix<double>&) = 0;
 		virtual Vector<double>& getElementSolutionVector() = 0;
 		virtual Vector<double>& getInternalForce() = 0;
 
