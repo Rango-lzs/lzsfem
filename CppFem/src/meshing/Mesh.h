@@ -22,7 +22,7 @@ public:
 	int getNumElements();
 	virtual void setNumNodes(int n, int m) = 0;
 	int getNumNodes();
-	Vector<Node>& getNodes();
+	Vector<Node*>& getNodes();
 	Vector<Element*>& getElements();
 	virtual void setElementMaterial(Material* mat) = 0;
 protected:

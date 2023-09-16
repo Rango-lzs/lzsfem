@@ -10,6 +10,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ROOT_DIR}/lib)
 
 #adding the sources manually
 
+set(algebar_src
+	src/algebra/floatmatrix.cpp
+	src/algebra/floatarray.cpp
+)
+
 set(element_src 
 	src/elements/Element.cpp
 	src/elements/Quad2.cpp
@@ -22,6 +27,14 @@ set(meshing_src
 	src/meshing/Mesh.cpp
 	src/meshing/NaiveMesh.cpp
 	src/meshing/CustomMesh.cpp
+)
+
+set(input_src
+	src/input/inputrecord.cpp
+	src/input/text_input_record.cpp
+	src/input/dynamic_input_record.cpp
+	src/input/text_data_reader.cpp
+	src/input/dynamic_data_reader.cpp
 )
 
 set(interpolation_src
@@ -60,13 +73,14 @@ set(tensor_src
 	src/tensors/Stress.cpp
 )
 
-set(fem_src
+set(femcore_src
 
-	src/fem/Function.h
-	src/fem/TestFunction.h
-	src/fem/Discretization.cpp
-	src/fem/Discretization.cpp
-	src/fem/ImplAssembly.cpp
+	src/femcore/Function.h
+	src/femcore/TestFunction.h
+	src/femcore/Discretization.cpp
+	src/femcore/Discretization.cpp
+	src/femcore/ImplAssembly.cpp
+	src/femcore/domain.cpp
 )
 
 set(physics_src
@@ -75,16 +89,22 @@ set(physics_src
 	src/physics/Force.cpp
 )
 
+set(logger_src
+	src/logger/logger.cpp
+)
+
 set(SOURCES 
 	${algebra_src}
 	${meshing_src}				
 	${element_src}
+	${input_src}
 	${interpolation_src}
 	${materials_src}
 	${solver_src}
 	${tensor_src}
-	${fem_src}
-	${physics_src}			
+	${femcore_src}
+	${physics_src}
+	${logger_src}			
 	#src/plotter/gnuplot_i.cpp
 	#src/plotter/Plotter.cpp											
 )
@@ -100,12 +120,25 @@ set(element_inc
 set(algebra_inc
 	src/algebra/Vector.h
 	src/algebra/Matrix.h
+	src/algebra/floatmatrix.h
+	src/algebra/floatmatrixf.h
+	src/algebra/floatarray.h
+	src/algebra/floatarrayf.h
 )
 
 set(meshing_inc
 	src/meshing/Mesh.h
 	src/meshing/NaiveMesh.h
 	src/meshing/CustomMesh.h
+)
+
+set(input_inc
+	src/input/datareader.h
+	src/input/inputrecord.h
+	src/input/text_input_record.h
+	src/input/dynamic_input_record.h
+	src/input/text_data_reader.h
+	src/input/dynamic_data_reader.h
 )
 
 set(interpolation_inc
@@ -144,19 +177,24 @@ set(tensor_inc
 	src/tensors/Stress.h
 )
 
-set(fem_inc
+set(femcore_inc
 
-	src/fem/Function.h
-	src/fem/TestFunction.h
-	src/fem/Discretization.h
-	src/fem/Discretization.h
-	src/fem/ImplAssembly.h
+	src/femcore/Function.h
+	src/femcore/TestFunction.h
+	src/femcore/Discretization.h
+	src/femcore/Discretization.h
+	src/femcore/ImplAssembly.h
+	src/femcore/domain.h
 )
 
 set(physics_inc
 	src/physics/BoundaryConditions.h
 	src/physics/MechanicalBoundaryConditions.h
 	src/physics/Force.h
+)
+
+set(logger_inc
+	src/logger/logger.h
 )
 
 set(include_dir 
@@ -167,41 +205,47 @@ set(include_dir
 	src/materials
 	src/solver
 	src/tensors
-	src/fem
+	src/femcore
 	src/physics
+	src/input
+	src/logger
 )
 
 set(INCLUDES
 	${algebra_inc}
 	${meshing_inc}				
 	${element_inc}
+	${input_inc}
 	${interpolation_inc}
 	${materials_inc}
 	${solver_inc}
 	${tensor_inc}
-	${fem_inc}
+	${femcore_inc}
 	${physics_inc}
+	${logger_inc}
 )
 
 #location of include directories
 source_group(src/algebra FILES ${algebra_src})
 source_group(src/meshing FILES ${meshing_src})
 source_group(src/elements FILES ${element_src})
+source_group(src/input  FILES ${input_src})
 source_group(src/interpolation FILES ${interpolation_src})
 source_group(src/materials FILES ${materials_src})
 source_group(src/solver FILES ${solver_src})
 source_group(src/tensor FILES ${tensor_src})
-source_group(src/fem FILES ${fem_src})
+source_group(src/femcore FILES ${femcore_src})
 source_group(src/physics FILES ${physics_src})
 
 source_group(inc/algebra FILES ${algebra_inc})
 source_group(inc/meshing FILES ${meshing_inc})
 source_group(inc/elements FILES ${element_inc})
+source_group(inc/input FILES ${input_inc})
 source_group(inc/interpolation FILES ${interpolation_inc})
 source_group(inc/materials FILES ${materials_inc})
 source_group(inc/solver FILES ${solver_inc})
 source_group(inc/tensor FILES ${tensor_inc})
-source_group(inc/fem FILES ${fem_inc})
+source_group(inc/femcore FILES ${femcore_inc})
 source_group(inc/physics FILES ${physics_inc})
 
 

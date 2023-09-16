@@ -2,7 +2,6 @@
 #include"Element.h"
 
 int Element::totalElements = 0;
-//std::string Element::type="Element";
 void Element::print()
 {
 	std::cout << "ELEMENT: " << globalNum << "\n";
@@ -70,14 +69,17 @@ int Element::getTotalElements()
 {
 	return totalElements;
 }
+
 int Element::getElementNum()
 {
 	return globalNum;
 }
+
 Vector<Node*> Element::getElementNodes()
 {
 	return nodes;
 }
+
 void Element::resizeElementSolutionVector(int n)
 {
 	if (solution.size() == n)
@@ -86,6 +88,7 @@ void Element::resizeElementSolutionVector(int n)
 	}
 	solution.resize(n);
 }
+
 void Element::computeTensorialResults()
 {
 	setNodalValues();
@@ -98,6 +101,7 @@ void Element::computeTensorialResults()
 	material->assembleTensors(strain_vec, strain, stress);
 
 }
+
 void Element::setNodalValues()
 {
 	nodes[0]->getDOFs()[0] = solution[0];
@@ -109,6 +113,7 @@ void Element::setNodalValues()
 	nodes[3]->getDOFs()[0] = solution[6];
 	nodes[3]->getDOFs()[1] = solution[7];
 }
+
 void Element::setNodalInternalForces()
 {
 	nodes[0]->getInternalForce()[0] += internalForce[0];
@@ -128,6 +133,7 @@ void Element::setNodalInternalForces()
 		nodes[3]->getInternalForce()[0]=internalForce[6];
 		nodes[3]->getInternalForce()[1]=internalForce[7];  */
 }
+
 std::ostream& operator<<(std::ostream& out, Element& el)
 {
 	out << "MATERIAL: ";
