@@ -20,7 +20,7 @@ namespace rango {
  * component initialization. The input record identification facilitates the
  * implementation of database readers with direct or random access.
  */
-class OOFEM_EXPORT DataReader
+class FEM_EXPORT DataReader
 {
 protected:
     /// Output file name (first line in OOFEM input files).
@@ -68,5 +68,5 @@ public:
     /// Gives the problem description
     std :: string giveDescription() { return this->description; }
 };
-} // end namespace oofem
+} // end namespace fem
 #endif // datareader_h

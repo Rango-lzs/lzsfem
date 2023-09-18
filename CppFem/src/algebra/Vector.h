@@ -1,12 +1,3 @@
-/**
-  FILE: Vector.h
-  
-  AUTHOR: J Alfonso P Escobar
-  
-  DESCRIPTION: derived class from STL vector, provides vector functionalities. TEMPLATE CLASS. Overloaded operators only work with numerical types.
-			   
-*/
-
 #ifndef VECTOR_H
 #define VECTOR_H
 
@@ -14,8 +5,6 @@
 #include<iostream>
 #include<ctime>
 #include<cmath>
-
-
 
 template<typename T>
 class Vector:public std::vector<T>

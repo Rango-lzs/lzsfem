@@ -40,15 +40,15 @@
 #include <map>
 #include <set>
 
-namespace oofem {
+namespace fem {
 class FEMComponent;
 class DynamicInputRecord;
 
 /// Helper function for creating a dynamic input record for a node
-OOFEM_EXPORT std::unique_ptr<DynamicInputRecord> CreateNodeIR(int i, InputFieldType nodeType, FloatArray coord);
+FEM_EXPORT std::unique_ptr<DynamicInputRecord> CreateNodeIR(int i, InputFieldType nodeType, FloatArray coord);
 
 /// Helper function for creating elements (with optional cross-section number).
-OOFEM_EXPORT std::unique_ptr<DynamicInputRecord> CreateElementIR(int i, InputFieldType elementType, IntArray nodes, int cs = 0);
+FEM_EXPORT std::unique_ptr<DynamicInputRecord> CreateElementIR(int i, InputFieldType elementType, IntArray nodes, int cs = 0);
 
 /**
  * Class representing the a dynamic Input Record.
@@ -56,7 +56,7 @@ OOFEM_EXPORT std::unique_ptr<DynamicInputRecord> CreateElementIR(int i, InputFie
  * This is intended for internal usage, where new input records and such are created dynamically.
  * @author Mikael Öhman
  */
-class OOFEM_EXPORT DynamicInputRecord : public InputRecord
+class FEM_EXPORT DynamicInputRecord : public InputRecord
 {
 protected:
     std :: string recordKeyword;
@@ -128,5 +128,5 @@ public:
     /// Removes given field from record.
     void unsetField(InputFieldType id);
 };
-} // end namespace oofem
+} // end namespace fem
 #endif // dynamicinputrecord_h

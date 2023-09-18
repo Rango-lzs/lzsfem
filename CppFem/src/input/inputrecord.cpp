@@ -34,7 +34,7 @@
 
 #include "inputrecord.h"
 
-namespace oofem {
+namespace fem {
 
 void
 InputRecord :: giveOptionalField(int &answer, InputFieldType id)
@@ -193,4 +193,4 @@ const char* ValueInputException::what() const noexcept
     return msg.c_str();
 }
 
-} // end namespace oofem
+} // end namespace fem

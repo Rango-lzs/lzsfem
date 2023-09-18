@@ -39,7 +39,7 @@
 #include <vector>
 #include <memory>
 
-namespace oofem {
+namespace fem {
 class InputRecord;
 
 /**
@@ -50,7 +50,7 @@ class InputRecord;
  * @author Mikael Öhman
  * @todo InputRecordType is ignored. It shouldn't be too difficult to respect it, but it's not necessary.
  */
-class OOFEM_EXPORT DynamicDataReader : public DataReader
+class FEM_EXPORT DynamicDataReader : public DataReader
 {
 protected:
     std :: string name;
@@ -95,5 +95,5 @@ public:
      */
     void writeToFile(const char *fileName);
 };
-} // end namespace oofem
+} // end namespace fem
 #endif // dynamicdatareader_h

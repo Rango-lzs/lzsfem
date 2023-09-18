@@ -37,7 +37,7 @@
 
 #include <string>
 
-namespace oofem {
+namespace fem {
 OOFEMTXTDataReader :: OOFEMTXTDataReader(std :: string inputfilename) : DataReader(),
     dataSourceName(std :: move(inputfilename)), recordList()
 {
@@ -46,7 +46,7 @@ OOFEMTXTDataReader :: OOFEMTXTDataReader(std :: string inputfilename) : DataRead
     {
         std :: ifstream inputStream(dataSourceName);
         if ( !inputStream.is_open() ) {
-            OOFEM_ERROR("Can't open input stream (%s)", dataSourceName.c_str());
+            FEM_ERROR("Can't open input stream (%s)", dataSourceName.c_str());
         }
 
         int lineNumber = 0;
@@ -63,7 +63,7 @@ OOFEMTXTDataReader :: OOFEMTXTDataReader(std :: string inputfilename) : DataRead
     for ( auto it = lines.begin(); it != lines.end(); ++it ) {
         if ( it->second.compare(0, 8, "@include") == 0 ) {
             std :: string fname = it->second.substr(10, it->second.length()-11);
-            OOFEM_LOG_INFO("Reading included file: %s\n", fname.c_str());
+            FEM_LOG_INFO("Reading included file: %s\n", fname.c_str());
 
             // Remove the include line
             lines.erase(it++);
@@ -72,7 +72,7 @@ OOFEMTXTDataReader :: OOFEMTXTDataReader(std :: string inputfilename) : DataRead
             std :: string line;
             std :: ifstream includedStream(fname);
             if ( !includedStream.is_open() ) {
-                OOFEM_ERROR("Can't open input stream (%s)", fname.c_str());
+                FEM_ERROR("Can't open input stream (%s)", fname.c_str());
             }
             while (this->giveLineFromInput(includedStream, includedLine, line)) {
                 lines.emplace(it, make_pair(includedLine, line));
@@ -98,7 +98,7 @@ InputRecord &
 OOFEMTXTDataReader :: giveInputRecord(InputRecordType typeId, int recordId)
 {
     if ( this->it == this->recordList.end() ) {
-        OOFEM_ERROR("Out of input records, file contents must be missing");
+        FEM_ERROR("Out of input records, file contents must be missing");
     }
     return *this->it++;
 }
@@ -115,7 +115,7 @@ void
 OOFEMTXTDataReader :: finish()
 {
     if ( this->it != this->recordList.end() ) {
-        OOFEM_WARNING("There are unread lines in the input file\n"
+        FEM_WARNING("There are unread lines in the input file\n"
             "The most common cause are missing entries in the domain record, e.g. 'nset'");
     }
     this->recordList.clear();
@@ -168,4 +168,4 @@ OOFEMTXTDataReader :: giveRawLineFromInput(std :: ifstream &stream, int &lineNum
     } while ( line.length() == 0 || line [ 0 ] == '#' ); // skip comments
     return true;
 }
-} // end namespace oofem
+} // end namespace fem

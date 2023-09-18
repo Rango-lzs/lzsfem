@@ -1,45 +1,7 @@
-/*
- *
- *                 #####    #####   ######  ######  ###   ###
- *               ##   ##  ##   ##  ##      ##      ## ### ##
- *              ##   ##  ##   ##  ####    ####    ##  #  ##
- *             ##   ##  ##   ##  ##      ##      ##     ##
- *            ##   ##  ##   ##  ##      ##      ##     ##
- *            #####    #####   ##      ######  ##     ##
- *
- *
- *             OOFEM : Object Oriented Finite Element Code
- *
- *               Copyright (C) 1993 - 2013   Borek Patzak
- *
- *
- *
- *       Czech Technical University, Faculty of Civil Engineering,
- *   Department of Structural Mechanics, 166 29 Prague, Czech Republic
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
-
-#pragma once
 
 #ifndef floatmatrixf_h
 #define floatmatrixf_h
 
-#include "oofemcfg.h"
-#include "contextioresulttype.h"
-#include "contextmode.h"
 #include "floatmatrix.h"
 #include "floatarrayf.h"
 
@@ -49,14 +11,14 @@
 #include <utility>
 #include <iosfwd>
 
-namespace oofem {
+namespace fem {
 
 /**
  * Implementation of matrix containing floating point numbers.
  * @author Mikael Öhman
  */
 template<std::size_t N, std::size_t M>
-class OOFEM_EXPORT FloatMatrixF
+class FEM_EXPORT FloatMatrixF
 {
 protected:
     /// Values of matrix stored column wise.
@@ -84,7 +46,7 @@ public:
     /// Copy constructor.
     FloatMatrixF(const FloatMatrixF<N,M> &mat) noexcept : values(mat.values) {}
     /// FloatMatrix conversion constructor.
-    FloatMatrixF(const FloatMatrix &mat)
+    FloatMatrixF(const FloatMatrix& mat)
     {
 #ifndef NDEBUG
         if ( mat.giveNumberOfRows() != N || mat.giveNumberOfColumns() != M ) {
@@ -1087,7 +1049,7 @@ FloatMatrixF<N,N> inv(const FloatMatrixF<N,N> &mat, double zeropiv=1e-24)
     for ( std::size_t  i = 1; i < N; i++ ) {
         double piv = tmp.at(i, i);
         if ( std::abs(piv) <= zeropiv ) {
-            OOFEM_ERROR("pivot (%d,%d) to close to small", i, i);
+            FEM_ERROR("pivot (%d,%d) to close to small", i, i);
         }
         for ( std::size_t j = i + 1; j <= N; j++ ) {
             double linkomb = tmp.at(j, i) / tmp.at(i, i);
@@ -1344,7 +1306,7 @@ inline std::pair<FloatArrayF<2>, FloatMatrixF<2,2>> eig(const FloatMatrixF<2,2> 
         -b - std::sqrt(b*b - c)
     };
     FloatMatrixF<2,2> vecs;
-    OOFEM_ERROR("TODO"); // is this even worth specializing? I don't think we ever use it for 2x2. Typically just 3x3, 6x6, 9x9
+    FEM_ERROR("TODO"); // is this even worth specializing? I don't think we ever use it for 2x2. Typically just 3x3, 6x6, 9x9
     return {vals, vecs};
 }
 #endif
@@ -1497,5 +1459,5 @@ FloatMatrixF<N,M> solve(FloatMatrixF<N,N> mtrx, const FloatMatrixF<N,M> &B, doub
 }
 ///@}
 
-} // end namespace oofem
+} // end namespace fem
 #endif // floatmatrixf_h

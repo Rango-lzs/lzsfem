@@ -45,7 +45,7 @@
 
 #include <sstream>
 
-namespace oofem {
+namespace fem {
 std::unique_ptr<DynamicInputRecord> CreateNodeIR(int i, InputFieldType nodeType, FloatArray coord)
 {
     auto result = std::make_unique<DynamicInputRecord>(nodeType, i);

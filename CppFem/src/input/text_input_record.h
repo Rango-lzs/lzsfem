@@ -41,12 +41,12 @@
 #include <string>
 #include <vector>
 
-namespace oofem {
+namespace fem {
 /**
  * Class representing the Input Record for OOFEM txt input file format.
  * The input record is represented as string consisting of several fields.
  */
-class OOFEM_EXPORT OOFEMTXTInputRecord : public InputRecord
+class FEM_EXPORT OOFEMTXTInputRecord : public InputRecord
 {
 protected:
     /**
@@ -128,5 +128,5 @@ protected:
      */
     int readMatrix(const char *helpSource, int r, int c, FloatMatrix &ans);
 };
-} // end namespace oofem
+} // end namespace fem
 #endif // oofemtxtinputrecord_h

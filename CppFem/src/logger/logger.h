@@ -49,12 +49,12 @@
 # define __func__ __FUNCTION__
 #endif
 
-namespace oofem {
+namespace fem {
 /**
  * Logger class used by OOFEM to print information during analysis.
  * Prints warnings and errors into a separate stream from normal output.
  */
-class OOFEM_EXPORT Logger
+class FEM_EXPORT Logger
 {
 public:
     /// Type defining basic log levels.
@@ -115,20 +115,20 @@ protected:
     const char *giveLevelName(logLevelType l) const;
 };
 
-extern OOFEM_EXPORT Logger oofem_logger;
+extern FEM_EXPORT Logger FEM_logger;
 
 /**
  * Log reporting macros
  */
 //@{
-#define OOFEM_LOG_FATAL(...) oofem_logger.writeELogMsg(Logger :: LOG_LEVEL_FATAL, __func__, __FILE__, __LINE__, __VA_ARGS__)
-#define OOFEM_LOG_ERROR(...) oofem_logger.writeELogMsg(Logger :: LOG_LEVEL_ERROR, __func__, __FILE__, __LINE__, __VA_ARGS__)
-#define OOFEM_LOG_WARNING(...) oofem_logger.writeELogMsg(Logger :: LOG_LEVEL_WARNING,  __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define FEM_LOG_FATAL(...) FEM_logger.writeELogMsg(Logger :: LOG_LEVEL_FATAL, __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define FEM_LOG_ERROR(...) FEM_logger.writeELogMsg(Logger :: LOG_LEVEL_ERROR, __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define FEM_LOG_WARNING(...) FEM_logger.writeELogMsg(Logger :: LOG_LEVEL_WARNING,  __func__, __FILE__, __LINE__, __VA_ARGS__)
 
-#define OOFEM_LOG_FORCED(...) oofem_logger.writeLogMsg(Logger :: LOG_LEVEL_FORCED, __VA_ARGS__)
-#define OOFEM_LOG_RELEVANT(...) oofem_logger.writeLogMsg(Logger :: LOG_LEVEL_RELEVANT, __VA_ARGS__)
-#define OOFEM_LOG_INFO(...) oofem_logger.writeLogMsg(Logger :: LOG_LEVEL_INFO, __VA_ARGS__)
-#define OOFEM_LOG_DEBUG(...) oofem_logger.writeLogMsg(Logger :: LOG_LEVEL_DEBUG, __VA_ARGS__)
+#define FEM_LOG_FORCED(...) FEM_logger.writeLogMsg(Logger :: LOG_LEVEL_FORCED, __VA_ARGS__)
+#define FEM_LOG_RELEVANT(...) FEM_logger.writeLogMsg(Logger :: LOG_LEVEL_RELEVANT, __VA_ARGS__)
+#define FEM_LOG_INFO(...) FEM_logger.writeLogMsg(Logger :: LOG_LEVEL_INFO, __VA_ARGS__)
+#define FEM_LOG_DEBUG(...) FEM_logger.writeLogMsg(Logger :: LOG_LEVEL_DEBUG, __VA_ARGS__)
 //@}
-} // end namespace oofem
+} // end namespace fem
 #endif // logger_h

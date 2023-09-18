@@ -42,12 +42,12 @@
 #endif
 
 
-namespace oofem {
+namespace fem {
 #define LOG_ERR_HEADER "_______________________________________________________"
 #define LOG_ERR_TAIL   "_______________________________________________________\a\n"
 
 // Default log output
-Logger oofem_logger(Logger :: LOG_LEVEL_INFO);
+Logger FEM_logger(Logger :: LOG_LEVEL_INFO);
 
 Logger :: Logger(logLevelType level) :
     logStream(stdout),
@@ -83,7 +83,7 @@ Logger :: appendLogTo(const std :: string &fname)
     }
 
     if ( stream == NULL ) {
-        OOFEM_WARNING( "file opening error (%s)", fname.c_str() );
+        FEM_WARNING( "file opening error (%s)", fname.c_str() );
     } else {
         this->logStream = stream;
     }
@@ -102,7 +102,7 @@ Logger :: appendErrorTo(const std :: string &fname)
     }
 
     if ( stream == NULL ) {
-        OOFEM_WARNING( "file opening error (%s)", fname.c_str() );
+        FEM_WARNING( "file opening error (%s)", fname.c_str() );
     } else {
         this->errStream = stream;
     }
@@ -118,7 +118,7 @@ Logger :: appendLogTo(FILE *stream)
     }
 
     if ( stream == NULL ) {
-        OOFEM_ERROR( "Logger::appendLogTo : null stream given" );
+        FEM_ERROR( "Logger::appendLogTo : null stream given" );
     } else {
         this->logStream = stream;
     }
@@ -134,7 +134,7 @@ Logger :: appendErrorTo(FILE *stream)
     }
 
     if ( stream == NULL ) {
-        OOFEM_ERROR( "Logger::appendLogTo : null stream given" );
+        FEM_ERROR( "Logger::appendLogTo : null stream given" );
     } else {
         this->errStream = stream;
     }
@@ -271,4 +271,4 @@ Logger :: printStatistics()
     }
 }
 
-} // end namespace oofem
+} // end namespace fem

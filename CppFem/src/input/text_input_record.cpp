@@ -47,7 +47,7 @@
 #include <ostream>
 #include <sstream>
 
-namespace oofem {
+namespace fem {
 OOFEMTXTInputRecord :: OOFEMTXTInputRecord() : tokenizer(), record()
 { }
 
@@ -361,7 +361,7 @@ OOFEMTXTInputRecord :: giveField(std :: list< Range > &list, InputFieldType id)
         setReadFlag(indx);
         const char *rec = tokenizer.giveToken(++indx);
         if ( * rec != '{' ) {
-            OOFEM_WARNING("missing left '{'");
+            FEM_WARNING("missing left '{'");
             list.clear();
             throw BadFormatInputException(*this, id, lineNumber);
         }
@@ -381,7 +381,7 @@ OOFEMTXTInputRecord :: giveField(std :: list< Range > &list, InputFieldType id)
 
         // test for enclosing bracket
         if ( * rec != '}' ) {
-            OOFEM_WARNING("missing end '}'");
+            FEM_WARNING("missing end '}'");
             list.clear();
             throw BadFormatInputException(*this, id, lineNumber);
         }
@@ -533,7 +533,7 @@ OOFEMTXTInputRecord :: finish(bool wrn)
     }
 
     if ( wf ) {
-        OOFEM_WARNING( buff.str().c_str() );
+        FEM_WARNING( buff.str().c_str() );
     }
 }
 
@@ -560,7 +560,7 @@ OOFEMTXTInputRecord :: readRange(const char **helpSource, int &li, int &hi)
         * helpSource = endptr;
         // test whitespaces
         if ( * * helpSource != ' ' && * * helpSource != '\t' ) {
-            OOFEM_WARNING("unexpected token while reading range value");
+            FEM_WARNING("unexpected token while reading range value");
             return 0;
         }
 
@@ -577,7 +577,7 @@ OOFEMTXTInputRecord :: readRange(const char **helpSource, int &li, int &hi)
             ( * helpSource )++;
             return 1;
         } else {
-            OOFEM_WARNING("end ')' missing while parsing range value");
+            FEM_WARNING("end ')' missing while parsing range value");
             return 0;
         }
     }
@@ -620,7 +620,7 @@ OOFEMTXTInputRecord :: readMatrix(const char *helpSource, int r, int c, FloatMat
                 if ( * endptr == ';' ) {
                     ( endptr )++;
                 } else {
-                    OOFEM_WARNING("missing row terminating semicolon");
+                    FEM_WARNING("missing row terminating semicolon");
                     return 0;
                 }
             }
@@ -635,7 +635,7 @@ OOFEMTXTInputRecord :: readMatrix(const char *helpSource, int r, int c, FloatMat
         if ( * endptr == '}' ) {
             return 1;
         } else {
-            OOFEM_WARNING("end '}' missing while parsing matrix value");
+            FEM_WARNING("end '}' missing while parsing matrix value");
             return 0;
         }
     } else {
@@ -644,4 +644,4 @@ OOFEMTXTInputRecord :: readMatrix(const char *helpSource, int r, int c, FloatMat
 
 }
 
-} // end namespace oofem
+} // end namespace fem

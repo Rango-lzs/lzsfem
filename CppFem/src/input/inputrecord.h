@@ -44,7 +44,7 @@
 #include "logger.h" // for missing __func__ in MSC
 #include "oofemcfg.h"
 
-namespace oofem {
+namespace fem {
 class IntArray;
 class FloatArray;
 class FloatMatrix;
@@ -90,7 +90,7 @@ typedef const char *InputFieldType;
  * resolve all dependencies. This allows to create a copy of input record instance for later use
  * without the need to re-open input files (used for metasteps).
  */
-class OOFEM_EXPORT InputRecord
+class FEM_EXPORT InputRecord
 {
 public:
     /// Destructor
@@ -220,5 +220,5 @@ public:
 };
 
 
-} // end namespace oofem
+} // end namespace fem
 #endif // inputrecord_h

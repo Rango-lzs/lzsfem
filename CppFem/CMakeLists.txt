@@ -185,6 +185,8 @@ set(femcore_inc
 	src/femcore/Discretization.h
 	src/femcore/ImplAssembly.h
 	src/femcore/domain.h
+
+	src/femcore/fem_export.h
 )
 
 set(physics_inc
@@ -247,6 +249,8 @@ source_group(inc/solver FILES ${solver_inc})
 source_group(inc/tensor FILES ${tensor_inc})
 source_group(inc/femcore FILES ${femcore_inc})
 source_group(inc/physics FILES ${physics_inc})
+
+add_definitions(-DFEM_MODULE)
 
 
 include_directories(FEM ${include_dir})

@@ -89,7 +89,7 @@
 #include <vector>
 #include <set>
 
-namespace oofem {
+namespace fem {
 Domain :: Domain(int n, int serNum, EngngModel *e) : defaultNodeDofIDArry(),
                                                      bcTracker(this)
     // Constructor. Creates a new domain.
@@ -159,7 +159,7 @@ Domain :: giveElement(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)elementList.size() ) {
-        OOFEM_ERROR("undefined element (%d)", n);
+        FEM_ERROR("undefined element (%d)", n);
     }
 #endif
     return this->elementList[n-1].get();
@@ -185,7 +185,7 @@ Domain :: giveElementPlaceInArray(int iGlobalElNum) const
     if ( res != elementGlobal2LocalMap.end() ) {
         return res->second;
     } else {
-        OOFEM_ERROR("returning -1 for iGlobalElNum: %d.", iGlobalElNum );
+        FEM_ERROR("returning -1 for iGlobalElNum: %d.", iGlobalElNum );
         return -1;
     }
 }
@@ -198,7 +198,7 @@ Domain :: giveDofManPlaceInArray(int iGlobalDofManNum) const
     if ( res != dofmanGlobal2LocalMap.end() ) {
         return res->second;
     } else {
-        OOFEM_ERROR("returning -1 for iGlobalDofManNum: %d.", iGlobalDofManNum );
+        FEM_ERROR("returning -1 for iGlobalDofManNum: %d.", iGlobalDofManNum );
         return -1;
     }
 }
@@ -211,7 +211,7 @@ Domain :: giveElementsWithMaterialNum(int iMaterialNum) const
     if ( res != materialNum2ElMap.end() ) {
         return res->second;
     } else {
-        OOFEM_ERROR("Material not found.")
+        FEM_ERROR("Material not found.")
         return res->second;
     }
 }
@@ -221,13 +221,13 @@ Domain :: giveLoad(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)bcList.size() ) {
-        OOFEM_ERROR("undefined load (%d)", n);
+        FEM_ERROR("undefined load (%d)", n);
     }
     Load *answer = dynamic_cast< Load * >( bcList[n-1].get() );
     if ( answer ) {
         return answer;
     } else {
-        OOFEM_ERROR("cannot cast boundary condition %d to Load class", n);
+        FEM_ERROR("cannot cast boundary condition %d to Load class", n);
         return NULL;
     }
 #else
@@ -242,7 +242,7 @@ Domain :: giveBc(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)bcList.size() ) {
-        OOFEM_ERROR("undefined bc (%d)", n);
+        FEM_ERROR("undefined bc (%d)", n);
     }
 #endif
     return bcList[n-1].get();
@@ -254,7 +254,7 @@ Domain :: giveIc(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)icList.size() ) {
-        OOFEM_ERROR("undefined ic (%d)", n);
+        FEM_ERROR("undefined ic (%d)", n);
     }
 #endif
 
@@ -267,7 +267,7 @@ Domain :: giveFunction(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)functionList.size() ) {
-        OOFEM_ERROR("undefined load-time function (%d)", n);
+        FEM_ERROR("undefined load-time function (%d)", n);
     }
 #endif
 
@@ -280,7 +280,7 @@ Domain :: giveMaterial(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)materialList.size() ) {
-        OOFEM_ERROR("undefined material (%d)", n);
+        FEM_ERROR("undefined material (%d)", n);
     }
 #endif
 
@@ -292,12 +292,12 @@ Domain :: giveSide(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)dofManagerList.size() ) {
-        OOFEM_ERROR("undefined dofManager (%d)", n);
+        FEM_ERROR("undefined dofManager (%d)", n);
     }
 
     ElementSide *side = dynamic_cast< ElementSide * >( dofManagerList[n-1].get() );
     if ( !side ) {
-        OOFEM_ERROR("incompatible type of dofManager %d, can not convert", n);
+        FEM_ERROR("incompatible type of dofManager %d, can not convert", n);
     }
     return side;
 
@@ -313,7 +313,7 @@ Domain :: giveDofManager(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)dofManagerList.size() ) {
-        OOFEM_ERROR("undefined dofManager (%d)", n);
+        FEM_ERROR("undefined dofManager (%d)", n);
     }
 #endif
     return this->dofManagerList[n-1].get();
@@ -338,7 +338,7 @@ Domain :: giveCrossSection(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)crossSectionList.size() ) {
-        OOFEM_ERROR("undefined cross section (%d)", n);
+        FEM_ERROR("undefined cross section (%d)", n);
     }
 #endif
     return crossSectionList[n-1].get();
@@ -350,7 +350,7 @@ Domain :: giveNonlocalBarrier(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)nonlocalBarrierList.size() ) {
-        OOFEM_ERROR("undefined barrier (%d)", n);
+        FEM_ERROR("undefined barrier (%d)", n);
     }
 #endif
     return nonlocalBarrierList[n-1].get();
@@ -362,7 +362,7 @@ Domain :: giveSet(int n)
 {
 #ifdef DEBUG
     if ( n < 1 || n > (int)setList.size() ) {
-        OOFEM_ERROR("undefined set (%d)", n);
+        FEM_ERROR("undefined set (%d)", n);
     }
 #endif
 
@@ -374,7 +374,7 @@ Domain :: giveXfemManager()
 {
 #ifdef DEBUG
     if ( !xfemManager ) {
-        OOFEM_ERROR("undefined xfem manager");
+        FEM_ERROR("undefined xfem manager");
     }
 #endif
     return xfemManager.get();
@@ -392,7 +392,7 @@ Domain :: giveContactManager()
 {
 #ifdef DEBUG
     if ( !contactManager ) {
-        OOFEM_ERROR("undefined contact manager");
+        FEM_ERROR("undefined contact manager");
     }
 #endif
     return contactManager.get();
@@ -415,7 +415,7 @@ Domain :: giveFractureManager()
 {
 #ifdef DEBUG
     if ( !fracManager ) {
-        OOFEM_ERROR("undefined fracture manager");
+        FEM_ERROR("undefined fracture manager");
     }
 #endif
     return fracManager.get();
@@ -432,7 +432,7 @@ Domain :: giveEngngModel()
 {
 #ifdef DEBUG
     if ( !engineeringModel ) {
-        OOFEM_ERROR("Not defined");
+        FEM_ERROR("Not defined");
     }
 #endif
 
@@ -558,7 +558,7 @@ Domain :: instanciateYourself(DataReader &dr)
         // component number (as given in input record) becomes label
         std :: unique_ptr< DofManager > dman( classFactory.createDofManager(name.c_str(), i, this) );
         if ( !dman ) {
-            OOFEM_ERROR("Couldn't create node of type: %s\n", name.c_str());
+            FEM_ERROR("Couldn't create node of type: %s\n", name.c_str());
         }
 
         dman->initializeFrom(ir);
@@ -584,7 +584,7 @@ Domain :: instanciateYourself(DataReader &dr)
 
         std :: unique_ptr< Element >elem( classFactory.createElement(name.c_str(), i, this) );
         if ( !elem ) {
-            OOFEM_ERROR("Couldn't create element: %s", name.c_str());
+            FEM_ERROR("Couldn't create element: %s", name.c_str());
         }
 
         elem->initializeFrom(ir);
@@ -607,20 +607,20 @@ Domain :: instanciateYourself(DataReader &dr)
             // Only one set for now (i don't see any need to ever introduce any other version)
             std::unique_ptr< Set > set = std::make_unique<Set>(num, this); //classFactory.createSet(name.c_str(), num, this)
             if ( !set ) {
-                OOFEM_ERROR("Couldn't create set: %s", name.c_str());
+                FEM_ERROR("Couldn't create set: %s", name.c_str());
             }
 
             set->initializeFrom(ir);
 
             // check number
             if ( num < 1 || num > nset ) {
-                OOFEM_ERROR("Invalid set number (num=%d)", num);
+                FEM_ERROR("Invalid set number (num=%d)", num);
             }
 
             if ( !setList[num - 1] ) {
                 setList[num - 1] = std :: move(set);
             } else {
-                OOFEM_ERROR("Set entry already exist (num=%d)", num);
+                FEM_ERROR("Set entry already exist (num=%d)", num);
             }
 
             ir.finish();
@@ -640,20 +640,20 @@ Domain :: instanciateYourself(DataReader &dr)
 
         std :: unique_ptr< CrossSection >crossSection( classFactory.createCrossSection(name.c_str(), num, this) );
         if ( !crossSection ) {
-            OOFEM_ERROR("Couldn't create crosssection: %s", name.c_str());
+            FEM_ERROR("Couldn't create crosssection: %s", name.c_str());
         }
 
         crossSection->initializeFrom(ir);
 
         // check number
         if ( ( num < 1 ) || ( num > ncrossSections ) ) {
-            OOFEM_ERROR("Invalid crossSection number (num=%d)", num);
+            FEM_ERROR("Invalid crossSection number (num=%d)", num);
         }
 
         if ( !crossSectionList[num - 1] ) {
             crossSectionList[num - 1] = std :: move(crossSection);
         } else {
-            OOFEM_ERROR("crossSection entry already exist (num=%d)", num);
+            FEM_ERROR("crossSection entry already exist (num=%d)", num);
         }
 
         ir.finish();
@@ -673,20 +673,20 @@ Domain :: instanciateYourself(DataReader &dr)
 
         std :: unique_ptr< Material >mat( classFactory.createMaterial(name.c_str(), num, this) );
         if ( !mat ) {
-            OOFEM_ERROR("Couldn't create material: %s", name.c_str());
+            FEM_ERROR("Couldn't create material: %s", name.c_str());
         }
 
         mat->initializeFrom(ir);
 
         // check number
         if ( ( num < 1 ) || ( num > nmat ) ) {
-            OOFEM_ERROR("Invalid material number (num=%d)", num);
+            FEM_ERROR("Invalid material number (num=%d)", num);
         }
 
         if ( !materialList[num - 1] ) {
             materialList[num - 1] = std :: move(mat);
         } else {
-            OOFEM_ERROR("material entry already exist (num=%d)", num);
+            FEM_ERROR("material entry already exist (num=%d)", num);
         }
 
         ir.finish();
@@ -706,20 +706,20 @@ Domain :: instanciateYourself(DataReader &dr)
 
         std :: unique_ptr< NonlocalBarrier >barrier( classFactory.createNonlocalBarrier(name.c_str(), num, this) );
         if ( !barrier ) {
-            OOFEM_ERROR("Couldn't create barrier: %s", name.c_str());
+            FEM_ERROR("Couldn't create barrier: %s", name.c_str());
         }
 
         barrier->initializeFrom(ir);
 
         // check number
         if ( ( num < 1 ) || ( num > nbarrier ) ) {
-            OOFEM_ERROR("Invalid barrier number (num=%d)", num);
+            FEM_ERROR("Invalid barrier number (num=%d)", num);
         }
 
         if ( !nonlocalBarrierList[num - 1] ) {
             nonlocalBarrierList[num - 1] = std :: move(barrier);
         } else {
-            OOFEM_ERROR("barrier entry already exist (num=%d)", num);
+            FEM_ERROR("barrier entry already exist (num=%d)", num);
         }
 
         ir.finish();
@@ -741,20 +741,20 @@ Domain :: instanciateYourself(DataReader &dr)
 
         std :: unique_ptr< GeneralBoundaryCondition >bc( classFactory.createBoundaryCondition(name.c_str(), num, this) );
         if ( !bc ) {
-            OOFEM_ERROR("Couldn't create boundary condition: %s", name.c_str());
+            FEM_ERROR("Couldn't create boundary condition: %s", name.c_str());
         }
 
         bc->initializeFrom(ir);
 
         // check number
         if ( ( num < 1 ) || ( num > nload ) ) {
-            OOFEM_ERROR("Invalid boundary condition number (num=%d)", num);
+            FEM_ERROR("Invalid boundary condition number (num=%d)", num);
         }
 
         if ( !bcList[num - 1] ) {
             bcList[num - 1] = std :: move(bc);
         } else {
-            OOFEM_ERROR("boundary condition entry already exist (num=%d)", num);
+            FEM_ERROR("boundary condition entry already exist (num=%d)", num);
         }
 
         ir.finish();
@@ -774,20 +774,20 @@ Domain :: instanciateYourself(DataReader &dr)
 
         std :: unique_ptr< InitialCondition >ic( new InitialCondition(num, this) );
         if ( !ic ) {
-            OOFEM_ERROR("Creation of IC no. %d failed", num);
+            FEM_ERROR("Creation of IC no. %d failed", num);
         }
 
         ic->initializeFrom(ir);
 
         // check number
         if ( ( num < 1 ) || ( num > nic ) ) {
-            OOFEM_ERROR("Invalid initial condition number (num=%d)", num);
+            FEM_ERROR("Invalid initial condition number (num=%d)", num);
         }
 
         if ( !icList[num - 1] ) {
             icList[num - 1] = std :: move(ic);
         } else {
-            OOFEM_ERROR("initial condition entry already exist (num=%d)", num);
+            FEM_ERROR("initial condition entry already exist (num=%d)", num);
         }
 
         ir.finish();
@@ -808,20 +808,20 @@ Domain :: instanciateYourself(DataReader &dr)
 
         std :: unique_ptr< Function >func( classFactory.createFunction(name.c_str(), num, this) );
         if ( !func ) {
-            OOFEM_ERROR("Couldn't create time function: %s", name.c_str());
+            FEM_ERROR("Couldn't create time function: %s", name.c_str());
         }
 
         func->initializeFrom(ir);
 
         // check number
         if ( ( num < 1 ) || ( num > nloadtimefunc ) ) {
-            OOFEM_ERROR("Invalid Function number (num=%d)", num);
+            FEM_ERROR("Invalid Function number (num=%d)", num);
         }
 
         if ( !functionList[num - 1] ) {
             functionList[num - 1] = std :: move(func);
         } else {
-            OOFEM_ERROR("Function entry already exist (num=%d)", num);
+            FEM_ERROR("Function entry already exist (num=%d)", num);
         }
 
         ir.finish();
@@ -841,20 +841,20 @@ Domain :: instanciateYourself(DataReader &dr)
             // Only one set for now (i don't see any need to ever introduce any other version)
             std :: unique_ptr< Set > set = std::make_unique<Set>(num, this); //classFactory.createSet(name.c_str(), num, this)
             if ( !set ) {
-                OOFEM_ERROR("Couldn't create set: %s", name.c_str());
+                FEM_ERROR("Couldn't create set: %s", name.c_str());
             }
 
             set->initializeFrom(ir);
 
             // check number
             if ( ( num < 1 ) || ( num > nset ) ) {
-                OOFEM_ERROR("Invalid set number (num=%d)", num);
+                FEM_ERROR("Invalid set number (num=%d)", num);
             }
 
             if ( !setList[num - 1] ) {
                 setList[num - 1] = std :: move(set);
             } else {
-                OOFEM_ERROR("Set entry already exist (num=%d)", num);
+                FEM_ERROR("Set entry already exist (num=%d)", num);
             }
 
             ir.finish();
@@ -873,7 +873,7 @@ Domain :: instanciateYourself(DataReader &dr)
         IR_GIVE_RECORD_KEYWORD_FIELD(ir, name, num);
         xfemManager = classFactory.createXfemManager(name.c_str(), this);
         if ( !xfemManager ) {
-            OOFEM_ERROR("Couldn't create xfemmanager: %s", name.c_str());
+            FEM_ERROR("Couldn't create xfemmanager: %s", name.c_str());
         }
 
         xfemManager->initializeFrom(ir);
@@ -891,7 +891,7 @@ Domain :: instanciateYourself(DataReader &dr)
         IR_GIVE_RECORD_KEYWORD_FIELD(ir, name, num);
         contactManager = classFactory.createContactManager(name.c_str(), this);
         if ( !contactManager ) {
-            OOFEM_ERROR("Couldn't create contact manager: %s", name.c_str());
+            FEM_ERROR("Couldn't create contact manager: %s", name.c_str());
         }
 
         contactManager->initializeFrom(ir);
@@ -908,7 +908,7 @@ Domain :: instanciateYourself(DataReader &dr)
     if ( topologytype.length() > 0 ) {
         this->topology = classFactory.createTopology(topologytype.c_str(), this);
         if ( !this->topology ) {
-            OOFEM_ERROR("Couldn't create topology of type '%s'", topologytype.c_str());
+            FEM_ERROR("Couldn't create topology of type '%s'", topologytype.c_str());
         }
 
         return this->topology->instanciateYourself(dr);
@@ -969,7 +969,7 @@ Domain :: postInitialize()
         spatialLocalizer = std::make_unique<OctreeSpatialLocalizer>(this);
         spatialLocalizer->init();
         connectivityTable = std::make_unique<ConnectivityTable>(this);
-        OOFEM_LOG_INFO("Spatial localizer init done\n");
+        FEM_LOG_INFO("Spatial localizer init done\n");
     }
 
     if ( this->hasXfemManager() ) {
@@ -1059,7 +1059,7 @@ Domain :: giveDefaultNodeDofIDArry()
     }  else if ( dType == _WarpingMode ) {
         defaultNodeDofIDArry = {D_w};
     } else {
-        OOFEM_ERROR("unknown domainType (%s)", __domainTypeToString(dType));
+        FEM_ERROR("unknown domainType (%s)", __domainTypeToString(dType));
     }
 
     return defaultNodeDofIDArry;
@@ -1134,7 +1134,7 @@ Domain :: resolveDomainDofsDefaults(const char *typeName)
     } else if  ( !strncmp(typeName, "warping", 7) ) {
         dType = _WarpingMode;
     } else {
-        OOFEM_ERROR("unknown domainType (%s)", typeName);
+        FEM_ERROR("unknown domainType (%s)", typeName);
         return;
     }
 }
@@ -1177,7 +1177,7 @@ Domain :: giveConnectivityTable()
 {
     if ( !connectivityTable ) {
         //connectivityTable = std::make_unique<ConnectivityTable>(this);
-        OOFEM_LOG_ERROR("Connectivity table init error");
+        FEM_LOG_ERROR("Connectivity table init error");
     }
 
     return connectivityTable.get();
@@ -1194,7 +1194,7 @@ Domain :: giveSpatialLocalizer()
     if ( spatialLocalizer ) {
         return spatialLocalizer.get();
     } else {
-        OOFEM_LOG_ERROR("Spatial localizer init failure");
+        FEM_LOG_ERROR("Spatial localizer init failure");
         return nullptr;      
     }
 }
@@ -1326,7 +1326,7 @@ Domain :: createDofs()
             }
 
             if ( !dman->isDofTypeCompatible(dtype) ) {
-                OOFEM_ERROR("Incompatible dof type (%d) in node %d", dtype, i);
+                FEM_ERROR("Incompatible dof type (%d) in node %d", dtype, i);
             }
 
             // Finally create the new DOF: 
@@ -1419,7 +1419,7 @@ int
 Domain :: giveNextFreeDofID(int increment)
 {
     if ( this->engineeringModel->isParallel() ) {
-        OOFEM_ERROR("Additional dof id's not implemented/tested for parallel problems");
+        FEM_ERROR("Additional dof id's not implemented/tested for parallel problems");
     }
 
     int freeID = this->freeDofID;
@@ -1557,12 +1557,12 @@ Domain :: restoreContext(DataStream &stream, ContextMode mode)
     } else {
         if ( serNum != this->giveSerialNumber() ) {
             // read corresponding domain
-            OOFEM_LOG_INFO("restoring domain %d.%d\n", this->number, this->giveSerialNumber());
+            FEM_LOG_INFO("restoring domain %d.%d\n", this->number, this->giveSerialNumber());
             OOFEMTXTDataReader domainDr(this->engineeringModel->giveDomainFileName(1, this->giveSerialNumber()));
             this->clear();
 
             if ( !this->instanciateYourself(domainDr) ) {
-                OOFEM_ERROR("domain Instanciation failed");
+                FEM_ERROR("domain Instanciation failed");
             }
 
             domainUpdated = true;
@@ -1599,7 +1599,7 @@ Domain :: giveTransactionManager()
     if ( !transactionManager ) {
         transactionManager = std::make_unique<DomainTransactionManager>(this);
         if ( !transactionManager ) {
-            OOFEM_ERROR("allocation failed");
+            FEM_ERROR("allocation failed");
         }
     }
 
@@ -1661,7 +1661,7 @@ int Domain :: commitTransactions(DomainTransactionManager *tm)
      *    elem = elementList.release (t._num-1);
      *    delete elem;
      *  } else {
-     *    OOFEM_ERROR("unknown transaction component type");
+     *    FEM_ERROR("unknown transaction component type");
      *  }
      * } else if (t._ttype == DTT_ADD) {
      *  if (t._ctype == DCT_DofManager) {
@@ -1669,10 +1669,10 @@ int Domain :: commitTransactions(DomainTransactionManager *tm)
      *  } else if (t._ctype == DCT_Element) {
      *    elemMap[t._num] = (*Element) t._obj;
      *  } else {
-     *    OOFEM_ERROR("unknown transaction component type");
+     *    FEM_ERROR("unknown transaction component type");
      *  }
      * } else {
-     *  OOFEM_ERROR("unknown transaction type");
+     *  FEM_ERROR("unknown transaction type");
      * }
      *
      * // Pop new transaction
@@ -1822,10 +1822,10 @@ Domain :: LB_giveUpdatedLocalNumber(int num, EntityRenumberingScheme scheme)
         if ( dm ) {
             return dm->giveNumber();
         } else {
-            OOFEM_ERROR("dofman %d moved to remote partition, updated number not available", num);
+            FEM_ERROR("dofman %d moved to remote partition, updated number not available", num);
         }
     } else {
-        OOFEM_ERROR("unsuported renumbering scheme");
+        FEM_ERROR("unsuported renumbering scheme");
     }
 
     return 0;
@@ -1840,11 +1840,11 @@ Domain :: LB_giveUpdatedGlobalNumber(int num, EntityRenumberingScheme scheme)
         if ( dm ) {
             return dm->giveNumber();
         } else {
-            OOFEM_ERROR("dofman [%d] not available on local partition, updated number not available", num);
+            FEM_ERROR("dofman [%d] not available on local partition, updated number not available", num);
             return 0;
         }
     } else {
-        OOFEM_ERROR("unsuported renumbering scheme");
+        FEM_ERROR("unsuported renumbering scheme");
     }
 
     return 0;
@@ -1889,7 +1889,7 @@ void Domain :: BuildElementPlaceInArrayMap()
             // label does not exist yet
             elementGlobal2LocalMap [ globnum ] = i;
         } else {
-            OOFEM_ERROR("Element with same global number already exist (label=%d)", globnum);
+            FEM_ERROR("Element with same global number already exist (label=%d)", globnum);
         }
     }
 }
@@ -1907,7 +1907,7 @@ void Domain :: BuildDofManPlaceInArrayMap()
             // label does not exist yet
             dofmanGlobal2LocalMap [ globnum ] = i;
         } else {
-            OOFEM_ERROR("DofManagaer with same global number already exist (label=%d)", globnum);
+            FEM_ERROR("DofManagaer with same global number already exist (label=%d)", globnum);
         }
     }
 }
@@ -1925,4 +1925,4 @@ void Domain :: BuildMaterialToElementMap()
     }
 }
 
-} // end namespace oofem
+} // end namespace fem

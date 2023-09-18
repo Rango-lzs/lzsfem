@@ -40,7 +40,7 @@
 
 #include <fstream>
 
-namespace oofem {
+namespace fem {
 /**
  * Class representing the implementation of plain text date reader.
  * It reads a sequence of input records from data file
@@ -49,7 +49,7 @@ namespace oofem {
  * written in correct order, which determined by the coded sequence of
  * component initialization and described in input manual.
  */
-class OOFEM_EXPORT OOFEMTXTDataReader : public DataReader
+class FEM_EXPORT OOFEMTXTDataReader : public DataReader
 {
 protected:
     std :: string dataSourceName;
@@ -78,5 +78,5 @@ protected:
     /// Reads one line from stream.
     bool giveRawLineFromInput(std :: ifstream &stream, int &lineNum, std :: string &line);
 };
-} // end namespace oofem
+} // end namespace fem
 #endif // oofemtxtdatareader_h

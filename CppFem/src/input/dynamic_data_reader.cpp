@@ -39,7 +39,7 @@
 #include <memory>
 #include <fstream>
 
-namespace oofem {
+namespace fem {
 DynamicDataReader :: DynamicDataReader(std :: string name) : DataReader(), name(std :: move(name))
 {
     this->it = recordList.end();
@@ -98,4 +98,4 @@ DynamicDataReader :: writeToFile(const char *fileName)
     }
     fout.close();
 }
-} // end namespace oofem
+} // end namespace fem
