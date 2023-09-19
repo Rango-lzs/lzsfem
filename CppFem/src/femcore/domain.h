@@ -32,6 +32,7 @@ namespace fem
 	class Material;
 	class BoundaryCondition;
 	class InitialCondition;
+	class Function;
 	class FemObjectSet;
 
 	class Domain

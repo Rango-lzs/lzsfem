@@ -13,14 +13,19 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ROOT_DIR}/lib)
 set(algebar_src
 	src/algebra/floatmatrix.cpp
 	src/algebra/floatarray.cpp
+	src/algebra/dictionary.cpp
+	src/algebra/scalarfunction.cpp
 )
 
 set(element_src 
 	src/elements/Element.cpp
 	src/elements/Quad2.cpp
 	src/elements/Bar1d.cpp
-	src/elements/Node.cpp
-	src/elements/Rod.cpp
+	#src/elements/Node.cpp
+)
+
+set(node_src
+	src/node/node.cpp
 )
 
 set(meshing_src
@@ -35,11 +40,13 @@ set(input_src
 	src/input/dynamic_input_record.cpp
 	src/input/text_data_reader.cpp
 	src/input/dynamic_data_reader.cpp
+	src/input/tokenizer.cpp
 )
 
 set(interpolation_src
 	src/interpolation/Interpolation.cpp
 	src/interpolation/InterQuad2d.cpp
+	src/interpolation/fe_interpol.cpp
 )
 
 set(materials_src
@@ -104,7 +111,8 @@ set(SOURCES
 	${tensor_src}
 	${femcore_src}
 	${physics_src}
-	${logger_src}			
+	${logger_src}
+	${node_inc}
 	#src/plotter/gnuplot_i.cpp
 	#src/plotter/Plotter.cpp											
 )
@@ -113,8 +121,11 @@ set(element_inc
 	src/elements/Element.h
 	src/elements/Quad2.h
 	src/elements/Bar1d.h
-	src/elements/Node.h
-	src/elements/Rod.h
+	#src/elements/Node.h
+)
+
+set(node_inc
+	src/node/node.h
 )
 
 set(algebra_inc
@@ -124,6 +135,12 @@ set(algebra_inc
 	src/algebra/floatmatrixf.h
 	src/algebra/floatarray.h
 	src/algebra/floatarrayf.h
+	src/algebra/intarray.h
+	src/algebra/intarrayf.h
+	src/algebra/dictionary.h
+	src/algebra/range.h
+	src/algebra/pair.h
+	src/algebra/scalarfunction.h
 )
 
 set(meshing_inc
@@ -139,11 +156,13 @@ set(input_inc
 	src/input/dynamic_input_record.h
 	src/input/text_data_reader.h
 	src/input/dynamic_data_reader.h
+	src/input/tokenizer.h
 )
 
 set(interpolation_inc
 	src/interpolation/Interpolation.h
 	src/interpolation/InterQuad2d.h
+	src/interpolation/fe_interpol.h
 )
 
 set(materials_inc
@@ -211,6 +230,7 @@ set(include_dir
 	src/physics
 	src/input
 	src/logger
+	src/node
 )
 
 set(INCLUDES
@@ -225,6 +245,7 @@ set(INCLUDES
 	${femcore_inc}
 	${physics_inc}
 	${logger_inc}
+	${node_inc}
 )
 
 #location of include directories

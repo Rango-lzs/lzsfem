@@ -1,39 +1,13 @@
-/*
- *
- *                 #####    #####   ######  ######  ###   ###
- *               ##   ##  ##   ##  ##      ##      ## ### ##
- *              ##   ##  ##   ##  ####    ####    ##  #  ##
- *             ##   ##  ##   ##  ##      ##      ##     ##
- *            ##   ##  ##   ##  ##      ##      ##     ##
- *            #####    #####   ##      ######  ##     ##
- *
- *
- *             OOFEM : Object Oriented Finite Element Code
- *
- *               Copyright (C) 1993 - 2013   Borek Patzak
- *
- *
- *
- *       Czech Technical University, Faculty of Civil Engineering,
- *   Department of Structural Mechanics, 166 29 Prague, Czech Republic
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
+/*****************************************************************//**
+ * \file   text_input_record.h
+ * \brief  
+ * 
+ * \author Leizs
+ * \date   September 2023
+ *********************************************************************/
 
-#ifndef oofemtxtinputrecord_h
-#define oofemtxtinputrecord_h
+#ifndef femtxtinputrecord_h
+#define femtxtinputrecord_h
 
 #include "inputrecord.h"
 #include "tokenizer.h"
@@ -46,7 +20,7 @@ namespace fem {
  * Class representing the Input Record for OOFEM txt input file format.
  * The input record is represented as string consisting of several fields.
  */
-class FEM_EXPORT OOFEMTXTInputRecord : public InputRecord
+class FEM_EXPORT FEMTXTInputRecord : public InputRecord
 {
 protected:
     /**
@@ -64,15 +38,15 @@ protected:
 
 public:
     /// Constructor. Creates an empty input record.
-    OOFEMTXTInputRecord();
+    FEMTXTInputRecord();
     /// Constructor. Creates the input record corresponding to given string.
-    OOFEMTXTInputRecord(int linenumber, std :: string source);
+    FEMTXTInputRecord(int linenumber, std :: string source);
     /// Copy constructor.
-    OOFEMTXTInputRecord(const OOFEMTXTInputRecord &);
+    FEMTXTInputRecord(const FEMTXTInputRecord &);
     /// Assignment operator.
-    OOFEMTXTInputRecord &operator = ( const OOFEMTXTInputRecord & );
+    FEMTXTInputRecord &operator = ( const FEMTXTInputRecord & );
 
-    std::unique_ptr<InputRecord> clone() const override { return std::make_unique<OOFEMTXTInputRecord>(*this); }
+    std::unique_ptr<InputRecord> clone() const override { return std::make_unique<FEMTXTInputRecord>(*this); }
 
 public:
     /// Sets the record string.
@@ -129,4 +103,4 @@ protected:
     int readMatrix(const char *helpSource, int r, int c, FloatMatrix &ans);
 };
 } // end namespace fem
-#endif // oofemtxtinputrecord_h
+#endif // FEMTXTInputRecord_h

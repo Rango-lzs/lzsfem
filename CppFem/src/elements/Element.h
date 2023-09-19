@@ -12,6 +12,21 @@
 #include "Matrix.h"
 #include <string>
 
+//后续改为Parameter
+//@name Input fields for general element.
+//@{
+#define _IFT_Element_mat "mat"
+#define _IFT_Element_crosssect "crosssect"
+#define _IFT_Element_nodes "nodes"
+#define _IFT_Element_bodyload "bodyloads"
+#define _IFT_Element_boundaryload "boundaryloads"
+#define _IFT_Element_lcs "lcs"
+#define _IFT_Element_partitions "partitions"
+#define _IFT_Element_remote "remote"
+#define _IFT_Element_activityTimeFunction "activityltf"
+#define _IFT_Element_nip "nip"
+//@}
+
 class Node;
 /**
  * @~English

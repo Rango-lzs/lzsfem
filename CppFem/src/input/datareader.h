@@ -11,7 +11,7 @@
 
 #include "inputrecord.h"
 
-namespace rango {
+namespace fem {
 /**
  * Class representing the abstraction for input data source.
  * Its role is to provide input records for particular components.
