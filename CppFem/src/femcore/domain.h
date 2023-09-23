@@ -9,6 +9,8 @@
 #ifndef domain_h
 #define domain_h
 
+#include <unordered_map>
+
  /**
   * Class and object Domain. Domain contains mesh description, or if program runs in parallel then it contains
   * description of domain associated to particular processor or thread of execution. Generally, it contain and
@@ -35,50 +37,44 @@ namespace fem
 	class Function;
 	class FemObjectSet;
 
+	class EngngModel;
+	class ConnectivityTable;
+	class OutputManager;
+	class TopologyDescription;
+
+	class DataReader;
+
 	class Domain
 	{
 	private:
 		/// Element list.
-		std::vector< std::unique_ptr< Element > > elementList;
+		std::vector< std::unique_ptr< Element > > m_elementList;
 		/// Dof manager list.
-		std::vector< std::unique_ptr< DofManager > > dofManagerList;
+		std::vector< std::unique_ptr< DofManager > > m_dofManagerList;
 		/// Cross section list.
-		std::vector< std::unique_ptr< CrossSection > > crossSectionList;
+		std::vector< std::unique_ptr< CrossSection > > m_crossSectionList;
 		/// Material list.
-		std::vector< std::unique_ptr< Material > > materialList;
+		std::vector< std::unique_ptr< Material > > m_materialList;
 		/// Boundary condition list.
-		std::vector< std::unique_ptr< BoundaryCondition > > bcList;
+		std::vector< std::unique_ptr< BoundaryCondition > > m_bcList;
 		/// Initial condition list.
-		std::vector< std::unique_ptr< InitialCondition > > icList;
+		std::vector< std::unique_ptr< InitialCondition > > m_icList;
 		/// Load time function list.
-		std::vector< std::unique_ptr< Function > > functionList;
+		std::vector< std::unique_ptr< Function > > m_functionList;
 		/// Set list.
-		std::vector< std::unique_ptr< FemObjectSet > > setList;
-		
-		/**
-		 * Domain type. Determined by input data. It determines the problem type (like plane stress or plane strain mode).
-		 * According to this mode the default number of Dofs per node (or side) and their physical meaning are determined.
-		 * These default settings can be redefined by particular node or side. See related documentation for details.
-		 * @see Node
-		 * @see ElementSide
-		 */
-		domainType dType;
-
+		std::vector< std::unique_ptr< FemObjectSet > > m_setList;
+				
 		/**
 		 * Associated Engineering model. An abstraction for type of analysis which will be prformed.
 		 */
-		EngngModel* engineeringModel;
+		EngngModel* m_engineeringModel;
 
 		/**
 		 * Domain connectivity table. Table is build upon request.
 		 * Provides connectivity information of current domain.
 		 */
 		std::unique_ptr< ConnectivityTable > connectivityTable;
-		/**
-		 * Spatial Localizer. It is build upon request.
-		 * Provides the spatial localization services.
-		 */
-		std::unique_ptr< SpatialLocalizer > spatialLocalizer;
+
 		/// Output manager, allowing to filter the produced output.
 		std::unique_ptr< OutputManager > outputManager;
 		/// Domain number.
@@ -88,36 +84,12 @@ namespace fem
 		/// Number of spatial dimensions
 		int nsd;
 		bool axisymm;
-		/// nodal recovery object associated to receiver.
-		std::unique_ptr< NodalRecoveryModel > smoother; ///@todo I don't see why this has to be stored, and there is only one? /Mikael
 
 		std::string mDomainType;
-		/**
-		 * For nonlocal models of integral type
-		 * it is necessary, mainly due to resulting efficiency, to compute variable(s)
-		 * which are nonlocally averaged in advance, before average process begins.
-		 * The loop over all  integration points is typically made to compute these variables.
-		 * To prevent doing this multiple times at the same solution state,
-		 * the modification time mark is kept.
-		 * This state counter could not be kept in static global variable,
-		 * because in case of multiple domains stateCounter should be kept independently for each domain.
-		 */
-		StateCounterType nonlocalUpdateStateCounter;
-		/// XFEM Manager
-		std::unique_ptr< XfemManager > xfemManager;
-
-		/// Fracture Manager
-		std::unique_ptr< FractureManager > fracManager;
-
-		/// Contact Manager
-		std::unique_ptr< ContactManager > contactManager;
-
-		/// BC tracker (keeps track of BCs applied wia sets to components)
-		BCTracker bcTracker;
 
 		/**
 		 * Map from an element's global number (label) to its place
-		 * in the element array. Added by ES 140326.
+		 * in the element array.
 		 */
 		 // elementGlobal2LocalMap
 		std::unordered_map< int, int > elementGlobal2LocalMap;
@@ -140,31 +112,6 @@ namespace fem
 	public:
 		/// Keeps track of next free dof ID (for special Lagrange multipliers, XFEM and such)
 		int freeDofID;
-	private:
-
-#ifdef __PARALLEL_MODE
-		/**
-		 * Transaction manager. The purpose of this class is to
-		 * make the domain modification (in terms of adding and deleting components) versatile.
-		 */
-		std::unique_ptr< DomainTransactionManager > transactionManager;
-		/// Global dof manager map (index is global of man number).
-		std::map< int, DofManager* >dmanMap;
-		/// dmanMap init flag.
-		bool dmanMapInitialized;
-		/// Global element map (index is global of man number).
-		std::map< int, Element* >elementMap;
-		/// dmanMap init flag.
-		bool elementMapInitialized;
-
-
-		/**@name Load Balancing data structures */
-		//@{
-		/// List of received elements.
-		std::list< Element* >recvElemList; ///@todo This seems like dead, old unused code. Remove it? / Mikael
-		//@}
-#endif
-
 	public:
 		/**
 		 * Constructor. Creates empty n-th domain belonging to given engineering model.
@@ -195,13 +142,17 @@ namespace fem
 		 * @param n Pointer to n-th element is returned.
 		 */
 		Element* giveElement(int n);
-		std::vector< std::unique_ptr< Element > >& giveElements() { return this->elementList; }
+		std::vector< std::unique_ptr< Element > >& giveElements() { return this->m_elementList; }
 		/**
 		 * Service for accessing particular domain fe element.
 		 * Generates error if no such element is defined.
 		 * @param n Pointer to the element with id n
 		 */
 		Element* giveGlobalElement(int n);
+
+		void loadFile(DataReader& dr);
+
+	private:
 	};
 } //end namespace fem
 #endif // domain_h
