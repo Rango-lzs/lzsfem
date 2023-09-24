@@ -26,6 +26,40 @@
   * - Checking yourself.
   */
 
+#define ParameterListDeclare(ParameterListDefiner) \
+class Parameter\
+{\
+public:\
+	ParameterListDefiner\
+};\
+static Parameter param; \
+
+#define ParameterDefiner(ParamName) std::string ParamName = #ParamName
+
+#define DoaminParamListDefiner \
+ParameterDefiner(name); \
+ParameterDefiner(type); \
+
+ParameterListDeclare(DoaminParamListDefiner)
+
+///@name Input fields for domains
+#define _IFT_Domain_type "domain" ///< This is trouble, will not work with dynamic input record
+#define _IFT_Domain_ndofman "ndofman"
+#define _IFT_Domain_nelem "nelem"
+#define _IFT_Domain_nmat "nmat"
+#define _IFT_Domain_ncrosssect "ncrosssect"
+#define _IFT_Domain_nbc "nbc"
+#define _IFT_Domain_nic "nic"
+#define _IFT_Domain_nfunct "nltf"
+#define _IFT_Domain_nset "nset"
+#define _IFT_Domain_nbarrier "nbarrier"
+#define _IFT_Domain_topology "topology"
+#define _IFT_Domain_nxfemman "nxfemman" /// [in,optional] Specifies if there is an xfem-manager.
+#define _IFT_Domain_ncontactman "ncontactman" /// [in,optional] Specifies if there is a contact manager.
+#define _IFT_Domain_numberOfSpatialDimensions "nsd" ///< [in,optional] Specifies how many spatial dimensions the domain has.
+#define _IFT_Domain_nfracman "nfracman" /// [in,optional] Specifies if there is a fracture manager.
+#define _IFT_Domain_axisymmetric "axisymm" /// [optional] Specifies if the problem is axisymmetric.
+
 namespace fem 
 {
 	class Element;
@@ -46,6 +80,16 @@ namespace fem
 
 	class Domain
 	{
+		//ÓÃºê¶¨Òå
+		class Parameter
+		{
+		public:
+			const std::string domain_type = "domain";
+			const std::string ndofman = "ndofman";
+		};
+
+		static Parameter param;
+
 	private:
 		/// Element list.
 		std::vector< std::unique_ptr< Element > > m_elementList;
@@ -150,7 +194,9 @@ namespace fem
 		 */
 		Element* giveGlobalElement(int n);
 
-		void loadFile(DataReader& dr);
+		//void loadFile(DataReader& dr);
+
+		int instanciateYourself(DataReader& dr);
 
 	private:
 	};

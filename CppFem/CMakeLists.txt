@@ -88,6 +88,8 @@ set(femcore_src
 	src/femcore/Discretization.cpp
 	src/femcore/ImplAssembly.cpp
 	src/femcore/domain.cpp
+	src/femcore/timer.cpp
+	src/femcore/timestep.cpp
 )
 
 set(physics_src
@@ -204,6 +206,8 @@ set(femcore_inc
 	src/femcore/Discretization.h
 	src/femcore/ImplAssembly.h
 	src/femcore/domain.h
+	src/femcore/timer.h
+	src/femcore/timestep.h
 
 	src/femcore/fem_export.h
 )
