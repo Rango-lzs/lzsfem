@@ -1,41 +1,13 @@
-/*
- *
- *                 #####    #####   ######  ######  ###   ###
- *               ##   ##  ##   ##  ##      ##      ## ### ##
- *              ##   ##  ##   ##  ####    ####    ##  #  ##
- *             ##   ##  ##   ##  ##      ##      ##     ##
- *            ##   ##  ##   ##  ##      ##      ##     ##
- *            #####    #####   ##      ######  ##     ##
- *
- *
- *             OOFEM : Object Oriented Finite Element Code
- *
- *               Copyright (C) 1993 - 2013   Borek Patzak
- *
- *
- *
- *       Czech Technical University, Faculty of Civil Engineering,
- *   Department of Structural Mechanics, 166 29 Prague, Czech Republic
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
+/*****************************************************************//**
+ * \file   timer.h
+ * \brief  
+ * 
+ * \author Leizs
+ * \date   September 2023
+ *********************************************************************/
 
 #ifndef timer_h
 #define timer_h
-
-#include "oofemcfg.h"
 
 #include <chrono>
 
@@ -43,7 +15,7 @@ namespace oofem {
 /**
  * Class implementing single timer, providing wall clock and user time capabilities.
  */
-class OOFEM_EXPORT Timer
+class FEM_EXPORT Timer
 {
     /// Wall clock time markers.
     std :: chrono :: time_point< std :: chrono :: high_resolution_clock >start_wtime, end_wtime;
@@ -95,7 +67,7 @@ private:
  * It can handle several timers independently, each corresponding to different solution stage, etc.
  * Each timer is capable to track elapsed wall clock time as well as user time.
  */
-class OOFEM_EXPORT EngngModelTimer
+class FEM_EXPORT EngngModelTimer
 {
 public:
     /**

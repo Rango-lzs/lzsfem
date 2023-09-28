@@ -90,6 +90,11 @@ set(femcore_src
 	src/femcore/domain.cpp
 	src/femcore/timer.cpp
 	src/femcore/timestep.cpp
+	src/femcore/fem_factory.cpp
+	src/femcore/fem_application.cpp
+
+	src/femcore/field.cpp
+	src/femcore/field_manager.cpp
 )
 
 set(physics_src
@@ -100,6 +105,11 @@ set(physics_src
 
 set(logger_src
 	src/logger/logger.cpp
+	src/logger/error.cpp
+)
+
+set(quadrature_src
+	src/quadrature/integrationrule.cpp
 )
 
 set(SOURCES 
@@ -114,7 +124,8 @@ set(SOURCES
 	${femcore_src}
 	${physics_src}
 	${logger_src}
-	${node_inc}
+	${node_src}
+	${quadrature_src}
 	#src/plotter/gnuplot_i.cpp
 	#src/plotter/Plotter.cpp											
 )
@@ -143,6 +154,7 @@ set(algebra_inc
 	src/algebra/range.h
 	src/algebra/pair.h
 	src/algebra/scalarfunction.h
+	src/algebra/sparsemtrxtype.h
 )
 
 set(meshing_inc
@@ -190,6 +202,9 @@ set(solver_inc
 	src/solver/NLSolverCG.h
 	src/solver/NLSolverBiCGStab.h
 	src/solver/ArcLength.h
+
+	src/solver/linsystsolvertype.h
+	src/solver/geneigvalsolvertype.h
 )
 
 set(tensor_inc
@@ -210,6 +225,22 @@ set(femcore_inc
 	src/femcore/timestep.h
 
 	src/femcore/fem_export.h
+	src/femcore/domaintype.h
+	src/femcore/enumitem.h
+	src/femcore/fem_factory.h
+	src/femcore/fem_application.h
+
+	src/femcore/contextmode.h
+	src/femcore/contextoutputmode.h
+	src/femcore/contextioresulttype.h
+
+	src/femcore/field.h
+	src/femcore/field_manager.h
+	src/femcore/valuemodetype.h
+	src/femcore/doftype.h
+	src/femcore/dofiditem.h
+	src/femcore/dof.h
+	
 )
 
 set(physics_inc
@@ -220,6 +251,12 @@ set(physics_inc
 
 set(logger_inc
 	src/logger/logger.h
+	src/logger/error.h
+	src/logger/verbose.h
+)
+
+set(quadrature_inc
+	src/quadrature/integrationrule.h
 )
 
 set(include_dir 
@@ -233,8 +270,10 @@ set(include_dir
 	src/femcore
 	src/physics
 	src/input
+	src/output
 	src/logger
 	src/node
+	src/quadrature
 )
 
 set(INCLUDES
@@ -250,6 +289,7 @@ set(INCLUDES
 	${physics_inc}
 	${logger_inc}
 	${node_inc}
+	${quadrature_inc}
 )
 
 #location of include directories

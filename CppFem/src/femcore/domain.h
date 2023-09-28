@@ -9,6 +9,7 @@
 #ifndef domain_h
 #define domain_h
 
+#include "domaintype.h"
 #include <unordered_map>
 
  /**
@@ -129,7 +130,8 @@ namespace fem
 		int nsd;
 		bool axisymm;
 
-		std::string mDomainType;
+		DomainType m_dType;
+		std::string m_strdType;
 
 		/**
 		 * Map from an element's global number (label) to its place
@@ -197,6 +199,8 @@ namespace fem
 		//void loadFile(DataReader& dr);
 
 		int instanciateYourself(DataReader& dr);
+
+		void resolveDomainDofsDefaults(const char* typeName);
 
 	private:
 	};

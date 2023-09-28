@@ -1,6 +1,10 @@
-/*
-*
-*/
+/*****************************************************************//**
+ * \file   domain.cpp
+ * \brief  
+ * 
+ * \author Leizs
+ * \date   September 2023
+ *********************************************************************/
 
 #include "domain.h"
 #include "element.h"
@@ -14,32 +18,27 @@
 #include "set.h"
 
 #include "engngm.h"
-#include "entityrenumberingscheme.h"
-#include "datastream.h"
-#include "contextioerr.h"
 #include "verbose.h"
-#include "connectivitytable.h"
+
+//#include "connectivitytable.h"
 #include "outputmanager.h"
-#include "octreelocalizer.h"
-#include "nodalrecoverymodel.h"
-#include "nonlocalbarrier.h"
-#include "classfactory.h"
+
+#include "fem_factory.h"
 #include "logger.h"
 
-#include "topologydescription.h"
-#include "errorestimator.h"
 #include "range.h"
-#include "fracturemanager.h"
+
 #include "datareader.h"
 
 #include "text_data_reader.h"
-#include "initmodulemanager.h"
-#include "exportmodulemanager.h"
+
+//#include "exportmodulemanager.h"
 
 #include "boundarycondition.h"
-#include "activebc.h"
-#include "simpleslavedof.h"
-#include "masterdof.h"
+
+//#include "activebc.h"
+//#include "simpleslavedof.h"
+//#include "masterdof.h"
 
 #ifdef __PARALLEL_MODE
 #include "parallel.h"
@@ -56,16 +55,12 @@
 
 namespace fem 
 {
-	Domain::Domain(int n, int serNum, EngngModel* e)
-	{
-	}
+	Domain::Domain(int n, int serNum, EngngModel* e){}
 
-	Domain :: ~Domain()
-	{
-	}
+	Domain :: ~Domain(){}
 
+	// Creates all objects mentioned in the data file.
 	int Domain::instanciateYourself(DataReader& dr)
-		// Creates all objects mentioned in the data file.
 	{
 		int num;
 		std::string name, topologytype;
@@ -76,10 +71,10 @@ namespace fem
 
 		// read type of Domain to be solved
 		{
-			auto& ir = dr.giveInputRecord   (DataReader::IR_domainRec, 1);
+			auto& ir = dr.giveInputRecord(DataReader::IR_domainRec, 1);
 			IR_GIVE_FIELD(ir, name, _IFT_Domain_type); // This is inconsistent, "domain" isn't  exactly a field, but the actual record keyword.
 
-			mDomainType = name;
+			m_strdType = name;
 
 			ir.finish();
 		}
@@ -126,23 +121,23 @@ namespace fem
 		///@todo Eventually remove this backwards compatibility:
 		//_HeatTransferMode _HeatMass1Mode // Are these deprecated?
 		// set the number of spatial dimensions
-		if (dType == _1dTrussMode) {
+		if (m_dType == _1dTrussMode) {
 			nsd = 1;
 		}
-		else if (dType == _2dIncompressibleFlow || dType == _2dBeamMode || dType == _2dTrussMode || dType == _2dMindlinPlateMode || dType == _PlaneStrainMode || dType == _2dPlaneStressMode || dType == _2dPlaneStressRotMode || dType == _WarpingMode) {
+		else if (m_dType == _2dIncompressibleFlow || m_dType == _2dBeamMode || m_dType == _2dTrussMode || m_dType == _2dMindlinPlateMode || m_dType == _PlaneStrainMode || m_dType == _2dPlaneStressMode || m_dType == _2dPlaneStressRotMode || m_dType == _WarpingMode) {
 			nsd = 2;
 		}
-		else if (dType == _3dIncompressibleFlow || dType == _3dShellMode || dType == _3dMode || dType == _3dDirShellMode) {
+		else if (m_dType == _3dIncompressibleFlow || m_dType == _3dShellMode || m_dType == _3dMode || m_dType == _3dDirShellMode) {
 			nsd = 3;
 		}
-		else if (dType == _3dAxisymmMode) {
+		else if (m_dType == _3dAxisymmMode) {
 			nsd = 2;
 			axisymm = true;
 		}
 
 		// read nodes
-		dofManagerList.clear();
-		dofManagerList.resize(nnode);
+		m_dofManagerList.clear();
+		m_dofManagerList.resize(nnode);
 		for (int i = 1; i <= nnode; i++) {
 			auto& ir = dr.giveInputRecord(DataReader::IR_dofmanRec, i);
 			// read type of dofManager
@@ -150,14 +145,14 @@ namespace fem
 
 			// assign component number according to record order
 			// component number (as given in input record) becomes label
-			std::unique_ptr< DofManager > dman(classFactory.createDofManager(name.c_str(), i, this));
+			std::unique_ptr<DofManager> dman(classFactory.createDofManager(name.c_str(), i, this));
 			if (!dman) {
 				FEM_ERROR("Couldn't create node of type: %s\n", name.c_str());
 			}
 
 			dman->initializeFrom(ir);
 			dman->setGlobalNumber(num);    // set label
-			dofManagerList[i - 1] = std::move(dman);
+			m_dofManagerList[i - 1] = std::move(dman);
 
 			ir.finish();
 		}
@@ -169,8 +164,8 @@ namespace fem
 			BuildDofManPlaceInArrayMap();
 
 		// read elements
-		elementList.clear();
-		elementList.resize(nelem);
+		m_elementList.clear();
+		m_elementList.resize(nelem);
 		for (int i = 1; i <= nelem; i++) {
 			auto& ir = dr.giveInputRecord(DataReader::IR_elemRec, i);
 			// read type of element
@@ -183,7 +178,7 @@ namespace fem
 
 			elem->initializeFrom(ir);
 			elem->setGlobalNumber(num);
-			elementList[i - 1] = std::move(elem);
+			m_elementList[i - 1] = std::move(elem);
 
 			ir.finish();
 		}
@@ -227,8 +222,8 @@ namespace fem
 #  endif
 
 		// read cross sections
-		crossSectionList.clear();
-		crossSectionList.resize(ncrossSections);
+		m_crossSectionList.clear();
+		m_crossSectionList.resize(ncrossSections);
 		for (int i = 1; i <= ncrossSections; i++) {
 			auto& ir = dr.giveInputRecord(DataReader::IR_crosssectRec, i);
 			IR_GIVE_RECORD_KEYWORD_FIELD(ir, name, num);
@@ -245,8 +240,8 @@ namespace fem
 				FEM_ERROR("Invalid crossSection number (num=%d)", num);
 			}
 
-			if (!crossSectionList[num - 1]) {
-				crossSectionList[num - 1] = std::move(crossSection);
+			if (!m_crossSectionList[num - 1]) {
+				m_crossSectionList[num - 1] = std::move(crossSection);
 			}
 			else {
 				FEM_ERROR("crossSection entry already exist (num=%d)", num);
@@ -260,8 +255,8 @@ namespace fem
 #  endif
 
 			// read materials
-			materialList.clear();
-		materialList.resize(nmat);
+			m_materialList.clear();
+		m_materialList.resize(nmat);
 		for (int i = 1; i <= nmat; i++) {
 			auto& ir = dr.giveInputRecord(DataReader::IR_matRec, i);
 			// read type of material
@@ -279,8 +274,8 @@ namespace fem
 				FEM_ERROR("Invalid material number (num=%d)", num);
 			}
 
-			if (!materialList[num - 1]) {
-				materialList[num - 1] = std::move(mat);
+			if (!m_materialList[num - 1]) {
+				m_materialList[num - 1] = std::move(mat);
 			}
 			else {
 				FEM_ERROR("material entry already exist (num=%d)", num);
@@ -293,6 +288,7 @@ namespace fem
 		VERBOSE_PRINT0("Instanciated materials ", nmat)
 #  endif
 
+/*
 			// read barriers
 			nonlocalBarrierList.clear();
 		nonlocalBarrierList.resize(nbarrier);
@@ -328,10 +324,11 @@ namespace fem
 			VERBOSE_PRINT0("Instanciated barriers ", nbarrier);
 		}
 #  endif
+*/
 
 		// read boundary conditions
-		bcList.clear();
-		bcList.resize(nload);
+		m_bcList.clear();
+		m_bcList.resize(nload);
 		for (int i = 1; i <= nload; i++) {
 			auto& ir = dr.giveInputRecord(DataReader::IR_bcRec, i);
 			// read type of bc
@@ -364,8 +361,8 @@ namespace fem
 #  endif
 
 			// read initial conditions
-			icList.clear();
-		icList.resize(nic);
+		m_icList.clear();
+		m_icList.resize(nic);
 		for (int i = 1; i <= nic; i++) {
 			auto& ir = dr.giveInputRecord(DataReader::IR_icRec, i);
 			// read type of load
@@ -550,63 +547,13 @@ namespace fem
 		return 1;
 	}
 
-
-	void
-		Domain::postInitialize()
-	{
-		// New  - in development /JB
-		// set element cross sections based on element set definition and set the corresponding
-		// material based on the cs
-		for (int i = 1; i <= this->giveNumberOfCrossSectionModels(); i++) {
-			if (int setNum = this->giveCrossSection(i)->giveSetNumber()) {
-				Set* set = this->giveSet(setNum);
-				for (int ielem : set->giveElementList()) {
-					Element* element = this->giveElement(ielem);
-					element->setCrossSection(i);
-				}
-			}
-		}
-
-		{
-			spatialLocalizer = std::make_unique<OctreeSpatialLocalizer>(this);
-			spatialLocalizer->init();
-			connectivityTable = std::make_unique<ConnectivityTable>(this);
-			FEM_LOG_INFO("Spatial localizer init done\n");
-		}
-
-		if (this->hasXfemManager()) {
-			this->giveXfemManager()->postInitialize();
-		}
-
-		// Dofs must be created before dof managers due their post-initialization:
-		this->createDofs();
-
-		for (auto& dman : dofManagerList) {
-			dman->postInitialize();
-		}
-
-
-		for (auto& el : elementList) {
-			el->postInitialize();
-		}
-
-		for (auto& bc : bcList) {
-			bc->postInitialize();
-		}
-
-
-	}
-
-
-	std::string
-		Domain::errorInfo(const char* func) const
+	std::string Domain::errorInfo(const char* func) const
 	{
 		return std::string("Domain::") + func + ", number: " + std::to_string(number);
 	}
 
 
-	const IntArray&
-		Domain::giveDefaultNodeDofIDArry()
+	const IntArray& Domain::giveDefaultNodeDofIDArry()
 	{
 		// returns default DofID array, defining physical meaning of particular DOFs
 		// in Node Dof collection
@@ -614,77 +561,77 @@ namespace fem
 			return defaultNodeDofIDArry;
 		}
 
-		if (dType == _2dPlaneStressRotMode) {
+		if (m_dType == _2dPlaneStressRotMode) {
 			defaultNodeDofIDArry = { D_u, D_v, R_w };
 		}
-		else if (dType == _2dPlaneStressMode) {
+		else if (m_dType == _2dPlaneStressMode) {
 			defaultNodeDofIDArry = { D_u, D_v };
 		}
-		else if (dType == _PlaneStrainMode) {
+		else if (m_dType == _PlaneStrainMode) {
 			defaultNodeDofIDArry = { D_u, D_v };
 		}
-		else if (dType == _3dMode) {
+		else if (m_dType == _3dMode) {
 			defaultNodeDofIDArry = { D_u, D_v, D_w };
 		}
-		else if (dType == _3dAxisymmMode) {
+		else if (m_dType == _3dAxisymmMode) {
 			defaultNodeDofIDArry = { D_u, D_v, R_w };
 		}
-		else if (dType == _2dMindlinPlateMode) {
+		else if (m_dType == _2dMindlinPlateMode) {
 			defaultNodeDofIDArry = { D_w, R_u, R_v };
 		}
-		else if (dType == _3dShellMode) {
+		else if (m_dType == _3dShellMode) {
 			defaultNodeDofIDArry = { D_u, D_v, D_w, R_u, R_v, R_w };
 		}
-		else if (dType == _2dTrussMode) {
+		else if (m_dType == _2dTrussMode) {
 			defaultNodeDofIDArry = { D_u, D_w };
 		}
-		else if (dType == _1dTrussMode) {
+		else if (m_dType == _1dTrussMode) {
 			defaultNodeDofIDArry = { D_u };
 		}
-		else if (dType == _2dBeamMode) {
+		else if (m_dType == _2dBeamMode) {
 			defaultNodeDofIDArry = { D_u, D_w, R_v };
 		}
-		else if (dType == _2dLatticeMode) {
+		else if (m_dType == _2dLatticeMode) {
 			defaultNodeDofIDArry = { D_u, D_v, R_w };
 		}
-		else if (dType == _HeatTransferMode) {
+		else if (m_dType == _HeatTransferMode) {
 			defaultNodeDofIDArry = { T_f };
 		}
-		else if (dType == _Mass1TransferMode) {
+		else if (m_dType == _Mass1TransferMode) {
 			defaultNodeDofIDArry = { C_1 };
 		}
-		else if (dType == _HeatMass1Mode) {
+		else if (m_dType == _HeatMass1Mode) {
 			defaultNodeDofIDArry = { T_f, C_1 };
 		}
-		else if (dType == _2dIncompressibleFlow) {
+		else if (m_dType == _2dIncompressibleFlow) {
 			defaultNodeDofIDArry = { V_u, V_v, P_f };
 		}
-		else if (dType == _3dIncompressibleFlow) {
+		else if (m_dType == _3dIncompressibleFlow) {
 			defaultNodeDofIDArry = { V_u, V_v, V_w, P_f };
 		}
-		else if (dType == _3dDirShellMode) {
+		else if (m_dType == _3dDirShellMode) {
 			defaultNodeDofIDArry = { D_u, D_v, D_w, W_u, W_v, W_w, Gamma };
 		}
-		else if (dType == _2dLatticeMassTransportMode) {
+		else if (m_dType == _2dLatticeMassTransportMode) {
 			defaultNodeDofIDArry = { P_f };
 		}
-		else if (dType == _3dLatticeMassTransportMode) {
+		else if (m_dType == _3dLatticeMassTransportMode) {
 			defaultNodeDofIDArry = { P_f };
 		}
-		else if (dType == _3dLatticeMode) {
+		else if (m_dType == _3dLatticeMode) {
 			defaultNodeDofIDArry = { D_u, D_v, D_w, R_u, R_v, R_w };
 		}
-		else if (dType == _2dLatticeHeatTransferMode) {
+		else if (m_dType == _2dLatticeHeatTransferMode) {
 			defaultNodeDofIDArry = { T_f };
 		}
-		else if (dType == _3dLatticeHeatTransferMode) {
+		else if (m_dType == _3dLatticeHeatTransferMode) {
 			defaultNodeDofIDArry = { T_f };
 		}
-		else if (dType == _WarpingMode) {
+		else if (m_dType == _WarpingMode) {
 			defaultNodeDofIDArry = { D_w };
 		}
 		else {
-			FEM_ERROR("unknown domainType (%s)", __domainTypeToString(dType));
+			FEM_ERROR("unknown domainType (%s)", __domainTypeToString(m_dType));
 		}
 
 		return defaultNodeDofIDArry;
@@ -704,118 +651,95 @@ namespace fem
 		return axisymm;
 	}
 
-
-	void
-		Domain::resolveDomainDofsDefaults(const char* typeName)
-		//
-		// resolves default number of dofs per node according to domain type name.
-		// and also resolves default dof mask according to domain type.
-		//
+	/**
+	 * @~English
+	 * @brief resolves default number of dofs per node according to domain type name.
+	 * @ and also resolves default dof mask according to domain type.
+	 * @param[??] typeName brief-description-about-typeName .
+	 * @return void brief-description-about-void .
+	 * 
+	 * @~Chinese
+	 * @brief brief-description-about-resolveDomainDofsDefaults .
+	 * @param[??] typeName brief-description-about-typeName .
+	 * @return void brief-description-about-void .
+	 * 
+	 */
+	void Domain::resolveDomainDofsDefaults(const char* typeName)
 	{
 		if (!strncmp(typeName, "2dplanestressrot", 16)) {
-			dType = _2dPlaneStressRotMode;
+			m_dType = _2dPlaneStressRotMode;
 		}
 		else if (!strncmp(typeName, "2dplanestress", 12)) {
-			dType = _2dPlaneStressMode;
+			m_dType = _2dPlaneStressMode;
 		}
 		else if (!strncmp(typeName, "planestrain", 11)) {
-			dType = _PlaneStrainMode;
+			m_dType = _PlaneStrainMode;
 		}
 		else if (!strncmp(typeName, "3daxisymm", 9)) {
-			dType = _3dAxisymmMode;
+			m_dType = _3dAxisymmMode;
 		}
 		else if (!strncmp(typeName, "2dmindlinplate", 14)) {
-			dType = _2dMindlinPlateMode;
+			m_dType = _2dMindlinPlateMode;
 		}
 		else if (!strncmp(typeName, "3dshell", 7)) {
-			dType = _3dShellMode;
+			m_dType = _3dShellMode;
 		}
 		else if (!strncmp(typeName, "2dtruss", 7)) {
-			dType = _2dTrussMode;
+			m_dType = _2dTrussMode;
 		}
 		else if (!strncmp(typeName, "1dtruss", 7)) {
-			dType = _1dTrussMode;
+			m_dType = _1dTrussMode;
 		}
 		else if (!strncmp(typeName, "2dbeam", 6)) {
-			dType = _2dBeamMode;
+			m_dType = _2dBeamMode;
 		}
 		else if (!strncmp(typeName, "2dlattice", 9)) {
-			dType = _2dLatticeMode;
+			m_dType = _2dLatticeMode;
 		}
 		else if (!strncmp(typeName, "heattransfer", 12)) {
-			dType = _HeatTransferMode;
+			m_dType = _HeatTransferMode;
 		}
 		else if (!strncmp(typeName, "mass1transfer", 13)) {
-			dType = _Mass1TransferMode;
+			m_dType = _Mass1TransferMode;
 		}
 		else if (!strncmp(typeName, "hema1", 5)) {
-			dType = _HeatMass1Mode;
+			m_dType = _HeatMass1Mode;
 		}
 		else if (!strncmp(typeName, "2dincompflow", 12)) {
-			dType = _2dIncompressibleFlow;
+			m_dType = _2dIncompressibleFlow;
 		}
 		else if (!strncmp(typeName, "3dincompflow", 12)) {
-			dType = _3dIncompressibleFlow;
+			m_dType = _3dIncompressibleFlow;
 		}
 		else if (!strncmp(typeName, "3ddirshell", 10)) {
-			dType = _3dDirShellMode;
+			m_dType = _3dDirShellMode;
 		}
 		else if (!strncmp(typeName, "2dmasslatticetransport", 22)) {
-			dType = _2dLatticeMassTransportMode;
+			m_dType = _2dLatticeMassTransportMode;
 		}
 		else if (!strncmp(typeName, "3dlattice", 9)) {
-			dType = _3dLatticeMode;
+			m_dType = _3dLatticeMode;
 		}
 		else if (!strncmp(typeName, "3dmasslatticetransport", 22)) {
-			dType = _3dLatticeMassTransportMode;
+			m_dType = _3dLatticeMassTransportMode;
 		}
 		else if (!strncmp(typeName, "2dheatlattice", 13)) {
-			dType = _3dLatticeMassTransportMode;
+			m_dType = _3dLatticeMassTransportMode;
 		}
 		else if (!strncmp(typeName, "3dheatlattice", 13)) {
-			dType = _3dLatticeMassTransportMode;
+			m_dType = _3dLatticeMassTransportMode;
 		}
 		else if (!strncmp(typeName, "3d", 2)) {
-			dType = _3dMode;
+			m_dType = _3dMode;
 		}
 		else if (!strncmp(typeName, "warping", 7)) {
-			dType = _WarpingMode;
+			m_dType = _WarpingMode;
 		}
 		else {
 			FEM_ERROR("unknown domainType (%s)", typeName);
 			return;
 		}
 	}
-
-
-	NodalRecoveryModel*
-		Domain::giveSmoother()
-	{
-		return this->smoother.get();
-	}
-
-
-	void
-		Domain::setSmoother(NodalRecoveryModel* newSmoother, bool destroyOld)
-	{
-		if (!destroyOld) {
-			this->smoother.release();
-		}
-
-		this->smoother.reset(newSmoother);
-	}
-
-
-	void
-		Domain::setTopology(TopologyDescription* topo, bool destroyOld)
-	{
-		if (!destroyOld) {
-			this->topology.release();
-		}
-
-		this->topology.reset(topo);
-	}
-
 
 	ConnectivityTable*
 		Domain::giveConnectivityTable()
@@ -832,29 +756,9 @@ namespace fem
 	}
 
 
-	SpatialLocalizer*
-		Domain::giveSpatialLocalizer()
-		//
-		// return connectivity Table - if no defined - creates new one
-		//
-	{
-		//     if (spatialLocalizer == NULL) spatialLocalizer = new DummySpatialLocalizer(1, this);
-		if (spatialLocalizer) {
-			return spatialLocalizer.get();
-		}
-		else {
-			FEM_LOG_ERROR("Spatial localizer init failure");
-			return nullptr;
-		}
-	}
+	
 
-	void Domain::setSpatialLocalizer(std::unique_ptr<SpatialLocalizer> sl) {
-		spatialLocalizer = std::move(sl);
-	}
-
-
-	void
-		Domain::createDofs()
+	void Domain::createDofs()
 	{
 
 		///////////////////////////////////////////////////////////////////////////////////////////////
@@ -955,12 +859,12 @@ namespace fem
 				int icid = dof_ic[i - 1].find(id) != dof_ic[i - 1].end() ? dof_ic[i - 1][id] : 0;
 
 				// Determine the doftype:
-				dofType dtype = DT_master;
+				dofType m_dType = DT_master;
 				const std::map< int, int >* dmanTypes = dman->giveDofTypeMap();
 				if (dmanTypes) {
 					std::map< int, int > ::const_iterator it = dmanTypes->find(id);
 					if (it != dmanTypes->end()) {
-						dtype = (dofType)it->second;
+						m_dType = (dofType)it->second;
 					}
 				}
 				// Check if active dofs are needed:
@@ -970,23 +874,23 @@ namespace fem
 					// This seems like the most suitable choice, but it could possibly be changed.
 					ActiveBoundaryCondition* active_bc = dynamic_cast<ActiveBoundaryCondition*>(this->giveBc(bcid));
 					if (active_bc && active_bc->requiresActiveDofs()) {
-						dtype = DT_active;
+						m_dType = DT_active;
 					}
 				}
 
-				if (!dman->isDofTypeCompatible(dtype)) {
-					FEM_ERROR("Incompatible dof type (%d) in node %d", dtype, i);
+				if (!dman->isDofTypeCompatible(m_dType)) {
+					FEM_ERROR("Incompatible dof type (%d) in node %d", m_dType, i);
 				}
 
 				// Finally create the new DOF: 
-				//printf("Creating: node %d, id = %d, dofType = %d, bc = %d, ic = %d\n", i, id, dtype, bcid, icid);
+				//printf("Creating: node %d, id = %d, dofType = %d, bc = %d, ic = %d\n", i, id, m_dType, bcid, icid);
 				if (!dman->hasDofID((DofIDItem)id)) {
 
-					Dof* dof = classFactory.createDof(dtype, (DofIDItem)id, dman);
+					Dof* dof = classFactory.createDof(m_dType, (DofIDItem)id, dman);
 					dof->setBcId(bcid); // Note: slave dofs and such will simple ignore this.
 					dof->setIcId(icid);
 					// Slave dofs obtain their weights post-initialization, simple slave dofs must have their master node specified.
-					if (dtype == DT_simpleSlave) {
+					if (m_dType == DT_simpleSlave) {
 						static_cast<SimpleSlaveDof*>(dof)->setMasterDofManagerNum((*dman->giveMasterMap())[id]);
 					}
 					dman->appendDof(dof);
@@ -1004,15 +908,14 @@ namespace fem
 		}
 	}
 
-
-	int
-		Domain::checkConsistency()
-		// this function transverse tree of all objects and invokes
-		// checkConsistency on this objects
-		// currently this function checks noly consistency
-		// of internal object structures, mainly whether referenced other objects
-		// are having required support
-		//
+	// this function transverse tree of all objects and invokes
+	// checkConsistency on this objects
+	// currently this function checks noly consistency
+	// of internal object structures, mainly whether referenced other objects
+	// are having required support
+	//
+	int Domain::checkConsistency()
+		
 	{
 		int result = 1;
 
@@ -1031,8 +934,7 @@ namespace fem
 		return result;
 	}
 
-	double
-		Domain::giveArea()
+	double Domain::giveArea()
 	{
 		double area = 0.0;
 		for (auto& element : this->elementList) {
@@ -1042,8 +944,7 @@ namespace fem
 		return area;
 	}
 
-	double
-		Domain::giveVolume()
+	double Domain::giveVolume()
 	{
 		double volume = 0.0;
 		for (auto& element : this->elementList) {
@@ -1053,8 +954,7 @@ namespace fem
 		return volume;
 	}
 
-	double
-		Domain::giveSize()
+	double Domain::giveSize()
 	{
 		double volume = 0.0;
 		for (auto& element : this->elementList) {
@@ -1064,8 +964,7 @@ namespace fem
 		return volume;
 	}
 
-	int
-		Domain::giveNextFreeDofID(int increment)
+	int Domain::giveNextFreeDofID(int increment)
 	{
 		if (this->engineeringModel->isParallel()) {
 			FEM_ERROR("Additional dof id's not implemented/tested for parallel problems");
@@ -1076,28 +975,24 @@ namespace fem
 		return freeID;
 	}
 
-	void
-		Domain::resetFreeDofID()
+	void Domain::resetFreeDofID()
 	{
 		this->freeDofID = MaxDofID;
 	}
 
-	ErrorEstimator*
-		Domain::giveErrorEstimator()
+	ErrorEstimator* Domain::giveErrorEstimator()
 	{
 		return engineeringModel->giveDomainErrorEstimator(this->number);
 	}
 
 
-	OutputManager*
-		Domain::giveOutputManager()
+	OutputManager* Domain::giveOutputManager()
 	{
 		return outputManager.get();
 	}
 
 
-	TopologyDescription*
-		Domain::giveTopology()
+	TopologyDescription* Domain::giveTopology()
 	{
 		return topology.get();
 	}
@@ -1144,8 +1039,7 @@ namespace fem
 	}
 
 
-	void
-		Domain::saveContext(DataStream& stream, ContextMode mode)
+	void Domain::saveContext(DataStream& stream, ContextMode mode)
 	{
 		if (!stream.write(this->giveSerialNumber())) {
 			THROW_CIOERR(CIO_IOERR);
@@ -1171,8 +1065,7 @@ namespace fem
 	}
 
 
-	void
-		Domain::restoreContext(DataStream& stream, ContextMode mode)
+	void Domain::restoreContext(DataStream& stream, ContextMode mode)
 	{
 		bool domainUpdated = false;
 		int serNum = this->giveSerialNumber();

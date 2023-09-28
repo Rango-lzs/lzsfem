@@ -55,7 +55,7 @@ class IntArray;
  * - Printing and updating at end of step ;
  * - Managing its swapping to and from disk.
  */
-class OOFEM_EXPORT Node : public DofManager
+class FEM_EXPORT Node : public DofManager
 {
 protected:
     /**
