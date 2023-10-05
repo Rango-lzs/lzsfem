@@ -13,13 +13,7 @@
 #include "datareader.h"
 #include "error.h"
 
-#include <cstring>
-#if defined ( __GNUC__ ) && defined ( HAVE_EXECINFO_H )
-#include <cxxabi.h>
-#include <execinfo.h>
-#include <cstdio>
-#include <cstdlib>
-#endif
+#include <string>
 
 namespace fem 
 {

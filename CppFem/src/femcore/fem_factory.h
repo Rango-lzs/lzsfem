@@ -4,8 +4,7 @@
 #include "sparsemtrxtype.h"
 #include "doftype.h"
 #include "linsystsolvertype.h"
-//#include "patch.h" // for PatchType
-#include "integrationrule.h" // for IntegrationRuleType
+#include "integrationrule.h"
 #include "geneigvalsolvertype.h"
 #include "dofiditem.h"
 
@@ -85,48 +84,40 @@ namespace fem
 
 	///@name Macros for registering new components. Unique dummy variables must be created as a result (design flaw in C++).
 	//@{
-#define REGISTER_Element(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerElement(_IFT_ ## class ## _Name, CTOR< Element, class, int, Domain* > );
-#define REGISTER_DofManager(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerDofManager(_IFT_ ## class ## _Name, CTOR< DofManager, class, int, Domain* > );
-#define REGISTER_BoundaryCondition(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerBoundaryCondition(_IFT_ ## class ## _Name, CTOR< GeneralBoundaryCondition, class, int, Domain* > );
-#define REGISTER_CrossSection(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerCrossSection(_IFT_ ## class ## _Name, CTOR< CrossSection, class, int, Domain* > );
-#define REGISTER_Material(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerMaterial(_IFT_ ## class ## _Name, CTOR< Material, class, int, Domain* > );
-#define REGISTER_Material_Alt(class, altname) static bool __dummy_ ## class ## altname OOFEM_ATTR_UNUSED = GiveClassFactory().registerMaterial(#altname, CTOR< Material, class, int, Domain* > );
-#define REGISTER_EngngModel(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerEngngModel(_IFT_ ## class ## _Name, CTOR< EngngModel, class, int, EngngModel* > );
-#define REGISTER_Function(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerFunction(_IFT_ ## class ## _Name, CTOR< Function, class, int, Domain* > );
-#define REGISTER_NonlocalBarrier(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerNonlocalBarrier(_IFT_ ## class ## _Name, CTOR< NonlocalBarrier, class, int, Domain* > );
-#define REGISTER_ExportModule(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerExportModule(_IFT_ ## class ## _Name, CTOR< ExportModule, class, int, EngngModel* > );
-#define REGISTER_SparseNonLinearSystemNM(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerSparseNonLinearSystemNM(_IFT_ ## class ## _Name, CTOR< SparseNonLinearSystemNM, class, Domain*, EngngModel* > );
-#define REGISTER_InitModule(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerInitModule(_IFT_ ## class ## _Name, CTOR< InitModule, class, int, EngngModel* > );
-#define REGISTER_TopologyDescription(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerTopologyDescription(_IFT_ ## class ## _Name, CTOR< TopologyDescription, class, Domain* > );
-#define REGISTER_LoadBalancerMonitor(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerLoadBalancerMonitor(_IFT_ ## class ## _Name, CTOR< LoadBalancerMonitor, class, EngngModel* > );
-#define REGISTER_LoadBalancer(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerLoadBalancer(_IFT_ ## class ## _Name, CTOR< LoadBalancer, class, EngngModel* > );
-#define REGISTER_Monitor(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerMonitor(_IFT_ ## class ## _Name, CTOR< Monitor, class, int > );
+#define REGISTER_Element(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED =FemFactory::instance().registerElement(_IFT_ ## class ## _Name, CTOR< Element, class, int, Domain* > );
+#define REGISTER_DofManager(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerDofManager(_IFT_ ## class ## _Name, CTOR< DofManager, class, int, Domain* > );
+#define REGISTER_BoundaryCondition(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerBoundaryCondition(_IFT_ ## class ## _Name, CTOR< GeneralBoundaryCondition, class, int, Domain* > );
+#define REGISTER_CrossSection(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerCrossSection(_IFT_ ## class ## _Name, CTOR< CrossSection, class, int, Domain* > );
+#define REGISTER_Material(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerMaterial(_IFT_ ## class ## _Name, CTOR< Material, class, int, Domain* > );
+#define REGISTER_Material_Alt(class, altname) static bool __dummy_ ## class ## altname OOFEM_ATTR_UNUSED = FemFactory::instance().registerMaterial(#altname, CTOR< Material, class, int, Domain* > );
+#define REGISTER_EngngModel(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerEngngModel(_IFT_ ## class ## _Name, CTOR< EngngModel, class, int, EngngModel* > );
+#define REGISTER_Function(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerFunction(_IFT_ ## class ## _Name, CTOR< Function, class, int, Domain* > );
+#define REGISTER_NonlocalBarrier(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerNonlocalBarrier(_IFT_ ## class ## _Name, CTOR< NonlocalBarrier, class, int, Domain* > );
+#define REGISTER_ExportModule(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerExportModule(_IFT_ ## class ## _Name, CTOR< ExportModule, class, int, EngngModel* > );
+#define REGISTER_SparseNonLinearSystemNM(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerSparseNonLinearSystemNM(_IFT_ ## class ## _Name, CTOR< SparseNonLinearSystemNM, class, Domain*, EngngModel* > );
+#define REGISTER_InitModule(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerInitModule(_IFT_ ## class ## _Name, CTOR< InitModule, class, int, EngngModel* > );
+#define REGISTER_TopologyDescription(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerTopologyDescription(_IFT_ ## class ## _Name, CTOR< TopologyDescription, class, Domain* > );
+#define REGISTER_LoadBalancerMonitor(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerLoadBalancerMonitor(_IFT_ ## class ## _Name, CTOR< LoadBalancerMonitor, class, EngngModel* > );
+#define REGISTER_LoadBalancer(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerLoadBalancer(_IFT_ ## class ## _Name, CTOR< LoadBalancer, class, EngngModel* > );
+#define REGISTER_Monitor(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerMonitor(_IFT_ ## class ## _Name, CTOR< Monitor, class, int > );
 
 // These should be converted to use strings.
-#define REGISTER_SparseMtrx(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerSparseMtrx(type, CTOR< SparseMtrx, class > );
-#define REGISTER_SparseLinSolver(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerSparseLinSolver(type, CTOR< SparseLinearSystemNM, class, Domain*, EngngModel* > );
-#define REGISTER_ErrorEstimator(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerErrorEstimator(type, CTOR< ErrorEstimator, class, int, Domain* > );
-#define REGISTER_NodalRecoveryModel(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerNodalRecoveryModel(type, CTOR< NodalRecoveryModel, class, Domain* > );
-#define REGISTER_GeneralizedEigenValueSolver(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerGeneralizedEigenValueSolver(type, CTOR< SparseGeneralEigenValueSystemNM, class, Domain*, EngngModel* > );
-#define REGISTER_Mesher(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerMesherInterface(type, CTOR< MesherInterface, class, Domain* > );
-#define REGISTER_MaterialMappingAlgorithm(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerMaterialMappingAlgorithm(type, CTOR< MaterialMappingAlgorithm, class > );
-
-#define REGISTER_XfemManager(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerXfemManager(_IFT_ ## class ## _Name, CTOR< XfemManager, class, Domain* > );
-#define REGISTER_EnrichmentItem(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerEnrichmentItem(_IFT_ ## class ## _Name, CTOR< EnrichmentItem, class, int, XfemManager*, Domain* > );
-#define REGISTER_NucleationCriterion(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerNucleationCriterion(_IFT_ ## class ## _Name, CTOR< NucleationCriterion, class, Domain* > );
-#define REGISTER_EnrichmentFunction(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerEnrichmentFunction(_IFT_ ## class ## _Name, CTOR< EnrichmentFunction, class, int, Domain* > );
-//#define REGISTER_EnrichmentDomain(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerEnrichmentDomain(_IFT_ ## class ## _Name, CTOR< EnrichmentDomain, class > );
-#define REGISTER_EnrichmentFront(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerEnrichmentFront(_IFT_ ## class ## _Name, CTOR< EnrichmentFront, class > );
-#define REGISTER_PropagationLaw(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerPropagationLaw(_IFT_ ## class ## _Name, CTOR< PropagationLaw, class > );
-#define REGISTER_Geometry(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerGeometry(_IFT_ ## class ## _Name, CTOR< BasicGeometry, class > );
-
-#define REGISTER_FailureCriteria(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerFailureCriteria(_IFT_ ## class ## _Name, CTOR< FailureCriteria, class, int, FractureManager* > );
-#define REGISTER_FailureCriteriaStatus(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerFailureCriteriaStatus(_IFT_ ## class ## _Name, CTOR< FailureCriteriaStatus, class, FailureCriteria* > );
-
-#define REGISTER_ContactManager(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerContactManager(_IFT_ ## class ## _Name, CTOR< ContactManager, class, Domain* > );
-#define REGISTER_ContactDefinition(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerContactDefinition(_IFT_ ## class ## _Name, CTOR< ContactDefinition, class, ContactManager* > );
+#define REGISTER_SparseMtrx(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerSparseMtrx(type, CTOR< SparseMtrx, class > );
+#define REGISTER_SparseLinSolver(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerSparseLinSolver(type, CTOR< SparseLinearSystemNM, class, Domain*, EngngModel* > );
+#define REGISTER_GeneralizedEigenValueSolver(class, type) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerGeneralizedEigenValueSolver(type, CTOR< SparseGeneralEigenValueSystemNM, class, Domain*, EngngModel* > );
+#define REGISTER_XfemManager(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerXfemManager(_IFT_ ## class ## _Name, CTOR< XfemManager, class, Domain* > );
+#define REGISTER_EnrichmentItem(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerEnrichmentItem(_IFT_ ## class ## _Name, CTOR< EnrichmentItem, class, int, XfemManager*, Domain* > );
+#define REGISTER_NucleationCriterion(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerNucleationCriterion(_IFT_ ## class ## _Name, CTOR< NucleationCriterion, class, Domain* > );
+#define REGISTER_EnrichmentFunction(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerEnrichmentFunction(_IFT_ ## class ## _Name, CTOR< EnrichmentFunction, class, int, Domain* > );
+//#define REGISTER_EnrichmentDomain(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerEnrichmentDomain(_IFT_ ## class ## _Name, CTOR< EnrichmentDomain, class > );
+#define REGISTER_EnrichmentFront(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerEnrichmentFront(_IFT_ ## class ## _Name, CTOR< EnrichmentFront, class > );
+#define REGISTER_PropagationLaw(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerPropagationLaw(_IFT_ ## class ## _Name, CTOR< PropagationLaw, class > );
+#define REGISTER_Geometry(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerGeometry(_IFT_ ## class ## _Name, CTOR< BasicGeometry, class > );
+#define REGISTER_FailureCriteria(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerFailureCriteria(_IFT_ ## class ## _Name, CTOR< FailureCriteria, class, int, FractureManager* > );
+#define REGISTER_FailureCriteriaStatus(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerFailureCriteriaStatus(_IFT_ ## class ## _Name, CTOR< FailureCriteriaStatus, class, FailureCriteria* > );
+#define REGISTER_ContactManager(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerContactManager(_IFT_ ## class ## _Name, CTOR< ContactManager, class, Domain* > );
+#define REGISTER_ContactDefinition(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = FemFactory::instance().registerContactDefinition(_IFT_ ## class ## _Name, CTOR< ContactDefinition, class, ContactManager* > );
 ///@todo What is this? Doesn't seem needed / Mikael
-#define REGISTER_Quasicontinuum(class) static bool __dummy_ ## class OOFEM_ATTR_UNUSED = GiveClassFactory().registerQuasicontinuum(_IFT_ ## class ## _Name, < QuasiContinuum, class, ????? > );
 //@}
 
 /**

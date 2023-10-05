@@ -95,6 +95,7 @@ set(femcore_src
 
 	src/femcore/field.cpp
 	src/femcore/field_manager.cpp
+	src/femcore/engngm.cpp
 )
 
 set(physics_src
@@ -240,6 +241,9 @@ set(femcore_inc
 	src/femcore/doftype.h
 	src/femcore/dofiditem.h
 	src/femcore/dof.h
+
+	src/femcore/outputmanager.h
+	src/femcore/engngm.h
 	
 )
 
