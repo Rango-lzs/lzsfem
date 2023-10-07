@@ -9,22 +9,11 @@
 #ifndef FEM_APP_HH
 #define FEM_APP_HH
 
+#include "problemmode.h"
 #include <memory>
 
 namespace fem
 {
-	//”√¥¶≤ªœÍ
-	enum ProblemMode { 
-		_processor,
-		_postProcessor
-	};
-
-	/// Corresponds to macro- and micro-problem in multiscale simulations.
-	enum ProblemScale {
-		macroScale,
-		microScale
-	};
-
 	class EngngModel;
 
 	class FemApp

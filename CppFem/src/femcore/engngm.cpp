@@ -44,7 +44,8 @@
 
 namespace fem
 {
-	EngngModel::EngngModel(int i, EngngModel* _master) :domainNeqs(),
+	EngngModel::EngngModel(int i, EngngModel* _master)
+		:domainNeqs(),
 		domainPrescribedNeqs(),
 		exportModuleManager(this),
 	{
@@ -69,32 +70,6 @@ namespace fem
 		contextOutputStep = 0;
 		pMode = _processor;  // for giveContextFile()
 		pScale = macroScale;
-
-		master = _master; // master mode by default
-		// create context if in master mode; otherwise request context from master
-		if (master) {
-			context = master->giveContext();
-		}
-		else {
-			context = new EngngModelContext();
-		}
-
-		parallelFlag = 0;
-		numProcs = 1;
-		rank = 0;
-		nonlocalExt = 0;
-#ifdef __PARALLEL_MODE
-		loadBalancingFlag = false;
-		force_load_rebalance_in_first_step = false;
-		lb = NULL;
-		lbm = NULL;
-		communicator = NULL;
-		nonlocCommunicator = NULL;
-		commBuff = NULL;
-#ifdef __USE_MPI
-		comm = MPI_COMM_SELF;
-#endif
-#endif
 	}
 
 
@@ -109,12 +84,6 @@ namespace fem
 		if (outputStream) {
 			fclose(outputStream);
 		}
-
-#ifdef __PARALLEL_MODE
-		delete communicator;
-		delete nonlocCommunicator;
-		delete commBuff;
-#endif
 	}
 
 
@@ -127,8 +96,7 @@ namespace fem
 	}
 
 
-	void
-		EngngModel::Instanciate_init()
+	void EngngModel::Instanciate_init()
 	{
 		// create domains
 		domainNeqs.clear();
@@ -166,7 +134,7 @@ namespace fem
 		this->startTime = time(NULL);
 
 #  ifdef VERBOSE
-		OOFEM_LOG_DEBUG("Reading all data from \"%s\"\n", referenceFileName.c_str());
+		FEM_LOG_DEBUG("Reading all data from \"%s\"\n", referenceFileName.c_str());
 #  endif
 
 		simulationDescription = std::string(desc);
@@ -196,30 +164,24 @@ namespace fem
 
 			exportModuleManager.initialize();
 
-			// Milan ??????????????????
-			//GPImportModule* gim = new GPImportModule(this);
-			//gim -> getInput();
-			// Milan ??????????????????
-
 			// check emodel input record if no default metastep, since all has been read
 			if (inputReaderFinish) {
 				ir.finish();
 			}
 		}
 		catch (InputException& e) {
-			OOFEM_ERROR("Error initializing from user input: %s\n", e.what());
+			FEM_ERROR("Error initializing from user input: %s\n", e.what());
 		}
 
 		return 1;
 	}
 
 
-	void
-		EngngModel::initializeFrom(InputRecord& ir)
+	void EngngModel::initializeFrom(InputRecord& ir)
 	{
 		IR_GIVE_FIELD(ir, numberOfSteps, _IFT_EngngModel_nsteps);
 		if (numberOfSteps <= 0) {
-			OOFEM_ERROR("nsteps not specified, bad format");
+			FEM_ERROR("nsteps not specified, bad format");
 		}
 
 		contextOutputStep = 0;
@@ -248,18 +210,6 @@ namespace fem
 		IR_GIVE_OPTIONAL_FIELD(ir, parallelFlag, _IFT_EngngModel_parallelflag);
 		// fprintf (stderr, "Parallel mode is %d\n", parallelFlag);
 
-#ifdef __PARALLEL_MODE
-	/* Load balancing support */
-		_val = 0;
-		IR_GIVE_OPTIONAL_FIELD(ir, _val, _IFT_EngngModel_loadBalancingFlag);
-		loadBalancingFlag = _val;
-
-		_val = 0;
-		IR_GIVE_OPTIONAL_FIELD(ir, _val, _IFT_EngngModel_forceloadBalancingFlag);
-		force_load_rebalance_in_first_step = _val;
-
-#endif
-
 		suppressOutput = ir.hasField(_IFT_EngngModel_suppressOutput);
 
 		if (suppressOutput) {
@@ -268,7 +218,7 @@ namespace fem
 		else {
 
 			if ((outputStream = fopen(this->dataOutputFileName.c_str(), "w")) == NULL) {
-				OOFEM_ERROR("Can't open output file %s", this->dataOutputFileName.c_str());
+				FEM_ERROR("Can't open output file %s", this->dataOutputFileName.c_str());
 			}
 
 			fprintf(outputStream, "%s", PRG_HEADER);
@@ -354,8 +304,7 @@ namespace fem
 	}
 
 
-	int
-		EngngModel::forceEquationNumbering(int id)
+	int EngngModel::forceEquationNumbering(int id)
 	{
 		// forces equation renumbering for current time step
 		// intended mainly for problems with changes of static system
@@ -1571,7 +1520,7 @@ namespace fem
 	void
 		EngngModel::updateComponent(TimeStep* tStep, NumericalCmpn cmpn, Domain* d)
 	{
-		OOFEM_ERROR("Unknown Type of component.");
+		FEM_ERROR("Unknown Type of component.");
 	}
 
 
@@ -1816,7 +1765,7 @@ namespace fem
 			return this->domainList[i - 1].get();
 		}
 		else {
-			OOFEM_ERROR("Undefined domain");
+			FEM_ERROR("Undefined domain");
 		}
 
 		return NULL;
@@ -1862,7 +1811,7 @@ namespace fem
 			return &this->metaStepList[i - 1];
 		}
 		else {
-			OOFEM_ERROR("undefined metaStep (%d)", i);
+			FEM_ERROR("undefined metaStep (%d)", i);
 		}
 
 		return NULL;
@@ -1877,7 +1826,7 @@ namespace fem
 
 		if (!suppressOutput) {
 			if ((outputStream = fopen(this->dataOutputFileName.c_str(), "w")) == NULL) {
-				OOFEM_ERROR("Can't open output file %s", this->dataOutputFileName.c_str());
+				FEM_ERROR("Can't open output file %s", this->dataOutputFileName.c_str());
 			}
 		}
 	}
@@ -1887,7 +1836,7 @@ namespace fem
 		// Returns an output stream on the data file of the receiver.
 	{
 		if (!outputStream) {
-			OOFEM_ERROR("No output stream opened!");
+			FEM_ERROR("No output stream opened!");
 		}
 
 		return outputStream;
@@ -1929,9 +1878,9 @@ namespace fem
 			fprintf(out, "User time consumed: %03dh:%02dm:%02ds\n\n\n", uhrs, umin, usec);
 		}
 
-		OOFEM_LOG_FORCED("\n\nANALYSIS FINISHED\n\n\n");
-		OOFEM_LOG_FORCED("Real time consumed: %03dh:%02dm:%02ds\n", rhrs, rmin, rsec);
-		OOFEM_LOG_FORCED("User time consumed: %03dh:%02dm:%02ds\n", uhrs, umin, usec);
+		FEM_LOG_FORCED("\n\nANALYSIS FINISHED\n\n\n");
+		FEM_LOG_FORCED("Real time consumed: %03dh:%02dm:%02ds\n", rhrs, rmin, rsec);
+		FEM_LOG_FORCED("User time consumed: %03dh:%02dm:%02ds\n", uhrs, umin, usec);
 		exportModuleManager.terminate();
 	}
 
@@ -1948,7 +1897,7 @@ namespace fem
 
 #  ifdef VERBOSE
 		if (result) {
-			OOFEM_LOG_DEBUG("Consistency check:  OK\n");
+			FEM_LOG_DEBUG("Consistency check:  OK\n");
 		}
 		else {
 			VERBOSE_PRINTS("Consistency check", "failed")
@@ -1992,7 +1941,7 @@ namespace fem
 		MPI_Comm_rank(this->comm, &this->rank);
 		MPI_Comm_size(this->comm, &numProcs);
 #else
-		OOFEM_ERROR("Can't do it, only compiled for sequential runs");
+		FEM_ERROR("Can't do it, only compiled for sequential runs");
 #endif
 #ifdef __VERBOSE_PARALLEL
 		OOFEM_LOG_RELEVANT("[%d/%d] Running on %s\n", rank, numProcs, processor_name);
@@ -2045,7 +1994,7 @@ namespace fem
 			nonlocCommunicator->setUpCommunicationMaps(this, true, forceInit);
 		}
 #else
-		OOFEM_ERROR("Can't set up comm maps, parallel support not compiled");
+		FEM_ERROR("Can't set up comm maps, parallel support not compiled");
 #endif
 	}
 
@@ -2079,7 +2028,7 @@ namespace fem
 			result &= communicator->finishExchange();
 			return result;
 #else
-			OOFEM_ERROR("Support for parallel mode not compiled in.");
+			FEM_ERROR("Support for parallel mode not compiled in.");
 			return 0;
 #endif
 		}

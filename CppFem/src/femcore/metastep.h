@@ -35,7 +35,6 @@
 #ifndef metastep_h
 #define metastep_h
 
-#include "oofemcfg.h"
 #include "inputrecord.h"
 
 #include <memory>

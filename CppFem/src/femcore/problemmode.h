@@ -4,13 +4,13 @@
 
 namespace fem
 {
-	enum problemMode {
+	enum ProblemMode {
 		_processor,
 		_postProcessor
 	};
 
 	/// Corresponds to macro- and micro-problem in multiscale simulations.
-	enum problemScale {
+	enum ProblemScale {
 		macroScale,
 		microScale
 	};

@@ -154,14 +154,6 @@ namespace fem
 	class FEM_EXPORT EngngModel
 	{
 	public:
-		enum EngngModel_UpdateMode { EngngModel_Unknown_Mode, EngngModel_SUMM_Mode, EngngModel_SET_Mode };
-		enum EngngModelCommType { PC_default, PC_nonlocal };
-		/// Helper struct to pass array and numbering scheme as a single argument.
-		struct ArrayWithNumbering {
-			FloatArray* array;
-			const UnknownNumberingScheme* numbering;
-		};
-
 		/**
 		 * Means to choose methods for finding a good initial guess.
 		 * This is ad-hoc methods, often problem-specific for obtaining a point from which Newton iterations work.
@@ -188,12 +180,7 @@ namespace fem
 		IntArray domainNeqs;
 		/// Number of prescribed equations per domain.
 		IntArray domainPrescribedNeqs;
-		/// Renumbering flag (renumbers equations after each step, necessary if Dirichlet BCs change).
-		bool renumberFlag;
-		/// Profile optimized numbering flag (using Sloan's algorithm).
-		bool profileOpt;
-		/// Equation numbering completed flag.
-		int equationNumberingCompleted;
+		
 		/// Number of meta steps.
 		int nMetaSteps;
 		/// List of problem metasteps.
@@ -222,10 +209,6 @@ namespace fem
 		/// Export module manager.
 		ExportModuleManager exportModuleManager;
 		
-		/// Domain mode.
-		problemMode pMode;
-		/// Multiscale mode.
-		problemScale pScale;
 		/// Solution start time.
 		time_t startTime;
 
@@ -236,46 +219,12 @@ namespace fem
 		EngngModelContext* context;
 		/// E-model timer.
 		EngngModelTimer timer;
-		/// Flag indicating that the receiver runs in parallel.
-		int parallelFlag;
+		
 		/// Type of non linear formulation (total or updated formulation).
 		enum fMode nonLinFormulation;
 		/// Error estimator. Useful for adaptivity, or simply printing errors output.
 		std::unique_ptr<ErrorEstimator> defaultErrEstimator;
 
-		/// Domain rank in a group of collaborating processes (0..groupSize-1).
-		int rank;
-		/// Total number of collaborating processes.
-		int numProcs;
-		/// Flag indicating if nonlocal extension active, which will cause data to be sent between shared elements before computing the internal forces.
-		int nonlocalExt;
-#ifdef __PARALLEL_MODE
-		/// Processor name.
-		char processor_name[PROCESSOR_NAME_LENGTH];
-#ifdef __USE_MPI
-		/// Communication object for this engineering model.
-		MPI_Comm comm;
-#endif
-
-		/**@name Load balancing attributes */
-		//@{
-		/// Load Balancer.
-		std::unique_ptr<LoadBalancer> lb;
-		std::unique_ptr<LoadBalancerMonitor> lbm;
-		/// If set to true, load balancing is active.
-		bool loadBalancingFlag;
-		/// Debug flag forcing load balancing after first step.
-		bool force_load_rebalance_in_first_step;
-		//@}
-
-		/// Common Communicator buffer.
-		CommunicatorBuff* commBuff;
-		/// Communicator.
-		ProblemCommunicator* communicator;
-
-		/// NonLocal Communicator. Necessary when nonlocal constitutive models are used.
-		ProblemCommunicator* nonlocCommunicator;
-#endif
 		/// Message tags
 		enum { InternalForcesExchangeTag, MassExchangeTag, LoadExchangeTag, ReactionExchangeTag, RemoteElementExchangeTag };
 		
@@ -368,30 +317,7 @@ namespace fem
 			contextOutputMode = COM_UserDefined;
 			contextOutputStep = cStep;
 		}
-		/**
-		 * Sets domain mode to given mode.
-		 * @param pmode Problem mode.
-		 */
-		void setProblemMode(problemMode pmode) { pMode = pmode; }
-		/**
-		 * Sets the problem to run in parallel (or not).
-		 * @param parallelFlag Determines parallel mode.
-		 */
-		void setParallelMode(bool newParallelFlag);
-		/// Returns domain mode.
-		problemMode giveProblemMode() { return pMode; }
-		/**
-		 * Sets scale in multiscale simulation.
-		 * @param pscale Problem scale.
-		 */
-		void setProblemScale(problemScale pscale) { pScale = pscale; }
-		/// Returns scale in multiscale simulation
-		problemScale giveProblemScale() { return pScale; }
-		/// Sets the renumber flag to true.
-		virtual void setRenumberFlag() { this->renumberFlag = true; }
-		/// Sets the renumber flag to false.
-		virtual void resetRenumberFlag() { this->renumberFlag = false; }
-
+		
 		/**
 		 * Returns the user time of the current simulation step in seconds.
 		 */
@@ -482,7 +408,6 @@ namespace fem
 		 */
 		virtual FieldPtr giveField(FieldType key, TimeStep*) { return FieldPtr(); }
 
-
 		///Returns the master engnmodel
 		EngngModel* giveMasterEngngModel() { return this->master; }
 
@@ -515,62 +440,6 @@ namespace fem
 		 */
 		virtual int giveCurrentNumberOfIterations() { return 1; }
 
-#ifdef __PARALLEL_MODE
-		/// Returns the communication object of reciever.
-		MPI_Comm giveParallelComm() { return this->comm; }
-		/**
-		 * Packs data of local element to be received by their remote counterpart on remote partitions.
-		 * Remote elements are introduced when nonlocal constitutive models are used, in order to
-		 * allow local averaging procedure (remote elements, which are involved in averaging on local partition are
-		 * mirrored on this local partition) instead of implementing inefficient fine-grain communication.
-		 * Remote element data are exchanged only if necessary and once for all of them.
-		 * Current implementation calls packUnknowns service for all elements listed in
-		 * given process communicator send map.
-		 * @param processComm Corresponding process communicator.
-		 * @return Nonzero if successful.
-		 */
-		int packRemoteElementData(ProcessCommunicator& processComm);
-		/**
-		 * Unpacks data for remote elements (which are mirrors of remote partition's local elements).
-		 * Remote elements are introduced when nonlocal constitutive models are used, in order to
-		 * allow local averaging procedure (remote elements, which are involved in averaging on local partition are
-		 * mirrored on this local partition) instead of implementing inefficient fine-grain communication.
-		 * Remote element data are exchanged only if necessary and once for all of them.
-		 * Current implementation calls unpackAndUpdateUnknowns service for all elements listed in
-		 * given process communicator receive map.
-		 * @param processComm Corresponding process communicator.
-		 * @return Nonzero if successful.
-		 */
-		int unpackRemoteElementData(ProcessCommunicator& processComm);
-		/**
-		 * Packing function for vector values of DofManagers. Packs vector values of shared/remote DofManagers
-		 * into send communication buffer of given process communicator.
-		 * @param processComm Task communicator.
-		 * @param src Source vector + equation numbering.
-		 * @return Nonzero if successful.
-		 */
-		int packDofManagers(ArrayWithNumbering* src, ProcessCommunicator& processComm);
-		/**
-		 * Unpacking function for vector values of DofManagers . Unpacks vector of shared/remote DofManagers
-		 * from  receive communication buffer of given process communicator.
-		 * @param processComm Task communicator.
-		 * @param dest Destination vector + equation numbering.
-		 * @return Nonzero if successful.
-		 */
-		int unpackDofManagers(ArrayWithNumbering* dest, ProcessCommunicator& processComm);
-
-		ProblemCommunicator* giveProblemCommunicator(EngngModelCommType t) {
-			if (t == PC_default) {
-				return communicator;
-			}
-			else if (t == PC_nonlocal) {
-				return nonlocCommunicator;
-			}
-			else {
-				return NULL;
-			}
-		}
-#endif
 		void initializeCommMaps(bool forceInit = false);
 		/**
 		 * Initializes whole problem according to its description stored in inputStream.
@@ -813,14 +682,7 @@ namespace fem
 		 * and updates total value in dictionary.
 		 */
 		virtual int requiresUnknownsDictionaryUpdate() { return false; }
-		/**
-		 * Returns true if equation renumbering is required for given solution step.
-		 * This may of course change the number of equation and in general there is no guarantee
-		 * that for a certain dof the same equation will be assigned. So the use of
-		 * DOF unknowns dictionaries is generally recommended.
-		 */
-		virtual bool requiresEquationRenumbering(TimeStep* tStep) { return renumberFlag; }
-		//virtual int supportsBoundaryConditionChange () {return 0;}
+		
 		/**
 		 * Updates necessary values in Dofs unknown dictionaries.
 		 * @see EngngModel::requiresUnknownsDictionaryUpdate
@@ -842,11 +704,7 @@ namespace fem
 		 * @todo When all models have converted to using a field, this should be removed.
 		 */
 		virtual bool newDofHandling() { return false; }
-		/**
-		 * Returns the parallel context corresponding to given domain (n) and unknown type
-		 * Default implementation returns i-th context from parallelContextList.
-		 */
-		virtual ParallelContext* giveParallelContext(int n);
+
 		/**
 		 * Creates parallel contexts. Must be implemented by derived classes since the governing equation type is required
 		 * for context creation.
@@ -1022,19 +880,9 @@ namespace fem
 		 */
 		virtual void printDofOutputAt(FILE* stream, Dof* iDof, TimeStep* tStep);
 
-
 		// identification
 		/// Returns class name of the receiver.
 		virtual const char* giveClassName() const = 0;
-		/// Returns nonzero if nonlocal stiffness option activated.
-		virtual int useNonlocalStiffnessOption() { return 0; }
-		/// Returns true if receiver in parallel mode
-		bool isParallel() const { return (parallelFlag != 0); }
-		/// Returns domain rank in a group of collaborating processes (0..groupSize-1)
-		int giveRank() const { return rank; }
-		/// Returns the number of collaborating processes.
-		int giveNumberOfProcesses() const { return numProcs; }
-
 
 		/**
 		 * Indicates type of non linear computation (total or updated formulation).
@@ -1062,7 +910,6 @@ namespace fem
 		/// Returns the scale factor for given variable type.
 		virtual double giveVariableScale(VarScaleType varId) { return 1.0; }
 
-
 		/**
 		 * Determines the space necessary for send/receive buffer.
 		 * It uses related communication map pattern to determine the maximum size needed.
@@ -1073,42 +920,6 @@ namespace fem
 		 * @return Upper bound of space needed.
 		 */
 		virtual int estimateMaxPackSize(IntArray& commMap, DataStream& buff, int packUnpackType) { return 0; }
-#ifdef __PARALLEL_MODE
-		/**
-		 * Recovers the load balance between processors, if needed. Uses load balancer monitor and load balancer
-		 * instances to decide if rebalancing is needed (monitor) and to repartition the domain (load balancer).
-		 * Method is responsible for packing all relevant data (the use of dof dictionaries is assumed to store e-model
-		 * dof related staff, which can later help in renumbering after rebalancing) and to send/receive all data.
-		 * Then the local update and renumbering is necessary to get consistent data structure.
-		 */
-		virtual void balanceLoad(TimeStep* tStep);
-		/** Returns reference to receiver's load balancer. */
-		virtual LoadBalancer* giveLoadBalancer() { return NULL; }
-		/** Returns reference to receiver's load balancer monitor. */
-		virtual LoadBalancerMonitor* giveLoadBalancerMonitor() { return NULL; }
-#endif
-		/// Request domain rank and problem size
-		void initParallel();
-		/// Returns reference to itself -> required by communicator.h
-		EngngModel* giveEngngModel() { return this; }
-		virtual bool isElementActivated(int elemNum) { return true; }
-		virtual bool isElementActivated(Element* e) { return true; }
-
-
-#ifdef __OOFEG
-		virtual void drawYourself(oofegGraphicContext& gc);
-		virtual void drawElements(oofegGraphicContext& gc);
-		virtual void drawNodes(oofegGraphicContext& gc);
-		/**
-		 * Shows the sparse structure of required matrix, type == 1 stiffness.
-		 */
-		virtual void showSparseMtrxStructure(int type, oofegGraphicContext& gc, TimeStep* tStep) { }
-#endif
-
-#ifdef _PYBIND_BINDINGS
-		void setNumberOfDomains(const int& i) { this->ndomains = i; }
-		const int& getNumberOfDomains() const { return this->ndomains; }
-#endif
 
 		/// Returns string for prepending output (used by error reporting macros).
 		std::string errorInfo(const char* func) const;
