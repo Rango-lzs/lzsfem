@@ -10,7 +10,10 @@
 #define domain_h
 
 #include "domaintype.h"
+#include "intarray.h"
+
 #include <unordered_map>
+#include <memory>
 
  /**
   * Class and object Domain. Domain contains mesh description, or if program runs in parallel then it contains
@@ -67,10 +70,10 @@ namespace fem
 	class DofManager;
 	class CrossSection;
 	class Material;
-	class BoundaryCondition;
+	class GeneralBoundaryCondition;
 	class InitialCondition;
 	class Function;
-	class FemObjectSet;
+	class Set;
 
 	class EngngModel;
 	class ConnectivityTable;
@@ -101,13 +104,13 @@ namespace fem
 		/// Material list.
 		std::vector< std::unique_ptr< Material > > m_materialList;
 		/// Boundary condition list.
-		std::vector< std::unique_ptr< BoundaryCondition > > m_bcList;
+		std::vector< std::unique_ptr< GeneralBoundaryCondition > > m_bcList;
 		/// Initial condition list.
 		std::vector< std::unique_ptr< InitialCondition > > m_icList;
 		/// Load time function list.
 		std::vector< std::unique_ptr< Function > > m_functionList;
 		/// Set list.
-		std::vector< std::unique_ptr< FemObjectSet > > m_setList;
+		std::vector< std::unique_ptr<Set> > m_setList;
 				
 		/**
 		 * Associated Engineering model. An abstraction for type of analysis which will be prformed.
@@ -118,7 +121,7 @@ namespace fem
 		 * Domain connectivity table. Table is build upon request.
 		 * Provides connectivity information of current domain.
 		 */
-		std::unique_ptr< ConnectivityTable > connectivityTable;
+		//std::unique_ptr< ConnectivityTable > connectivityTable;
 
 		/// Output manager, allowing to filter the produced output.
 		std::unique_ptr< OutputManager > outputManager;
@@ -152,9 +155,6 @@ namespace fem
 		 */
 		std::unordered_map< int, IntArray> materialNum2ElMap;
 
-		/// Topology description
-		std::unique_ptr< TopologyDescription > topology;
-
 	public:
 		/// Keeps track of next free dof ID (for special Lagrange multipliers, XFEM and such)
 		int freeDofID;
@@ -180,6 +180,11 @@ namespace fem
 		void setNumber(int nn) { this->number = nn; }
 		/// Returns domain serial (version) number.
 		int giveSerialNumber() { return this->serialNumber; }
+
+		EngngModel* giveEngngModel() { return m_engineeringModel; }
+
+		void BuildDofManPlaceInArrayMap();
+		void BuildElementPlaceInArrayMap();
 
 		// management of the mesh components
 		/**

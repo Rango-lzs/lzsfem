@@ -16,7 +16,8 @@
 #include <iosfwd>
 #include <initializer_list>
 
-namespace fem {
+namespace fem
+{
 	class DataStream;
 
 	/**

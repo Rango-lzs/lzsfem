@@ -13,7 +13,8 @@
 #include <string>
 #include <iosfwd>
 
-namespace fem {
+namespace fem 
+{
 	class DataStream;
 	class Pair;
 

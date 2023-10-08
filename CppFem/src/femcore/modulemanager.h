@@ -73,7 +73,7 @@ namespace fem
 				// read type of module
 				std::unique_ptr< M > module = this->CreateModule(name.c_str(), i, emodel);
 				if (!module) {
-					OOFEM_ERROR("unknown module (%s)", name.c_str());
+					FEM_ERROR("unknown module (%s)", name.c_str());
 				}
 
 				module->initializeFrom(mir);
@@ -116,7 +116,7 @@ namespace fem
 				elem = moduleList[num - 1].get();
 			}
 			else {
-				OOFEM_ERROR("No module no. %d defined", num);
+				FEM_ERROR("No module no. %d defined", num);
 			}
 
 			return elem;

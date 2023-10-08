@@ -1,51 +1,18 @@
-/*
- *
- *                 #####    #####   ######  ######  ###   ###
- *               ##   ##  ##   ##  ##      ##      ## ### ##
- *              ##   ##  ##   ##  ####    ####    ##  #  ##
- *             ##   ##  ##   ##  ##      ##      ##     ##
- *            ##   ##  ##   ##  ##      ##      ##     ##
- *            #####    #####   ##      ######  ##     ##
- *
- *
- *             OOFEM : Object Oriented Finite Element Code
- *
- *               Copyright (C) 1993 - 2013   Borek Patzak
- *
- *
- *
- *       Czech Technical University, Faculty of Civil Engineering,
- *   Department of Structural Mechanics, 166 29 Prague, Czech Republic
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
-
 #ifndef internalstatetype_h
 #define internalstatetype_h
 
 #include "enumitem.h"
 
-namespace oofem {
-//
-// following type determine the mode of some value.
-// which can be requested from various specialized methods.
-// particular specialized methods (for example method for computing the load vector)
-// are general, i.e., they are able to compute response for
-// both totalLoadVector and incrementalLoadVector charTypes.
-// The particular type of response is then requested using parameter of ValueModeType type.
-//
+namespace fem
+{
+	//
+	// following type determine the mode of some value.
+	// which can be requested from various specialized methods.
+	// particular specialized methods (for example method for computing the load vector)
+	// are general, i.e., they are able to compute response for
+	// both totalLoadVector and incrementalLoadVector charTypes.
+	// The particular type of response is then requested using parameter of ValueModeType type.
+	//
 #define InternalStateType_DEF \
     ENUM_ITEM_WITH_VALUE(IST_Undefined, 0) \
     ENUM_ITEM_WITH_VALUE(IST_StressTensor, 1) \
@@ -198,25 +165,25 @@ namespace oofem {
  * Type  representing the physical meaning of element or constitutive model internal variable.
  * Values of this type are used, when these internal variables are requested.
  */
-enum InternalStateType {
-    InternalStateType_DEF
-};
+	enum InternalStateType {
+		InternalStateType_DEF
+	};
 
-enum ElementCharSizeMethod {
-    ECSM_Unknown,
-    ECSM_SquareRootOfArea,
-    ECSM_Projection,
-    ECSM_ProjectionCentered,
-    ECSM_Oliver1,
-    ECSM_Oliver1modified,
-    ECSM_Oliver2
-};
+	enum ElementCharSizeMethod {
+		ECSM_Unknown,
+		ECSM_SquareRootOfArea,
+		ECSM_Projection,
+		ECSM_ProjectionCentered,
+		ECSM_Oliver1,
+		ECSM_Oliver1modified,
+		ECSM_Oliver2
+	};
 
 #undef ENUM_ITEM
 #undef ENUM_ITEM_WITH_VALUE
 #undef enumitem_h
 
 
-const char *__InternalStateTypeToString(InternalStateType _value);
-} // end namespace oofem
+	const char* __InternalStateTypeToString(InternalStateType _value);
+} // end namespace fem
 #endif // internalstatetype_h

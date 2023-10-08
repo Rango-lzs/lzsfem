@@ -16,10 +16,12 @@
 #include "timediscretizationtype.h"
 #include "inputrecord.h"
 
-namespace fem {
+namespace fem 
+{
 	class EngngModel;
 	class DataStream;
 
+	typedef long StateCounterType;
 	/**
 	 * Class representing solution step. The timeStep instance may represent either
 	 * time step, load increment, or load case depending on used Engineering model.
