@@ -46,8 +46,7 @@ namespace fem
 {
 	EngngModel::EngngModel(int i, EngngModel* _master)
 		:domainNeqs(),
-		domainPrescribedNeqs(),
-		exportModuleManager(this),
+		domainPrescribedNeqs()
 	{
 		suppressOutput = false;
 
@@ -55,21 +54,14 @@ namespace fem
 		numberOfSteps = 0;
 		numberOfEquations = 0;
 		numberOfPrescribedEquations = 0;
-		renumberFlag = false;
-		equationNumberingCompleted = 0;
+
 		ndomains = 0;
 		nMetaSteps = 0;
-		profileOpt = false;
 		nonLinFormulation = UNKNOWN;
 
 		outputStream = NULL;
 
 		referenceFileName = "";
-
-		contextOutputMode = COM_NoContext;
-		contextOutputStep = 0;
-		pMode = _processor;  // for giveContextFile()
-		pScale = macroScale;
 	}
 
 
@@ -83,15 +75,6 @@ namespace fem
 		//fclose (inputStream) ;
 		if (outputStream) {
 			fclose(outputStream);
-		}
-	}
-
-
-	void EngngModel::setParallelMode(bool newParallelFlag)
-	{
-		parallelFlag = newParallelFlag;
-		if (parallelFlag) {
-			initParallel();
 		}
 	}
 
@@ -122,14 +105,7 @@ namespace fem
 		this->coreOutputFileName = std::string(dataOutputFileName);
 		this->dataOutputFileName = std::string(dataOutputFileName);
 
-		if (this->giveProblemMode() == _postProcessor) {
-			// modify output file name to prevent output to be lost
-			this->dataOutputFileName.append(".oofeg");
-		}
-
-
 		this->Instanciate_init(); // Must be done after initializeFrom
-
 
 		this->startTime = time(NULL);
 
@@ -142,10 +118,7 @@ namespace fem
 		try {
 			// instanciate receiver
 			this->initializeFrom(ir);
-			exportModuleManager.initializeFrom(ir);
-			initModuleManager.initializeFrom(ir);
-			monitorManager.initializeFrom(ir);
-
+		
 			if (this->nMetaSteps == 0) {
 				inputReaderFinish = false;
 				this->instanciateDefaultMetaStep(ir);
@@ -153,16 +126,8 @@ namespace fem
 			else {
 				this->instanciateMetaSteps(dr);
 			}
-
-			// instanciate initialization module manager
-			initModuleManager.instanciateYourself(dr, ir);
-			// instanciate export module manager
-			exportModuleManager.instanciateYourself(dr, ir);
-			// instanciate monitor manager
-			monitorManager.instanciateYourself(dr, ir);
+		
 			this->instanciateDomains(dr);
-
-			exportModuleManager.initialize();
 
 			// check emodel input record if no default metastep, since all has been read
 			if (inputReaderFinish) {
@@ -184,16 +149,6 @@ namespace fem
 			FEM_ERROR("nsteps not specified, bad format");
 		}
 
-		contextOutputStep = 0;
-		IR_GIVE_OPTIONAL_FIELD(ir, contextOutputStep, _IFT_EngngModel_contextoutputstep);
-		if (contextOutputStep) {
-			this->setUDContextOutputMode(contextOutputStep);
-		}
-
-		renumberFlag = false;
-		IR_GIVE_OPTIONAL_FIELD(ir, renumberFlag, _IFT_EngngModel_renumberFlag);
-		profileOpt = false;
-		IR_GIVE_OPTIONAL_FIELD(ir, profileOpt, _IFT_EngngModel_profileOpt);
 		nMetaSteps = 0;
 		IR_GIVE_OPTIONAL_FIELD(ir, nMetaSteps, _IFT_EngngModel_nmsteps);
 		int _val = 1;
@@ -203,12 +158,9 @@ namespace fem
 		int eeTypeId = -1;
 		IR_GIVE_OPTIONAL_FIELD(ir, eeTypeId, _IFT_EngngModel_eetype);
 		if (eeTypeId >= 0) {
-			this->defaultErrEstimator = classFactory.createErrorEstimator((ErrorEstimatorType)eeTypeId, 1, this->giveDomain(1));
-			this->defaultErrEstimator->initializeFrom(ir);
+			//this->defaultErrEstimator = FemFactory::instance().createErrorEstimator((ErrorEstimatorType)eeTypeId, 1, this->giveDomain(1));
+			//this->defaultErrEstimator->initializeFrom(ir);
 		}
-
-		IR_GIVE_OPTIONAL_FIELD(ir, parallelFlag, _IFT_EngngModel_parallelflag);
-		// fprintf (stderr, "Parallel mode is %d\n", parallelFlag);
 
 		suppressOutput = ir.hasField(_IFT_EngngModel_suppressOutput);
 
@@ -221,7 +173,6 @@ namespace fem
 				FEM_ERROR("Can't open output file %s", this->dataOutputFileName.c_str());
 			}
 
-			fprintf(outputStream, "%s", PRG_HEADER);
 			fprintf(outputStream, "\nStarting analysis on: %s\n", ctime(&this->startTime));
 			fprintf(outputStream, "%s\n", simulationDescription.c_str());
 
@@ -274,7 +225,7 @@ namespace fem
 		EngngModel::instanciateDefaultMetaStep(InputRecord& ir)
 	{
 		if (numberOfSteps == 0) {
-			OOFEM_ERROR("nsteps cannot be zero");
+			FEM_ERROR("nsteps cannot be zero");
 		}
 
 		// create default meta steps
@@ -296,109 +247,11 @@ namespace fem
 		// conditions into the system and this may results into increased number of
 		// equations.
 		//
-		if (!equationNumberingCompleted) {
-			this->forceEquationNumbering();
-		}
-
-		return num.isDefault() ? domainNeqs.at(id) : domainPrescribedNeqs.at(id);
-	}
-
-
-	int EngngModel::forceEquationNumbering(int id)
-	{
-		// forces equation renumbering for current time step
-		// intended mainly for problems with changes of static system
-		// during solution
-		// OUTPUT:
-		// sets this->numberOfEquations and this->numberOfPrescribedEquations and returns this value
-
-		Domain* domain = this->giveDomain(id);
-		TimeStep* currStep = this->giveCurrentStep();
-
-		this->domainNeqs.at(id) = 0;
-		this->domainPrescribedNeqs.at(id) = 0;
-
-		if (!this->profileOpt) {
-			for (auto& node : domain->giveDofManagers()) {
-				node->askNewEquationNumbers(currStep);
-			}
-
-			for (auto& elem : domain->giveElements()) {
-				int nnodes = elem->giveNumberOfInternalDofManagers();
-				for (int k = 1; k <= nnodes; k++) {
-					elem->giveInternalDofManager(k)->askNewEquationNumbers(currStep);
-				}
-			}
-
-			// For special boundary conditions;
-			for (auto& bc : domain->giveBcs()) {
-				int nnodes = bc->giveNumberOfInternalDofManagers();
-				for (int k = 1; k <= nnodes; k++) {
-					bc->giveInternalDofManager(k)->askNewEquationNumbers(currStep);
-				}
-			}
-		}
-		else {
-			// invoke profile reduction
-			int initialProfile, optimalProfile;
-			Timer timer;
-			OOFEM_LOG_INFO("\nRenumbering DOFs with Sloan's algorithm...\n");
-			timer.startTimer();
-
-			SloanGraph graph(domain);
-			graph.initialize();
-			graph.tryParameters(0, 0);
-			initialProfile = graph.giveOptimalProfileSize();
-			graph.tryParameters(2, 1);
-			graph.tryParameters(1, 0);
-			graph.tryParameters(5, 1);
-			graph.tryParameters(10, 1);
-			optimalProfile = graph.giveOptimalProfileSize();
-
-			timer.stopTimer();
-
-			OOFEM_LOG_DEBUG("Sloan's algorithm done in %.2fs\n", timer.getUtime());
-			OOFEM_LOG_DEBUG("Nominal profile %d (old) %d (new)\n", initialProfile, optimalProfile);
-
-			//FILE* renTableFile = fopen ("rentab.dat","w");
-			//graph.writeOptimalRenumberingTable (renTableFile);
-			graph.askNewOptimalNumbering(currStep);
-		}
-
+	
 		return domainNeqs.at(id);
 	}
 
-
-	int
-		EngngModel::forceEquationNumbering()
-	{
-		// set numberOfEquations counter to zero
-		this->numberOfEquations = 0;
-		this->numberOfPrescribedEquations = 0;
-
-		OOFEM_LOG_DEBUG("Renumbering dofs in all domains\n");
-		for (int i = 1; i <= this->giveNumberOfDomains(); i++) {
-			domainNeqs.at(i) = 0;
-			this->numberOfEquations += this->forceEquationNumbering(i);
-		}
-
-		equationNumberingCompleted = 1;
-
-		for (int i = 1; i <= this->giveNumberOfDomains(); i++) {
-			this->numberOfPrescribedEquations += domainPrescribedNeqs.at(i);
-		}
-
-		for (std::size_t i = 1; i <= parallelContextList.size(); i++) {
-			this->parallelContextList[i - 1].init((int)i);
-		}
-
-
-		return this->numberOfEquations;
-	}
-
-
-	void
-		EngngModel::solveYourself()
+	void EngngModel::solveYourself()
 	{
 		int smstep = 1, sjstep = 1;
 
@@ -421,12 +274,9 @@ namespace fem
 				this->preInitializeNextStep();
 				this->giveNextStep();
 
-				// renumber equations if necessary. Ensure to call forceEquationNumbering() for staggered problems
-				if (this->requiresEquationRenumbering(this->giveCurrentStep())) {
-					this->forceEquationNumbering();
-				}
+				
 
-				OOFEM_LOG_DEBUG("Number of equations %d\n", this->giveNumberOfDomainEquations(1, EModelDefaultEquationNumbering()));
+				//FEM_LOG_DEBUG("Number of equations %d\n", this->giveNumberOfDomainEquations(1, EModelDefaultEquationNumbering()));
 
 				this->initializeYourself(this->giveCurrentStep());
 				this->solveYourselfAt(this->giveCurrentStep());
@@ -437,7 +287,7 @@ namespace fem
 				this->terminate(this->giveCurrentStep());
 
 				double _steptime = this->giveSolutionStepTime();
-				OOFEM_LOG_INFO("EngngModel info: user time consumed by solution step %d: %.2fs\n",
+				FEM_LOG_INFO("EngngModel info: user time consumed by solution step %d: %.2fs\n",
 					this->giveCurrentStep()->giveNumber(), _steptime);
 
 				if (!suppressOutput) {
@@ -519,81 +369,44 @@ namespace fem
 					dman->updateYourself(tStep);
 				}
 
-			// Update xfem manager if it is present
-			if (domain->hasXfemManager()) {
-				domain->giveXfemManager()->updateYourself(tStep);
-			}
-
 #  ifdef VERBOSE
-			VERBOSE_PRINT0("Updated nodes ", domain->giveNumberOfDofManagers())
+			//VERBOSE_PRINT0("Updated nodes ", domain->giveNumberOfDofManagers())
 #  endif
 
 
 				for (auto& elem : domain->giveElements()) {
 					// skip remote elements (these are used as mirrors of remote elements on other domains
 					// when nonlocal constitutive models are used. They introduction is necessary to
-					// allow local averaging on domains without fine grain communication between domains).
-					if (elem->giveParallelMode() == Element_remote) {
-						continue;
-					}
-
+					// allow local averaging on domains without fine grain communication between domains).				
 					elem->updateYourself(tStep);
 				}
 
 #  ifdef VERBOSE
-			VERBOSE_PRINT0("Updated Elements ", domain->giveNumberOfElements())
+			//VERBOSE_PRINT0("Updated Elements ", domain->giveNumberOfElements())
 #  endif
-		}
-
-		// if there is an error estimator, it should be updated so that values can be exported.
-		if (this->defaultErrEstimator) {
-			this->defaultErrEstimator->estimateError(equilibratedEM, tStep);
-		}
+		}		
 	}
 
-	void
-		EngngModel::terminate(TimeStep* tStep)
+	void EngngModel::terminate(TimeStep* tStep)
 	{
 		if (!suppressOutput) {
 			this->doStepOutput(tStep);
 			fflush(this->giveOutputStream());
 		}
-		else {
-			exportModuleManager.doOutput(tStep);
-		}
-		monitorManager.update(tStep, Monitor::MonitorEvent::TimeStepTermination);
-
+		
 		this->saveStepContext(tStep, CM_State | CM_Definition);
 	}
 
 
-	void
-		EngngModel::doStepOutput(TimeStep* tStep)
+	void EngngModel::doStepOutput(TimeStep* tStep)
 	{
 		if (!suppressOutput) {
 			this->printOutputAt(this->giveOutputStream(), tStep);
 			fflush(this->giveOutputStream());
 		}
-
-		// export using export manager
-		exportModuleManager.doOutput(tStep);
 	}
 
-	void
-		EngngModel::saveStepContext(TimeStep* tStep, ContextMode mode)
-	{
-		if (this->giveContextOutputMode() == COM_Always || this->giveContextOutputMode() == COM_Required ||
-			(this->giveContextOutputMode() == COM_UserDefined && tStep->giveNumber() % this->giveContextOutputStep() == 0)) {
-
-			auto fname = this->giveContextFileName(this->giveCurrentStep()->giveNumber(), this->giveCurrentStep()->giveVersion());
-			FileDataStream stream(fname, true);
-			this->saveContext(stream, mode);
-		}
-	}
-
-
-	void
-		EngngModel::printOutputAt(FILE* file, TimeStep* tStep)
+	void EngngModel::printOutputAt(FILE* file, TimeStep* tStep)
 	{
 		int domCount = 0;
 
@@ -617,8 +430,7 @@ namespace fem
 	}
 
 
-	void
-		EngngModel::printOutputAt(FILE* file, TimeStep* tStep, const IntArray& nodeSets, const IntArray& elementSets)
+	void EngngModel::printOutputAt(FILE* file, TimeStep* tStep, const IntArray& nodeSets, const IntArray& elementSets)
 	{
 		for (auto& domain : domainList) {
 			int dnum = domain->giveNumber();
@@ -636,8 +448,7 @@ namespace fem
 	}
 
 
-	void
-		EngngModel::outputNodes(FILE* file, Domain& domain, TimeStep* tStep, int setNum)
+	void EngngModel::outputNodes(FILE* file, Domain& domain, TimeStep* tStep, int setNum)
 	{
 		fprintf(file, "\n\nNode output:\n------------------\n");
 
@@ -664,8 +475,7 @@ namespace fem
 	}
 
 
-	void
-		EngngModel::outputElements(FILE* file, Domain& domain, TimeStep* tStep, int setNum)
+	void EngngModel::outputElements(FILE* file, Domain& domain, TimeStep* tStep, int setNum)
 	{
 		fprintf(file, "\n\nElement output:\n---------------\n");
 

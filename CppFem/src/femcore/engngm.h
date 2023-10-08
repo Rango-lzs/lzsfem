@@ -32,6 +32,7 @@
 
 #include <string>
 #include <memory>
+#include "assemblercallback.h"
 
  ///@name Input fields for general Engineering models.
  //@{
@@ -202,12 +203,6 @@ namespace fem
 		FILE* outputStream;
 		/// String with reference file name
 		std::string referenceFileName;
-		/// Domain context output mode.
-		ContextOutputMode contextOutputMode;
-		int contextOutputStep;
-
-		/// Export module manager.
-		ExportModuleManager exportModuleManager;
 		
 		/// Solution start time.
 		time_t startTime;
@@ -291,32 +286,6 @@ namespace fem
 		 * @param src New output file name.
 		 */
 		void letOutputBaseFileNameBe(const std::string& src);
-		/**
-		 * Returns domain context output mode.
-		 */
-		ContextOutputMode giveContextOutputMode() { return contextOutputMode; }
-		/**
-		 * Returns domain context output step.
-		 */
-		int giveContextOutputStep() { return contextOutputStep; }
-		/**
-		 * Sets context output mode of receiver.
-		 * @param contextMode domain context mode.
-		 */
-		void setContextOutputMode(ContextOutputMode contextMode)
-		{
-			contextOutputMode = contextMode;
-		}
-		/**
-		 * Sets user defined context output mode (it sets contextOutputMode to contextOutputMode),
-		 * setting contextOutputStep to given value.
-		 * @param cStep new context output step
-		 */
-		void setUDContextOutputMode(int cStep)
-		{
-			contextOutputMode = COM_UserDefined;
-			contextOutputStep = cStep;
-		}
 		
 		/**
 		 * Returns the user time of the current simulation step in seconds.
@@ -571,12 +540,12 @@ namespace fem
 		}
 		/// Returns end of time interest (time corresponding to end of time integration).
 		virtual double giveEndOfTimeOfInterest() { return 0.; }
+
 		/// Returns the time step number, when initial conditions should apply.
 		int giveNumberOfTimeStepWhenIcApply() { return 0; }
 		/// Returns reference to receiver's numerical method.
 		virtual NumericalMethod* giveNumericalMethod(MetaStep* mStep) { return nullptr; }
-		/// Returns receiver's export module manager.
-		ExportModuleManager* giveExportModuleManager() { return &exportModuleManager; }
+		
 		/// Returns reference to receiver timer (EngngModelTimer).
 		EngngModelTimer* giveTimer() { return &timer; }
 

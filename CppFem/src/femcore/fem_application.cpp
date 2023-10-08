@@ -38,7 +38,6 @@ namespace fem
 		}
 
 		problem->setProblemMode(mode);
-		problem->setParallelMode(parallelFlag);
 
 		if (contextFlag) {
 			problem->setContextOutputMode(COM_Always);

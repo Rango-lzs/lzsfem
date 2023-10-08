@@ -10,7 +10,6 @@
 #define dofiditemh
 
 #include "enumitem.h"
-
 #include <string>
 
 namespace fem

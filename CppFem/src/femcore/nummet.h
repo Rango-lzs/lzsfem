@@ -43,7 +43,7 @@ namespace fem
 	 * instance may also represent interface to an existing procedure
 	 * written in C or Fortran.
 	 */
-	class OOFEM_EXPORT NumericalMethod
+	class FEM_EXPORT NumericalMethod
 	{
 	protected:
 		/// Pointer to domain
@@ -79,8 +79,8 @@ namespace fem
 
 		virtual void setDomain(Domain* d) { domain = d; }
 
-		virtual void saveContext(DataStream& stream, ContextMode mode) { }
-		virtual void restoreContext(DataStream& stream, ContextMode mode) { }
+		/*virtual void saveContext(DataStream& stream, ContextMode mode) { }
+		virtual void restoreContext(DataStream& stream, ContextMode mode) { }*/
 	};
 } // end namespace oofem
 #endif // nummet_h

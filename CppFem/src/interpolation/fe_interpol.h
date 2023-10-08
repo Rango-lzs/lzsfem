@@ -15,7 +15,8 @@
 #include "node.h"
 #include "element.h"
 
-namespace fem {
+namespace fem 
+{
 	class Element;
 	class FloatArray;
 	class FloatMatrix;
