@@ -41,6 +41,7 @@
 #ifdef __OOFEG
 #include "oofeggraphiccontext.h"
 #endif
+#include <memory>
 
 namespace fem
 {
@@ -185,8 +186,7 @@ namespace fem
 	}
 
 
-	int
-		EngngModel::instanciateDomains(DataReader& dr)
+	int EngngModel::instanciateDomains(DataReader& dr)
 	{
 		int result = 1;
 		// read problem domains
@@ -199,8 +199,7 @@ namespace fem
 	}
 
 
-	int
-		EngngModel::instanciateMetaSteps(DataReader& dr)
+	int EngngModel::instanciateMetaSteps(DataReader& dr)
 	{
 		// create meta steps
 		metaStepList.clear();
@@ -221,8 +220,7 @@ namespace fem
 	}
 
 
-	int
-		EngngModel::instanciateDefaultMetaStep(InputRecord& ir)
+	int EngngModel::instanciateDefaultMetaStep(InputRecord& ir)
 	{
 		if (numberOfSteps == 0) {
 			FEM_ERROR("nsteps cannot be zero");
@@ -238,8 +236,7 @@ namespace fem
 	}
 
 
-	int
-		EngngModel::giveNumberOfDomainEquations(int id, const UnknownNumberingScheme& num)
+	int EngngModel::giveNumberOfDomainEquations(int id, const UnknownNumberingScheme& num)
 	{
 		//
 		// returns number of equations of current problem
@@ -357,8 +354,7 @@ namespace fem
 	}
 
 
-	void
-		EngngModel::updateYourself(TimeStep* tStep)
+	void EngngModel::updateYourself(TimeStep* tStep)
 	{
 		for (auto& domain : domainList) {
 #  ifdef VERBOSE
@@ -550,7 +546,7 @@ namespace fem
 #pragma omp critical
 #endif
 				if (answer.assemble(loc, mat) == 0) {
-					OOFEM_ERROR("sparse matrix assemble error");
+					FEM_ERROR("sparse matrix assemble error");
 				}
 			}
 		}
@@ -661,7 +657,7 @@ namespace fem
 		}
 
 		if (domain->hasContactManager()) {
-			OOFEM_ERROR("Contact problems temporarily deactivated");
+			FEM_ERROR("Contact problems temporarily deactivated");
 			//domain->giveContactManager()->assembleTangentFromContacts(answer, tStep, type, s, s);
 		}
 
@@ -710,7 +706,7 @@ namespace fem
 #pragma omp critical
 #endif
 				if (answer.assemble(r_loc, c_loc, mat) == 0) {
-					OOFEM_ERROR("sparse matrix assemble error");
+					FEM_ERROR("sparse matrix assemble error");
 				}
 			}
 		}
@@ -732,7 +728,7 @@ namespace fem
 		}
 
 		if (domain->hasContactManager()) {
-			OOFEM_ERROR("Contant problems temporarily deactivated");
+			FEM_ERROR("Contant problems temporarily deactivated");
 			//domain->giveContactManager()->assembleTangentFromContacts(answer, tStep, type, rs, cs);
 		}
 
@@ -1157,7 +1153,7 @@ namespace fem
 					}
 				}
 				else {
-					OOFEM_ERROR("Unsupported element boundary load type");
+					FEM_ERROR("Unsupported element boundary load type");
 				}
 
 				if (assembleFlag) {
@@ -1337,21 +1333,21 @@ namespace fem
 	void
 		EngngModel::updateSolution(FloatArray& solutionVector, TimeStep* tStep, Domain* d)
 	{
-		OOFEM_ERROR("updateSolution is not implemented.");
+		FEM_ERROR("updateSolution is not implemented.");
 	}
 
 
 	void
 		EngngModel::updateInternalRHS(FloatArray& answer, TimeStep* tStep, Domain* d, FloatArray* eNorms)
 	{
-		OOFEM_ERROR("updateInternalRHS is not implemented.");
+		FEM_ERROR("updateInternalRHS is not implemented.");
 	}
 
 
 	void
 		EngngModel::updateMatrix(SparseMtrx& mat, TimeStep* tStep, Domain* d)
 	{
-		OOFEM_ERROR("updateMatrix is not implemented.");
+		FEM_ERROR("updateMatrix is not implemented.");
 	}
 
 
@@ -1585,7 +1581,7 @@ namespace fem
 		EngngModel::setDomain(int i, Domain* ptr, bool iDeallocateOld)
 	{
 		if (i < 1 || i >(int)this->domainList.size()) {
-			OOFEM_ERROR("Domain index %d out of range [1,%d]", i, (int)this->domainList.size());
+			FEM_ERROR("Domain index %d out of range [1,%d]", i, (int)this->domainList.size());
 		}
 		if (!iDeallocateOld) {
 			this->domainList[i - 1].release();
@@ -1598,7 +1594,7 @@ namespace fem
 		EngngModel::giveParallelContext(int i)
 	{
 		if (i > (int)parallelContextList.size()) {
-			OOFEM_ERROR("context not initialized for this problem");
+			FEM_ERROR("context not initialized for this problem");
 		}
 
 		return &this->parallelContextList[i - 1];
@@ -1873,7 +1869,7 @@ namespace fem
 #endif
 
 			if (!(result &= nonlocCommunicator->unpackAllData(this, &EngngModel::unpackRemoteElementData))) {
-				OOFEM_ERROR("Receiveng and Unpacking remote element data");
+				FEM_ERROR("Receiveng and Unpacking remote element data");
 			}
 
 			result &= nonlocCommunicator->finishExchange();

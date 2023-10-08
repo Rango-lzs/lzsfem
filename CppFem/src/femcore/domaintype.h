@@ -11,7 +11,8 @@
 
 #include "enumitem.h"
 
-namespace fem {
+namespace fem
+{
 #define domainType_DEF \
     ENUM_ITEM(_unknownMode) \
     ENUM_ITEM(_2dPlaneStressMode) \

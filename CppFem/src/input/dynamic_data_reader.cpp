@@ -6,7 +6,7 @@
  * \date   September 2023
  *********************************************************************/
 
-#include "dynamicdatareader.h"
+#include "dynamic_data_reader.h"
 #include "inputrecord.h"
 #include "error.h"
 

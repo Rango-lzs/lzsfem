@@ -19,7 +19,6 @@
 
 namespace fem
 {
-
 	class Function;
 	class DofManager;
 
@@ -145,8 +144,8 @@ namespace fem
 		void initializeFrom(InputRecord& ir) override;
 		void giveInputRecord(DynamicInputRecord& input) override;
 
-		void saveContext(DataStream& stream, ContextMode mode) override;
-		void restoreContext(DataStream& stream, ContextMode mode) override;
+		//void saveContext(DataStream& stream, ContextMode mode) override;
+		//void restoreContext(DataStream& stream, ContextMode mode) override;
 	};
 } // end namespace fem
 #endif // generalbc_h

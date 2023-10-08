@@ -5,6 +5,7 @@
 #include "contextioresulttype.h"
 #include "contextmode.h"
 #include "enumitem.h"
+#include "fem_export.h"
 #include <string>
 #include <memory>
 

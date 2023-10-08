@@ -131,7 +131,7 @@ namespace fem
 		 * @return property value
 		 */
 		virtual double giveProperty(int aProperty, TimeStep* tStep) {
-			OOFEM_ERROR("Not supported for this boundary condition.");
+			FEM_ERROR("Not supported for this boundary condition.");
 			return 0;
 		}
 
@@ -144,8 +144,8 @@ namespace fem
 		const FloatArray& giveComponentArray() const;
 		void setComponentArray(FloatArray& arry) { componentArray = std::move(arry); }
 
-		void saveContext(DataStream& stream, ContextMode mode) override;
-		void restoreContext(DataStream& stream, ContextMode mode) override;
+		//void saveContext(DataStream& stream, ContextMode mode) override;
+		//void restoreContext(DataStream& stream, ContextMode mode) override;
 	};
 } // end namespace oofem
 #endif // load_h
