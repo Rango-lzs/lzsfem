@@ -15,6 +15,7 @@
 namespace fem
 {
 	class EngngModel;
+	class DataReader;
 
 	class FemApp
 	{

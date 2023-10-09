@@ -37,12 +37,6 @@ namespace fem
 			return NULL;
 		}
 
-		problem->setProblemMode(mode);
-
-		if (contextFlag) {
-			problem->setContextOutputMode(COM_Always);
-		}
-
 		problem->instanciateYourself(dr, *emodelir, dataOutputFileName.c_str(), desc.c_str());
 		emodelir->finish();
 

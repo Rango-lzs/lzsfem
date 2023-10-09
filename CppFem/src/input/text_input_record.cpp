@@ -378,8 +378,7 @@ namespace fem {
 		}
 	}
 
-	void
-		FEMTXTInputRecord::giveField(ScalarFunction& answer, InputFieldType id)
+	void FEMTXTInputRecord::giveField(ScalarFunction& answer, InputFieldType id)
 	{
 		const char* rec;
 		int indx = this->giveKeywordIndx(id);

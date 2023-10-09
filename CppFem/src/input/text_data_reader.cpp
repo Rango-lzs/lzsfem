@@ -1,11 +1,11 @@
 
-#include "oofemtxtdatareader.h"
+#include "text_data_reader.h"
 #include "error.h"
 
 #include <string>
 
 namespace fem {
-OOFEMTXTDataReader :: OOFEMTXTDataReader(std :: string inputfilename) : DataReader(),
+FEMTXTDataReader :: FEMTXTDataReader(std :: string inputfilename) : DataReader(),
     dataSourceName(std :: move(inputfilename)), recordList()
 {
     std :: list< std :: pair< int, std :: string > >lines;
@@ -55,14 +55,14 @@ OOFEMTXTDataReader :: OOFEMTXTDataReader(std :: string inputfilename) : DataRead
     this->it = this->recordList.begin();
 }
 
-OOFEMTXTDataReader :: OOFEMTXTDataReader(const OOFEMTXTDataReader &x) : OOFEMTXTDataReader(x.dataSourceName) {}
+FEMTXTDataReader :: FEMTXTDataReader(const FEMTXTDataReader &x) : FEMTXTDataReader(x.dataSourceName) {}
 
-OOFEMTXTDataReader :: ~OOFEMTXTDataReader()
+FEMTXTDataReader :: ~FEMTXTDataReader()
 {
 }
 
 InputRecord &
-OOFEMTXTDataReader :: giveInputRecord(InputRecordType typeId, int recordId)
+FEMTXTDataReader :: giveInputRecord(InputRecordType typeId, int recordId)
 {
     if ( this->it == this->recordList.end() ) {
         FEM_ERROR("Out of input records, file contents must be missing");
@@ -71,7 +71,7 @@ OOFEMTXTDataReader :: giveInputRecord(InputRecordType typeId, int recordId)
 }
 
 bool
-OOFEMTXTDataReader :: peakNext(const std :: string &keyword)
+FEMTXTDataReader :: peakNext(const std :: string &keyword)
 {
     std :: string nextKey;
     this->it->giveRecordKeywordField(nextKey);
@@ -79,7 +79,7 @@ OOFEMTXTDataReader :: peakNext(const std :: string &keyword)
 }
 
 void
-OOFEMTXTDataReader :: finish()
+FEMTXTDataReader :: finish()
 {
     if ( this->it != this->recordList.end() ) {
         FEM_WARNING("There are unread lines in the input file\n"
@@ -89,7 +89,7 @@ OOFEMTXTDataReader :: finish()
 }
 
 bool
-OOFEMTXTDataReader :: giveLineFromInput(std :: ifstream &stream, int &lineNum, std :: string &line)
+FEMTXTDataReader :: giveLineFromInput(std :: ifstream &stream, int &lineNum, std :: string &line)
 {
     bool flag = false; //0-tolower, 1-remain with capitals
 
@@ -111,7 +111,7 @@ OOFEMTXTDataReader :: giveLineFromInput(std :: ifstream &stream, int &lineNum, s
 }
 
 bool
-OOFEMTXTDataReader :: giveRawLineFromInput(std :: ifstream &stream, int &lineNum, std :: string &line)
+FEMTXTDataReader :: giveRawLineFromInput(std :: ifstream &stream, int &lineNum, std :: string &line)
 {
     do {
         lineNum++;

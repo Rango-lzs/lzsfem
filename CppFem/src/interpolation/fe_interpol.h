@@ -106,6 +106,7 @@ namespace fem
 		 * @return Nonzero is returned if point is within the element geometry, zero otherwise.
 		 */
 		virtual int global2local(FloatArray& answer, const FloatArray& gcoords) const = 0;
+		
 		/**
 		 * Evaluates the determinant of the transformation.
 		 * @param lcoords Array containing (local) coordinates.
@@ -113,6 +114,7 @@ namespace fem
 		 * @return Determinant of the transformation.
 		 */
 		virtual double giveTransformationJacobian(const FloatArray& lcoords) const;
+		
 		/**
 		 * Gives the jacobian matrix at the local coordinates.
 		 * @param jacobianMatrix The requested matrix.
@@ -123,6 +125,11 @@ namespace fem
 		{
 			FEM_ERROR("Not overloaded.");
 		}
+
+		virtual integrationDomain giveIntegrationDomain() const = 0;
+		virtual integrationDomain giveBoundaryIntegrationDomain() const = 0;
+		virtual integrationDomain giveBoundaryEdgeIntegrationDomain() const = 0;
+		virtual integrationDomain giveBoundarySurfaceIntegrationDomain() const = 0;
 
 		/**
 		 * Sets up a suitable integration rule for numerical integrating over volume.

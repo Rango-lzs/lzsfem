@@ -15,10 +15,11 @@ set(algebar_src
 	src/algebra/floatarray.cpp
 	src/algebra/dictionary.cpp
 	src/algebra/scalarfunction.cpp
+	src/algebra/mathfem.cpp
 )
 
 set(element_src 
-	src/elements/Element.cpp
+	src/elements/element.cpp
 	src/elements/Quad2.cpp
 	src/elements/Bar1d.cpp
 	#src/elements/Node.cpp
@@ -53,7 +54,7 @@ set(materials_src
 	src/materials/ElasticMaterial.cpp
 	src/materials/PlaneStress.cpp
 	src/materials/PlaneStrain.cpp
-	src/materials/Material.cpp
+	src/materials/material.cpp
 	src/materials/VonMises.cpp
 	src/materials/VonMisesPlaneStress.cpp
 	src/materials/VonMisesPlaneStrain.cpp
@@ -133,7 +134,7 @@ set(SOURCES
 )
 
 set(element_inc 
-	src/elements/Element.h
+	src/elements/element.h
 	src/elements/Quad2.h
 	src/elements/Bar1d.h
 	#src/elements/Node.h
@@ -157,6 +158,7 @@ set(algebra_inc
 	src/algebra/pair.h
 	src/algebra/scalarfunction.h
 	src/algebra/sparsemtrxtype.h
+	src/algebra/mathfem.h
 )
 
 set(meshing_inc
@@ -185,7 +187,7 @@ set(materials_inc
 	src/materials/ElasticMaterial.h
 	src/materials/PlaneStress.h
 	src/materials/PlaneStrain.h
-	src/materials/Material.h
+	src/materials/material.h
 	src/materials/VonMises.h
 	src/materials/VonMisesPlaneStress.h
 	src/materials/VonMisesPlaneStrain.h
