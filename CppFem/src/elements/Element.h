@@ -2,58 +2,32 @@
 
 #include "fem_export.h"
 
-class FEMesh;
-//-----------------------------------------------------------------------------
-class FEElementTraits;
-class FEMeshPartition;
+class ElementTraits;
 
-//-----------------------------------------------------------------------------
-//! The FEElementState class stores the element state data. The state is defined
-//! by a material point class for each of the integration points.
-class FEM_EXPORT FEElementState
-{
-public:
-	//! default constructor
-	FEElementState() {}
-
-	//! destructor
-	~FEElementState() { Clear(); }
-
-	//! copy constructor
-	FEElementState(const FEElementState& s);
-
-	//! assignment operator
-	FEElementState& operator = (const FEElementState& s);
-
-	//! clear state data
-	void Clear() { for (size_t i=0; i<m_data.size(); ++i) delete m_data[i]; m_data.clear(); }
-
-	//! create 
-	void Create(int n) { m_data.assign(n, static_cast<FEMaterialPoint*>(0) ); }
-
-	//! operator for easy access to element data
-	FEMaterialPoint*& operator [] (int n) { return m_data[n]; }
-
-private:
-	std::vector<FEMaterialPoint*>	m_data;
-};
-
-//-----------------------------------------------------------------------------
 //! Base class for all element classes
-
 //! From this class the different element classes are derived.
+
+/**
+*@~English
+* @brief brief - description - about - Element .
+* @
+*
+*@~Chinese
+* @brief brief - description - about - Element.
+* Tasks:
+*单元相关的数据，节点，材料等
+* 计算单元刚度矩阵，载荷向量
+* 计算单元应力，应变
+* 结果输出
+*
+*/
 
 class FEM_EXPORT FEElement
 {
 public:
-	enum {MAX_NODES     = 27};	// max nr of nodes
-	enum {MAX_INTPOINTS = 27};	// max nr of integration points
-
-	// Status flags. 
-	enum Status {
-		ACTIVE = 0x01
-	};
-
+	static const int MAX_NODES = 27;
+	static const int MAX_INTPOINTS = 27;
+	
 public:
 	//! default constructor
 	FEElement();
@@ -96,7 +70,7 @@ public:
 	virtual void SetTraits(FEElementTraits* ptraits);
 
 	//! Get the element traits
-	FEElementTraits* GetTraits() { return m_pT; }
+	ElementTraits* GetTraits() { return m_pT; }
 
 	//! return number of nodes
 	int Nodes() const { return m_pT->m_neln; }
@@ -162,9 +136,9 @@ public:
 	// find local element index of node n
     int FindNode(int n) const;
 
-	// project data to nodes
+	// project data to nodes, from gauss point to node 
 	void project_to_nodes(double* ai, double* ao) const { m_pT->project_to_nodes(ai, ao); }
-	void project_to_nodes(vec3d*  ai, vec3d*  ao) const { m_pT->project_to_nodes(ai, ao); }
+	void project_to_nodes(FloatArrayF<3>* ai, vec3d*  ao) const { m_pT->project_to_nodes(ai, ao); }
 	void project_to_nodes(mat3ds* ai, mat3ds* ao) const { m_pT->project_to_nodes(ai, ao); }
 	void project_to_nodes(mat3d*  ai, mat3d*  ao) const { m_pT->project_to_nodes(ai, ao); }
 
@@ -181,31 +155,19 @@ public:
 	void setActive() { m_status |= ACTIVE; }
 	void setInactive() { m_status &= ~ACTIVE; }
 
-protected:
+private:
 	int		m_nID;		//!< element ID
 	int		m_lid;		//!< local ID
 	int		m_mat;		//!< material index
 	unsigned int	m_status;	//!< element status
-	FEMeshPartition * m_part;	//!< parent mesh partition
 
-public:
 	std::vector<int>		m_node;		//!< connectivity
 
 	// This array stores the local node numbers, that is the node numbers
 	// into the node list of a domain.
 	std::vector<int>		m_lnode;	//!< local connectivity
 
-public: 
-	// NOTE: Work in progress
-	// Elements can now also have degrees of freedom, only currently just one.
-	// Like with nodes, a degree of freedom needs an equation number and a value
-	// The equation number is in m_lm and the value is in m_val
-	int		m_lm;	//!< equation number of element degree of freedom
-	double	m_val;	//!< solution value of element degree of freedom
-
-protected:
-	FEElementState		m_State;	//!< element state data
-	FEElementTraits*	m_pT;		//!< pointer to element traits
+	ElementTraits*	m_pT;		//!< pointer to element traits
 };
 
 //-----------------------------------------------------------------------------

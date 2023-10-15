@@ -61,6 +61,13 @@ class ProcessCommunicator;
  * @see MaterialStatus class
  * @see GaussPoint class
  */
+
+/**
+* Task:
+* give the material constitutive matrix which related the the stress and strain status
+* 实现材料本构模型，材料刚度，应力更新
+* 历史变量的存储
+*/
 class FEM_EXPORT Material : public FEMComponent
 {
 protected:
