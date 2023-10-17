@@ -29,37 +29,4 @@ namespace fem
 		iRule->SetUpPointsOnLine(points, _Unknown);
 		return std::move(iRule);
 	}
-
-	std::unique_ptr<IntegrationRule> FEInterpolation::giveBoundaryIntegrationRule(int order, int boundary) const
-	{
-		integrationDomain id = this->giveBoundaryIntegrationDomain();
-		auto iRule = std::make_unique<GaussIntegrationRule>(1, nullptr);
-
-		int points = iRule->getRequiredNumberOfIntegrationPoints(id, order + this->order);
-		iRule->setUpIntegrationPoints(id, points, _Unknown);
-		return std::move(iRule);
-	}
-
-	std::unique_ptr<IntegrationRule>
-		FEInterpolation::giveBoundaryEdgeIntegrationRule(int order, int boundary) const
-	{
-		integrationDomain id = this->giveBoundaryEdgeIntegrationDomain();
-		auto iRule = std::make_unique<GaussIntegrationRule>(1, nullptr);
-
-		int points = iRule->getRequiredNumberOfIntegrationPoints(id, order + this->order);
-		iRule->setUpIntegrationPoints(id, points, _Unknown);
-		return std::move(iRule);
-	}
-
-	std::unique_ptr<IntegrationRule>
-		FEInterpolation::giveBoundarySurfaceIntegrationRule(int order, int boundary) const
-	{
-		integrationDomain id = this->giveBoundarySurfaceIntegrationDomain();
-		auto iRule = std::make_unique<GaussIntegrationRule>(1, nullptr);
-
-		int points = iRule->getRequiredNumberOfIntegrationPoints(id, order + this->order);
-		iRule->setUpIntegrationPoints(id, points, _Unknown);
-		return std::move(iRule);
-	}
-
 } // end namespace fem

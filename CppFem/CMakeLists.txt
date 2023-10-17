@@ -47,7 +47,10 @@ set(input_src
 set(interpolation_src
 	src/interpolation/Interpolation.cpp
 	src/interpolation/InterQuad2d.cpp
+
 	src/interpolation/fe_interpol.cpp
+	src/interpolation/feinterpol2d.cpp
+	src/interpolation/fei2d_quad_linear.cpp
 )
 
 set(materials_src
@@ -180,7 +183,10 @@ set(input_inc
 set(interpolation_inc
 	src/interpolation/Interpolation.h
 	src/interpolation/InterQuad2d.h
+	src/interpolation/fei_element_geometry_wrapper.h
 	src/interpolation/fe_interpol.h
+	src/interpolation/feinterpol2d.h
+	src/interpolation/fei2d_quad_linear.h
 )
 
 set(materials_inc
@@ -248,6 +254,9 @@ set(femcore_inc
 	src/femcore/outputmanager.h
 	src/femcore/engngm.h
 	src/femcore/femcmpnn.h
+
+	src/femcore/FECoreKernel.h
+
 	
 )
 

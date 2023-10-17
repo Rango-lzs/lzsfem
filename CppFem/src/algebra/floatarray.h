@@ -15,13 +15,13 @@
 #include <vector>
 #include <iosfwd>
 
-class IntArray;
-class FloatMatrix;
-class DataStream;
-template<std::size_t N> class FloatArrayF;
-
 namespace fem
 {
+	class IntArray;
+	class FloatMatrix;
+	class DataStream;
+	template<std::size_t N> class FloatArrayF;
+
 	class FloatArray
 	{
 	protected:
@@ -62,7 +62,8 @@ namespace fem
 		FloatArray& operator = (FloatArray&& src) { values = std::move(src.values); return *this; }
 		/// Assignment operator.
 		inline FloatArray& operator = (std::initializer_list< double >list) { values = list; return *this; }
-		/// Assign from fixed size array
+		
+		/// /// Assign from fixed size array
 		template< std::size_t N >
 		inline FloatArray& operator = (const FloatArrayF<N>& src) { values.assign(src.begin(), src.end()); return *this; }
 
