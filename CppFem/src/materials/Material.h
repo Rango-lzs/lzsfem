@@ -12,6 +12,7 @@
 #include "matresponsemode.h"
 #include "dictionary.h"
 #include "chartype.h"
+#include "floatmatrixf.h"
 
 ///@name Input fields for Material
 //@{
@@ -30,6 +31,8 @@ class FloatArray;
 class FloatMatrix;
 class Element;
 class ProcessCommunicator;
+
+class MaterialPoint;
 
 /**
  * Abstract base class for all material models. Declares the basic common interface
@@ -102,236 +105,38 @@ public:
     /// Destructor.
     virtual ~Material() = default;
 
-    /**
-     * Returns true if stiffness matrix of receiver is symmetric
-     * Default implementation returns true.
-     */
-    virtual bool isCharacteristicMtrxSymmetric(MatResponseMode rMode) const { return true; }
-    /**
-     * @brief Returns characteristic matrix of the receiver
-     * 
-     */
-    virtual void giveCharacteristicMatrix(FloatMatrix &answer, CharType type, GaussPoint* gp, TimeStep *tStep) {}
-    /**
-     * @brief Returns characteristic vector of the receiver
-     * 
-     */
-    virtual void giveCharacteristicVector(FloatArray &answer, FloatArray& flux, CharType type, GaussPoint* gp, TimeStep *tStep) {}
-    /**
-     * @brief Returns characteristic value of the receiver
-     * 
-     */
-    virtual double giveCharacteristicValue(CharType type, GaussPoint* gp, TimeStep *tStep);
-    /**
-     * Returns the value of material property 'aProperty'. Property must be identified
-     * by unique int id. Integration point also passed to allow for materials with spatially
-     * varying properties
-     * @param aProperty ID of property requested.
-     * @param gp Integration point,
-     * @return Property value.
-     */
-    virtual double give(int aProperty, GaussPoint *gp) const;
-    /**
-     * Returns true if 'aProperty' exists on material.
-     * @param aProperty ID of property requested.
-     * @param gp Integration point.
-     * @return True if 'aProperty' exists.
-     */
-    virtual bool hasProperty(int aProperty, GaussPoint *gp) const;
-    /**
-     * Modify 'aProperty', which already exists on material. Intended for evolving material properties.
-     * @param aProperty ID of a property requested.
-     * @param value Assigned value.
-     * @param gp Integration point.
-     */
-    virtual void modifyProperty(int aProperty, double value, GaussPoint *gp);
-    /**
-     * @return Casting time of the receiver.
-     */
-    double giveCastingTime() const { return this->castingTime; }
-    /**
-     * @param tStep Time step to check activity for.
-     * @return True if material is activated for given solution step.
-     */
-    virtual bool isActivated(TimeStep *tStep) const {
-        if ( tStep ) {
-            return ( tStep->giveTargetTime() >= this->castingTime );
-        } else {
-            return true;
-        }
-    }
-
-    // identification and auxiliary functions
-    /**
-     * Tests if material supports material mode.
-     * @param mode Required material mode.
-     * @return Nonzero if supported, zero otherwise.
-     */
-    virtual bool hasMaterialModeCapability(MaterialMode mode) const;
-
-    /**
-     * Tests if material supports casting time
-     * @return Nonzero if supported, zero otherwise.
-     */
-    virtual bool hasCastingTimeSupport() const;
-
-    ///@name Access functions for internal states. Usually overloaded by new material models.
-    //@{
-    /**
-     * Sets the value of a certain variable at a given integration point to the given value.
-     * @param value Contains the value(s) to be set (in reduced form).
-     * @param gp Integration point.
-     * @param type Determines the type of internal variable.
-     * @param type Determines the type of internal variable.
-     * @returns Nonzero if ok, zero if var not supported.
-     */
-    virtual int setIPValue(const FloatArray &value, GaussPoint *gp, InternalStateType type)
-    { return 0; }
-    /**
-     * Returns the integration point corresponding value in Reduced form.
-     * @param answer Contain corresponding ip value, zero sized if not available.
-     * @param gp Integration point to which the value refers.
-     * @param type Determines the type of internal variable.
-     * @param tStep Determines the time step.
-     * @returns Nonzero if the assignment can be done, zero if this type of variable is not supported.
-     */
-    virtual int giveIPValue(FloatArray &answer, GaussPoint *gp, InternalStateType type, TimeStep *tStep);
-    //@}
-
     void initializeFrom(InputRecord &ir) override;
     void giveInputRecord(DynamicInputRecord &input) override;
     void printYourself() override;
 
-    /**
-     * Stores integration point state to output stream.
-     * @param stream Output stream.
-     * @param mode Determines amount of info required in stream (state, definition, ...).
-     * @param gp integration point.
-     * @exception throws an ContextIOERR exception if error encountered.
-     */
-    virtual void saveIPContext(DataStream &stream, ContextMode mode, GaussPoint *gp);
-    /**
-     * Reads integration point state to output stream.
-     * @param stream Output stream.
-     * @param mode Determines amount of info required in stream (state, definition, ...).
-     * @param gp integration point.
-     * @exception throws an ContextIOERR exception if error encountered.
-     */
-    virtual void restoreIPContext(DataStream &stream, ContextMode mode, GaussPoint *gp);
+	//! calculate stress at material point
+	virtual FloatMatrixF<3,3> Stress(MaterialPoint& pt) = 0;
 
-    /**
-     * Allows programmer to test some internal data, before computation begins.
-     * For example, one may use this function, to ensure that element has material with
-     * required capabilities is assigned to element. This must be done after all
-     * mesh components are instanciated.
-     * @return Nonzero if receiver is consistent.
-     */
-    int checkConsistency() override;
-    /**
-     * Restores consistency of the status, i.e., computes or corrects
-     * the values of certain status variables such that the state is admissible.
-     * For instance, if the initial values of some internal variables
-     * are read from a file, other internal variables are adjusted accordingly.
-     */
-    virtual void restoreConsistency(GaussPoint *gp) { }
-    /**
-     * Optional function to call specific procedures when initializing a material.
-     * For example, multiscale simulations need to create master and slave material statuses on specific integration points before the computation.
-     * @param element Pointer to element.
-     * @return Zero on error.
-     */
-    virtual int initMaterial(Element *element);
-    /**
-     * Returns material status of receiver in given integration point.
-     * If status does not exist yet, it is created using CreateStatus member function.
-     * @param gp Returns reference to material status belonging to integration
-     * point gp.
-     * @return Material status associated with given integration point.
-     */
-    virtual MaterialStatus *giveStatus(GaussPoint *gp) const;
-    /*
-     * In the case of nonlocal constitutive models,
-     * the use of multiple inheritance is assumed. Typically, the class representing nonlocal
-     * constitutive model is derived both from class representing local model and from class
-     * NonlocalMaterialExtension or from one of its derived classes
-     * (which declare services and variables corresponding to specific analysis type).
-     * Or alternatively, material model can introduce stronger form of this relation,
-     * it can possess object of NonlocalMaterialExtension.
-     * @return In both cases, this function returns pointer to this object, obtained by
-     * returning address of component or using pointer conversion from receiver to base class
-     * NonlocalMaterialExtension. If no nonlocal extension exists, NULL pointer is returned.
-     */
-    //virtual NonlocalMaterialExtension* giveNonlocalMaterialExtensionPtr () {return NULL;}
+	//! calculate tangent stiffness at material point
+	virtual tens4ds Tangent(FEMaterialPoint& pt) = 0;
 
-    /**
-     * Pack all necessary data of integration point (according to element parallel_mode)
-     * into given communication buffer. The nature of packed data is material model dependent.
-     * Typically, for material of "local" response (response depends only on integration point local state)
-     * no data are exchanged. For "nonlocal" constitutive models the send/receive of local values which
-     * undergo averaging is performed between local and corresponding remote elements.
-     * @param buff Communication buffer.
-     * @param tStep Solution step.
-     * @param ip Integration point.
-     */
-    virtual int packUnknowns(DataStream &buff, TimeStep *tStep, GaussPoint *ip) { return 1; }
-    /**
-     * Unpack and updates all necessary data of given integration point (according to element parallel_mode)
-     * into given communication buffer.
-     * @see packUnknowns service.
-     * @param buff Communication buffer.
-     * @param tStep Solution step.
-     * @param ip Integration point.
-     */
-    virtual int unpackAndUpdateUnknowns(DataStream &buff, TimeStep *tStep, GaussPoint *ip) { return 1; }
-    /**
-     * Estimates the necessary pack size to hold all packed data of receiver.
-     */
-    virtual int estimatePackSize(DataStream &buff, GaussPoint *ip) { return 0; }
-    /**
-     * Returns the weight representing relative computational cost of receiver
-     * The reference material model is linear isotropic material - its weight is set to 1.0
-     * The other material models should compare to this reference model.
-     */
-    virtual double predictRelativeComputationalCost(GaussPoint *gp) { return 1.0; }
-    /**
-     * Returns the relative redistribution cost of the receiver
-     */
-    virtual double predictRelativeRedistributionCost(GaussPoint *gp) { return 1.0; }
+	//! calculate the 2nd Piola-Kirchhoff stress at material point
+	virtual mat3ds PK2Stress(FEMaterialPoint& pt, const mat3ds E);
 
-    /**
-     * Creates new copy of associated status and inserts it into given integration point.
-     * @param gp Integration point where newly created status will be stored.
-     * @return Reference to new status.
-     */
-    virtual MaterialStatus *CreateStatus(GaussPoint *gp) const
-    { return nullptr; }
+	//! calculate material tangent stiffness at material point
+	virtual tens4dmm MaterialTangent(FEMaterialPoint& pt, const mat3ds E);
 
-    /**
-     * Initializes temporary variables stored in integration point status
-     * at the beginning of new time step.
-     * Temporary history variables (they describe state of material during
-     * solution of time step) are initialized according to history variables, which
-     * describe state corresponding to previous equilibrium solution.
-     * Default implementation simply extracts status from integration point and
-     * calls its initTempStatus method.
-     */
-    virtual void initTempStatus(GaussPoint *gp) const;
+	//! calculate secant tangent stiffness at material point
+	virtual tens4dmm SecantTangent(FEMaterialPoint& pt, bool mat = false);
 
-    /**
-     * Stores receiver state to output stream.
-     * @param stream Output stream.
-     * @param mode Determines amount of info required in stream (state, definition, ...).
-     * @exception throws an ContextIOERR exception if error encountered.
-     */
-    //void saveContext(DataStream &stream, ContextMode mode) override;
-    /**
-     * Restores the receiver state previously written in stream.
-     * @see saveContext
-     * @param stream Input stream.
-     * @param mode Determines amount of info available in stream (state, definition, ...).
-     * @exception throws an ContextIOERR exception if error encountered.
-     */
-   // void restoreContext(DataStream &stream, ContextMode mode) override;
+	//! return the material density
+	void SetDensity(const double d);
+
+	//! evaluate density
+	virtual double Density(FEMaterialPoint& pt);
+
+	//! Is this a rigid material or not
+	virtual bool IsRigid() const { return false; }
+
+	tens4dmm SolidTangent(FEMaterialPoint& pt);
+
+	virtual mat3ds SecantStress(FEMaterialPoint& pt, bool PK2 = false);
+	virtual bool UseSecantTangent() { return false; }
 };
 } // end namespace fem
 #endif // material_h
