@@ -52,6 +52,7 @@ namespace fem
 
     /**
      * Wrapper around element definition to provide FEIElementGeometry interface.
+     * 插值函数进行插值计算的时候需要单元的几何信息
      */
     class FEM_EXPORT FEIElementGeometryWrapper : public FEIElementGeometry
     {

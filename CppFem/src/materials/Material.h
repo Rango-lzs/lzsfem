@@ -12,7 +12,6 @@
 #include "matresponsemode.h"
 #include "dictionary.h"
 #include "chartype.h"
-#include "floatmatrixf.h"
 
 ///@name Input fields for Material
 //@{
@@ -31,8 +30,6 @@ class FloatArray;
 class FloatMatrix;
 class Element;
 class ProcessCommunicator;
-
-class MaterialPoint;
 
 /**
  * Abstract base class for all material models. Declares the basic common interface
@@ -70,31 +67,13 @@ class MaterialPoint;
 * give the material constitutive matrix which related the the stress and strain status
 * 实现材料本构模型，材料刚度，应力更新
 * 历史变量的存储
+* 同一材料，在不同维数和单元下，格式不一样，这个如何处理？  材料行为是由单元决定的
 */
 class FEM_EXPORT Material : public FEMComponent
 {
 protected:
-    /**
-     * Property dictionary.
-     * Can be used to store constant material parameters, which
-     * are same for all integration points.
-     * Note: Try to avoid using the dictionary because of a very slow access. Use rather separate variables to
-     * store material parameters.
-     */
-    Dictionary propertyDictionary;
-
-    /**
-     * Casting time. For solution time less than casting time the material
-     * is assumed to have no stiffness etc. This attribute is declared here,
-     * but support for this functionality must be incorporated by particular
-     * material model
-     */
-    double castingTime;
-    
-    /// Material existing before casting time - optional parameter, zero by default
-    int preCastingTimeMat;
-    
-
+   
+   
 public:
     /**
      * Constructor. Creates material with given number, belonging to given domain.
@@ -109,34 +88,6 @@ public:
     void giveInputRecord(DynamicInputRecord &input) override;
     void printYourself() override;
 
-	//! calculate stress at material point
-	virtual FloatMatrixF<3,3> Stress(MaterialPoint& pt) = 0;
-
-	//! calculate tangent stiffness at material point
-	virtual tens4ds Tangent(FEMaterialPoint& pt) = 0;
-
-	//! calculate the 2nd Piola-Kirchhoff stress at material point
-	virtual mat3ds PK2Stress(FEMaterialPoint& pt, const mat3ds E);
-
-	//! calculate material tangent stiffness at material point
-	virtual tens4dmm MaterialTangent(FEMaterialPoint& pt, const mat3ds E);
-
-	//! calculate secant tangent stiffness at material point
-	virtual tens4dmm SecantTangent(FEMaterialPoint& pt, bool mat = false);
-
-	//! return the material density
-	void SetDensity(const double d);
-
-	//! evaluate density
-	virtual double Density(FEMaterialPoint& pt);
-
-	//! Is this a rigid material or not
-	virtual bool IsRigid() const { return false; }
-
-	tens4dmm SolidTangent(FEMaterialPoint& pt);
-
-	virtual mat3ds SecantStress(FEMaterialPoint& pt, bool PK2 = false);
-	virtual bool UseSecantTangent() { return false; }
 };
 } // end namespace fem
 #endif // material_h

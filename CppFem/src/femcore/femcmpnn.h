@@ -34,6 +34,10 @@ namespace fem
 	 * @see error handles error reporting.
 	 * @see checkConsistency to ensure, whether internal data structures are consistent.
 	 */
+
+	/*
+	* 提供一些通用基础能力
+	*/
 	class FEM_EXPORT FEMComponent
 	{
 	protected:
@@ -52,76 +56,6 @@ namespace fem
 		FEMComponent(int n, Domain* d) : number(n), domain(d) { }
 		/// Virtual destructor.
 		virtual ~FEMComponent() = default;
-
-		/// @return Class name of the receiver.
-		virtual const char* giveClassName() const = 0;
-		/// @return Input record name of the receiver.
-		virtual const char* giveInputRecordName() const = 0;
-		/// @return Domain which receiver belongs to.
-		Domain* giveDomain() const { return domain; }
-		/**
-		 * Sets associated Domain
-		 * @param d New domain which receiver should belong to.
-		 */
-		virtual void setDomain(Domain* d) { this->domain = d; }
-		/// @return Component number of receiver.
-		int giveNumber() const { return number; }
-		/**
-		 * Sets number of receiver.
-		 * @param num New number of receiver.
-		 */
-		void setNumber(int num) { this->number = num; }
-		/**
-		 * Local renumbering support. For some tasks (parallel load balancing, for example) it is necessary to
-		 * renumber the entities. The various FEM components (such as nodes or elements) typically contain
-		 * links to other entities in terms of their local numbers, etc. This service allows to update
-		 * these relations to reflect updated numbering. The renumbering function is passed, which is supposed
-		 * to return an updated number of specified entity type based on old number.
-		 */
-		virtual void updateLocalNumbering(EntityRenumberingFunctor& f) { }
-		/**
-		 * Initializes receiver according to object description stored in input record.
-		 * This function is called immediately after creating object using
-		 * constructor. Input record can be imagined as data record in component database
-		 * belonging to receiver. Receiver may use value-name extracting functions
-		 * to extract particular field from record.
-		 * @see IR_GIVE_FIELD
-		 * @see IR_GIVE_OPTIONAL_FIELD
-		 * @param ir Input record to initialize from.
-		 */
-		virtual void initializeFrom(InputRecord& ir);
-		/**
-		 * Setups the input record string of receiver.
-		 * @param input Dynamic input record to be filled by receiver.
-		 */
-		virtual void giveInputRecord(DynamicInputRecord& input);
-		
-		/**
-		 * Allows programmer to test some internal data, before computation begins.
-		 * For example, one may use this function, to ensure that element has material with
-		 * required capabilities is assigned to element. This must be done after all
-		 * mesh components are instanciated.
-		 * @return Nonzero if receiver is consistent.
-		 */
-		virtual int checkConsistency();
-		/**
-		 * Prints output of receiver to stream, for given time step.
-		 * This is used for output into the standard output file.
-		 * @param file File pointer to print to.
-		 * @param tStep Time step to write for.
-		 */
-		virtual void printOutputAt(FILE* file, TimeStep* tStep) { }
-		/// Prints receiver state on stdout. Useful for debugging.
-		virtual void printYourself() { }
-		/**
-		 * Interface requesting service.
-		 * @see InterfaceType
-		 * @return Requested interface if implemented, otherwise NULL.
-		 */
-		virtual Interface* giveInterface(InterfaceType t) { return nullptr; }
-
-		/// Returns string for prepending output (used by error reporting macros).
-		std::string errorInfo(const char* func) const;
 	};
 } // end namespace fem
 #endif // femcmpnn_h

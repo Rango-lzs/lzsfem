@@ -64,3 +64,6 @@ def gauss_nd(npts, ndim=2):
     nd_wts = product(wts, repeat=ndim)
     nd_wts = [np.prod(nd_wt) for nd_wt in nd_wts]
     return nd_pts, nd_wts
+
+
+

@@ -45,12 +45,34 @@ set(input_src
 )
 
 set(interpolation_src
-	src/interpolation/Interpolation.cpp
-	src/interpolation/InterQuad2d.cpp
-
-	src/interpolation/fe_interpol.cpp
-	src/interpolation/feinterpol2d.cpp
+	src/interpolation/fei1d_line_hermite.cpp
+	src/interpolation/fei1d_line_linear.cpp
+	src/interpolation/fei1d_line_quad.cpp
+	src/interpolation/fei2d_line_hermite.cpp
+	src/interpolation/fei2d_line_linear.cpp
+	src/interpolation/fei2d_line_quadratic.cpp
+	src/interpolation/fei2d_quad_biquad.cpp
 	src/interpolation/fei2d_quad_linear.cpp
+	src/interpolation/fei2d_quad_quadratic.cpp
+	src/interpolation/fei2d_tri_linear.cpp
+	src/interpolation/fei2d_tri_quad.cpp
+	src/interpolation/fei3d_hexa_linear.cpp
+	src/interpolation/fei3d_hexa_quad.cpp
+	src/interpolation/fei3d_line_linear.cpp
+	src/interpolation/fei3d_quad_linear.cpp
+	src/interpolation/fei3d_tet_linear.cpp
+	src/interpolation/fei3d_tet_quad.cpp
+	src/interpolation/fei3d_tri_quadratic.cpp
+	src/interpolation/fei3d_tr_linear.cpp
+	src/interpolation/fei3d_wedge_linear.cpp
+	src/interpolation/fei3d_wedge_quadratic.cpp
+	src/interpolation/feinterpol1d.cpp
+	src/interpolation/feinterpol2d.cpp
+	src/interpolation/feinterpol3d.cpp
+	src/interpolation/fe_interpol.cpp
+	src/interpolation/Interpolation_depre.cpp
+	src/interpolation/InterQuad2d_depre.cpp
+
 )
 
 set(materials_src
@@ -62,6 +84,7 @@ set(materials_src
 	src/materials/VonMisesPlaneStress.cpp
 	src/materials/VonMisesPlaneStrain.cpp
 	src/materials/ElastoPlasticMaterial.cpp
+	src/materials/structuralmaterial.cpp
 )
 
 set(solver_src
@@ -148,8 +171,6 @@ set(node_inc
 )
 
 set(algebra_inc
-	src/algebra/Vector.h
-	src/algebra/Matrix.h
 	src/algebra/floatmatrix.h
 	src/algebra/floatmatrixf.h
 	src/algebra/floatarray.h
@@ -181,12 +202,35 @@ set(input_inc
 )
 
 set(interpolation_inc
-	src/interpolation/Interpolation.h
-	src/interpolation/InterQuad2d.h
+
 	src/interpolation/fei_element_geometry_wrapper.h
-	src/interpolation/fe_interpol.h
-	src/interpolation/feinterpol2d.h
 	src/interpolation/fei2d_quad_linear.h
+	src/interpolation/fei1d_line_hermite.h
+	src/interpolation/fei1d_line_linear.h
+	src/interpolation/fei1d_line_quad.h
+	src/interpolation/fei2d_line_hermite.h
+	src/interpolation/fei2d_line_linear.h
+	src/interpolation/fei2d_line_quadratic.h
+	src/interpolation/fei2d_quad_biquad.h
+	src/interpolation/fei2d_quad_linear.h
+	src/interpolation/fei2d_quad_quadratic.h
+	src/interpolation/fei2d_tri_linear.h
+	src/interpolation/fei2d_tri_quad.h
+	src/interpolation/fei3d_hexa_linear.h
+	src/interpolation/fei3d_hexa_quad.h
+	src/interpolation/fei3d_line_linear.h
+	src/interpolation/fei3d_quad_linear.h
+	src/interpolation/fei3d_tet_linear.h
+	src/interpolation/fei3d_tet_quad.h
+	src/interpolation/fei3d_tri_quadratic.h
+	src/interpolation/fei3d_tr_linear.h
+	src/interpolation/fei3d_wedge_linear.h
+	src/interpolation/fei3d_wedge_quadratic.h
+	src/interpolation/feinterpol1d.h
+	src/interpolation/feinterpol2d.h
+	src/interpolation/feinterpol3d.h
+	src/interpolation/Interpolation_depre.h
+	src/interpolation/InterQuad2d_depre.h
 )
 
 set(materials_inc
@@ -198,6 +242,7 @@ set(materials_inc
 	src/materials/VonMisesPlaneStress.h
 	src/materials/VonMisesPlaneStrain.h
 	src/materials/ElastoPlasticMaterial.h
+	src/materials/structuralmaterial.h
 )
 
 set(solver_inc

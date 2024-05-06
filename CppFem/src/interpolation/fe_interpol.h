@@ -30,7 +30,7 @@ namespace fem
 	/**
 	 * Class representing a general abstraction for finite element interpolation class.
 	 * The boundary functions denote the (numbered) region that have 1 spatial dimension (i.e. edges) or 2 spatial dimensions.
-	 * 计算雅克比矩阵, 或者自然坐标到物理坐标的映射，需要知道单元形状信息
+	 * 计算雅克比矩阵, 或者自然坐标到物理坐标的映射，需要知道单元形状信息, 此模块只计算插值函数相关信息
 	 */
 	class FEM_EXPORT FEInterpolation
 	{
@@ -38,7 +38,7 @@ namespace fem
 		int order = 0;
 
 		//the element to interpolated
-		FEIElementGeometry* m_elemGeom;
+		std::unique_ptr<FEIElementGeometry> m_elemGeom;
 
 	public:
 		FEInterpolation(int o) : order(o) { }
@@ -54,7 +54,7 @@ namespace fem
 		 */
 		virtual int giveNsd() const = 0;
 
-		FEIElementGeometry* giveElemGeomety() const;
+		std::unique_ptr<FEIElementGeometry>& giveElemGeomety() const;
 
 		/**
 		 * Evaluates the array of interpolation functions (shape functions) at given point.
@@ -138,14 +138,7 @@ namespace fem
 
 		virtual integrationDomain giveIntegrationDomain() const = 0;
 
-		/**
-		 * Sets up a suitable integration rule for numerical integrating over volume.
-		 * The required polynomial order for the determinant of the jacobian is added automatically.
-		 * @param order Polynomial order of integrand (should NOT including determinant of jacobian).
-		 */
-		virtual std::unique_ptr<IntegrationRule> giveIntegrationRule(int order) const;
-		//@}
-
+		
 		std::string errorInfo(const char* func) const { return func; } ///@todo Class name?
 	};
 } // end namespace fem

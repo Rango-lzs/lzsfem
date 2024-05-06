@@ -2,50 +2,23 @@
 #pragma once
 #include "fem_export.h"
 #include "FECoreFactory.h"
-#include "ClassDescriptor.h"
 #include <vector>
 #include <map>
 #include <string.h>
 #include <stdio.h>
-#include "version.h"
-
-//-----------------------------------------------------------------------------
-// Forward declarations
-class FEModel;
-class LinearSolver;
-class FEModule;
-
-
-//-----------------------------------------------------------------------------
-// base class for handling create events.
-class FECreateHandler{
-public:
-	FECreateHandler() { m_moduleId = -1; }
-	virtual ~FECreateHandler() {}
-	virtual void handle(FECoreBase*) = 0;
-
-	int GetModuleID() const { return m_moduleId; }
-	void SetModuleID(int n) { m_moduleId = n; }
-
-private:
-	int	m_moduleId;
-};
 
 //-----------------------------------------------------------------------------
 //! This is the FECore kernel class that manages the interactions between the 
 //! different modules. In particular, it manages the factory classes
 //! which are responsible for the creation of different classes that are registered
 //! with the kernel.
+//! Used as Factory store to hold the FEFactory and 
 class FEM_EXPORT FECoreKernel
 {
 public:
 	// Do not call this function from a plugin as it will not return the correct
 	// instance. Instead, use the FECoreKernel object that is passed in the PluginInitialize method
 	static FECoreKernel& GetInstance();
-
-	// set the instance of the kernel
-	static void SetInstance(FECoreKernel* pkernel);
-
 public:
 	static const char* SuperClassString(unsigned int sid);
 
@@ -66,12 +39,6 @@ public:
 
 	//! Create a class from a class descriptor
 	FECoreBase* Create(int superClassID, FEModel* pfem, const FEClassDescriptor& cd);
-
-	//! count the number of registered classes with a given super-class id
-	int Count(SUPER_CLASS_ID sid);
-
-	//! List the registered classes with a given super-class id
-	void List(SUPER_CLASS_ID sid);
 
 	//! Get the number of registered factory classes
 	int FactoryClasses();
@@ -94,102 +61,15 @@ public:
 	//! unregister factories from allocator
 	void UnregisterFactories(int alloc_id);
 
-	//! set the current allocator ID
-	void SetAllocatorID(int alloc_id);
-
-	//! generate a allocator ID
-	int GenerateAllocatorID();
-
 	FECoreBase* CreateInstance(const FECoreFactory* fac, FEModel* fem);
-
-	bool IsModuleActive(int moduleID);
-
-public: // Modules
-
-	//! count modules
-	int Modules() const;
-
-	//! Create a module (also makes it the active module)
-	bool CreateModule(const char* szmodule, const char* description = nullptr);
-	bool CreateModule(FEModule* pmodule, const char* szmodule, const char* description = nullptr);
-
-	//! set the active module
-	bool SetActiveModule(const char* szmodule);
-	bool SetActiveModule(int moduleId);
-
-	// return the active module's ID
-	int GetActiveModuleID();
-	FEModule* GetActiveModule();
-
-	//! add module dependency to the active module
-	bool AddModuleDependency(const char* szdep);
-
-	//! Get a module's name
-	const char* GetModuleName(int i) const;
-	const char* GetModuleNameFromId(int id) const;
-	const char* GetModuleDescription(int i) const;
-	int GetModuleStatus(int i) const;
-
-	//! Get a module's dependencies
-	vector<int> GetModuleDependencies(int i) const;
-
-	//! set the spec ID. Features with a matching spec ID will be preferred
-	//! set spec ID to -1 to stop caring
-	void SetSpecID(int nspec);
-
-public:
-	//! Register a new domain class
-	void RegisterDomain(FEDomainFactory* pf, bool pushFront = false);
-
-	//! Create a domain of a certain type (this uses the domain factories)
-	FEDomain* CreateDomain(const FE_Element_Spec& spec, FEMesh* pm, FEMaterial* pmat);
-
-	//! Create a domain of a certain type (this does not use the domain factories)
-	FEDomain* CreateDomainExplicit(int superClass, const char* sztype, FEModel* fem);
-
-public:
-	//! set the default linear solver
-	FECoreFactory* SetDefaultSolverType(const char* sztype);
-
-	void SetDefaultSolver(FEClassDescriptor* linsolve);
-
-	//! get the linear solver type
-	const char* GetLinearSolverType() const;
-
-	//! Get a linear solver
-	LinearSolver* CreateDefaultLinearSolver(FEModel* fem);
-
-public:
-	void OnCreateEvent(FECreateHandler* pf);
-
-	void BlockEvents(bool b);
 
 private:
 	std::vector<FECoreFactory*>			m_Fac;	// list of registered factory classes
-	std::vector<FEDomainFactory*>		m_Dom;	// list of domain factory classes
-
-	std::vector<FECreateHandler*>		m_createHandlers;
-	bool								m_blockEvents;
-
-	std::map<unsigned int, const char*>	m_sidMap;	// super class ID map
-
-	std::string			m_default_solver_type;	// default linear solver
-	FEClassDescriptor*	m_default_solver;
-
-	// module list
-	std::vector<FEModule*>	m_modules;
-	int					m_activeModule;
-
-	int				m_nspec;
-
-	int		m_alloc_id;			//!< current allocator ID
-	int		m_next_alloc_id;	//!< next allocator ID
-
+	
 private: // make singleton
 	FECoreKernel();
-	FECoreKernel(const FECoreKernel&){}
-	void operator = (const FECoreKernel&){}
-
+	FECoreKernel(const FECoreKernel&) = delete;
+	void operator = (const FECoreKernel&) = delete;
 private:
 	static FECoreKernel* m_pKernel;	// the one-and-only kernel object
 };

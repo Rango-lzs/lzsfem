@@ -1,44 +1,17 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
 
 #pragma once
-#include "fecore_enum.h"
-#include "FEParameterList.h"
 
 //-----------------------------------------------------------------------------
 //! Forward declaration of the FEModel class. All classes that register
 //! with the framework take a pointer to FEModel as their constructor parameter.
 class FEModel;
 class FECoreBase;
+enum class SUPER_CLASS_ID;
 
 //-----------------------------------------------------------------------------
 //! The factory class contains the mechanism for instantiating a class.
-class FECORE_API FECoreFactory : public FEParamContainer
+//! Also play as the role of a RxClass 
+class FEM_EXPORT FECoreFactory
 {
 public:
 	//! constructor
@@ -91,29 +64,3 @@ private:
 	SUPER_CLASS_ID	m_scid;		//!< the super-class ID
 	int				m_alloc_id;	//!< allocator ID
 };
-
-//-----------------------------------------------------------------------------
-//! Forward declarations of classes used by the domain factory
-class FEDomain;
-class FEMesh;
-class FEMaterial;
-class FEModel;
-
-//-----------------------------------------------------------------------------
-//! Creation of domains are a little more elaborate and deviate from the usual
-//! factory methods.
-class FECORE_API FEDomainFactory
-{
-public:
-	FEDomainFactory(){}
-	virtual ~FEDomainFactory(){}
-
-	virtual FEDomain* CreateDomain(const FE_Element_Spec& spec, FEMesh* pm, FEMaterial* pmat) = 0;
-};
-
-#define FECORE_SPEC(major, minor) ((major << 8) + minor)
-#define FECORE_SPEC_MAJOR(n) ((n) >> 8)
-#define FECORE_SPEC_MINOR(n) ((n) & 0x0F)
-
-// macro for tagging a feature as experimental (i.e. in development)
-#define FECORE_EXPERIMENTAL	int(0xFFFF)

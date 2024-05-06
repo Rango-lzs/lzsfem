@@ -19,7 +19,7 @@ namespace fem
 {
 	double FEI2dQuadLin::giveArea() const
 	{
-		FEIElementGeometry* cellgeo = giveElemGeomety();
+		std::unique_ptr<FEIElementGeometry>& cellgeo = giveElemGeomety();
 		const auto& node1 = cellgeo->giveVertexCoordinates(1);
 		const auto& node2 = cellgeo->giveVertexCoordinates(2);
 		const auto& node3 = cellgeo->giveVertexCoordinates(3);
@@ -54,9 +54,9 @@ namespace fem
 	std::pair<double, FloatMatrixF<2, 4>> FEI2dQuadLin::evaldNdx(const FloatArrayF<2>& lcoords) const
 	{
 		auto dndu = this->evaldNdxi(lcoords);
-		FEIElementGeometry* cellgeo = giveElemGeomety();
+		std::unique_ptr<FEIElementGeometry>& cellgeo = giveElemGeomety();
 
-		FloatMatrixF<2, 2> jacT;
+		FloatMatrixF<2, 2> jacT; // J = Dn/Ds * (x,y)
 		for (std::size_t i = 0; i < dndu.cols(); i++) {
 			double x = cellgeo->giveVertexCoordinates(i + 1).at(xind);
 			double y = cellgeo->giveVertexCoordinates(i + 1).at(yind);
@@ -86,7 +86,7 @@ namespace fem
 		double n3 = (1. - ksi) * (1. - eta) * 0.25;
 		double n4 = (1. + ksi) * (1. - eta) * 0.25;
 
-		FEIElementGeometry* cellgeo = giveElemGeomety();
+		std::unique_ptr<FEIElementGeometry>& cellgeo = giveElemGeomety();
 		const auto& p1 = cellgeo->giveVertexCoordinates(1);
 		const auto& p2 = cellgeo->giveVertexCoordinates(2);
 		const auto& p3 = cellgeo->giveVertexCoordinates(3);
@@ -108,7 +108,7 @@ namespace fem
 
 		answer.resize(2);
 
-		FEIElementGeometry* cellgeo = giveElemGeomety();
+		std::unique_ptr<FEIElementGeometry>& cellgeo = giveElemGeomety();
 		x1 = cellgeo->giveVertexCoordinates(1).at(xind);
 		x2 = cellgeo->giveVertexCoordinates(2).at(xind);
 		x3 = cellgeo->giveVertexCoordinates(3).at(xind);
@@ -264,17 +264,6 @@ namespace fem
 		return answer;
 	}
 
-	
-	std::unique_ptr<IntegrationRule>
-		FEI2dQuadLin::giveIntegrationRule(int order) const
-	{
-		auto iRule = std::make_unique<GaussIntegrationRule>(1, nullptr);
-		int points = iRule->getRequiredNumberOfIntegrationPoints(_Square, order + 2);
-		iRule->SetUpPointsOnSquare(points, _Unknown);
-		return std::move(iRule);
-	}
-
-
 	/*
 	 * FEI2dQuadlinAxi element
 	 */
@@ -284,7 +273,7 @@ namespace fem
 		this->evalN(N, lcoords);
 
 		double r = 0.0;
-		FEIElementGeometry* cellgeo = giveElemGeomety();
+		std::unique_ptr<FEIElementGeometry>& cellgeo = giveElemGeomety();
 		for (int i = 1; i <= 4; i++) {
 			double x = cellgeo->giveVertexCoordinates(i).at(1);
 			r += x * N.at(i);
