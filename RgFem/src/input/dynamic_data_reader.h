@@ -18,11 +18,6 @@ class InputRecord;
 
 /**
  * Class representing the implementation of a dynamic data reader for in-code use.
- * Despite its name, it can also write OOFEM text-input files.
- *
- * @see DynamicInputRecord It is the intended complement for in-code generation of FE-problem intialization.
- * @author Mikael Öhman
- * @todo InputRecordType is ignored. It shouldn't be too difficult to respect it, but it's not necessary.
  */
 class FEM_EXPORT DynamicDataReader : public DataReader
 {
@@ -49,16 +44,9 @@ public:
      */
     void insertInputRecord(InputRecordType type, std::unique_ptr<InputRecord> record);
 
-    /**
-     * Sets the output file name. Used for writing input files.
-     */
-    void setOutputFileName(const std :: string &outputFileName) { this->outputFileName = outputFileName; }
-    /**
-     * Sets the description line. Used for writing input files.
-     */
-    void setDescription(const std :: string &description) { this->description = description; }
-
+    
     InputRecord &giveInputRecord(InputRecordType, int recordId) override;
+
     bool peakNext(const std :: string &keyword) override;
     void finish() override;
     std :: string giveReferenceName() const override { return name; }

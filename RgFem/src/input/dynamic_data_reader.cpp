@@ -44,8 +44,7 @@ DynamicDataReader :: giveInputRecord(InputRecordType typeId, int recordId)
     return **(this->it);
 }
 
-bool
-DynamicDataReader :: peakNext(const std :: string &keyword)
+bool DynamicDataReader :: peakNext(const std :: string &keyword)
 {
     std :: string nextKey;
     auto temp = this->it;
@@ -54,8 +53,7 @@ DynamicDataReader :: peakNext(const std :: string &keyword)
     return keyword.compare( nextKey ) == 0;
 }
 
-void
-DynamicDataReader :: finish()
+void DynamicDataReader :: finish()
 {
     this->recordList.clear();
 }
@@ -65,8 +63,8 @@ DynamicDataReader :: writeToFile(const char *fileName)
 {
     std :: ofstream fout(fileName);
 
-    fout << this->outputFileName << '\n';
-    fout << this->description << '\n';
+    fout << get << '\n';
+    fout << this->giveOutputFileName() << '\n';
     for ( auto &rec: this->recordList ) {
         fout << rec->giveRecordAsString() << "\n";
     }
