@@ -6,6 +6,9 @@ target_compile_definitions(RgFem PRIVATE RgFem_Module)
 
 target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
 
+set(Eigen_Root "D:/Program Files/eigen-3.4.0/eigen-3.4.0")
+target_include_directories(${TARGET_NAME} PRIVATE ${Eigen_Root})
+
 file(GLOB rootfiles *.cpp *.h)
 source_group("" FILES ${rootfiles})
 target_sources(${TARGET_NAME} PRIVATE ${rootfiles})

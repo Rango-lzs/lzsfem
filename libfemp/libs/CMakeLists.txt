@@ -1,0 +1,2 @@
+add_subdirectory(libla)
+add_subdirectory(libquadrature)

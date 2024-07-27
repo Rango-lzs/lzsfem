@@ -10,6 +10,11 @@
 #include "element.h"
 #include "gaussintegrationrule.h"
 
+/*
+插值模块需要知道高斯积分规则吗？
+高斯积分规则，跟单元类型，单元阶数相关
+*/
+
 namespace fem
 {
 	double FEInterpolation::giveTransformationJacobian(const FloatArray& lcoords) const

@@ -1,7 +1,8 @@
 /*****************************************************************//**
  * \file   fe_interpol.h
  * \brief
- *
+ *  单元插值基类
+ *  1、
  * \author Leizs
  * \date   September 2023
  *********************************************************************/
@@ -9,11 +10,10 @@
 #ifndef feinterpol_h
 #define feinterpol_h
 
-#include "error.h"
-#include "inputrecord.h"
-#include "intarray.h"
-#include "node.h"
-#include "element.h"
+#include "femcore/fem_export.h"
+#include "logger/error.h"
+#include <memory>
+
 
 namespace fem 
 {
@@ -24,36 +24,21 @@ namespace fem
 	class IntegrationRule;
 	class FEIElementGeometry;
 
-	template <std::size_t N> class FloatArrayF;
-	template <std::size_t N, std::size_t M> class FloatMatrixF;
-
 	/**
-	 * Class representing a general abstraction for finite element interpolation class.
-	 * The boundary functions denote the (numbered) region that have 1 spatial dimension (i.e. edges) or 2 spatial dimensions.
+	 *
 	 * 计算雅克比矩阵, 或者自然坐标到物理坐标的映射，需要知道单元形状信息, 此模块只计算插值函数相关信息
 	 */
 	class FEM_EXPORT FEInterpolation
 	{
-	private:
-		int order = 0;
-
+	private:		
 		//the element to interpolated
 		std::unique_ptr<FEIElementGeometry> m_elemGeom;
 
 	public:
-		FEInterpolation(int o) : order(o) { }
+		FEInterpolation(std::unique_ptr<FEIElementGeometry> elemGeom);
+
 		virtual ~FEInterpolation() = default;
 		
-		/**
-		 * Returns the interpolation order.
-		 */
-		int giveInterpolationOrder() const { return order; }
-
-		/**
-		 * Returns the spatial dimension.
-		 */
-		virtual int giveNsd() const = 0;
-
 		std::unique_ptr<FEIElementGeometry>& giveElemGeomety() const;
 
 		/**
@@ -105,7 +90,7 @@ namespace fem
 		 * @param lcoords Array containing (local) coordinates.
 		 * @param cellgeo Underlying cell geometry.
 		 */
-		virtual void local2global(FloatArray& answer, const FloatArray& lcoords) const = 0;
+		virtual void local2global(const FloatArray& lcoords, FloatArray& gcoords) const = 0;
 		/**
 		 * Evaluates local coordinates from given global ones.
 		 * If local coordinates cannot be found (generate elements, or point far outside geometry,
@@ -115,7 +100,7 @@ namespace fem
 		 * @param cellgeo Underlying cell geometry.
 		 * @return Nonzero is returned if point is within the element geometry, zero otherwise.
 		 */
-		virtual int global2local(FloatArray& answer, const FloatArray& gcoords) const = 0;
+		virtual int global2local(const FloatArray& gcoords, FloatArray& lcoords) const = 0;
 		
 		/**
 		 * Evaluates the determinant of the transformation.
@@ -123,7 +108,7 @@ namespace fem
 		 * @param cellgeo Underlying cell geometry.
 		 * @return Determinant of the transformation.
 		 */
-		virtual double giveTransformationJacobian(const FloatArray& lcoords) const;
+		virtual double calcJacobianDet(const FloatArray& lcoords) const;
 		
 		/**
 		 * Gives the jacobian matrix at the local coordinates.
@@ -131,15 +116,10 @@ namespace fem
 		 * @param lcoords Local coordinates.
 		 * @param cellgeo Element geometry.
 		 */
-		virtual void giveJacobianMatrixAt(FloatMatrix& jacobianMatrix, const FloatArray& lcoords) const
+		virtual void calcJacobianMatrixAt(FloatMatrix& jacobianMatrix, const FloatArray& lcoords) const
 		{
 			FEM_ERROR("Not overloaded.");
 		}
-
-		virtual integrationDomain giveIntegrationDomain() const = 0;
-
-		
-		std::string errorInfo(const char* func) const { return func; } ///@todo Class name?
 	};
 } // end namespace fem
 #endif // feinterpol_h

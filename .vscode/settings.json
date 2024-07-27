@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "gausspoint.C": "cpp",
+        "gaussintegrationrule.C": "cpp"
+    }
+}
