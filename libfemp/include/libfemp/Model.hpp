@@ -25,15 +25,6 @@ namespace fem {
  * problems
  */
 class Model {
- private:
-  int default_material;  // used when adding elements
-
- public:
-  std::vector<Element> element_list;
-  std::map<node_restriction_ref_t, NodeRestrictions>
-      node_restrictions_list;  // the node restrictions aren't stored in the
-                               // Node class in order to save up memory
-  std::vector<LoadPattern> load_pattern_list;
 
  public:
   Model();
@@ -120,6 +111,16 @@ class Model {
   std::vector<NodeGroup> m_node_groups;
   std::vector<ElementGroup> m_element_groups;
   std::vector<Material> m_material_list;
+
+private:
+    int default_material;  // used when adding elements
+
+public:
+    std::vector<Element> element_list;
+    std::map<node_restriction_ref_t, NodeRestrictions>
+        node_restrictions_list;  // the node restrictions aren't stored in the
+                                 // Node class in order to save up memory
+    std::vector<LoadPattern> load_pattern_list;
 };
 
 }  // namespace fem

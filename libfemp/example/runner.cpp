@@ -15,9 +15,5 @@ int main() {
 	parser->parse(file, model);
 
 	fem::Analysis<double>* p_analysis = new fem::LinearAnalysis<double>();
-	p_analysis->
-
-	
-
   return 0;
 }

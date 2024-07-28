@@ -5,12 +5,14 @@ project(libfemp
 	VERSION 0.1.0
 	)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 list(APPEND CMAKE_PREFIX_PATH "D:/Program Files/eigen-3.4.0/eigen-3.4.0")
 list(APPEND CMAKE_PREFIX_PATH "D:/Program Files/boost_1_79_0")
-
-
+list(APPEND CMAKE_PREFIX_PATH "C:/local/boost_1_79_0")
 
 option(USES_RE2C "Uses re2c to regenerate the lexer files")
 option(BUILD_TESTING "Determines whether tests should be configured" OFF )
@@ -36,6 +38,7 @@ find_package(Boost)
 #find_package(suitesparse MODULE REQUIRED)
 
 include_directories("D:/Program Files/eigen-3.4.0/eigen-3.4.0")
+include_directories("D:/ThirdParty/eigen3")
 
 add_subdirectory(libs)
 add_subdirectory(src)

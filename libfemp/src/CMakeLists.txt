@@ -5,6 +5,8 @@ project(libfemp
 	VERSION 0.1.0
 	)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 #add_subdirectory(libs/io)
 #add_subdirectory(libs/mesh)
 
@@ -164,7 +166,7 @@ target_include_directories(libfemp
 	)
 
 # 添加头文件目录
-set(RapidJson_Root "D:/Lzs/PhysicEngine/FEM_Project/femp")
+set(RapidJson_Root "../../ThirdParty")
 include_directories(${RapidJson_Root})
 
 add_library(libfemp::Static ALIAS libfemp)
