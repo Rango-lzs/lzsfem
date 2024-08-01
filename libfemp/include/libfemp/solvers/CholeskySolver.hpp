@@ -18,16 +18,16 @@ class CholeskySolver : public Solver<Scalar> {
   lalib::Matrix<Scalar, lalib::SparseCRS> L;
 
  public:
-  enum Solver<Scalar>::Error initialize(Equation& equation,
+  typename Solver<Scalar>::Error initialize(Equation& equation,
                                         ProgressIndicatorStrategy* progress);
-  enum Solver<Scalar>::Error solve(Equation& equation,
+  typename Solver<Scalar>::Error solve(Equation& equation,
                                    ProgressIndicatorStrategy* progress);
-  enum Solver<Scalar>::Error cleanup(Equation& equation,
+  typename Solver<Scalar>::Error cleanup(Equation& equation,
                                      ProgressIndicatorStrategy* progress);
 };
 
 template <typename Scalar>
-enum Solver<Scalar>::Error CholeskySolver<Scalar>::initialize(
+typename Solver<Scalar>::Error CholeskySolver<Scalar>::initialize(
     Equation& equation,
     ProgressIndicatorStrategy*) {
   assign(L, equation.K);
@@ -35,7 +35,7 @@ enum Solver<Scalar>::Error CholeskySolver<Scalar>::initialize(
 }
 
 template <typename Scalar>
-enum Solver<Scalar>::Error CholeskySolver<Scalar>::solve(
+typename Solver<Scalar>::Error CholeskySolver<Scalar>::solve(
     Equation& equation,
     ProgressIndicatorStrategy*) {
   // using namespace std;
@@ -46,7 +46,7 @@ enum Solver<Scalar>::Error CholeskySolver<Scalar>::solve(
 }
 
 template <typename Scalar>
-enum Solver<Scalar>::Error CholeskySolver<Scalar>::cleanup(
+typename Solver<Scalar>::Error CholeskySolver<Scalar>::cleanup(
     Equation&,
     ProgressIndicatorStrategy*) {
   return Solver<Scalar>::ERR_OK;

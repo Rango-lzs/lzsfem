@@ -58,7 +58,7 @@ class Model {
   /**
    * Adds a new material to the list
    */
-  void pushMaterial(fem::Material&);
+  void pushMaterial(const fem::Material&);
 
   std::vector<Material> getMaterialList() const;
   Material getMaterialByIndex(size_t index) const;
@@ -86,7 +86,7 @@ class Model {
    * @return	ERR_NONE if all went well, some other error if something went
    * bad
    */
-  void pushLoadPattern(fem::LoadPattern& lp);
+  void pushLoadPattern(const fem::LoadPattern& lp);
 
   std::vector<LoadPattern> getLoadPatternList() const;
 

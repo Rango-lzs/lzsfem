@@ -3,6 +3,8 @@
 #include <libfemp/Model.hpp>
 #include <libfemp/elements/BaseElement.hpp>
 
+#include "Eigen/Dense"
+
 namespace fem {
 
 std::vector<size_t> BaseElement::getNodeReferences() const {
@@ -58,7 +60,7 @@ BaseElement::getStiffnessMatrix(fem::Model& model) {
     auto dNdzeta = this->getdNdzeta(point);
 
     // generate the jacobian
-    Matrix3d J;
+    Eigen::Matrix3d J;
     J.setZero();
     for (unsigned int n = 0; n < nnodes; n++) {
       auto const& node_ref = this->nodes[n];
@@ -79,8 +81,17 @@ BaseElement::getStiffnessMatrix(fem::Model& model) {
     }
 
     const double detJ = J.determinant();
+    Eigen::Matrix3d invJ;
 
-    Matrix3d invJ = J.inverse();
+    Eigen::Matrix3d JI = Eigen::Matrix3d::Identity();
+    try {
+       invJ = JI.inverse();
+    }
+    catch (const std::exception& e)
+    {
+
+    }
+    
 
     // Set up the B matrix
     for (unsigned int n = 0; n < nnodes; n++) {

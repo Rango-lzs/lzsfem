@@ -50,7 +50,7 @@ Element Model::getElementByIndex(size_t index) const {
   return element_list[index];
 }
 
-void Model::pushMaterial(fem::Material& material) {
+void Model::pushMaterial(const fem::Material& material) {
   m_material_list.push_back(material);
 }
 
@@ -524,7 +524,7 @@ NodeRestrictions Model::getNodeRestrictionsByIndex(size_t index) const {
   return node_restrictions_list.at(index);
 }
 
-void Model::pushLoadPattern(fem::LoadPattern& lp) {
+void Model::pushLoadPattern(const fem::LoadPattern& lp) {
   // TODO perform error checks
 
   load_pattern_list.push_back(lp);

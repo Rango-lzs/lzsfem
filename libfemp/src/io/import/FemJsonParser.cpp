@@ -44,6 +44,24 @@ void parseJSON(std::istream& file, fem::Model& model) {
         return;
     }
 
+    // [] array  {}object
+
+    //parse material
+    if (doc.HasMember("materials")) {
+        const Value& mats = doc["materials"];
+        if (mats.IsArray()) {
+            for (SizeType i = 0; i < mats.Size(); i++)
+            {
+                //{"type":"linear elastic", "label": "Steel", "E":2e+11,"nu":0.3, "fy": 2.16164e-306}
+                const Value& mat = mats[i];
+                if (mat.HasMember("type") && mat.HasMember("label") && mat.HasMember("E") && mat.HasMember("nu")) {
+                    model.pushMaterial(fem::Material(mat["label"].GetString(), mat["E"].GetDouble(), mat["nu"].GetDouble()));
+                }
+            }
+        }
+    }
+
+    //parse node
     if (doc.HasMember("nodes") && doc["nodes"].IsArray()) {
         const Value& nodes = doc["nodes"];
         for (SizeType i = 0; i < nodes.Size(); i++) {
@@ -56,18 +74,19 @@ void parseJSON(std::istream& file, fem::Model& model) {
         }
     }
 
+    //parse element
     if (doc.HasMember("elements") && doc["elements"].IsArray()) {
-        const Value& elements = doc["elements"];
-        for (SizeType i = 0; i < elements.Size(); i++) {
+        const Value& elem_all = doc["elements"];
+        for (SizeType i = 0; i < elem_all.Size(); i++) {
             fem::Element elem;
-            const Value& element = elements[i];
-            if (element.HasMember("type") && element["type"].IsString())
+            const Value& elem_data = elem_all[i];
+            if (elem_data.HasMember("type") && elem_data["type"].IsString())
             {
                 elem.type = fem::Element::FE_HEXAHEDRON8;
             }
 
-            if (element.HasMember("nodes") && element["nodes"].IsArray()) {
-                const Value& nodes = element["nodes"];
+            if (elem_data.HasMember("nodes") && elem_data["nodes"].IsArray()) {
+                const Value& nodes = elem_data["nodes"];
                 std::vector<size_t> refs;
                 for (SizeType j = 0; j < nodes.Size(); j++) {
                     if (nodes[j].IsInt()) {
@@ -76,7 +95,84 @@ void parseJSON(std::istream& file, fem::Model& model) {
                 }
                 elem.nodes = refs;
             }
+
+            if (elem_data.HasMember("material")) 
+            {
+                const Value& ele_mat = elem_data["material"];
+                elem.material = ele_mat.GetInt();
+            }
+            else
+            {
+                elem.material = 0; // default material?
+            }
+
             model.pushElement(elem);
+        }
+    }
+
+    //parse node restrictions 
+    if (doc.HasMember("node restrictions")) {
+        const Value& node_restricts = doc["node restrictions"];
+        for (SizeType i = 0; i < node_restricts.Size(); i++)
+        {
+            const Value& node_res_data = node_restricts[i];
+            size_t node_ref = node_res_data["node"].GetInt();
+            fem::NodeRestrictions node_res;
+            if (node_res_data["dx"].GetBool())
+            {
+                node_res.setdx();
+            }
+            if (node_res_data["dy"].GetBool())
+            {
+                node_res.setdy();
+            }
+            if (node_res_data["dz"].GetBool())
+            {
+                node_res.setdz();
+            }
+
+            model.pushNodeRestrictions(node_ref, node_res);
+        }
+    }
+
+    //parse load patterns, only suport surface and body force?
+    if (doc.HasMember("load patterns"))
+    {
+        const Value& load_pat_data = doc["load patterns"];
+        for (SizeType i = 0; i < load_pat_data.Size(); i++)
+        {
+            fem::LoadPattern loadPat;
+            const Value& load_pat_value = load_pat_data[i];
+            loadPat.setLabel(load_pat_value["label"].GetString());
+            const Value& surf_load = load_pat_value["surface loads"];
+            for (SizeType j = 0; j < surf_load.Size(); j++)
+            {
+                //{"type": "quadrangle4", "nodes": [2,3,7,6], "forces": [[1,1,1],[1,1,1],[1,1,1],[1,1,1]]},
+                fem::Element srf_elem;
+                srf_elem.type = fem::Element::FE_QUADRANGLE4;  //surf_load[i]["type"].GetString();
+
+                const Value& nodes = surf_load[j]["nodes"];
+                std::vector<size_t> refs;
+                for (SizeType j = 0; j < nodes.Size(); j++) {
+                    if (nodes[j].IsInt()) {
+                        refs.push_back(nodes[j].GetInt());
+                    }
+                }
+                srf_elem.nodes = refs;
+                fem::SurfaceLoad* psrf_load = fem::SurfaceLoad::makeSurfaceLoad(&srf_elem);
+
+                const Value& forces = surf_load[j]["forces"];
+                for (SizeType j = 0; j < forces.Size(); j++)
+                {
+                    const Value& force = forces[i];
+                    fem::Point3D vec_for{ force[0].GetDouble(),force[1].GetDouble(),force[2].GetDouble() };
+                    psrf_load->surface_forces.push_back(vec_for);
+                }
+
+                loadPat.addSurfaceLoad(psrf_load);
+            }
+
+            model.pushLoadPattern(loadPat);
         }
     }
 }
