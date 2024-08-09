@@ -18,16 +18,16 @@ class UmfpackSolver : public Solver<Scalar> {
   lalib::Matrix<Scalar, lalib::SparseCCS> A;
 
  public:
-  enum Solver<Scalar>::Error initialize(Equation& equation,
+  typename Solver<Scalar>::Error initialize(Equation& equation,
                                         ProgressIndicatorStrategy* progress);
-  enum Solver<Scalar>::Error solve(Equation& equation,
+  typename Solver<Scalar>::Error solve(Equation& equation,
                                    ProgressIndicatorStrategy* progress);
-  enum Solver<Scalar>::Error cleanup(Equation& equation,
+  typename Solver<Scalar>::Error cleanup(Equation& equation,
                                      ProgressIndicatorStrategy* progress);
 };
 
 template <typename Scalar>
-enum Solver<Scalar>::Error UmfpackSolver<Scalar>::initialize(
+typename Solver<Scalar>::Error UmfpackSolver<Scalar>::initialize(
     Equation& equation,
     ProgressIndicatorStrategy*) {
   assign(A, equation.K);
@@ -35,7 +35,7 @@ enum Solver<Scalar>::Error UmfpackSolver<Scalar>::initialize(
 }
 
 template <typename Scalar>
-enum Solver<Scalar>::Error UmfpackSolver<Scalar>::solve(
+typename Solver<Scalar>::Error UmfpackSolver<Scalar>::solve(
     Equation& equation,
     ProgressIndicatorStrategy* progress) {
   lalib::umfpack(A, equation.d, equation.f, progress);
@@ -44,7 +44,7 @@ enum Solver<Scalar>::Error UmfpackSolver<Scalar>::solve(
 }
 
 template <typename Scalar>
-enum Solver<Scalar>::Error UmfpackSolver<Scalar>::cleanup(
+typename Solver<Scalar>::Error UmfpackSolver<Scalar>::cleanup(
     Equation&,
     ProgressIndicatorStrategy*) {
   return Solver<Scalar>::ERR_OK;

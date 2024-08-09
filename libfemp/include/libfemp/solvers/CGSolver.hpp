@@ -19,11 +19,11 @@ class CGSolver : public Solver<Scalar> {
 
   CGSolver();
 
-  enum Solver<Scalar>::Error initialize(Equation& equation,
+  typename Solver<Scalar>::Error initialize(Equation& equation,
                                         ProgressIndicatorStrategy* progress);
-  enum Solver<Scalar>::Error solve(Equation& equation,
+  typename Solver<Scalar>::Error solve(Equation& equation,
                                    ProgressIndicatorStrategy* progress);
-  enum Solver<Scalar>::Error cleanup(Equation& equation,
+  typename Solver<Scalar>::Error cleanup(Equation& equation,
                                      ProgressIndicatorStrategy* progress);
 };
 
@@ -34,7 +34,7 @@ CGSolver<Scalar>::CGSolver() {
 }
 
 template <typename Scalar>
-enum Solver<Scalar>::Error CGSolver<Scalar>::initialize(
+typename Solver<Scalar>::Error CGSolver<Scalar>::initialize(
     Equation& equation,
     ProgressIndicatorStrategy*) {
   assign(my_k, equation.K);
@@ -43,7 +43,7 @@ enum Solver<Scalar>::Error CGSolver<Scalar>::initialize(
 }
 
 template <typename Scalar>
-enum Solver<Scalar>::Error CGSolver<Scalar>::solve(
+typename Solver<Scalar>::Error CGSolver<Scalar>::solve(
     Equation& equation,
     ProgressIndicatorStrategy* progress) {
   if (lalib::cg(my_k, equation.d, equation.f, delta, max_iterations,
@@ -55,7 +55,7 @@ enum Solver<Scalar>::Error CGSolver<Scalar>::solve(
 }
 
 template <typename Scalar>
-enum Solver<Scalar>::Error CGSolver<Scalar>::cleanup(
+typename Solver<Scalar>::Error CGSolver<Scalar>::cleanup(
     Equation&,
     ProgressIndicatorStrategy*) {
   return Solver<Scalar>::ERR_OK;
