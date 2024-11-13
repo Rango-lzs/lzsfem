@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "femcore/fem_export.h"
+
 //-----------------------------------------------------------------------------
 //! Forward declaration of the FEModel class. All classes that register
 //! with the framework take a pointer to FEModel as their constructor parameter.
@@ -21,7 +23,7 @@ public:
 	virtual ~FECoreFactory();
 
 	//! This is the function that the kernel will use to intantiate an object
-	FECoreBase* CreateInstance(FEModel* pfem) const;
+    FECoreBase* CreateInstance(FEModel* pfem) const;
 
 public:
 	// return the class name
@@ -58,7 +60,7 @@ public:
 private:
 	const char*		m_szclass;	//!< class name
 	const char*		m_szbase;	//!< base class name
-	const char*		m_szalias;	//!< class alias string
+	const char*		m_szalias;	//!< class alias string ±ðÃû
 	int				m_spec;		//!< The max spec number for which this feature is defined (-1 is don't care)
 	unsigned int	m_module;	//!< ID of module this class belongs to
 	SUPER_CLASS_ID	m_scid;		//!< the super-class ID

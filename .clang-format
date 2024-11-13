@@ -1,0 +1,40 @@
+# 该配置要求 clang-format-16.0.0以及以上版本
+Language: Cpp
+BasedOnStyle: LLVM
+UseTab: Never
+IndentWidth: 4
+IndentCaseLabels: True
+# 最大行宽, 超出自动在合适位置代码换行
+ColumnLimit: 120
+# private public等之后缩进4空格
+AccessModifierOffset: -4
+TabWidth: 4
+# 所有的命名空间都缩进
+NamespaceIndentation: All
+# 引用符号 和指针符号 贴近左边
+PointerAlignment: Left
+ReferenceAlignment: Left
+MaxEmptyLinesToKeep: 4
+# 不允许函数/if/循环/enum等一行内写完 即便很短
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: None
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+BreakBeforeBraces: Custom
+# 大括号换行与否
+# 都换行
+BraceWrapping: {AfterControlStatement: Always, BeforeElse: true, BeforeWhile: true, BeforeLambdaBody: true, BeforeCatch: true, AfterNamespace: true, AfterClass: true, AfterEnum: true, AfterStruct: true, AfterFunction: true, AfterUnion: true, AfterCaseLabel: true, AfterExternBlock: true, SplitEmptyFunction: true, SplitEmptyRecord: true, SplitEmptyNamespace: true}
+# 除了类 结构体定义 之外 都不换行
+# BraceWrapping: {BeforeElse: false, BeforeWhile: false, BeforeLambdaBody: true, BeforeCatch: false, AfterNamespace: true, AfterClass: true, AfterEnum: true, AfterStruct: true, AfterFunction: true, AfterUnion: true, AfterCaseLabel: false, AfterExternBlock: true, SplitEmptyFunction: true, SplitEmptyRecord: true, SplitEmptyNamespace: true}
+BreakConstructorInitializersBeforeComma: true
+# 多行 行尾注释 对齐
+AlignTrailingComments: {Kind: Always, OverEmptyLines: 1}
+AlignArrayOfStructures: Right
+AlignConsecutiveMacros: {Enabled: true, AcrossEmptyLines: true, AcrossComments: true}
+SpacesBeforeTrailingComments: 2 # 行尾注释与代码之间 间隔空格数
+# 头文件重排 按照大小写不敏感的字典序排序
+SortIncludes: CaseInsensitive
+# 头文件重排 合并多个头文件, 并且重新按照目录优先级分块 (本cpp对应的.h独列一行, 标准库的头文件最后一个include块)
+IncludeBlocks: Regroup
+# 模板声明之后换行
+AlwaysBreakTemplateDeclarations: Yes

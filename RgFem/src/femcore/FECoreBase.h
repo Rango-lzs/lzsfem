@@ -1,5 +1,5 @@
 /*****************************************************************//**
- * \file   FECoreBase.h
+ * \file   FECoreObject.h
  * \brief  
  * 
  * \author Leizs
@@ -16,27 +16,27 @@
 //-----------------------------------------------------------------------------
 class FECoreFactory;
 class FEModel;
+class FEStream;
+class FEMetalClass;
+
+/*
+* Propertyr 和 Paramater的区别
+*/
 
 //-----------------------------------------------------------------------------
 //! Base class for most classes in FECore library and the base class for all 
 //! classes that can be registered with the framework.
-class FECORE_API FECoreBase
+class FEM_EXPORT FECoreObject
 {
 public:
 	//! constructor
-	FECoreBase(FEModel* fem);
+	FECoreObject(FEModel* fem);
 
 	//! destructor
-	virtual ~FECoreBase();
-
-	//! set class name
-	void SetName(const std::string& name);
-
-	//! get the class' name
-	const std::string& GetName() const;
+	virtual ~FECoreObject();
 
 	//! data serialization
-	void Serialize(DumpStream& ar) override;
+	void Serialize(FEStream& ar) override;
 
 	//! Initialization
 	virtual bool Init();
@@ -47,18 +47,9 @@ public:
 	//! call this after the parameters are changed
 	virtual bool UpdateParams();
 
-public:
-	//! return the super class id
-	SUPER_CLASS_ID GetSuperClassID();
-
-	//! return a (unique) string describing the type of this class
-	//! This string is used in object creation
-	const char* GetTypeStr();
-
 	// Build the class' parameter and property list
 	bool BuildClass();
 
-public:
 	//! number of parameters
 	int Parameters() const;
 
@@ -66,7 +57,7 @@ public:
 	virtual FEParam* FindParameter(const ParamString& s) override;
 
 	//! return the property (or this) that owns a parameter
-	FECoreBase* FindParameterOwner(void* pd);
+	FECoreObject* FindParameterOwner(void* pd);
 
 public: // interface for getting/setting properties
 
@@ -74,13 +65,13 @@ public: // interface for getting/setting properties
 	int Properties();
 
 	//! Set a property
-	bool SetProperty(int nid, FECoreBase* pm);
+	bool SetProperty(int nid, FECoreObject* pm);
 
 	//! Set a property via name
-	bool SetProperty(const char* sz, FECoreBase* pm);
+	bool SetProperty(const char* sz, FECoreObject* pm);
 
 	//! return a property
-	virtual FECoreBase* GetProperty(int i);
+	virtual FECoreObject* GetProperty(int i);
 
 	//! find a property index ( returns <0 for error)
 	int FindPropertyIndex(const char* szname);
@@ -89,23 +80,13 @@ public: // interface for getting/setting properties
 	FEProperty* FindProperty(const char* sz, bool searchChildren = false);
 
 	//! return a property from a paramstring
-	FECoreBase* GetProperty(const ParamString& prop);
+	FECoreObject* GetProperty(const ParamString& prop);
 
 	//! return the number of properties defined
 	int PropertyClasses() const;
 
 	//! return a property
 	FEProperty* PropertyClass(int i);
-
-public:
-	//! Get the parent of this object (zero if none)
-	FECoreBase* GetParent();
-
-	//! Get the ancestor of this class (this if none)
-	FECoreBase* GetAncestor();
-
-	//! Set the parent of this class
-	void SetParent(FECoreBase* parent);
 
 	//! return the component ID
 	int GetID() const;
@@ -119,8 +100,8 @@ public:
 	//! set the FEModel of this class (use with caution!)
 	void SetFEModel(FEModel* fem);
 
-	static void SaveClass(DumpStream& ar, FECoreBase* p);
-	static FECoreBase* LoadClass(DumpStream& ar, FECoreBase* p);
+	static void SaveClass(FEStream& ar, FECoreObject* p);
+	static FECoreObject* LoadClass(FEStream& ar, FECoreObject* p);
 
 	// set parameters through a class descriptor
 	bool SetParameters(const FEClassDescriptor& cd);
@@ -139,32 +120,23 @@ public:
 public:
 	template <class T> T* ExtractProperty(bool extractSelf = true);
 
-protected:
-	// Set the factory class
-	void SetFactoryClass(const FECoreFactory* fac);
-
-public:
-	const FECoreFactory* GetFactoryClass() const;
-
 private:
 	std::string		m_name;			//!< user defined name of component
-	FECoreBase*		m_pParent;		//!< pointer to "parent" object (if any) (NOTE: only used by materials)
+	FECoreObject*		m_pParent;		//!< pointer to "parent" object (if any) (NOTE: only used by materials)
 	FEModel*		m_fem;			//!< the model this class belongs to
 
 	vector<FEProperty*>	m_Prop;		//!< list of properties
 
 private:
 	int		m_nID;			//!< component ID
-
 	const FECoreFactory*	m_fac;	//!< factory class that instantiated this class
-
 	friend class FECoreFactory;
 };
 
 // include template property definitions
 #include "FEPropertyT.h"
 
-template <class T>	FEProperty* AddClassProperty(FECoreBase* pc, T* pp, const char* sz)
+template <class T>	FEProperty* AddClassProperty(FECoreObject* pc, T* pp, const char* sz)
 {
 	FEFixedPropertyT<T>* prop = new FEFixedPropertyT<T>(pp);
 	prop->SetDefaultType(sz);
@@ -172,7 +144,7 @@ template <class T>	FEProperty* AddClassProperty(FECoreBase* pc, T* pp, const cha
 	return prop;
 }
 
-template <class T> FEProperty* AddClassProperty(FECoreBase* pc, T** pp, const char* sz, unsigned int flags = FEProperty::Required)
+template <class T> FEProperty* AddClassProperty(FECoreObject* pc, T** pp, const char* sz, unsigned int flags = FEProperty::Required)
 {
 	FEPropertyT<T>* prop = new FEPropertyT<T>(pp);
 	if (prop->GetSuperClassID() == FECLASS_ID) prop->SetDefaultType(sz);
@@ -180,7 +152,7 @@ template <class T> FEProperty* AddClassProperty(FECoreBase* pc, T** pp, const ch
 	return prop;
 }
 
-template <class T>	FEProperty* AddClassProperty(FECoreBase* pc, std::vector<T*>* pp, const char* sz, unsigned int flags = FEProperty::Required)
+template <class T>	FEProperty* AddClassProperty(FECoreObject* pc, std::vector<T*>* pp, const char* sz, unsigned int flags = FEProperty::Required)
 {
 	FEVecPropertyT<T>* prop = new FEVecPropertyT<T>(pp);
 	if (prop->GetSuperClassID() == FECLASS_ID) prop->SetDefaultType(sz);
@@ -193,7 +165,7 @@ template <class T>	FEProperty* AddClassProperty(FECoreBase* pc, std::vector<T*>*
 #define FECORE_SUPER_CLASS(a) public: static SUPER_CLASS_ID superClassID() { return a; }
 //#define REGISTER_SUPER_CLASS(theClass, a) SUPER_CLASS_ID theClass::superClassID() { return a;}
 
-template <class T> T* FECoreBase::ExtractProperty(bool extractSelf)
+template <class T> T* FECoreObject::ExtractProperty(bool extractSelf)
 {
 	if (extractSelf)
 	{
@@ -203,7 +175,7 @@ template <class T> T* FECoreBase::ExtractProperty(bool extractSelf)
 	int NC = Properties();
 	for (int i = 0; i < NC; i++)
 	{
-		FECoreBase* pci = GetProperty(i);
+		FECoreObject* pci = GetProperty(i);
 		if (pci)
 		{
 			T* pc = pci->ExtractProperty<T>();

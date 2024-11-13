@@ -9,7 +9,7 @@
 #ifndef logger_h
 #define logger_h
 
-#include "fem_export.h"
+#include "femcore/fem_export.h"
 
 #include <cstdio>
 #include <string>

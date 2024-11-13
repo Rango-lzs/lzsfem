@@ -9,7 +9,7 @@
 #ifndef error_h
 #define error_h
 
-#include "fem_export.h"
+#include "femcore/fem_export.h"
 #include "logger.h"
 
 #include <string>

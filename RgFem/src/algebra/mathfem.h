@@ -6,7 +6,7 @@
 #ifndef mathfem_h
 #define mathfem_h
 
-#include "error.h"
+#include "logger/error.h"
 
 #include <cmath>
 #include <cfloat> // For _isnan

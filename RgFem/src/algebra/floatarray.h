@@ -9,7 +9,7 @@
 #ifndef floatarray_h
 #define floatarray_h
 
-#include "error.h"
+#include "logger/error.h"
 
 #include <initializer_list>
 #include <vector>

@@ -18,6 +18,7 @@ namespace fem
 	class DataStream;
 	class Pair;
 
+	// why not use std::map?
 	/**
 	 * This class implements a linked list whose entries are Pairs (see below).
 	 *

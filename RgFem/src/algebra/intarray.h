@@ -9,7 +9,7 @@
 #ifndef intarray_h
 #define intarray_h
 
-#include "error.h"
+#include "logger/error.h"
 
 #include <cstdio>
 #include <vector>

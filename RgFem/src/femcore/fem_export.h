@@ -1,6 +1,6 @@
 
-#ifndef FEM_EXPORT_H
-#define FEM_EXPORT_H
+#ifndef _FEM_EXPORT_H
+#define _FEM_EXPORT_H
 
 #ifdef FEM_STATIC_DEFINE
 #  define FEM_EXPORT
@@ -39,4 +39,4 @@
 #  endif
 #endif
 
-#endif /* FEM_EXPORT_H */
+#endif /* _FEM_EXPORT_H */
