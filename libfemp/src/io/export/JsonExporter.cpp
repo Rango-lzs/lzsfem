@@ -49,7 +49,7 @@ void JsonExporter::output(std::ostream& out, const fem::Model& model) {
   // dump the elements list
   out << "\t\"elements\":[";
   fem::material_ref_t material = 0;
-  auto element_list = model.getElementList();
+  auto &element_list = model.getElementList();
   for (std::vector<fem::Element>::const_iterator element = element_list.begin();
        element != element_list.end(); element++) {
     if (element != model.element_list.begin()) {

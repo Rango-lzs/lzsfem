@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(RangoFem)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakePredefinedTargets")
 
@@ -14,17 +16,18 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR}/$<CONFIG>)
 endforeach()
 
-macro(SUBDIRLIST result curdir)
-    file(GLOB_RECURSE children LIST_DIRECTORIES true RELATIVE ${curdir} ${curdir}/*)
-    set(dirlist "")
-    foreach(child ${children})
-        if(IS_DIRECTORY ${curdir}/${child})
-            list(APPEND dirlist ${child})
+macro(sub_dir_list result cur_dir)
+    file(GLOB_RECURSE child_dir LIST_DIRECTORIES true RELATIVE ${cur_dir} ${cur_dir}/*)
+    foreach(dir ${child_dir})
+        if(IS_DIRECTORY ${cur_dir}/${dir})          
+            list(APPEND ${result} ${dir})
+            #message(status " ********* " result)
         endif()
-    endforeach()
+    endforeach()   
+endmacro(sub_dir_list)
 
-    set(${result} ${dirlist})
-endmacro(SUBDIRLIST)
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "cmakes/")
+SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmakes)
 
 option(ENABLE_UNIT_TESTS "Enable unit tests" OFF)
 

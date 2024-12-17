@@ -14,7 +14,7 @@
 #include <fstream>
 
 namespace fem {
-DynamicDataReader :: DynamicDataReader(std :: string name) : DataReader(), name(std :: move(name))
+DynamicDataReader::DynamicDataReader(std :: string name) : DataReader(), name(std :: move(name))
 {
     this->it = recordList.end();
 }

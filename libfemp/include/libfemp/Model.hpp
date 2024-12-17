@@ -53,6 +53,9 @@ class Model {
    * Getter function for the element list
    */
   std::vector<Element>& getElementList();
+
+  const std::vector<Element>& getElementList() const;
+
   Element getElementByIndex(size_t index) const;
 
   /**

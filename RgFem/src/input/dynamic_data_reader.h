@@ -19,7 +19,7 @@ class InputRecord;
 /**
  * Class representing the implementation of a dynamic data reader for in-code use.
  */
-class FEM_EXPORT DynamicDataReader : public DataReader
+class FEM_EXPORT DynamicDataReader: public DataReader
 {
 protected:
     std :: string name;

@@ -9,22 +9,11 @@
 //#include <iostream>
 
 int main() {
-	std::string file_name = "D:/Lzs/PhysicEngine/FEM_Project/femp/data/models/surfaces/surface hexa8x2.fem.json";
+	std::string file_name = "../../data/models/surfaces/surface hexa8x2.fem.json";
 	std::fstream file;
 	file.open(file_name, std::fstream::in);
 
 	// TODO react to failed file open
-
-
-	/*try {
-		Eigen::Matrix3d JI = Eigen::Matrix3d::Identity();
-		Eigen::Matrix3d invJ = JI.inverse();
-		std::cout << "Identity Matrix:\n" << JI << std::endl;
-		std::cout << "Inverse of Identity Matrix:\n" << invJ << std::endl;
-	}
-	catch (const std::exception& e) {
-		std::cerr << "Exception caught: " << e.what() << std::endl;
-	}*/
 
 	fem::Model model;
 	model.clear();

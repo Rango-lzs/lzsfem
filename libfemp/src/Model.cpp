@@ -42,8 +42,13 @@ std::vector<Element>::size_type Model::numberOfElements() const {
   return element_list.size();
 }
 
-std::vector<Element> Model::getElementList() const {
+std::vector<Element>& Model::getElementList() {
   return element_list;
+}
+
+const std::vector<Element>& Model::getElementList() const
+{
+    return element_list;
 }
 
 Element Model::getElementByIndex(size_t index) const {
