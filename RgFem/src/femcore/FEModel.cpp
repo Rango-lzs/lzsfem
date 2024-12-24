@@ -98,12 +98,10 @@ public:
 public:
 	// The model
 	FEModel*	m_fem;
-
 	// module name
 	std::string		m_moduleName;
 
 	bool	m_bsolved;	// solved flag
-
 	// DOFS data
 	DOFS	m_dofs;				//!< list of degree of freedoms in this model
 
@@ -118,13 +116,6 @@ public:
 	FEPlotDataStore	m_plotData;		//!< Output request for plot file
 
 	DumpMemStream	m_dmp;	// only used by incremental solver
-
-public: // Global Data
-	std::map<string, double> m_Const;	//!< Global model constants
-	vector<FEGlobalData*>	m_GD;		//!< global data structures
-	std::vector<FEGlobalVariable*>	m_Var;
-
-	FEMODEL_MEMORY_STATS	m_memstats;
 };
 
 //-----------------------------------------------------------------------------

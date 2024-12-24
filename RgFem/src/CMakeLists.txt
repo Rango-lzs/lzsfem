@@ -30,6 +30,7 @@ target_sources(${TARGET_NAME} PRIVATE ${rootfiles})
 
 sub_dir_list(SUB_DIRS ${SOURCE_DIR})
  
+
 foreach(sub_dir ${SUB_DIRS})
     file(GLOB subdir_files ${sub_dir}/*.cpp ${sub_dir}/*.h)
     string(REPLACE "/" "\\" sub_dir ${sub_dir})
