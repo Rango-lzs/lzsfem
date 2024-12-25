@@ -32,6 +32,8 @@ SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmakes)
 option(ENABLE_UNIT_TESTS "Enable unit tests" OFF)
 
 add_subdirectory(RgFem)
+add_subdirectory(libfemp)
+
 if(ENABLE_UNIT_TESTS)
     set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Tests)
     add_subdirectory(tests)

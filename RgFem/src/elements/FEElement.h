@@ -1,87 +1,38 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
 #pragma once
-#include "FEElementLibrary.h"
-#include "FEElementTraits.h"
-#include "FEMaterialPoint.h"
-#include "fecore_enum.h"
-#include "FEException.h"
 
-class FEMesh;
-//-----------------------------------------------------------------------------
-class FEElementTraits;
-class FEMeshPartition;
+#include "femcore/fem_export.h"
 
-//-----------------------------------------------------------------------------
-//! The FEElementState class stores the element state data. The state is defined
-//! by a material point class for each of the integration points.
-class FECORE_API FEElementState
-{
-public:
-	//! default constructor
-	FEElementState() {}
+class ElementTraits;
 
-	//! destructor
-	~FEElementState() { Clear(); }
-
-	//! copy constructor
-	FEElementState(const FEElementState& s);
-
-	//! assignment operator
-	FEElementState& operator = (const FEElementState& s);
-
-	//! clear state data
-	void Clear() { for (size_t i=0; i<m_data.size(); ++i) delete m_data[i]; m_data.clear(); }
-
-	//! create 
-	void Create(int n) { m_data.assign(n, static_cast<FEMaterialPoint*>(0) ); }
-
-	//! operator for easy access to element data
-	FEMaterialPoint*& operator [] (int n) { return m_data[n]; }
-
-private:
-	std::vector<FEMaterialPoint*>	m_data;
-};
-
-//-----------------------------------------------------------------------------
 //! Base class for all element classes
-
 //! From this class the different element classes are derived.
 
-class FECORE_API FEElement
+/**
+*@~English
+* @brief brief - description - about - Element .
+* @
+*
+*@~Chinese
+* @brief brief - description - about - Element.
+* Tasks:
+* 单元相关的数据，节点，材料等  ： 属性数据
+* 计算单元刚度矩阵，载荷向量	： 物理特性
+* 计算单元应力，应变等结果		： 结果数据
+* 结果输出
+*/
+
+class FEM_EXPORT FEElement
 {
 public:
-	enum {MAX_NODES     = 27};	// max nr of nodes
-	enum {MAX_INTPOINTS = 27};	// max nr of integration points
+	static constexpr int MAX_NODES = 27;
+    static constexpr int MAX_INTPOINTS = 27;
 
-	// Status flags. 
-	enum Status {
-		ACTIVE = 0x01
-	};
-
+		// Status flags.
+    enum Status
+    {
+        ACTIVE = 0x01
+    };
+	
 public:
 	//! default constructor
 	FEElement();
@@ -90,41 +41,32 @@ public:
 	virtual ~FEElement() {}
 
 	//! get the element ID
-	int GetID() const;
+	int getID() const;
 
 	//! set the element ID
-	void SetID(int n);
+	void setID(int n);
 
 	//! Get the element's material ID
-	int GetMatID() const;
+	int getMatID() const;
 
 	//! Set the element's material ID
-	void SetMatID(int id);
+	void setMatID(int id);
 
-	//Get the mesh partition that contains this element
-	FEMeshPartition * GetMeshPartition() const { return m_part; }
-
-	//Set the mesh partition that contains this element
-	void SetMeshPartition(FEMeshPartition* part){ m_part = part; }
-
-	//! Set the Local ID
+	//! Set the Local ID, Local Id in the domain
 	void SetLocalID(int lid) { m_lid = lid; }
 
 	//! Get the local ID
 	int GetLocalID() const { return m_lid; }
 
-	//! clear material point data
-	void ClearData();
-
 public:
-	//! Set the type of the element
+	//! Set the type of the element and initialize the traits by type
 	void SetType(int ntype) { FEElementLibrary::SetElementTraits(*this, ntype); }
 
 	//! Set the traits of an element
 	virtual void SetTraits(FEElementTraits* ptraits);
 
 	//! Get the element traits
-	FEElementTraits* GetTraits() { return m_pT; }
+	ElementTraits* GetTraits() { return m_pT; }
 
 	//! return number of nodes
 	int Nodes() const { return m_pT->m_neln; }
@@ -190,9 +132,9 @@ public:
 	// find local element index of node n
     int FindNode(int n) const;
 
-	// project data to nodes
+	// project data to nodes, from gauss point to node 
 	void project_to_nodes(double* ai, double* ao) const { m_pT->project_to_nodes(ai, ao); }
-	void project_to_nodes(vec3d*  ai, vec3d*  ao) const { m_pT->project_to_nodes(ai, ao); }
+	void project_to_nodes(FloatArrayF<3>* ai, vec3d*  ao) const { m_pT->project_to_nodes(ai, ao); }
 	void project_to_nodes(mat3ds* ai, mat3ds* ao) const { m_pT->project_to_nodes(ai, ao); }
 	void project_to_nodes(mat3d*  ai, mat3d*  ao) const { m_pT->project_to_nodes(ai, ao); }
 
@@ -209,31 +151,19 @@ public:
 	void setActive() { m_status |= ACTIVE; }
 	void setInactive() { m_status &= ~ACTIVE; }
 
-protected:
+private:
 	int		m_nID;		//!< element ID
 	int		m_lid;		//!< local ID
 	int		m_mat;		//!< material index
 	unsigned int	m_status;	//!< element status
-	FEMeshPartition * m_part;	//!< parent mesh partition
 
-public:
 	std::vector<int>		m_node;		//!< connectivity
-
 	// This array stores the local node numbers, that is the node numbers
 	// into the node list of a domain.
 	std::vector<int>		m_lnode;	//!< local connectivity
 
-public: 
-	// NOTE: Work in progress
-	// Elements can now also have degrees of freedom, only currently just one.
-	// Like with nodes, a degree of freedom needs an equation number and a value
-	// The equation number is in m_lm and the value is in m_val
-	int		m_lm;	//!< equation number of element degree of freedom
-	double	m_val;	//!< solution value of element degree of freedom
+	ElementTraits*	m_pTraits;		//!< pointer to element traits
 
-protected:
-	FEElementState		m_State;	//!< element state data
-	FEElementTraits*	m_pT;		//!< pointer to element traits
 };
 
 //-----------------------------------------------------------------------------
@@ -311,3 +241,4 @@ public:
 
 	void SetTraits(FEElementTraits* pt);
 };
+

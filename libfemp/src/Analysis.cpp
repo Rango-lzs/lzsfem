@@ -15,7 +15,7 @@ typename Analysis<Scalar>::Error Analysis<Scalar>::buildEquation(
   if (model.getElementList().empty())
     return ERR_NO_ELEMENTS;
 
-  // generate the location matrix
+  // generate the local to global dof indication
   makeLocationMatrix(model, result);
 
   // generate stiffness matrix by cycling through all elements in the model

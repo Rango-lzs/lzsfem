@@ -11,12 +11,12 @@ target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
 set(Eigen_Root "D:/Program Files/eigen-3.4.0/eigen-3.4.0")
 target_include_directories(${TARGET_NAME} PRIVATE ${Eigen_Root})
 
-set(Eigen3_INCLUDE_DIR "D:/ThirdParty/eigen3")
+#set(Eigen3_INCLUDE_DIR "D:/ThirdParty/eigen3")
 
 message(status "flzs****${CMAKE_MODULE_PATH}")
 
 # 找到Eigen库
-find_package(Eigen3 3.3 REQUIRED)
+#find_package(Eigen3 3.3 REQUIRED)
  
 # 如果找到Eigen库，则将其包含目录添加到你的项目中
 if(Eigen3_FOUND)
@@ -27,6 +27,7 @@ endif()
 file(GLOB rootfiles *.cpp *.h)
 source_group("" FILES ${rootfiles})
 target_sources(${TARGET_NAME} PRIVATE ${rootfiles})
+
 
 sub_dir_list(SUB_DIRS ${SOURCE_DIR})
  
