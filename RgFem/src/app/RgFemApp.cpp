@@ -1,78 +1,75 @@
+/*********************************************************************
+ * \file   RgFemApp.cpp
+ * \brief  
+ * 
+ * \author Leizs
+ * \date   December 2024
+ *********************************************************************/
 
 #include "RgFemApp.h"
+#include "app/CmdOptions.h"
 
+#include "CLI/CLI.hpp"
 
-FEBioApp::FEBioApp()
+RgFemApp::RgFemApp()
 {
-	m_fem = nullptr;
+    mp_fem = nullptr;
 }
 
-FEBioApp* FEBioApp::Instance()
+RgFemApp* RgFemApp::Instance()
 {
-	static FEBioApp theApp;
+	static RgFemApp theApp;
 	return &theApp;
 }
 
-bool FEBioApp::Init(int argc, char* argv[])
+bool RgFemApp::Init(int argc, char* argv[])
 {
-	// Initialize kernel
-	FECoreKernel::SetInstance(febio::GetFECoreKernel());
 
-	// parse the command line
-	if (ParseCmdLine(argc, argv) == false) return false;
+	// 模块的初始化,类的注册,类的信息可以在模块加载时自动注册，也可以手动去初始化~
+	// 这部分等一些基础类写好后，再进行注册模块的注册
+	//FeModuleInit::InitLibrary();
 
-	// say hello
-	ConsoleStream s;
-	if (m_ops.bsplash && (!m_ops.bsilent)) febio::Hello(s);
+	CLI::App femApp("Rango FEM Application");
+    std::string inputFile;
+    femApp.add_option("-f,-file", inputFile, "the fem input file");
+	femApp.parse(argc,argv);
 
-	// Initialize FEBio library
-	febio::InitLibrary();
+	ParseCmdLine(argc, argv);
 
 	// copy some flags to configuration
-	m_config.SetOutputLevel(m_ops.bsilent ? 0 : 1);
+	m_config.SetOutputLevel(m_cmd_opts->bsilent ? 0 : 1);
 
 	// read the configration file if specified
-	if (m_ops.szcnf[0])
-		if (febio::Configure(m_ops.szcnf, m_config) == false)
+	if (m_cmd_opts.szcnf[0])
+		if (ReadConfigure(m_cmd_opts.szcnf, m_config) == false)
 		{
 			fprintf(stderr, "FATAL ERROR: An error occurred reading the configuration file.\n");
 			return false;
 		}
 
-	// read command line plugin if specified
-	if (m_ops.szimp[0] != 0)
+	// read command line plugin if specified, 可以使用开源库来代替,可以先不实现这部分
+	if (m_cmd_opts.szimp[0] != 0)
 	{
-		febio::ImportPlugin(m_ops.szimp);
+		ImportPlugin(m_cmd_opts.szimp);
 	}
-
-	// ping repo server
-	// Removed for the time being, pending further instruction
-	// ping();
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-bool FEBioApp::Configure(const char* szconfig)
+bool RgFemApp::ReadConfigure(const char* szconfig)
 {
-	return febio::Configure(szconfig, m_config);
+	return Configure(szconfig, m_config);
 }
 
 //-----------------------------------------------------------------------------
-int FEBioApp::Run()
+int RgFemApp::Run()
 {
-	// activate interruption handler
-	Interruption I;
-
-	// run FEBio either interactively or directly
-	if (m_ops.binteractive)
-		return prompt();
-	else
-		return RunModel();
+	return RunModel();
 }
 
 //-----------------------------------------------------------------------------
-void FEBioApp::Finish()
+void RgFemApp::Finish()
 {
 	febio::FinishLibrary();
 
@@ -81,62 +78,41 @@ void FEBioApp::Finish()
 
 //-----------------------------------------------------------------------------
 // get the current model
-FEBioModel* FEBioApp::GetCurrentModel()
+FEBioModel* RgFemApp::GetCurrentModel()
 {
 	return m_fem;
 }
 
 //-----------------------------------------------------------------------------
 // set the currently active model
-void FEBioApp::SetCurrentModel(FEBioModel* fem)
+void RgFemApp::SetCurrentModel(FEBioModel* fem)
 {
 	m_fem = fem;
 }
 
 //-----------------------------------------------------------------------------
-// Run an FEBio input file. 
-int FEBioApp::RunModel()
+// Run an input file. 
+int RgFemApp::RunModel()
 {
-	// create the FEBioModel object
-	FEBioModel fem;
-	SetCurrentModel(&fem);
-
-	// add console stream to log file
-	if (m_ops.bsilent == false)
-		fem.GetLogFile().SetLogStream(new ConsoleStream);
-	else
-		Console::GetHandle()->Deactivate();
-
-	// register callbacks
-	fem.AddCallback(update_console_cb, CB_MAJOR_ITERS | CB_INIT | CB_SOLVED | CB_STEP_ACTIVE, 0);
-	fem.AddCallback(interrupt_cb, CB_ALWAYS, 0);
-	fem.AddCallback(break_point_cb, CB_ALWAYS, 0);
-
-	// set options that were passed on the command line
-	fem.SetDebugLevel(m_ops.ndebug);
-	fem.SetDumpLevel(m_ops.dumpLevel);
-	fem.SetDumpStride(m_ops.dumpStride);
-
-	// set the output filenames
-	fem.SetLogFilename(m_ops.szlog);
-	fem.SetPlotFilename(m_ops.szplt);
-	fem.SetDumpFilename(m_ops.szdmp);
+	// create the FEModel object
+	FEBioModel model;
+    SetCurrentModel(&model);
 
 	// read the input file if specified
-	if (m_ops.szfile[0])
+	if (m_cont.inPutFile[0])
 	{
 		// read the input file
-		if (!fem.Input(m_ops.szfile))
+        if (!model.Input(m_cmd_opts.szfile))
 		{
 			return 1;
 		}
 
 	    // apply configuration overrides
-	    ApplyConfig(fem);
+        ApplyConfig(model);
 	}
 
 	// solve the model with the task and control file
-    bool ret = febio::SolveModel(fem, m_ops.sztask, m_ops.szctrl);
+    bool ret = febio::SolveModel(model, m_cmd_opts.sztask, m_cmd_opts.szctrl);
 	
 	// reset the current model pointer
 	SetCurrentModel(nullptr);
@@ -145,39 +121,21 @@ int FEBioApp::RunModel()
 
 //-----------------------------------------------------------------------------
 // apply configuration changes to model
-void FEBioApp::ApplyConfig(FEBioModel& fem)
+void RgFemApp::ApplyConfig(FEBioModel& fem)
 {
-	if (m_config.m_printParams != -1)
+	if (mp_config.m_printParams != -1)
 	{
-		fem.SetPrintParametersFlag(m_config.m_printParams != 0);
+		fem.SetPrintParametersFlag(mp_config.m_printParams != 0);
 	}
-	fem.ShowWarningsAndErrors(m_config.m_bshowErrors);
-}
-
-//-----------------------------------------------------------------------------
-//! Prints the FEBio prompt. If the user did not enter anything on the command
-//! line when running FEBio then commands can be entered at the FEBio prompt.
-//! This function returns the command arguments as a CMDOPTIONS structure.
-int FEBioApp::prompt()
-{
-	// get a pointer to the console window
-	Console* pShell = Console::GetHandle();
-
-	// set the title
-	pShell->SetTitle("FEBio4");
-
-	// process commands
-	ProcessCommands();
-
-	return 0;
+	fem.ShowWarningsAndErrors(mp_config.m_bshowErrors);
 }
 
 //-----------------------------------------------------------------------------
 //!  Parses the command line and returns a CMDOPTIONS structure
 //
-bool FEBioApp::ParseCmdLine(int nargs, char* argv[])
+bool RgFemApp::ParseCmdLine(int nargs, char* argv[])
 {
-	febio::CMDOPTIONS& ops = m_ops;
+	CmdOptions& ops = *mp_cmd_opts;
 
 	// set default options
 	ops.ndebug = 0;
@@ -458,41 +416,4 @@ bool FEBioApp::ParseCmdLine(int nargs, char* argv[])
 	}
 
 	return brun;
-}
-
-void FEBioApp::ProcessCommands()
-{
-	// get a pointer to the console window
-	Console* pShell = Console::GetHandle();
-
-	// get the command manager
-	CommandManager* CM = CommandManager::GetInstance();
-
-	// enter command loop
-	int nargs;
-	char* argv[32];
-	while (1)
-	{
-		// get a command from the shell
-		pShell->GetCommand(nargs, argv);
-		if (nargs > 0)
-		{
-			// find the command that has this name
-			Command* pcmd = CM->Find(argv[0]);
-			if (pcmd)
-			{
-				int nret = pcmd->run(nargs, argv);
-				if (nret == 1) break;
-			}
-			else
-			{
-				printf("Unknown command: %s\n", argv[0]);
-			}
-		}
-        else if (nargs == 0) break;
-
-		// make sure to clear the progress on the console
-		FEBioModel* fem = GetCurrentModel();
-		if ((fem == nullptr) || fem->IsSolved()) pShell->SetProgress(0);
-	}
 }

@@ -14,37 +14,40 @@
 #include "FEProperty.h"
 #include <string>
 
+//Use this clas to define the base impl class for the convenient of set and get facede class.
 template <class Facade, class... Base>
-class BmBaseImpl : public Base...
+class BaseImpl : public Base...
 {
     static_assert(std::is_class<Facade>::value, "Facade should be a class");
 
 protected:
-    BmBaseImpl() = default;
-    virtual ~BmBaseImpl() = default;
+    BaseImpl() = default;
+    virtual ~BaseImpl() = default;
     template <class T>
     auto f_facade()
     {
-        Zw_ASSERT(m _pFacade);
+        std::assert(m_pFacade);
         using Type = typename std::remove_cv<typename std::remove_pointer<T>::type>::type;
-        return static_cast<Type*>(m _pFacade);
+        return static_cast<Type*>(m_pFacade);
     }
     template <class T>
     auto f_facade() const
     {
-        ZW_ASSERT(m_pFacade);
+        std::assert(m_pFacade);
         using Type = typename std::remove_cv<typename std::remove is_pointer<T>::type>::type;
-        return static_cast<Type*>(m pFacade);
+        return static_cast<Type*>(m_pFacade);
     }
 
 private:
     friend typename Facade;
     void setFacade(Facade* p)
     {
-        m pFacade = p;
+        m_pFacade = p;
     }
-    Facade* m _pFacade = nullptr;
+    Facade* m_pFacade = nullptr;
 };
+
+
         
 
 //-----------------------------------------------------------------------------
