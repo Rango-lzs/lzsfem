@@ -8,6 +8,8 @@
 
 #pragma once
 #include "femcore/fem_export.h"
+#include "femcore/FEObjectBase.h"
+#include "femcore/FEMesh.h"
 
 #include <memory>
 
@@ -26,9 +28,6 @@ public:
 	// solve the model
 	virtual bool Solve();
 
-	//! Call this function whenever the geometry of the model has changed.
-	virtual void Update();
-
 	//! will return true if the model solved succussfully
 	bool IsSolved() const;
 
@@ -44,9 +43,6 @@ public:
 
 	//! Initialize the mesh
 	bool InitMesh();
-
-	//! Initialize shells
-	virtual void InitShells();
 
 	//! Build the matrix profile for this model
 	/**
@@ -81,17 +77,6 @@ public:	// --- Load controller functions ----
 
 	//! Get a load controller for a parameter (returns null if the param is not under load control)
 	FELoadController* GetLoadController(FEParam* p);
-
-public:	// --- mesh data generators ---
-
-	//! Add a mesh data generator to the model
-	void AddMeshDataGenerator(FEMeshDataGenerator* pmd);
-
-	//! get a mesh data generator
-	FEMeshDataGenerator* GetMeshDataGenerator(int i);
-
-	//! get the number of mesh data generators
-	int MeshDataGenerators() const;
 
 public: // --- Material functions ---
 
@@ -215,16 +200,6 @@ public:	// --- Model Loads ----
 	//! initialize model loads
 	bool InitModelLoads();
 
-public:	// --- Mesh adaptors ---
-	//! return number of mesh adaptors
-	int MeshAdaptors();
-
-	//! retrieve a mesh adaptors
-	FEMeshAdaptor* MeshAdaptor(int i);
-
-	//! add a mesh adaptor
-	void AddMeshAdaptor(FEMeshAdaptor* meshAdaptor);
-
 public: // --- parameter functions ---
 
 	//! evaluate all load controllers at some time
@@ -346,5 +321,3 @@ private:
 	std::unique_ptr<Impl> m_imp;
 	DECLARE_FECORE_CLASS();
 };
-
-FECORE_API FECoreBase* CopyFEBioClass(FECoreBase* pc, FEModel* fem);

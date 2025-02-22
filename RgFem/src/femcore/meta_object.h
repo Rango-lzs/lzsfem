@@ -18,8 +18,8 @@ class FEM_EXPORT MetaObject
 public:
 	virtual ~MetaObject() = default;
 
-	virtual const MetaClass* meta();
-	static const MetaClass* staic_meta();
+	virtual const MetaClass* meta();  //called by instance
+	static const MetaClass* staic_meta();  //called by class
 	bool isKindOf(const MetaClass* pMeta);
 
 protected:

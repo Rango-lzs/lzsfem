@@ -9,6 +9,7 @@
 #pragma once
 
 #include "femcore/meta_object.h"
+
 #include "FEParameterList.h"
 #include "fecore_enum.h"
 #include "FEProperty.h"
@@ -48,8 +49,6 @@ private:
 };
 
 
-        
-
 //-----------------------------------------------------------------------------
 class FECoreFactory;
 class FEModel;
@@ -61,7 +60,7 @@ class FEM_EXPORT FEObjectBase : public MetaObject
 {
 public:
 	//! constructor
-	explicit FEObjectBase(FEModel* pModel);
+    explicit FEObjectBase(FEModel* pModel);
 
 	//! destructor
 	virtual ~FEObjectBase();

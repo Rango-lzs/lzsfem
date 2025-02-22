@@ -20,6 +20,9 @@ class FEParamValidator;
 class DumpStream;
 class FEParamContainer;
 
+//FEParam一般是由FEObject所持有的，比较持久化的参数, 具有更丰富的信息，可能是数组类型
+//FEParamValue参数里的具体一个值，一般用于运行时取值
+
 //-----------------------------------------------------------------------------
 // Different supported parameter types
 enum FEParamType {
@@ -58,55 +61,86 @@ enum FEParamFlag {
 	FE_PARAM_WATCH	   = 0x40		// This is a watch parameter 
 };
 
-class FEParam;
-
-//-----------------------------------------------------------------------------
 // class describing the value of parameter
 class FEParamValue
 {
 private:
-	void*			m_pv;		// pointer to variable data
-	FEParamType		m_itype;	// type of variable (this is not the type of the param!)
-	FEParam*		m_param;	// the parameter (can be null if it is not a parameter)
+    void* m_pv;           // pointer to variable data
+    FEParamType m_itype;  // type of variable (this is not the type of the param!)
+    FEParam* m_param;     // the parameter (can be null if it is not a parameter)
 
 public:
+    FEParamValue()
+    {
+        m_pv = 0;
+        m_itype = FE_PARAM_INVALID;
+        m_param = 0;
+    }
 
-	FEParamValue()
-	{
-		m_pv = 0;
-		m_itype = FE_PARAM_INVALID;
-		m_param = 0;
-	}
+    explicit FEParamValue(FEParam* p, void* v, FEParamType itype)
+    {
+        m_pv = v;
+        m_itype = itype;
+        m_param = p;
+    }
 
-	explicit FEParamValue(FEParam* p, void* v, FEParamType itype)
-	{
-		m_pv = v;
-		m_itype = itype;
-		m_param = p;
-	}
+    FEParamValue(double& v)
+        : FEParamValue(0, &v, FE_PARAM_DOUBLE)
+    {
+    }
+    FEParamValue(vec2d& v)
+        : FEParamValue(0, &v, FE_PARAM_VEC2D)
+    {
+    }
+    FEParamValue(vec3d& v)
+        : FEParamValue(0, &v, FE_PARAM_VEC3D)
+    {
+    }
+    FEParamValue(mat3ds& v)
+        : FEParamValue(0, &v, FE_PARAM_MAT3DS)
+    {
+    }
+    FEParamValue(mat3d& v)
+        : FEParamValue(0, &v, FE_PARAM_MAT3D)
+    {
+    }
 
-	FEParamValue(double& v) : FEParamValue(0, &v, FE_PARAM_DOUBLE) {}
-	FEParamValue(vec2d&  v) : FEParamValue(0, &v, FE_PARAM_VEC2D) {}
-	FEParamValue(vec3d&  v) : FEParamValue(0, &v, FE_PARAM_VEC3D) {}
-	FEParamValue(mat3ds& v) : FEParamValue(0, &v, FE_PARAM_MAT3DS) {}
-    FEParamValue(mat3d&  v) : FEParamValue(0, &v, FE_PARAM_MAT3D ) {}
+    bool isValid() const
+    {
+        return (m_pv != 0);
+    }
 
-	bool isValid() const { return (m_pv != 0); }
+    FEParamType type() const
+    {
+        return m_itype;
+    }
 
-	FEParamType type() const { return m_itype; }
+    void* data_ptr() const
+    {
+        return m_pv;
+    }
 
-	void* data_ptr() const { return m_pv; }
+    FEParam* param()
+    {
+        return m_param;
+    }
 
-	FEParam* param() { return m_param; }
+    template <typename T>
+    T& value()
+    {
+        return *((T*)m_pv);
+    }
+    template <typename T>
+    const T& value() const
+    {
+        return *((T*)m_pv);
+    }
 
-	template <typename T> T& value() { return *((T*)m_pv); }
-	template <typename T> const T& value() const { return *((T*)m_pv); }
-
-	FECORE_API FEParamValue component(int n);
+    FECORE_API FEParamValue component(int n);
 };
 
 //-----------------------------------------------------------------------------
-//! This class describes a user-defined parameter
+//! This class describes a user-defined parameter  ,是否能用Variant替代，
 class FECORE_API FEParam
 {
 private:

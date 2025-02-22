@@ -6,9 +6,14 @@
  * \date   December 2024
  *********************************************************************/
 #pragma once
+
 #ifndef META_CLASS_H
 #define META_CLASS_H
 
+#include <string>
+#include <functional>
+
+class MetaObject; 
 using ObjectConstructor = std::function<MetaObject* ()>;
 
 class MetaClass
@@ -29,3 +34,5 @@ private:
 	const MetaClass* mp_parent;
 	ObjectConstructor m_constructor;
 };
+
+#endif
