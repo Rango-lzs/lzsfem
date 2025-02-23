@@ -27,6 +27,7 @@ class FEModel;
 class FETimeInfo;
 class FEDataMap;
 class DumpStream;
+class FEElement;
 
 //---------------------------------------------------------------------------------------
 // Helper class for faster lookup of elements based on their ID

@@ -51,7 +51,6 @@ private:
 
 //-----------------------------------------------------------------------------
 class FECoreFactory;
-class FEModel;
 
 //-----------------------------------------------------------------------------
 //! Base class for most classes in FECore library and the base class for all 

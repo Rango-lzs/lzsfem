@@ -1,8 +1,11 @@
 #pragma once
 
 #include "femcore/fem_export.h"
+#include "elements/FEElementLibrary.h"
+#include "elements/FEElementTraits.h"
+#include <vector>
 
-class ElementTraits;
+class FEMaterialPoint;
 
 //! Base class for all element classes
 //! From this class the different element classes are derived.
@@ -27,12 +30,6 @@ public:
 	static constexpr int MAX_NODES = 27;
     static constexpr int MAX_INTPOINTS = 27;
 
-		// Status flags.
-    enum Status
-    {
-        ACTIVE = 0x01
-    };
-	
 public:
 	//! default constructor
 	FEElement();
@@ -53,10 +50,10 @@ public:
 	void setMatID(int id);
 
 	//! Set the Local ID, Local Id in the domain
-	void SetLocalID(int lid) { m_lid = lid; }
+	void SetLocalID(int lid) { m_loc_id = lid; }
 
 	//! Get the local ID
-	int GetLocalID() const { return m_lid; }
+	int GetLocalID() const { return m_loc_id; }
 
 public:
 	//! Set the type of the element and initialize the traits by type
@@ -66,29 +63,29 @@ public:
 	virtual void SetTraits(FEElementTraits* ptraits);
 
 	//! Get the element traits
-	ElementTraits* GetTraits() { return m_pT; }
+	FEElementTraits* GetTraits() { return m_pTraits; }
 
 	//! return number of nodes
-	int Nodes() const { return m_pT->m_neln; }
+	int Nodes() const { return m_pTraits->m_neln; }
 
 	//! return the element class
-	int Class() const { return m_pT->Class(); }
+	int Class() const { return m_pTraits->Class(); }
 
 	//! return the element shape
-	int Shape() const { return m_pT->Shape(); }
+	int Shape() const { return m_pTraits->Shape(); }
 
 	//! return the type of element
-	int Type() const { return m_pT->Type(); }
+	int Type() const { return m_pTraits->Type(); }
 
 	//! return number of integration points
-	int GaussPoints() const { return m_pT->m_nint; }
+	int GaussPoints() const { return m_pTraits->m_nint; }
 
 	//! shape function values
-	double* H(int n) { return m_pT->m_H[n]; }
-	const double* H(int n) const { return m_pT->m_H[n]; }
+	double* H(int n) { return m_pTraits->m_H[n]; }
+	const double* H(int n) const { return m_pTraits->m_H[n]; }
 
 	//! return number of faces
-	int Faces() const { return m_pT->Faces(); }
+	int Faces() const { return m_pTraits->Faces(); }
 
 	//! return the nodes of the face
 	int GetFace(int nface, int* nodeList) const;
@@ -133,10 +130,10 @@ public:
     int FindNode(int n) const;
 
 	// project data to nodes, from gauss point to node 
-	void project_to_nodes(double* ai, double* ao) const { m_pT->project_to_nodes(ai, ao); }
-	void project_to_nodes(FloatArrayF<3>* ai, vec3d*  ao) const { m_pT->project_to_nodes(ai, ao); }
-	void project_to_nodes(mat3ds* ai, mat3ds* ao) const { m_pT->project_to_nodes(ai, ao); }
-	void project_to_nodes(mat3d*  ai, mat3d*  ao) const { m_pT->project_to_nodes(ai, ao); }
+	void project_to_nodes(double* ai, double* ao) const { m_pTraits->project_to_nodes(ai, ao); }
+	void project_to_nodes(FloatArrayF<3>* ai, vec3d*  ao) const { m_pTraits->project_to_nodes(ai, ao); }
+	void project_to_nodes(mat3ds* ai, mat3ds* ao) const { m_pTraits->project_to_nodes(ai, ao); }
+	void project_to_nodes(mat3d*  ai, mat3d*  ao) const { m_pTraits->project_to_nodes(ai, ao); }
 
 	// evaluate scalar field at integration point using specific interpolation order
 	double Evaluate(double* fn, int order, int n);
@@ -144,25 +141,17 @@ public:
 	int ShapeFunctions(int order);
 	double* H(int order, int n);
 
-public:
-	void setStatus(unsigned int n) { m_status = n; }
-	unsigned int status() const { return m_status; }
-	bool isActive() const { return (m_status & ACTIVE); }
-	void setActive() { m_status |= ACTIVE; }
-	void setInactive() { m_status &= ~ACTIVE; }
-
-private:
-	int		m_nID;		//!< element ID
-	int		m_lid;		//!< local ID
-	int		m_mat;		//!< material index
-	unsigned int	m_status;	//!< element status
+protected:
+	int		m_id;		//!< element ID
+	int		m_loc_id;		//!< local ID
+	int		m_mat_id;		//!< material index
 
 	std::vector<int>		m_node;		//!< connectivity
 	// This array stores the local node numbers, that is the node numbers
 	// into the node list of a domain.
-	std::vector<int>		m_lnode;	//!< local connectivity
+	std::vector<int>		m_loc_node;	//!< local connectivity
 
-	ElementTraits*	m_pTraits;		//!< pointer to element traits
+	FEElementTraits*	m_pTraits;		//!< pointer to element traits
 
 };
 
@@ -211,22 +200,22 @@ public:
 	//! assignment operator
 	FEElement2D& operator = (const FEElement2D& el);
 
-	double* GaussWeights() { return &((FE2DElementTraits*)(m_pT))->gw[0]; }			// weights of integration points
+	double* GaussWeights() { return &((FE2DElementTraits*)(m_pTraits))->gw[0]; }			// weights of integration points
 
-	double* Hr(int n) { return ((FE2DElementTraits*)(m_pT))->Gr[n]; }	// shape function derivative to r
-	double* Hs(int n) { return ((FE2DElementTraits*)(m_pT))->Gs[n]; }	// shape function derivative to s
+	double* Hr(int n) { return ((FE2DElementTraits*)(m_pTraits))->Gr[n]; }	// shape function derivative to r
+	double* Hs(int n) { return ((FE2DElementTraits*)(m_pTraits))->Gs[n]; }	// shape function derivative to s
 
-    double* Hrr(int n) { return ((FE2DElementTraits*)(m_pT))->Grr[n]; }	// shape function 2nd derivative to rr
-    double* Hsr(int n) { return ((FE2DElementTraits*)(m_pT))->Gsr[n]; }	// shape function 2nd derivative to sr
+    double* Hrr(int n) { return ((FE2DElementTraits*)(m_pTraits))->Grr[n]; }	// shape function 2nd derivative to rr
+    double* Hsr(int n) { return ((FE2DElementTraits*)(m_pTraits))->Gsr[n]; }	// shape function 2nd derivative to sr
     
-    double* Hrs(int n) { return ((FE2DElementTraits*)(m_pT))->Grs[n]; }	// shape function 2nd derivative to rs
-    double* Hss(int n) { return ((FE2DElementTraits*)(m_pT))->Gss[n]; }	// shape function 2nd derivative to ss
+    double* Hrs(int n) { return ((FE2DElementTraits*)(m_pTraits))->Grs[n]; }	// shape function 2nd derivative to rs
+    double* Hss(int n) { return ((FE2DElementTraits*)(m_pTraits))->Gss[n]; }	// shape function 2nd derivative to ss
     
 	//! values of shape functions
-	void shape_fnc(double* H, double r, double s) { ((FE2DElementTraits*)(m_pT))->shape(H, r, s); }
+	void shape_fnc(double* H, double r, double s) { ((FE2DElementTraits*)(m_pTraits))->shape(H, r, s); }
 
 	//! values of shape function derivatives
-	void shape_deriv(double* Hr, double* Hs, double r, double s) { ((FE2DElementTraits*)(m_pT))->shape_deriv(Hr, Hs, r, s); }
+	void shape_deriv(double* Hr, double* Hs, double r, double s) { ((FE2DElementTraits*)(m_pTraits))->shape_deriv(Hr, Hs, r, s); }
 };
 
 //-----------------------------------------------------------------------------

@@ -1,35 +1,18 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
+/*********************************************************************
+ * \file   FEElementTraits.h
+ * \brief  
+ * 
+ * \author Leizs
+ * \date   February 2025
+ *********************************************************************/
 
 #pragma once
-#include "matrix.h"
-#include "vec3d.h"
-#include "mat3d.h"
+
+#include "femcore/fem_export.h"
+
+#include "datastructure/matrix.h"
+#include "datastructure/vec3d.h"
+#include "datastructure/mat3d.h"
 #include "fecore_enum.h"
 #include <vector>
 
@@ -41,18 +24,20 @@ class FESurfaceElementShape;
 
 //-----------------------------------------------------------------------------
 //! This class is the base class for all element trait's classes
-
-class FECORE_API FEElementTraits
+//! 定义单元的属性(Traits)、类别、类型、形状函数等
+//! 
+//ElementSpecify
+class FEM_EXPORT FEElementTraits
 {
 public:
 	//! constructor
-	FEElementTraits(int ni, int ne, FE_Element_Class c, FE_Element_Shape s, FE_Element_Type t);
+	FEElementTraits(int ni, int ne, FE_Element_Category c, FE_Element_Shape s, FE_Element_Type t);
 
 	//! destructor
 	virtual ~FEElementTraits(){}
 
 	//! return the element class
-	FE_Element_Class Class() const { return m_spec.eclass; }
+	FE_Element_Category Class() const { return m_spec.eclass; }
 
 	//! return the element shape
 	FE_Element_Shape Shape() const { return m_spec.eshape; }
@@ -103,7 +88,7 @@ protected:
 //! This class defines the specific traits for solid elements and serves as
 //! a base class for specific solid element formulations
 //
-class FECORE_API FESolidElementTraits : public FEElementTraits
+class FEM_EXPORT FESolidElementTraits : public FEElementTraits
 {
 public:
 	//! constructor

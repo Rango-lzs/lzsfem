@@ -1,49 +1,24 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
+/*********************************************************************
+ * \file   fecore_enum.h
+ * \brief  
+ * 
+ * \author Leizs
+ * \date   February 2025
+ *********************************************************************/
 
 #pragma once
 
-//-----------------------------------------------------------------------------
-// Element Class:
-// Defines the general category of element.
-enum FE_Element_Class {
+// 单元的类别
+enum FE_Element_Category
+{
 	FE_ELEM_INVALID_CLASS,
-
 	FE_ELEM_SOLID,
 	FE_ELEM_SHELL,
 	FE_ELEM_BEAM,
-	FE_ELEM_SURFACE,
+    FE_ELEM_2D,
 	FE_ELEM_TRUSS,
-	FE_ELEM_DISCRETE,
-	FE_ELEM_2D,
-	FE_ELEM_EDGE,
-
-	FE_ELEM_WIRE = 100	// temporary. Can change.
+    FE_ELEM_SURFACE,
+	FE_ELEM_DISCRETE
 };
 
 //-----------------------------------------------------------------------------
@@ -180,43 +155,6 @@ enum SHELL_FORMULATION {
 	OLD_SHELL,
 	EAS_SHELL,
 	ANS_SHELL
-};
-
-//-----------------------------------------------------------------------------
-//! Helper class for creating domain classes.
-struct FE_Element_Spec
-{
-	FE_Element_Class    eclass;
-	FE_Element_Shape	eshape;
-	FE_Element_Type		etype;
-	bool				m_bthree_field;
-	int					m_shell_formulation;
-    bool                m_shell_norm_nodal;
-
-	bool		m_but4;
-	double		m_ut4_alpha;
-	bool		m_ut4_bdev;
-
-	FE_Element_Spec()
-	{
-		eclass = FE_ELEM_INVALID_CLASS;
-		eshape = FE_ELEM_INVALID_SHAPE;
-		etype  = FE_ELEM_INVALID_TYPE;
-		m_bthree_field = false;
-		m_shell_formulation = NEW_SHELL;
-        m_shell_norm_nodal = true;
-		m_but4 = false;
-		m_ut4_alpha = 0.05;
-		m_ut4_bdev = false;
-	}
-
-	bool operator == (const FE_Element_Spec& s)
-	{
-		if ((eclass == s.eclass) &&
-			(eshape == s.eshape) &&
-			(etype  == s.etype )) return true;
-		return false;
-	}
 };
 
 //-----------------------------------------------------------------------------
