@@ -6,11 +6,10 @@ target_compile_definitions(RgFem PRIVATE RgFem_Module)
 
 target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
 
-set(THIRD_PARTY_ROOT "D:/Lzs/PhysicEngine/FEM_Project/lzsfem/ThirdParty")
-
 #Add CLI11 Library, a head only comand parse library
 set(CLI11_INCLUDE_DIR "${THIRD_PARTY_ROOT}/cli11-src/include")
 target_include_directories(${TARGET_NAME} PRIVATE ${CLI11_INCLUDE_DIR})
+message(status "Third party root is ****${THIRD_PARTY_ROOT}")
 
 
 #Add Eigen3 Library

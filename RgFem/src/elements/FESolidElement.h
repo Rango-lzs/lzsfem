@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 //!  This class defines a solid element
-//!  定义实体单元
+//!  对应Abaqus的Continue(Solid)单元，可以是二维的，三维的
 
 class FEM_EXPORT FESolidElement : public FEElement
 {
