@@ -60,7 +60,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // Shell element used by old shell formulation
-class FECORE_API FEShellElementOld : public FEShellElement
+class FEM_EXPORT FEShellElementOld : public FEShellElement
 {
 public:
 	FEShellElementOld();
@@ -83,7 +83,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // Shell element used by new shell formulations
-class FECORE_API FEShellElementNew : public FEShellElement
+class FEM_EXPORT FEShellElementNew : public FEShellElement
 {
 public:
 	FEShellElementNew();

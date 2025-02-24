@@ -1,33 +1,5 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
-#include "fecore_api.h"
+#include "femcore/fem_export.h"
 #include "FECoreKernel.h"
 #include <vector>
 #include <string>
@@ -44,7 +16,7 @@ using dhours = std::chrono::duration<double, std::ratio<3600>>;
 //! function stops it and the GetTime function returns the time elapsed between
 //! the call to start and stop
 
-class FECORE_API Timer
+class FEM_EXPORT Timer
 {
 public:
 	//! constructor
@@ -109,7 +81,7 @@ enum TimerID {
 // have to be called at every exit point of a function.
 // In addition, it will also check if the timer is already running (e.g. from a function
 // higher in the call stack) in which case it will track the timer. 
-class FECORE_API TimerTracker
+class FEM_EXPORT TimerTracker
 {
 public:
 	TimerTracker(FEModel* fem, int timerId);

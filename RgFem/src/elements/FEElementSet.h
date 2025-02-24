@@ -27,7 +27,7 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 #include "FEItemList.h"
 #include "FEElement.h"
 #include "FEDomainList.h"
@@ -41,7 +41,7 @@ class DumpStream;
 
 //-----------------------------------------------------------------------------
 // This class defines a set of elements
-class FECORE_API FEElementSet : public FEItemList
+class FEM_EXPORT FEElementSet : public FEItemList
 {
 public:
 	//! constructor

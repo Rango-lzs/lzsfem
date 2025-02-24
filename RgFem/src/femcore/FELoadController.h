@@ -12,7 +12,7 @@
 //-----------------------------------------------------------------------------
 // Class that describes a load controller. A load controller can modify the value
 // of model parameters during the analysis. 
-class FECORE_API FELoadController : public FEModelComponent
+class FEM_EXPORT FELoadController : public FEModelComponent
 {
 	FECORE_SUPER_CLASS(FELOADCONTROLLER_ID)
 	FECORE_BASE_CLASS(FELoadController);

@@ -31,7 +31,7 @@
 
 //-----------------------------------------------------------------------------
 //! This class describes a general purpose interaction between two surfaces.
-class FECORE_API FESurfacePairConstraintNL : public FENLConstraint
+class FEM_EXPORT FESurfacePairConstraintNL : public FENLConstraint
 {
 public:
     //! constructor

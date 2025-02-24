@@ -38,7 +38,7 @@ class FEFacetSet;
 //! whether or not the dofs of the node will be assigned an equation number. 
 //! Currently, there are two boundary conditions: a fixed (FEFixedBC) and a
 //! prescribed (FEPrescribedBC) boundary condition. 
-class FECORE_API FEBoundaryCondition : public FEStepComponent
+class FEM_EXPORT FEBoundaryCondition : public FEStepComponent
 {
 	FECORE_SUPER_CLASS(FEBC_ID)
 	FECORE_BASE_CLASS(FEBoundaryCondition);

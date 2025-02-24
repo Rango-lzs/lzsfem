@@ -33,7 +33,7 @@ SOFTWARE.*/
 //-----------------------------------------------------------------------------
 // Base class for load curves.
 // Load curves are used to manipulate the time dependency of model parameters.
-class FECORE_API FELoadCurve : public FELoadController
+class FEM_EXPORT FELoadCurve : public FELoadController
 {
 public:
 	// constructor

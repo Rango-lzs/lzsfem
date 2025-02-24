@@ -27,7 +27,7 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 #include <string>
 
 //-----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ class FEFacetSet;
 class DumpStream;
 
 //-----------------------------------------------------------------------------
-class FECORE_API FESurfacePair
+class FEM_EXPORT FESurfacePair
 {
 public:
 	FESurfacePair(FEMesh* pm);

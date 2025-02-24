@@ -37,7 +37,7 @@ SOFTWARE.*/
 //-----------------------------------------------------------------------------
 //! Base class for defining initial conditions.
 //! Initial conditions can be used to set the initial state of the model in an analysis. 
-class FECORE_API FEInitialCondition : public FEStepComponent
+class FEM_EXPORT FEInitialCondition : public FEStepComponent
 {
 	FECORE_SUPER_CLASS(FEIC_ID)
 	FECORE_BASE_CLASS(FEInitialCondition);
@@ -48,7 +48,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // Base class for initial conditions applied to node sets
-class FECORE_API FENodalIC : public FEInitialCondition
+class FEM_EXPORT FENodalIC : public FEInitialCondition
 {
 public:
 	FENodalIC(FEModel* fem);
@@ -82,7 +82,7 @@ protected:
 
 //-----------------------------------------------------------------------------
 // Class representing an initial condition on a degree of freedom
-class FECORE_API FEInitialDOF : public FENodalIC
+class FEM_EXPORT FEInitialDOF : public FENodalIC
 {
 public:
 	FEInitialDOF(FEModel* pfem);

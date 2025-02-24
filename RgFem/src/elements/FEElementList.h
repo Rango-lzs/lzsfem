@@ -27,7 +27,7 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 class FEMesh;
 class FEElement;
@@ -43,13 +43,13 @@ public:
 		iterator() { m_pmesh = 0; m_ndom = -1; m_nel = -1; }
 		iterator(FEMesh* pm) { m_pmesh = pm; m_ndom = 0; m_nel = 0; }
 
-		FECORE_API FEElement& operator*();
+		FEM_EXPORT FEElement& operator*();
 
-		FECORE_API FEElement* operator->();
+		FEM_EXPORT FEElement* operator->();
 
-		FECORE_API operator FEElement* ();
+		FEM_EXPORT operator FEElement* ();
 
-		FECORE_API void operator ++ ();
+		FEM_EXPORT void operator ++ ();
 
 		bool operator != (const iterator& it)
 		{

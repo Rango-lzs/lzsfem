@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #pragma once
 #include <vector>
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 #include "fecore_enum.h"
 
 //-----------------------------------------------------------------------------
@@ -38,7 +38,7 @@ class DumpStream;
 //-----------------------------------------------------------------------------
 //! A property of a class reflects a member variable of the class that is a 
 //! pointer to a FECoreBase derived class. 
-class FECORE_API FEProperty
+class FEM_EXPORT FEProperty
 {
 public:
 	enum Flags

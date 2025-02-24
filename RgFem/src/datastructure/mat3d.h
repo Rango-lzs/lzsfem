@@ -1,31 +1,3 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
 #include <assert.h>
 #include "vec3d.h"
@@ -249,9 +221,9 @@ public:
     double invert(mat3ds& Ai);
 	
 	// determine eigen values and vectors
-	FECORE_API void eigen(double d[3], vec3d r[3] = 0) const;
-	FECORE_API void exact_eigen(double l[3]) const;
-	FECORE_API void eigen2(double d[3], vec3d r[3] = 0) const;
+	FEM_EXPORT void eigen(double d[3], vec3d r[3] = 0) const;
+	FEM_EXPORT void exact_eigen(double l[3]) const;
+	FEM_EXPORT void eigen2(double d[3], vec3d r[3] = 0) const;
 
 	// L2-norm 
 	double norm() const;
@@ -263,7 +235,7 @@ public:
 	double effective_norm() const;
 
 	// the "max shear" value
-	FECORE_API double max_shear() const;
+	FEM_EXPORT double max_shear() const;
 
 protected:
 	double m[6];	// stores data in the order xx, xy, yy, xz, yz, zz
@@ -473,8 +445,8 @@ public:
 	double dotdot(const mat3d& T) const;
 
 	// polar decomposition
-	FECORE_API void right_polar(mat3d& R, mat3ds& U) const;
-	FECORE_API void left_polar(mat3ds& V, mat3d& R) const;
+	FEM_EXPORT void right_polar(mat3d& R, mat3ds& U) const;
+	FEM_EXPORT void left_polar(mat3ds& V, mat3d& R) const;
 
 	// return identity matrix
 	static mat3d identity() { return mat3d(1,0,0, 0,1,0, 0,0,1); }
@@ -623,19 +595,19 @@ public:
 	}
 
 	// principle values
-	FECORE_API void Principals(float e[3]) const;
+	FEM_EXPORT void Principals(float e[3]) const;
 
 	// principle directions
-	FECORE_API vec3f PrincDirection(int l);
+	FEM_EXPORT vec3f PrincDirection(int l);
 
 	// deviatroric principle values
-	FECORE_API void DeviatoricPrincipals(float e[3]) const;
+	FEM_EXPORT void DeviatoricPrincipals(float e[3]) const;
 
 	// max-shear value
-	FECORE_API float MaxShear() const;
+	FEM_EXPORT float MaxShear() const;
 
 	// eigen-vectors and values
-	FECORE_API void eigen(vec3f e[3], float l[3]) const;
+	FEM_EXPORT void eigen(vec3f e[3], float l[3]) const;
 
 	// trace
 	float tr() const { return x + y + z; }
@@ -654,7 +626,7 @@ public:
 	float xy, yz, xz;
 };
 
-FECORE_API double fractional_anisotropy(const mat3fs& m);
+FEM_EXPORT double fractional_anisotropy(const mat3fs& m);
 
 ///////////////////////////////////////////////////////////////////
 // mat3f

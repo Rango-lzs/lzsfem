@@ -10,7 +10,7 @@
 #include "FEParamValidator.h"
 #include "ParamString.h"
 #include "MathObject.h"
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 #include <stdio.h>
 using namespace std;
 
@@ -32,7 +32,7 @@ typedef std::list<FEParam>::const_iterator FEParamIteratorConst;
 
 //-----------------------------------------------------------------------------
 //! A list of material parameters
-class FECORE_API FEParameterList
+class FEM_EXPORT FEParameterList
 {
 public:
 	FEParameterList(FEParamContainer* pc);
@@ -83,7 +83,7 @@ protected:
 
 //-----------------------------------------------------------------------------
 //! Base class for classes that wish to support parameter lists
-class FECORE_API FEParamContainer
+class FEM_EXPORT FEParamContainer
 {
 public:
 	//! constructor

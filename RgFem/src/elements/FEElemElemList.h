@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #pragma once
 #include <vector>
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 //-----------------------------------------------------------------------------
 class FEMesh;
@@ -38,7 +38,7 @@ class FEElement;
 //-----------------------------------------------------------------------------
 //! This class finds for each element the neighbouring elements
 //!
-class FECORE_API FEElemElemList
+class FEM_EXPORT FEElemElemList
 {
 public:
 	//! constructor

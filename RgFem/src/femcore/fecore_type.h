@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #pragma once
 #include "fecore_enum.h"
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 class vec2d;
 class vec3d;
@@ -67,4 +67,4 @@ template <> struct fecoreType<mat3ds>
 	static int size() { return 6; }
 };
 
-FECORE_API int fecore_data_size(FEDataType type);
+FEM_EXPORT int fecore_data_size(FEDataType type);

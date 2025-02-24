@@ -33,7 +33,7 @@ SOFTWARE.*/
 class FEMaterial;
 
 // Base class for solid and shell parts. Domains can also have materials assigned.
-class FECORE_API FEDomain : public FEMeshPartition
+class FEM_EXPORT FEDomain : public FEMeshPartition
 {
 public:
 	FEDomain(int nclass, FEModel* fem);

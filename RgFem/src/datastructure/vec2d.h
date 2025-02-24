@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 #pragma once
 #include <math.h>
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 class vec2d
 {

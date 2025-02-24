@@ -31,13 +31,13 @@ SOFTWARE.*/
 #ifdef WIN32
 	#ifdef FECORE_DLL
 		#ifdef fecore_EXPORTS
-			#define FECORE_API __declspec(dllexport)
+			#define FEM_EXPORT __declspec(dllexport)
 		#else
-			#define FECORE_API __declspec(dllimport)
+			#define FEM_EXPORT __declspec(dllimport)
 		#endif
 	#else
-		#define FECORE_API
+		#define FEM_EXPORT
 	#endif
 #else
-	#define FECORE_API
+	#define FEM_EXPORT
 #endif

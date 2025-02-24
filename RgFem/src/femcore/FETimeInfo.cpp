@@ -26,41 +26,47 @@ SOFTWARE.*/
 
 
 
-#pragma once
-#include "FEStepComponent.h"
-#include "FEGlobalVector.h"
-#include <FECore/FEDofList.h>
+#include "stdafx.h"
+#include "FETimeInfo.h"
+#include "DumpStream.h"
 
-//-----------------------------------------------------------------------------
-class FELinearSystem;
-
-//-----------------------------------------------------------------------------
-//! This class is the base class for all classes that affect the state of the model
-//! and contribute directly to the residual and the global stiffness matrix. This
-//! includes most boundary loads, body loads, contact, etc.
-class FEM_EXPORT FEModelLoad : public FEStepComponent
+FETimeInfo::FETimeInfo()
 {
-	FECORE_SUPER_CLASS(FELOAD_ID)
-	FECORE_BASE_CLASS(FEModelLoad)
+	currentTime = 0.0;
+	timeIncrement = 0.0;
+	alpha = 1.0;
+	beta = 0.25;
+	gamma = 0.5;
+	alphaf = 1.0;
+	alpham = 1.0;
+	currentIteration = 0;
+	augmentation = 0;
+	timeStep = 0;
+}
 
-public:
-	//! constructor
-	FEModelLoad(FEModel* pfem);
+FETimeInfo::FETimeInfo(double time, double tinc)
+{
+	currentTime = time;
+	timeIncrement = tinc;
+	alpha = 1.0;
+	beta = 0.25;
+	gamma = 0.5;
+	alphaf = 1.0;
+	alpham = 1.0;
+	currentIteration = 0;
+	augmentation = 0;
+}
 
-	const FEDofList& GetDofList() const;
-	
-	void Serialize(DumpStream& ar) override;
+void FETimeInfo::Serialize(DumpStream& ar)
+{
+	ar & currentTime;
+	ar & timeIncrement;
+	ar & currentIteration;
+	ar & augmentation;
 
-public:
-	// all classes derived from this base class must implement
-	// the following functions.
-
-	//! evaluate the contribution to the external load vector
-	virtual void LoadVector(FEGlobalVector& R);
-
-	//! evaluate the contribution to the global stiffness matrix
-	virtual void StiffnessMatrix(FELinearSystem& LS);
-
-protected:
-	FEDofList	m_dof;
-};
+	ar & alpha;
+	ar & alphaf;
+	ar & alpham;
+	ar & beta;
+	ar & gamma;
+}

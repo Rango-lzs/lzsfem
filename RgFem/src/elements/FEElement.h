@@ -24,6 +24,58 @@ class FEMaterialPoint;
 * 结果输出
 */
 
+/* 单元如何分类
+* 1、实体单元(连续体单元)，3D Solid，2D Plane, 
+* 2、结构单元, Shell, Beam, Truss
+* 3、连接单元, Spring, Cohesive
+* 4、
+*/
+
+
+class FEM_EXPORT FEElementState
+{
+public:
+    //! default constructor
+    FEElementState()
+    {
+    }
+
+    //! destructor
+    ~FEElementState()
+    {
+        Clear();
+    }
+
+    //! copy constructor
+    FEElementState(const FEElementState& s);
+
+    //! assignment operator
+    FEElementState& operator=(const FEElementState& s);
+
+    //! clear state data
+    void Clear()
+    {
+        for (size_t i = 0; i < m_data.size(); ++i)
+            delete m_data[i];
+        m_data.clear();
+    }
+
+    //! create
+    void Create(int n)
+    {
+        m_data.assign(n, static_cast<FEMaterialPoint*>(0));
+    }
+
+    //! operator for easy access to element data
+    FEMaterialPoint*& operator[](int n)
+    {
+        return m_data[n];
+    }
+
+private:
+    std::vector<FEMaterialPoint*> m_data;
+};
+
 class FEM_EXPORT FEElement
 {
 public:
@@ -151,13 +203,14 @@ protected:
 	// into the node list of a domain.
 	std::vector<int>		m_loc_node;	//!< local connectivity
 
+	FEElementState m_state;
 	FEElementTraits*	m_pTraits;		//!< pointer to element traits
 
 };
 
 //-----------------------------------------------------------------------------
 
-class FECORE_API FETrussElement : public FEElement
+class FEM_EXPORT FETrussElement : public FEElement
 {
 public:
 	FETrussElement();
@@ -178,7 +231,7 @@ public:
 //-----------------------------------------------------------------------------
 //! Discrete element class
 
-class FECORE_API FEDiscreteElement : public FEElement
+class FEM_EXPORT FEDiscreteElement : public FEElement
 {
 public:
 	FEDiscreteElement(){}
@@ -188,7 +241,7 @@ public:
 
 //-----------------------------------------------------------------------------
 //!  This class defines a 2D element
-class FECORE_API FEElement2D : public FEElement
+class FEM_EXPORT FEElement2D : public FEElement
 {
 public:
 	//! default constructor
@@ -219,7 +272,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API FELineElement : public FEElement
+class FEM_EXPORT FELineElement : public FEElement
 {
 public:
 	FELineElement();

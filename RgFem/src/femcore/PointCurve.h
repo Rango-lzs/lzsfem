@@ -24,11 +24,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 #pragma once
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 #include "vec2d.h"
 #include <vector>
 
-class FECORE_API PointCurve
+class FEM_EXPORT PointCurve
 {
 	class Imp;
 

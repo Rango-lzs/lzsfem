@@ -41,7 +41,7 @@ class FETimeStepController;
 
 //-----------------------------------------------------------------------------
 //! Base class for finite element analysis
-class FECORE_API FEAnalysis : public FECoreBase
+class FEM_EXPORT FEAnalysis : public FECoreBase
 {
 	FECORE_SUPER_CLASS(FEANALYSIS_ID)
 	FECORE_BASE_CLASS(FEAnalysis);

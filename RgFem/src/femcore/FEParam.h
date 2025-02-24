@@ -11,7 +11,7 @@
 #include "mat3d.h"
 #include <assert.h>
 #include <vector>
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 #include "ParamString.h"
 #include "units.h"
 
@@ -136,12 +136,12 @@ public:
         return *((T*)m_pv);
     }
 
-    FECORE_API FEParamValue component(int n);
+    FEM_EXPORT FEParamValue component(int n);
 };
 
 //-----------------------------------------------------------------------------
 //! This class describes a user-defined parameter  ,是否能用Variant替代，
-class FECORE_API FEParam
+class FEM_EXPORT FEParam
 {
 private:
 	void*			m_pv;		// pointer to variable data
@@ -271,4 +271,4 @@ template<class T> inline T* FEParam::pvalue(int n)
 }
 
 //-----------------------------------------------------------------------------
-FECORE_API FEParamValue GetParameterComponent(const ParamString& paramName, FEParam* param);
+FEM_EXPORT FEParamValue GetParameterComponent(const ParamString& paramName, FEParam* param);

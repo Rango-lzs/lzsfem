@@ -31,7 +31,7 @@ class FEElement;
 
 //---------------------------------------------------------------------------------------
 // Helper class for faster lookup of elements based on their ID
-class FECORE_API FEElementLUT
+class FEM_EXPORT FEElementLUT
 {
 public:
     FEElementLUT(FEMesh& mesh);
@@ -49,7 +49,7 @@ private:
 
 //! All the geometry data is stored in this class.
 
-class FECORE_API FEMesh
+class FEM_EXPORT FEMesh
 {
 public:
     //! constructor
@@ -355,7 +355,7 @@ private:
     }
 };
 
-class FECORE_API FEElementIterator
+class FEM_EXPORT FEElementIterator
 {
 public:
     FEElementIterator(FEMesh* mesh, FEElementSet* elemSet = nullptr);

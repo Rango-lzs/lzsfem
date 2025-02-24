@@ -41,7 +41,7 @@ FEElement* FEElementList::iterator::operator->()
 	return &m_pmesh->Domain(m_ndom).ElementRef(m_nel);
 }
 
-FECORE_API FEElementList::iterator::operator FEElement* ()
+FEM_EXPORT FEElementList::iterator::operator FEElement* ()
 {
 	return &m_pmesh->Domain(m_ndom).ElementRef(m_nel);
 }

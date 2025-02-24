@@ -29,7 +29,7 @@ SOFTWARE.*/
 #pragma once
 #include <vector>
 #include <string>
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 class DumpStream;
 
@@ -48,7 +48,7 @@ class DumpStream;
 
 //-----------------------------------------------------------------------------
 //! Class that manages the variables and degrees of freedoms.
-class FECORE_API DOFS
+class FEM_EXPORT DOFS
 {
 	// Class representing an individual degree of freedom
 	class DOF_ITEM

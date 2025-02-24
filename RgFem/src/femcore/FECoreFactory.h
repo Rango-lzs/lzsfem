@@ -38,7 +38,7 @@ class FECoreBase;
 
 //-----------------------------------------------------------------------------
 //! The factory class contains the mechanism for instantiating a class.
-class FECORE_API FECoreFactory : public FEParamContainer
+class FEM_EXPORT FECoreFactory : public FEParamContainer
 {
 public:
 	//! constructor
@@ -102,7 +102,7 @@ class FEModel;
 //-----------------------------------------------------------------------------
 //! Creation of domains are a little more elaborate and deviate from the usual
 //! factory methods.
-class FECORE_API FEDomainFactory
+class FEM_EXPORT FEDomainFactory
 {
 public:
 	FEDomainFactory(){}

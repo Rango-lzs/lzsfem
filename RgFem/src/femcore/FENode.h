@@ -7,7 +7,7 @@
  *********************************************************************/
 
 #pragma once
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 #include "femcore/DOFS.h"
 #include "datastructure/vec3d.h"
 #include <vector>
@@ -25,7 +25,7 @@ class DumpStream;
 //! dof is fixed, and (c) < -1 if the dof corresponds to a prescribed dof. In
 //! that case the corresponding equation number is given by -ID-2.
 
-class FECORE_API FENode
+class FEM_EXPORT FENode
 {
 public:
 	// Node status flags

@@ -36,7 +36,7 @@ SOFTWARE.*/
 #include "mat3d.h"
 #include "vec3d.h"
 #include "tens4d.h"
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 // This file defines template constructions that are used by the FECore debugger.
 // Don't use anything in here or include this file directly. 
@@ -55,7 +55,7 @@ template <> void fecore_print_T<std::vector<int> >(std::vector<int>* pv);
 
 class FECoreBreakPoint;
 
-class FECORE_API FECoreDebugger
+class FEM_EXPORT FECoreDebugger
 {
 public:
 	class Variable

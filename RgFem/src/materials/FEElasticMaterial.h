@@ -27,40 +27,47 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FEStepComponent.h"
-#include "FEGlobalVector.h"
-#include <FECore/FEDofList.h>
+#include "FESolidMaterial.h"
+#include "FEElasticMaterialPoint.h"
 
 //-----------------------------------------------------------------------------
-class FELinearSystem;
+//! Base class for (hyper-)elastic materials
 
-//-----------------------------------------------------------------------------
-//! This class is the base class for all classes that affect the state of the model
-//! and contribute directly to the residual and the global stiffness matrix. This
-//! includes most boundary loads, body loads, contact, etc.
-class FEM_EXPORT FEModelLoad : public FEStepComponent
+class FEBIOMECH_API FEElasticMaterial : public FESolidMaterial
 {
-	FECORE_SUPER_CLASS(FELOAD_ID)
-	FECORE_BASE_CLASS(FEModelLoad)
+public:
+	//! constructor 
+	FEElasticMaterial(FEModel* pfem);
+
+	//! destructor
+	~FEElasticMaterial();
+
+	//! create material point data for this material
+	FEMaterialPointData* CreateMaterialPointData() override;
+
+	//! calculate strain energy density at material point
+	virtual double StrainEnergyDensity(FEMaterialPoint& pt);
+    
+    // get the elastic material
+    virtual FEElasticMaterial* GetElasticMaterial() { return this; }
 
 public:
-	//! constructor
-	FEModelLoad(FEModel* pfem);
-
-	const FEDofList& GetDofList() const;
-	
-	void Serialize(DumpStream& ar) override;
+	//! evaluates approximation to Cauchy stress using forward difference
+	mat3ds SecantStress(FEMaterialPoint& pt, bool PK2 = false) override;
 
 public:
-	// all classes derived from this base class must implement
-	// the following functions.
-
-	//! evaluate the contribution to the external load vector
-	virtual void LoadVector(FEGlobalVector& R);
-
-	//! evaluate the contribution to the global stiffness matrix
-	virtual void StiffnessMatrix(FELinearSystem& LS);
+    virtual double StrongBondSED(FEMaterialPoint& pt) { return StrainEnergyDensity(pt); }
+    virtual double WeakBondSED(FEMaterialPoint& pt) { return 0; }
 
 protected:
-	FEDofList	m_dof;
+//	DECLARE_FECORE_CLASS();
+	FECORE_BASE_CLASS(FEElasticMaterial);
+};
+
+//-----------------------------------------------------------------------------
+class FEBIOMECH_API FEElasticStress : public FEDomainParameter
+{
+public:
+	FEElasticStress();
+	FEParamValue value(FEMaterialPoint& mp) override;
 };

@@ -41,7 +41,7 @@ class FEGlobalMatrix;
 //       Since a contact interface essentially is a nonlinear constraint, I think
 //       this may make things a lot easier. I already made the function definitions consistent
 //       but am hesitant to push this through at this point. 
-class FECORE_API FESurfacePairConstraint : public FEStepComponent
+class FEM_EXPORT FESurfacePairConstraint : public FEStepComponent
 {
 	FECORE_SUPER_CLASS(FESURFACEINTERFACE_ID)
 	FECORE_BASE_CLASS(FESurfacePairConstraint);

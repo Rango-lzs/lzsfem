@@ -42,7 +42,7 @@ private:
 //! different modules. In particular, it manages the factory classes
 //! which are responsible for the creation of different classes that are registered
 //! with the kernel.
-class FECORE_API FECoreKernel
+class FEM_EXPORT FECoreKernel
 {
 public:
 	// Do not call this function from a plugin as it will not return the correct

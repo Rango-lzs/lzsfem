@@ -23,44 +23,27 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
-
-
-
 #pragma once
-#include "FEStepComponent.h"
-#include "FEGlobalVector.h"
-#include <FECore/FEDofList.h>
+#include "mat3d.h"
+#include <functional>
+#include "FEM_EXPORT.h"
 
-//-----------------------------------------------------------------------------
-class FELinearSystem;
-
-//-----------------------------------------------------------------------------
-//! This class is the base class for all classes that affect the state of the model
-//! and contribute directly to the residual and the global stiffness matrix. This
-//! includes most boundary loads, body loads, contact, etc.
-class FEM_EXPORT FEModelLoad : public FEStepComponent
+template <class T> T weightedAverage(T* d, double* w, int n)
 {
-	FECORE_SUPER_CLASS(FELOAD_ID)
-	FECORE_BASE_CLASS(FEModelLoad)
+	T s = d[0] * w[0];
+	for (int i = 1; i < n; ++i) s += d[i] * w[i];
+	return s;
+}
 
-public:
-	//! constructor
-	FEModelLoad(FEModel* pfem);
+template <class T> T weightedAverage(T* d, double* w, int n, std::function<T(const T&)> fnc)
+{
+	T s = fnc(d[0]) * w[0];
+	for (int i = 1; i < n; ++i) s += fnc(d[i]) * w[i];
+	return s;
+}
 
-	const FEDofList& GetDofList() const;
-	
-	void Serialize(DumpStream& ar) override;
+FEM_EXPORT mat3ds weightedAverageStructureTensor(mat3ds* d, double* w, int n);
 
-public:
-	// all classes derived from this base class must implement
-	// the following functions.
-
-	//! evaluate the contribution to the external load vector
-	virtual void LoadVector(FEGlobalVector& R);
-
-	//! evaluate the contribution to the global stiffness matrix
-	virtual void StiffnessMatrix(FELinearSystem& LS);
-
-protected:
-	FEDofList	m_dof;
-};
+// evaluate Log_p (X)
+FEM_EXPORT mat3ds Log(const mat3ds& p, const mat3ds& X);
+FEM_EXPORT mat3ds Exp(const mat3ds& p, const mat3ds& X);

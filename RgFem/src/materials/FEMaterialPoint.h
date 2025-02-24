@@ -1,8 +1,9 @@
 #pragma once
 
-#include "mat3d.h"
-#include "quatd.h"
-#include "FETimeInfo.h"
+#include "femcore/fem_export.h"
+#include "datastructure/mat3d.h"
+#include "datastructure/quatd.h"
+#include "femcore/FETimeInfo.h"
 #include <vector>
 
 class FEElement;
@@ -18,7 +19,7 @@ class FEMaterialPoint;
 //! point.
 //! 
 
-class FECORE_API FEMaterialPointData
+class FEM_EXPORT FEMaterialPointData
 {
 public:
 	FEMaterialPointData(FEMaterialPointData* ppt = 0);
@@ -73,7 +74,7 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API FEMaterialPoint
+class FEM_EXPORT FEMaterialPoint
 {
 public:
 	FEMaterialPoint(FEMaterialPointData* data = nullptr);
@@ -206,7 +207,7 @@ template <class T> inline const T* FEMaterialPoint::ExtractData() const
 
 //-----------------------------------------------------------------------------
 // Material point base class for materials that define vector properties
-class FECORE_API FEMaterialPointArray : public FEMaterialPointData
+class FEM_EXPORT FEMaterialPointArray : public FEMaterialPointData
 {
 public:
 	FEMaterialPointArray(FEMaterialPointData* ppt = nullptr);
