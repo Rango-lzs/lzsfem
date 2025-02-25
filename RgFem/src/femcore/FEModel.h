@@ -10,11 +10,14 @@
 #include "femcore/fem_export.h"
 #include "femcore/FEObjectBase.h"
 #include "femcore/FEMesh.h"
+#include "femcore/FELinearConstraintManager.h"
+#include "femcore/FENLConstraint.h"
+#include "femcore/FEGlobalData.h"
 
 #include <memory>
 
 /**
- * 定义整个求解模型.整个
+ * 定义整个求解模型. 包含所有的FEM组件，此类可进一步精简，定义每个组件的Manager
  */
 class FE_EXPORT FEModel : public FEObjectBase
 {

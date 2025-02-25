@@ -328,7 +328,6 @@ private:
     vector<FEEdge*> m_Edge;             //!< Edges
 
     vector<FENodeSet*> m_NodeSet;       //!< node sets
-    vector<FESegmentSet*> m_LineSet;    //!< segment sets
     vector<FEElementSet*> m_ElemSet;    //!< element sets
     vector<FEDiscreteSet*> m_DiscSet;   //!< discrete element sets
     vector<FEFacetSet*> m_FaceSet;      //!< facet sets
