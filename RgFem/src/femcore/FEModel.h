@@ -19,7 +19,7 @@
 /**
  * 定义整个求解模型. 包含所有的FEM组件，此类可进一步精简，定义每个组件的Manager
  */
-class FE_EXPORT FEModel : public FEObjectBase
+class FE_EXPORT FEModel: public FEObjectBase
 {
 public:
 	FEModel(void);

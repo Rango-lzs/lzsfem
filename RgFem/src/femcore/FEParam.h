@@ -7,13 +7,13 @@
  *********************************************************************/
 
 #pragma once
-#include "vec3d.h"
-#include "mat3d.h"
+#include "datastructure/vec3d.h"
+#include "datastructure/mat3d.h"
+#include "femcore/fem_export.h"
+
 #include <assert.h>
 #include <vector>
-#include "FEM_EXPORT.h"
-#include "ParamString.h"
-#include "units.h"
+#include <string>
 
 //-----------------------------------------------------------------------------
 class FEParamValidator;
@@ -21,7 +21,9 @@ class DumpStream;
 class FEParamContainer;
 
 //FEParam一般是由FEObject所持有的，比较持久化的参数, 具有更丰富的信息，可能是数组类型
+//FEParamList对其中的FEParam生命周期负责，FEParam对其中具体value的生命周期负责
 //FEParamValue参数里的具体一个值，一般用于运行时取值
+//做减法，而不是做加法
 
 //-----------------------------------------------------------------------------
 // Different supported parameter types
@@ -49,18 +51,6 @@ enum FEParamType {
 	FE_PARAM_MATERIALPOINT
 };
 
-//-----------------------------------------------------------------------------
-// Parameter flags
-enum FEParamFlag {
-	FE_PARAM_ATTRIBUTE = 0x01,		// parameter will be read as attribute
-	FE_PARAM_USER      = 0x02,		// user parameter (owned by parameter list)	
-	FE_PARAM_HIDDEN	   = 0x04,		// Hides parameter (in FEBio Studio)
-	FE_PARAM_ADDLC     = 0x08,		// parameter should get a default load curve in FEBio Studio
-	FE_PARAM_VOLATILE  = 0x10,		// parameter can change (e.g. via a load curve)
-	FE_PARAM_TOPLEVEL  = 0x20,		// parameter should only defined at top-level (materials only)
-	FE_PARAM_WATCH	   = 0x40		// This is a watch parameter 
-};
-
 // class describing the value of parameter
 class FEParamValue
 {
@@ -84,22 +74,36 @@ public:
         m_param = p;
     }
 
+	FEParamValue(bool& v)
+        : FEParamValue(0, &v, FE_PARAM_BOOL)
+    {
+    }
+
+	FEParamValue(int& v)
+        : FEParamValue(0, &v, FE_PARAM_INT)
+    {
+    }
+
     FEParamValue(double& v)
         : FEParamValue(0, &v, FE_PARAM_DOUBLE)
     {
     }
+
     FEParamValue(vec2d& v)
         : FEParamValue(0, &v, FE_PARAM_VEC2D)
     {
     }
+
     FEParamValue(vec3d& v)
         : FEParamValue(0, &v, FE_PARAM_VEC3D)
     {
     }
+
     FEParamValue(mat3ds& v)
         : FEParamValue(0, &v, FE_PARAM_MAT3DS)
     {
     }
+
     FEParamValue(mat3d& v)
         : FEParamValue(0, &v, FE_PARAM_MAT3D)
     {
@@ -130,6 +134,7 @@ public:
     {
         return *((T*)m_pv);
     }
+
     template <typename T>
     const T& value() const
     {
@@ -271,4 +276,4 @@ template<class T> inline T* FEParam::pvalue(int n)
 }
 
 //-----------------------------------------------------------------------------
-FEM_EXPORT FEParamValue GetParameterComponent(const ParamString& paramName, FEParam* param);
+FEM_EXPORT FEParamValue GetParameterComponent(const std::string& paramName, FEParam* param);
