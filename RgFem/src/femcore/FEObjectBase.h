@@ -7,45 +7,8 @@
  *********************************************************************/
 #pragma once
 
-#include "fecore_enum.h"
 #include "femcore/FEParamObject.h"
-#include "FEProperty.h"
-
 #include <string>
-
-// Use this clas to define the base impl class for the convenient of set and get facede class.
-template <class Facade, class... Base>
-class BaseImpl : public Base...
-{
-    static_assert(std::is_class<Facade>::value, "Facade should be a class");
-
-protected:
-    BaseImpl() = default;
-    virtual ~BaseImpl() = default;
-    template <class T>
-    auto f_facade()
-    {
-        std::assert(m_pFacade);
-        using Type = typename std::remove_cv<typename std::remove_pointer<T>::type>::type;
-        return static_cast<Type*>(m_pFacade);
-    }
-    template <class T>
-    auto f_facade() const
-    {
-        std::assert(m_pFacade);
-        using Type = typename std::remove_cv<typename std::remove is_pointer<T>::type>::type;
-        return static_cast<Type*>(m_pFacade);
-    }
-
-private:
-    friend typename Facade;
-    void setFacade(Facade* p)
-    {
-        m_pFacade = p;
-    }
-    Facade* m_pFacade = nullptr;
-};
-
 
 //-----------------------------------------------------------------------------
 class FECoreFactory;
@@ -65,6 +28,12 @@ public:
 
     //! Initialization
     virtual bool Init();
+
+    void SetName(const std::string& name);
+    const std::string& GetName() const
+
+    void SetID(int id);
+    int GetID() const;
 
 public:
     //! number of parameters

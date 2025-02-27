@@ -130,7 +130,7 @@ public:
 };
 
 //=============================================================================
-class FEM_EXPORT FESRISolidElementTraits
+class FECORE_API FESRISolidElementTraits
 {
 public:
 	FESRISolidElementTraits() : m_pTRI(0) {}
@@ -757,7 +757,7 @@ protected:
 //=============================================================================
 // This class defines the traits for surface elements and serves as a
 // base class for the specific surface element formulations.
-class FEM_EXPORT FESurfaceElementTraits : public FEElementTraits
+class FECORE_API FESurfaceElementTraits : public FEElementTraits
 {
 public:
 	FESurfaceElementTraits(int ni, int ne, FE_Element_Shape es, FE_Element_Type et);
@@ -1688,7 +1688,7 @@ public:
 //=============================================================================
 // This class defines the traits for 2D elements and serves as a
 // base class for the specific 2D element formulations.
-class FE2DElementTraits : public FEElementTraits
+class     public FEElementTraits
 {
 public:
 	FE2DElementTraits(int ni, int ne, FE_Element_Shape es, FE_Element_Type et);

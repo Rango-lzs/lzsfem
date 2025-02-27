@@ -95,11 +95,11 @@ void RgFemApp::SetCurrentModel(FEBioModel* fem)
 int RgFemApp::RunModel()
 {
 	// create the FEModel object
-	FEBioModel model;
+	FERgModel model;
     SetCurrentModel(&model);
 
 	// read the input file if specified
-	if (m_cont.inPutFile[0])
+	if (m_config.inPutFile[0])
 	{
 		// read the input file
         if (!model.Input(m_cmd_opts.szfile))
@@ -112,7 +112,17 @@ int RgFemApp::RunModel()
 	}
 
 	// solve the model with the task and control file
-    bool ret = febio::SolveModel(model, m_cmd_opts.sztask, m_cmd_opts.szctrl);
+    //bool ret = febio::SolveModel(model, m_cmd_opts.sztask, m_cmd_opts.szctrl);
+	if (model.Init())
+	{
+		return 1;
+	}
+
+	
+	if (model.Solve())
+	{
+		return 1; // should we catch the exception?
+	}
 	
 	// reset the current model pointer
 	SetCurrentModel(nullptr);

@@ -1,8 +1,6 @@
-
-#include "stdafx.h"
 #include "FEModel.h"
 #include "FELoadController.h"
-#include "FEMaterial.h"
+#include "materials/FEMaterial.h"
 #include "FEModelLoad.h"
 #include "FEBoundaryCondition.h"
 #include "FENodalLoad.h"
@@ -25,11 +23,11 @@
 #include "FEMeshAdaptor.h"
 #include <string>
 #include <map>
-#include "DumpStream.h"
+#include "basicio/DumpStream.h"
 #include "LinearSolver.h"
 #include "FETimeStepController.h"
 #include "Timer.h"
-#include "DumpMemStream.h"
+#include "basicio/DumpMemStream.h"
 #include "FEPlotDataStore.h"
 #include "FESolidDomain.h"
 #include "FEShellDomain.h"
@@ -42,9 +40,57 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------
-// Implementation class for the FEModel class
+// Impl class for the FEModel class
 class FEModel::Impl
 {
+public:
+    struct LoadParam
+    {
+        FEParam* param;
+        int lc;
+
+        double m_scl;
+        vec3d m_vscl;
+
+        LoadParam()
+        {
+            m_scl = 1.0;
+            m_vscl = vec3d(0, 0, 0);
+        }
+
+        void Serialize(DumpStream& ar)
+        {
+            ar& lc;
+            ar& m_scl& m_vscl;
+
+            if (ar.IsShallow() == false)
+            {
+                // we can't save the FEParam* directly, so we need to store meta data and try to find it on loading
+                if (ar.IsSaving())
+                {
+                    FECoreBase* pc = dynamic_cast<FECoreBase*>(param->parent());
+                    assert(pc);
+                    ar << pc;
+                    ar << param->name();
+                }
+                else
+                {
+                    FECoreBase* pc = nullptr;
+                    ar >> pc;
+                    assert(pc);
+
+                    char name[256] = {0};
+                    ar >> name;
+
+                    param = pc->FindParameter(name);
+                    assert(param);
+                }
+            }
+            else
+                param = nullptr;
+        }
+    };
+
 public:
 	Impl(FEModel* fem) : m_fem(fem), m_mesh(fem), m_dmp(*fem)
 	{
@@ -139,7 +185,7 @@ BEGIN_FECORE_CLASS(FEModel, FECoreBase)
 END_FECORE_CLASS();
 
 //-----------------------------------------------------------------------------
-FEModel::FEModel(void) : FECoreBase(this), m_imp(new FEModel::Implementation(this))
+FEModel::FEModel(void) : FECoreBase(this), m_imp(new FEModel::Impl(this))
 {
 	// set the name
 	SetName("fem");
@@ -349,21 +395,6 @@ bool FEModel::Init()
 	tp.currentTime = 0;
 	m_imp->m_ftime0 = 0;
 
-	// initialize global data
-	// TODO: I'd like to do this here for consistency, but
-	//       the problem is that solute dofs (i.e. concentration dofs) have
-	//       to be allocated before the materials are read in.
-	//       So right now the Init function is called when the solute data is created.
-/*	for (int i=0; i<(int) m_GD.size(); ++i)
-	{
-		FEGlobalData* pd = m_GD[i]; assert(pd);
-		if (pd->Init() == false) return false;
-	}
-*/
-	// create and initialize the rigid body data
-	// NOTE: Do this first, since some BC's look at the nodes' rigid id.
-	if (InitRigidSystem() == false) return false;
-
 	// evaluate all load controllers at the initial time
 	for (int i = 0; i < LoadControllers(); ++i)
 	{
@@ -429,19 +460,6 @@ bool FEModel::Init()
 
 	// initialize nonlinear constraints
 	if (InitConstraints() == false) return false;
-
-	// initialize mesh adaptors
-	for (int i = 0; i < MeshAdaptors(); ++i)
-	{
-		FEMeshAdaptor* ma = MeshAdaptor(i);
-		if (ma->Init() == false)
-		{
-			std::string s = ma->GetName();
-			const char* sz = (s.empty() ? "<unnamed>" : s.c_str());
-			feLogError("Mesh adaptor %d (%s) failed to initialize", i + 1, sz);
-			return false;
-		}
-	}
 
 	// evaluate all load parameters
 	// Do this last in case any model components redefined their load curves.
@@ -708,7 +726,7 @@ int FEModel::LoadControllers() const
 //! Attach a load controller to a parameter
 void FEModel::AttachLoadController(FEParam* param, int lc)
 {
-	Implementation::LoadParam lp;
+	Impl::LoadParam lp;
 	lp.param = param;
 	lp.lc = lc;
 
@@ -733,7 +751,7 @@ bool FEModel::DetachLoadController(FEParam* p)
 {
 	for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
 	{
-		Implementation::LoadParam& pi = m_imp->m_Param[i];
+		Impl::LoadParam& pi = m_imp->m_Param[i];
 		if (pi.param == p)
 		{
 			m_imp->m_Param.erase(m_imp->m_Param.begin() + i);
@@ -749,7 +767,7 @@ FELoadController* FEModel::GetLoadController(FEParam* p)
 {
 	for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
 	{
-		Implementation::LoadParam& pi = m_imp->m_Param[i];
+		Impl::LoadParam& pi = m_imp->m_Param[i];
 		if (pi.param == p)
 		{
 			return (pi.lc >= 0 ? GetLoadController(pi.lc) : nullptr);
@@ -1562,7 +1580,7 @@ bool FEModel::EvaluateLoadParameters()
 	int NLC = LoadControllers();
 	for (int i = 0; i<(int)m_imp->m_Param.size(); ++i)
 	{
-		Implementation::LoadParam& pi = m_imp->m_Param[i];
+		Impl::LoadParam& pi = m_imp->m_Param[i];
 		int nlc = pi.lc;
 		if ((nlc >= 0) && (nlc < NLC))
 		{
@@ -2044,13 +2062,13 @@ void FEModel::CopyFrom(FEModel& fem)
 		// add the nonlinear constraint
 		AddNonlinearConstraint(plc_new);
 
-		// add the surface to the mesh (if any)
-        FESurfaceConstraint* psc = dynamic_cast<FESurfaceConstraint*>(plc_new);
-        if (psc)
-        {
-            FESurface* ps = psc->GetSurface();
-            if (ps) mesh.AddSurface(ps);
-        }
+		//// add the surface to the mesh (if any)
+  //      FESurfaceConstraint* psc = dynamic_cast<FESurfaceConstraint*>(plc_new);
+  //      if (psc)
+  //      {
+  //          FESurface* ps = psc->GetSurface();
+  //          if (ps) mesh.AddSurface(ps);
+  //      }
 	}
 
 	// --- Load curves ---
@@ -2081,7 +2099,7 @@ void FEModel::CopyFrom(FEModel& fem)
 //-----------------------------------------------------------------------------
 // This function serializes data to a stream.
 // This is used for running and cold restarts.
-void FEModel::Implementation::Serialize(DumpStream& ar)
+void FEModel::Impl::Serialize(DumpStream& ar)
 {
 	if (ar.IsShallow())
 	{
@@ -2223,27 +2241,6 @@ int FEModel::Timers()
 Timer* FEModel::GetTimer(int i)
 {
 	return &(m_imp->m_timers[i]);
-}
-
-//-----------------------------------------------------------------------------
-//! return number of mesh adaptors
-int FEModel::MeshAdaptors()
-{
-	return (int)m_imp->m_MA.size();
-}
-
-//-----------------------------------------------------------------------------
-//! retrieve a mesh adaptors
-FEMeshAdaptor* FEModel::MeshAdaptor(int i)
-{
-	return m_imp->m_MA[i];
-}
-
-//-----------------------------------------------------------------------------
-//! add a mesh adaptor
-void FEModel::AddMeshAdaptor(FEMeshAdaptor* meshAdaptor)
-{
-	m_imp->m_MA.push_back(meshAdaptor);
 }
 
 //-----------------------------------------------------------------------------

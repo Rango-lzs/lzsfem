@@ -1,4 +1,6 @@
 #pragma once
+
+#include "femcore/meta_object.h"
 #include "datastructure/vec2d.h"
 #include "datastructure/vec3d.h"
 #include "datastructure/mat3d.h"
@@ -83,7 +85,6 @@ public:
     FEParam* AddParameter(std::vector<vec2d>& v, const char* sz);
     FEParam* AddParameter(std::vector<std::string>& v, const char* sz);
     FEParam* AddParameter(FEMaterialPointProperty& v, const char* sz);
-    FEParam* AddParameter(Image& im, const char* sz);
 
     FEParam* AddParameter(int& v, RANGE rng, const char* sz);
     FEParam* AddParameter(double& v, RANGE rng, const char* sz);
