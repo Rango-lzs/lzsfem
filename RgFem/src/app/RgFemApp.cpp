@@ -8,6 +8,7 @@
 
 #include "RgFemApp.h"
 #include "app/CmdOptions.h"
+#include "app/AppUtils.h"
 
 #include "CLI/CLI.hpp"
 
@@ -126,18 +127,18 @@ int RgFemApp::RunModel()
 	
 	// reset the current model pointer
 	SetCurrentModel(nullptr);
-	return  ret? 1 : 0;
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
 // apply configuration changes to model
 void RgFemApp::ApplyConfig(FEBioModel& fem)
 {
-	if (mp_config.m_printParams != -1)
+    if (m_config.m_printParams != -1)
 	{
-		fem.SetPrintParametersFlag(mp_config.m_printParams != 0);
+        fem.SetPrintParametersFlag(m_config.m_printParams != 0);
 	}
-	fem.ShowWarningsAndErrors(mp_config.m_bshowErrors);
+    fem.ShowWarningsAndErrors(m_config.m_bshowErrors);
 }
 
 //-----------------------------------------------------------------------------
@@ -145,7 +146,7 @@ void RgFemApp::ApplyConfig(FEBioModel& fem)
 //
 bool RgFemApp::ParseCmdLine(int nargs, char* argv[])
 {
-	CmdOptions& ops = *mp_cmd_opts;
+	CmdOptions& ops = m_cmd_opts;
 
 	// set default options
 	ops.ndebug = 0;
@@ -173,7 +174,7 @@ bool RgFemApp::ParseCmdLine(int nargs, char* argv[])
 	if (ops.szcnf[0] == 0)
 	{
 		char szpath[1024] = { 0 };
-		febio::get_app_path(szpath, 1023);
+		Rango::get_app_path(szpath, 1023);
 		sprintf(ops.szcnf, "%sfebio.xml", szpath);
 	}
 

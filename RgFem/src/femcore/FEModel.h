@@ -22,7 +22,7 @@ class FEGlobalVariable
 {
 public:
     double v;
-    string name;
+    std::string name;
 };
 
 /**
