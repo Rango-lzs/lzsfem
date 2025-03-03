@@ -1,6 +1,6 @@
 #pragma once
 
-#include "femcore/meta_object.h"
+#include "femcore/MetaObject.h"
 #include "datastructure/vec2d.h"
 #include "datastructure/vec3d.h"
 #include "datastructure/mat3d.h"
@@ -12,6 +12,8 @@
 #include <list>
 #include <memory>
 #include <stdio.h>
+
+class DumpStream;
 
 //-----------------------------------------------------------------------------
 //! Base class for classes that wish to support parameter lists

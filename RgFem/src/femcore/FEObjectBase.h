@@ -30,7 +30,7 @@ public:
     virtual bool Init();
 
     void SetName(const std::string& name);
-    const std::string& GetName() const
+    const std::string& GetName() const;
 
     void SetID(int id);
     int GetID() const;

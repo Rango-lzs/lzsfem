@@ -13,6 +13,8 @@
 #include <string>
 #include <functional>
 
+//是否需要一个RxStore来管理所有的RxClass信息？
+
 class MetaObject; 
 using ObjectConstructor = std::function<MetaObject* ()>;
 
@@ -25,7 +27,7 @@ public:
 
 	std::string name();
 	const MetaClass* parent();
-	bool isKindOf(const MetaClass* pParent);
+	bool isKindOf(const MetaClass* pParent) const;
 
 	MetaObject* create();
 
