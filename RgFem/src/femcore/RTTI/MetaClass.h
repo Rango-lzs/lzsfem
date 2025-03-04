@@ -25,8 +25,8 @@ public:
 	MetaClass(const std::string& name, const MetaClass* pParent, ObjectConstructor cons);
 	~MetaClass() = default;
 
-	std::string name();
-	const MetaClass* parent();
+	const std::string& name() const;
+	const MetaClass* parent() const;
 	bool isKindOf(const MetaClass* pParent) const;
 
 	MetaObject* create();
@@ -35,6 +35,19 @@ private:
 	std::string m_name;
 	const MetaClass* mp_parent;
 	ObjectConstructor m_constructor;
+};
+
+template<class T>
+class ConcretMeta : public MetaClass
+{
+public:
+	static const MetaClass* instance()
+	{
+		static ConcretMeta s_meta;
+		return &s_meta;
+	}
+
+	ConcretMeta() {}
 };
 
 #endif

@@ -27,29 +27,4 @@ protected:
 	MetaObject() = default;
 };
 
-class DemoObject : public MetaObject
-{
-public:
-	DemoObject() {}
-
-	virtual const const MetaClass* meta()
-	{
-		return mpMeta;
-	}
-
-	static const MetaClass* staic_meta()
-	{
-		return mpMeta;
-	}
-public:
-	void member()
-	{
-
-	}
-private:
-	static MetaClass* mpMeta;
-};
-
-//MetaClass* DemoObject::mpMeta = new MetaClass("DemoObject", MetaObject::meta(), []() { return new DemoObject(); });
-
 #endif
