@@ -17,6 +17,11 @@ public:
 		return mpMeta;
 	}
 
+	static std::string class_name()
+    {
+        return "DemoObject";
+    }          
+
 	static MetaObject* meta_cast(MetaObject* pOther)
 	{
         if (!pOther)

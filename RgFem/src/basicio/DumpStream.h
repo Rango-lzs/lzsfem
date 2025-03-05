@@ -1,43 +1,15 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
-#include <vector>
-#include <string>
-#include <map>
-#include <string.h>
+
 #include "vec3d.h"
 #include "mat3d.h"
 #include "quatd.h"
 #include "tens3d.h"
-#include "fecore_api.h"
-#include "FECoreKernel.h"
+#include "femcore/fem_export.h"
 #include "matrix.h"
+
+#include <vector>
+#include <string>
+#include <map>
 
 //-----------------------------------------------------------------------------
 class FEModel;
@@ -69,14 +41,18 @@ enum TypeID
 #define uchar unsigned char
 #endif
 
+//用于序列化的流，用于文件保存，重启动等
+// 自动步长尝试的时候，需要回退数据
+// 
 //-----------------------------------------------------------------------------
 //! A dump stream is used to serialize data to and from a data stream.
 //! This is used in FEBio for running and cold restarts. 
 //! This is just an abstract base class. Classes must be derived from this
 //! to implement the actual storage mechanism.
-class FECORE_API DumpStream
+class FEM_EXPORT DumpStream
 {
-public: 
+public:
+	//数据块
 	class DataBlock
 	{
 	public:

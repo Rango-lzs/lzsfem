@@ -47,6 +47,7 @@ public:
 		return &s_meta;
 	}
 
+private:
 	ConcretMeta() {}
 };
 
