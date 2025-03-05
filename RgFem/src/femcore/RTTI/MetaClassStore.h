@@ -8,12 +8,10 @@
 
 #pragma once
 #include "femcore/fem_export.h"
-#include "femcore/RTTI/MetaClass.h"
 #include <map>
 #include <string>
 
 class MetaClass;
-
 //这个类用于存储所有类的MetaClass信息，
 //需要通过类名称来获取其对应的MetaClass，从而构造类的实例
 //这个类应该是个单例
@@ -25,15 +23,10 @@ public:
         static MetaClassStore metaStore;
         return &metaStore;
     }
-    const MetaClass* get(const std::string& rxName) const
-    {
-        return m_meta_store.at(rxName);
-    }
-    void insert(const MetaClass* pMeta)
-    {
-        m_meta_store.emplace(pMeta->name(), pMeta);
-    }
-
+    const MetaClass* get(const std::string& rxName) const;
+    
+    void insert(const MetaClass* pMeta);
+    
 private:
     MetaClassStore();
     std::map<std::string, const MetaClass*> m_meta_store;

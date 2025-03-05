@@ -8,7 +8,7 @@
 
 #include "femcore/RTTI/MetaClass.h"
 
- MetaClass::MetaClass(const std::string& name, const MetaClass* pParent, ObjectConstructor cons)
+ MetaClass::MetaClass(std::string name, const MetaClass* pParent, ObjectConstructor cons)
 	 :m_name(name)
 	 ,mp_parent(pParent)
 	 ,m_constructor(std::move(cons))
