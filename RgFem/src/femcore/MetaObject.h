@@ -11,19 +11,22 @@
 #define META_OBJECT_H
 
 #include "femcore/fem_export.h"
+#include <string>
 
 class MetaClass;
 class FEM_EXPORT MetaObject
 {
 public:
+	using BaseClass = void;
 	virtual ~MetaObject() = default;
 
 	virtual const MetaClass* meta() const;  //called by instance
 	static const MetaClass* staic_meta();  //called by class
-	static MetaObject* meta_cast(MetaObject* pOther);	
+	static MetaObject* meta_cast(MetaObject* pOther);
+    static std::string class_name();
 	bool isKindOf(const MetaClass* pMeta) const;
 
-protected:
+public:
 	MetaObject() = default;
 };
 

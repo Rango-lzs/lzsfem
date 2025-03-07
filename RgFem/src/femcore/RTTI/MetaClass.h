@@ -11,6 +11,7 @@
 #define META_CLASS_H
 
 #include "femcore/RTTI/MetaClassStore.h"
+#include "femcore/MetaObject.h"
 #include <functional>
 #include <string>
 
@@ -51,7 +52,25 @@ public:
 
 private:
     ConcretMeta()
-        : MetaClass("name", ConcretMeta<T::BaseClass>::instance(), []() ->  MetaObject* { return new T(); })
+        : MetaClass(T::class_name(), ConcretMeta<T::BaseClass>::instance(), []() -> MetaObject* { return new T(); })
+    {
+    }
+};
+
+template <>
+class ConcretMeta<MetaObject> : public MetaClass
+{
+public:
+    static const MetaClass* instance()
+    {
+        static ConcretMeta s_meta;
+        MetaClassStore::instance()->insert(&s_meta);
+        return &s_meta;
+    }
+
+private:
+    ConcretMeta()
+        : MetaClass(MetaObject::class_name(), nullptr, []() -> MetaObject* { return nullptr; })
     {
     }
 };

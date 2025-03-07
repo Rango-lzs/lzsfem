@@ -1,80 +1,39 @@
+/*********************************************************************
+ * \file   RTTIMacroDefine.h
+ * \brief  
+ * 
+ * \author Leizs
+ * \date   March 2025
+ *********************************************************************/
 
-class MetaClass;
-// 宏定义辅助注册类型
-#define DECLARE_RTTI_CLASS(ClassName, BaseClass)                                                                       \
+#pragma once
+
+#define DECLARE_META_CLASS(DERIVE_CLASS, BASE_CLASS)                                                                   \
 public:                                                                                                                \
-    static const MetaClass* static_meta()                                                                             \
+    using BaseClass = BASE_CLASS;                                                                                      \
+    virtual const const MetaClass* meta() const;                                                                       \
+    static const MetaClass* staic_meta();                                                                              \
+    static std::string class_name();                                                                                   \
+    static MetaObject* meta_cast(MetaObject* pOther)
+
+
+#define DEFINE_META_CLASS(DERIVE_CLASS, BASE_CLASS)                                                                    \
+    const const MetaClass* DERIVE_CLASS::meta() const                                                                  \
     {                                                                                                                  \
-        static const MetaClass MetaClass(#ClassName, BaseClass::static_meta(),                                         \
-                                       []() -> std::unique_ptr<MetaObject> { return std::make_unique<ClassName>(); }); \
-        return &MetaClass;                                                                                              \
+        return DERIVE_CLASS::staic_meta();                                                                             \
     }                                                                                                                  \
-    const MetaClass* meta() const override                                                                           \
+    const MetaClass* DERIVE_CLASS::staic_meta()                                                                        \
     {                                                                                                                  \
-        return static_meta();                                                                                        \
+        return ConcretMeta<DERIVE_CLASS>::instance();                                                                  \
     }                                                                                                                  \
-    void RegisterType() const                                                                                          \
+    std::string DERIVE_CLASS::class_name()                                                                             \
     {                                                                                                                  \
-        RTTIFactory::GetInstance().RegisterType(GetStaticType());                                                      \
+        return #DERIVE_CLASS;                                                                                          \
     }                                                                                                                  \
-    ClassName()                                                                                                        \
+    MetaObject* DERIVE_CLASS::meta_cast(MetaObject* pOther)                                                            \
     {                                                                                                                  \
-        RegisterType();                                                                                                \
-    }
-
-
-#define DEFINE_RTTI_CLASS(ClassName)                                                                                   \
-    static const MetaClass* GetStaticType()                                                                             \
-    {                                                                                                                  \
-        static const MetaClass MetaClass(#ClassName, nullptr,                                                            \
-                                       []() -> std::unique_ptr<RTTIObject> { return std::make_unique<ClassName>(); }); \
-        return &MetaClass;                                                                                              \
+        if (!pOther)                                                                                                   \
+            return nullptr;                                                                                            \
+        return pOther->isKindOf(MetaObject::staic_meta()) ? static_cast<MetaObject*>(pOther) : nullptr;                \
     }                                                                                                                  \
-    const MetaClass* GetType() const override                                                                           \
-    {                                                                                                                  \
-        return GetStaticType();                                                                                        \
-    }                                                                                                                  \
-    void RegisterType() const                                                                                          \
-    {                                                                                                                  \
-        RTTIFactory::GetInstance().RegisterType(GetStaticType());                                                      \
-    }                                                                                                                  \
-    ClassName()                                                                                                        \
-    {                                                                                                                  \
-        RegisterType();                                                                                                \
-    }
-
-
-
-// 示例类层次结构
-class Base : public MetaObject
-{
-    DEFINE_RTTI_CLASS(Base)
-};
-
-class Derived : public Base
-{
-    DECLARE_RTTI_CLASS(Derived, Base)
-};
-
-class FurtherDerived : public Derived
-{
-    DECLARE_RTTI_CLASS(FurtherDerived, Derived)
-};
-
-int main()
-{
-    // 通过工厂创建实例
-    auto base = RTTIFactory::GetInstance().Create("Base");
-    auto derived = RTTIFactory::GetInstance().Create("Derived");
-
-    std::cout << "Base type: " << base->GetType()->GetName() << std::endl;
-    std::cout << "Derived type: " << derived->GetType()->GetName() << std::endl;
-
-    // 动态转换测试
-    if (auto* derivedPtr = derived->DynamicCast<Base>())
-    {
-        std::cout << "Successfully cast to Base" << std::endl;
-    }
-
-    return 0;
-}
+    static const MetaClass* s_pMeta = ConcretMeta<DERIVE_CLASS>::instance()

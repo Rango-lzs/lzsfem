@@ -21,6 +21,11 @@ const MetaClass* MetaObject::staic_meta()
     return gsMetaObjClass;
 }
 
+std::string class_name()
+{
+    return "MetaObject";
+}
+
 MetaObject* MetaObject::meta_cast(MetaObject* pOther)
 {
     if (!pOther)

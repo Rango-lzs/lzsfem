@@ -1,6 +1,8 @@
 #pragma once
 
 #include "femcore/MetaObject.h"
+#include "femcore/RTTI/RTTIMacroDefine.h"
+
 #include "datastructure/vec2d.h"
 #include "datastructure/vec3d.h"
 #include "datastructure/mat3d.h"
@@ -14,11 +16,13 @@
 #include <stdio.h>
 
 class DumpStream;
+class FEParameterList;
 
 //-----------------------------------------------------------------------------
-//! Base class for classes that wish to support parameter lists
+//!每一个FEM对象都需要由一些参数定义，这些参数可能是通过输入文件解析，也可以手动设置
 class FEM_EXPORT FEParamObject : public MetaObject
 {
+    DECLARE_META_CLASS(FEParamObject, MetaObject);
 public:
     //! constructor
     FEParamObject();
