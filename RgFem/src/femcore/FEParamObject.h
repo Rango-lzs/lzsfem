@@ -63,7 +63,7 @@ public:
 
 public:
     //! This function will be overridden by each class that defines a parameter list
-    virtual void BuildParamList();
+    virtual void BuildParamList() = 0;
 
     //! Add a parameter to the list
     FEParam* AddParameter(void* pv, FEParamType itype, int ndim, const char* sz, bool* watch = nullptr);
@@ -132,7 +132,7 @@ void FEParamObject::SetParameter(const char* sz, T v)
 //    define a parameter list
 
 // the following macro declares the parameter list for a material
-#define DECLARE_FECORE_CLASS()                                                                                         \
+#define DECLARE_PARAM_LIST()                                                                                         \
 public:                                                                                                                \
     void BuildParamList() override;
 
@@ -144,7 +144,7 @@ public:                                                                         
     }
 
 // the BEGIN_FECORE_CLASS defines the beginning of a parameter list
-#define BEGIN_FECORE_CLASS(theClass, baseClass)                                                                        \
+#define BEGIN_PARAM_DEFINE(theClass, baseClass)                                                                        \
     void theClass::BuildParamList()                                                                                    \
     {                                                                                                                  \
         baseClass::BuildParamList();
@@ -153,7 +153,7 @@ public:                                                                         
 #define ADD_PARAMETER(...)   AddParameter(__VA_ARGS__)
 
 // the END_FECORE_CLASS defines the end of a parameter list
-#define END_FECORE_CLASS()   }
+#define END_PARAM_DEFINE()   }
 
 // macro for starting a parameter group
 #define BEGIN_PARAM_GROUP(a) BeginParameterGroup(a)
