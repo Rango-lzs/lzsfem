@@ -1,8 +1,6 @@
-#include "stdafx.h"
 #include "FEAnalysis.h"
-#include "FEModel.h"
-#include "FECoreKernel.h"
-#include "log.h"
+#include "femcore/FEModel.h"
+#include "logger/log.h"
 #include "DOFS.h"
 #include "MatrixProfile.h"
 #include "FEBoundaryCondition.h"
@@ -10,11 +8,11 @@
 #include "FELinearConstraintManager.h"
 #include "FEShellDomain.h"
 #include "FEMeshAdaptor.h"
-#include "FETimeStepController.h"
+#include "femcore/TimeStep/FETimeStepController.h"
 #include "FEModule.h"
 
 //---------------------------------------------------------------------------------------------
-BEGIN_PARAM_DEFINE(FEAnalysis, FE0bjectBase)
+BEGIN_PARAM_DEFINE(FEAnalysis, FEObjectBase)
 
 	BEGIN_PARAM_GROUP("Analysis");
 		ADD_PARAMETER(m_nanalysis, "analysis");// , 0, "STATIC\0DYNAMIC\0STEADY-STATE\0TRANSIENT=1\0");
@@ -49,7 +47,7 @@ BEGIN_PARAM_DEFINE(FEAnalysis, FE0bjectBase)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEAnalysis::FEAnalysis(FEModel* fem) : FECoreBase(fem)
+FEAnalysis::FEAnalysis(FEModel* fem) : FEObjectBase(fem)
 {
 	m_psolver = nullptr;
 	m_tend = 0.0;
@@ -345,6 +343,7 @@ bool FEAnalysis::InitSolver()
 }
 
 //-----------------------------------------------------------------------------
+//分析步求解算法流程
 bool FEAnalysis::Solve()
 {
 	FEModel& fem = *GetFEModel();

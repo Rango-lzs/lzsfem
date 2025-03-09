@@ -1,4 +1,5 @@
 #pragma once
+#include "femcore/FEObjectBase.h"
 #include <vector>
 
 //-----------------------------------------------------------------------------
@@ -11,10 +12,9 @@ class FETimeStepController;
 
 //-----------------------------------------------------------------------------
 //! Base class for finite element analysis
-class FEM_EXPORT FEAnalysis : public FECoreBase
+class FEM_EXPORT FEAnalysis : public FEObjectBase
 {
-	FECORE_SUPER_CLASS(FEANALYSIS_ID)
-	FECORE_BASE_CLASS(FEAnalysis);
+	DECLARE_META_CLASS(FEAnalysis, FEObjectBase);
 
 public:
 	//! constructor
@@ -122,7 +122,7 @@ public:
 
 	// --- Time Step Data ---
 	//{
-		int		m_ntime;		//!< nr of timesteps
+		int		m_ntime;		//时间步数
 		double	m_final_time;	//!< end time for this time step
 		double	m_dt;			//!< current time step 
 		double	m_dt0;			//!< initial time step size
@@ -159,5 +159,5 @@ protected:
 	std::vector<int>				m_Dom;	//!< list of active domains for this analysis
 	std::vector<FEStepComponent*>	m_MC;	//!< array of model components active during this step
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
