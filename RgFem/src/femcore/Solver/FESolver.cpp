@@ -1,32 +1,11 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
+/*****************************************************************
+ * \file   FESolver.cpp
+ * \brief  
+ * 
+ * \author 11914
+ * \date   March 2025
+ *********************************************************************/
 
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FESolver.h"
 #include "FEModel.h"
 #include "FENodeReorder.h"
@@ -38,19 +17,18 @@ SOFTWARE.*/
 #include "FENodalLoad.h"
 #include "LinearSolver.h"
 
-BEGIN_FECORE_CLASS(FESolver, FECoreBase)
+BEGIN_PARAM_DEFINE(FESolver, FEObjectBase)
 	BEGIN_PARAM_GROUP("linear system");
 		ADD_PARAMETER(m_msymm    , "symmetric_stiffness", 0, "non-symmetric\0symmetric\0symmetric structure\0");
 		ADD_PARAMETER(m_eq_scheme, "equation_scheme", 0, "staggered\0block\0");
 		ADD_PARAMETER(m_eq_order , "equation_order", 0, "default\0reverse\0febio2\0");
 		ADD_PARAMETER(m_bwopt    , "optimize_bw");
 	END_PARAM_GROUP();
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FESolver::FESolver(FEModel* fem) : FECoreBase(fem)
+FESolver::FESolver(FEModel* fem) : FEObjectBase(fem)
 { 
-	m_msymm = REAL_SYMMETRIC; // assume symmetric stiffness matrix
 	m_niter = 0;
 
 	m_nref = 0;
@@ -61,9 +39,6 @@ FESolver::FESolver(FEModel* fem) : FECoreBase(fem)
 	m_neq = 0;
 
 	m_bwopt = false;
-
-	m_eq_scheme = EQUATION_SCHEME::STAGGERED;
-	m_eq_order = EQUATION_ORDER::NORMAL_ORDER;
 }
 
 //-----------------------------------------------------------------------------
@@ -79,7 +54,7 @@ void FESolver::SetEquationScheme(int scheme)
 
 //-----------------------------------------------------------------------------
 //! set the linear system partitions
-void FESolver::SetPartitions(const vector<int>& part)
+void FESolver::SetPartitions(const std::vector<int>& part)
 {
 	m_part = part;
 }
@@ -93,18 +68,12 @@ int FESolver::GetPartitionSize(int partition)
 	else return 0;
 }
 
-//-----------------------------------------------------------------------------
-//! get the current stiffness matrix
-FEGlobalMatrix* FESolver::GetStiffnessMatrix()
-{
-	return nullptr;
-}
 
 //-----------------------------------------------------------------------------
-//! get the current load vector
-std::vector<double> FESolver::GetLoadVector()
+//! get the current load std::vector
+std::std::vector<double> FESolver::GetLoadstd::vector()
 {
-	return std::vector<double>();
+	return std::std::vector<double>();
 }
 
 //-----------------------------------------------------------------------------
@@ -138,19 +107,12 @@ int FESolver::MatrixSymmetryFlag() const
 //! get matrix type
 Matrix_Type FESolver::MatrixType() const
 {
-	Matrix_Type mtype;
-	switch (m_msymm)
-	{
-	case REAL_UNSYMMETRIC   : mtype = REAL_UNSYMMETRIC; break;
-	case REAL_SYMMETRIC     : mtype = REAL_SYMMETRIC; break;
-	case REAL_SYMM_STRUCTURE: mtype = REAL_SYMM_STRUCTURE; break;
-	}
-	return mtype;
+	return (Matrix_Type)mtype;
 }
 
 //-----------------------------------------------------------------------------
-// extract the (square) norm of a solution vector
-double FESolver::ExtractSolutionNorm(const vector<double>& v, const FEDofList& dofs) const
+// extract the (square) norm of a solution std::vector
+double FESolver::ExtractSolutionNorm(const std::vector<double>& v, const FEDofList& dofs) const
 {
 	assert(v.size() == m_dofMap.size());
 	double norm = 0;
@@ -165,10 +127,10 @@ double FESolver::ExtractSolutionNorm(const vector<double>& v, const FEDofList& d
 }
 
 //-----------------------------------------------------------------------------
-// return the solution vector
-std::vector<double> FESolver::GetSolutionVector() const
+// return the solution std::vector
+std::std::vector<double> FESolver::GetSolutionstd::vector() const
 {
-	return std::vector<double>();
+	return std::std::vector<double>();
 }
 
 //-----------------------------------------------------------------------------
@@ -197,7 +159,7 @@ bool FESolver::HasActiveDofs(const FEDofList& dof)
 
 //-----------------------------------------------------------------------------
 // get the active dof map (returns nr of functions)
-int FESolver::GetActiveDofMap(vector<int>& activeDofMap)
+int FESolver::GetActiveDofMap(std::vector<int>& activeDofMap)
 {
 	// get the dof map
 	int neq = (int)m_dofMap.size();
@@ -219,7 +181,7 @@ int FESolver::GetActiveDofMap(vector<int>& activeDofMap)
 
 	// create the conversion table
 	int nsize = imax - imin + 1;
-	vector<int> LUT(nsize, -1);
+	std::vector<int> LUT(nsize, -1);
 	for (size_t i = 0; i < neq; ++i)
 	{
 		LUT[m_dofMap[i] - imin] = 1;
@@ -256,7 +218,7 @@ void FESolver::BuildMatrixProfile(FEGlobalMatrix& G, bool breset)
 	// (otherwise we only build the "dynamic" profile)
 	if (breset)
 	{
-		vector<int> elm;
+		std::vector<int> elm;
 
 		// Add all elements to the profile
 		// Loop over all active domains
@@ -347,7 +309,7 @@ bool FESolver::InitEquations()
 
 	// reorder the node numbers
 	int NN = mesh.Nodes();
-	vector<int> P(NN);
+	std::vector<int> P(NN);
     
     // see if we need to optimize the bandwidth
 	if (m_bwopt)
@@ -548,7 +510,7 @@ bool FESolver::InitEquations2()
 
 	// reorder the node numbers
 	int NN = mesh.Nodes();
-	vector<int> P(NN);
+	std::vector<int> P(NN);
 
 	// see if we need to optimize the bandwidth
 	if (m_bwopt)
@@ -743,7 +705,7 @@ void FESolver::Serialize(DumpStream& ar)
 
 //-----------------------------------------------------------------------------
 //! Update the state of the model
-void FESolver::Update(std::vector<double>& u)
+void FESolver::Update(std::std::vector<double>& u)
 { 
 	assert(false); 
 };
@@ -803,7 +765,7 @@ FENodalDofInfo FESolver::GetDOFInfoFromEquation(int ieq)
 	for (int i = 0; i < mesh.Nodes(); ++i)
 	{
 		FENode& node = mesh.Node(i);
-		vector<int>& id = node.m_ID;
+		std::vector<int>& id = node.m_ID;
 		for (int j = 0; j < id.size(); ++j)
 		{
 			if (id[j] == ieq)

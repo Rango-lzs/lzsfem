@@ -529,49 +529,7 @@ int FEAnalysis::SolveTimeStep()
 				if (fem.DoCallback(CB_TIMESTEP_SOLVED) == false)
 				{
 					return false;
-				}
-
-				if (fem.MeshAdaptors())
-				{
-					fem.GetTime().augmentation = niter;
-					feLog("\n=== Applying mesh adaptors: iteration %d\n", niter + 1);
-					for (int i = 0; i < fem.MeshAdaptors(); ++i)
-					{
-						FEMeshAdaptor* meshAdaptor = fem.MeshAdaptor(i);
-						if (meshAdaptor->IsActive())
-						{
-							feLog("*mesh adaptor %d (%s):\n", i + 1, meshAdaptor->GetTypeStr());
-
-							// Apply the mesh adaptor. 
-							// It will return true if the mesh was modified. 
-							bool meshModified = meshAdaptor->Apply(niter);
-
-							bconv = ((meshModified == false) && bconv);
-							feLog("\n");
-						}
-					}
-					niter++;
-
-					if (bconv == false)
-					{
-						// we need to clear the FE solver and then reinitialize it again
-						FESolver* solver = GetFESolver();
-						solver->Clean();
-
-						// reinitialize it
-						InitSolver();
-
-						// inform listeners that the mesh was remeshed
-						fem.DoCallback(CB_REMESH);
-					}
-					feLog("\n");
-
-					if (m_badaptorReSolve == false)
-					{
-						bconv = true;
-						break;
-					}
-				}
+				}				
 			}
 			else break;
 		}

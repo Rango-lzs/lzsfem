@@ -124,10 +124,10 @@ public:
 	int GetPartitionSize(int partition);
 
 	//! get the current stiffness matrix
-	virtual FEGlobalMatrix* GetStiffnessMatrix();
+	virtual FEGlobalMatrix* GetStiffnessMatrix() = 0;
 
 	//! get the current load vector
-	virtual std::vector<double> GetLoadVector();
+	virtual std::vector<double> GetLoadVector() = 0;
 
 	// get the linear solver
 	virtual LinearSolver* GetLinearSolver() = 0;
@@ -145,7 +145,7 @@ public:
 	bool HasActiveDofs(const FEDofList& dof);
 
 	// get the active dof map (returns nr of functions)
-	int GetActiveDofMap(vector<int>& dofMap);
+	int GetActiveDofMap(std::vector<int>& dofMap);
 
 	// return the node (mesh index) from an equation number
 	FENodalDofInfo GetDOFInfoFromEquation(int ieq);
