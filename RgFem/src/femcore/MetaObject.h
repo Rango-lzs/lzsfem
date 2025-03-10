@@ -18,9 +18,9 @@ class FEM_EXPORT MetaObject
 {
 public:
 	using BaseClass = void;
-	virtual ~MetaObject() = default;
+	virtual ~MetaObject() = 0;
 
-	virtual const MetaClass* meta() const;  //called by instance
+	virtual const MetaClass* meta() const = 0;  //called by instance
 	static const MetaClass* staic_meta();  //called by class
 	static MetaObject* meta_cast(MetaObject* pOther);
     static std::string class_name();

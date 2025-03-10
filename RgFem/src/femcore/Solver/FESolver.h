@@ -1,37 +1,9 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
-#include "FECoreBase.h"
+#include "femcore/FEObjectBase.h"
 #include "Timer.h"
 #include "matrix.h"
 #include "vector.h"
-#include "FEDofList.h"
+#include "femcore/FEDofList.h"
 #include "FETimeInfo.h"
 
 //-----------------------------------------------------------------------------
@@ -72,7 +44,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // structure identifying nodal dof info
-struct FECORE_API FENodalDofInfo
+struct FEM_EXPORT FENodalDofInfo
 {
 	int		m_eq = -1;		// equation number
 	int		m_node = -1;		// 0-based index into mesh!
@@ -92,10 +64,9 @@ class FEGlobalVector;
 //! A class derived from FESolver implements a solver for a specific type
 //! of physics problem. It takes the FEModel in its constructor and implements
 //! the SolveStep function to solve the FE problem.
-class FECORE_API FESolver : public FECoreBase
+class FEM_EXPORT FESolver : public FEObjectBase
 {
-	FECORE_SUPER_CLASS(FESOLVER_ID)
-	FECORE_BASE_CLASS(FESolver)
+    DECLARE_META_CLASS(FESolver, FEObjectBase);
 
 public:
 	//! constructor
@@ -118,7 +89,7 @@ public:
 	virtual void Reset();
 
 	// Initialize linear equation system
-	virtual bool InitEquations();
+	virtual bool InitEquations() = 0;
 
 	// New equation initialization procedure
 	// TODO: work in progress
@@ -147,7 +118,7 @@ public:
 	void SetEquationScheme(int scheme);
 
 	//! set the linear system partitions
-	void SetPartitions(const vector<int>& part);
+	void SetPartitions(const std::vector<int>& part);
 
 	//! Get the size of a partition
 	int GetPartitionSize(int partition);
@@ -159,7 +130,7 @@ public:
 	virtual std::vector<double> GetLoadVector();
 
 	// get the linear solver
-	virtual LinearSolver* GetLinearSolver();
+	virtual LinearSolver* GetLinearSolver() = 0;
 
 	//! Matrix symmetry flag
 	int MatrixSymmetryFlag() const;
@@ -181,7 +152,7 @@ public:
 
 public:
 	// extract the (square) norm of a solution vector
-	double ExtractSolutionNorm(const vector<double>& v, const FEDofList& dofs) const;
+	double ExtractSolutionNorm(const std::vector<double>& v, const FEDofList& dofs) const;
 
 	// return the solution vector
 	virtual std::vector<double> GetSolutionVector() const;
@@ -207,7 +178,7 @@ public: //TODO Move these parameters elsewhere
 
 protected:
 	// list of solution variables
-	vector<FESolutionVariable>	m_Var;
+	std::vector<FESolutionVariable>	m_Var;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };

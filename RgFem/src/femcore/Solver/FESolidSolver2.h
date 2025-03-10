@@ -1,44 +1,16 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
 
-#include "FECore/FENewtonSolver.h"
-#include <FECore/FETimeInfo.h>
+#include "femcore/Solver/FENewtonSolver.h"
+#include "femcore/FETimeInfo.h"
 #include "FECore/FEGlobalVector.h"
-#include "FERigidSolver.h"
+#include "femcore/Solver/FERigidSolver.h"
 #include <FECore/FEDofList.h>
 
 //-----------------------------------------------------------------------------
 //! The FESolidSolver2 class solves large deformation solid mechanics problems
 //! It can deal with quasi-static and dynamic problems
 //! 
-class FEBIOMECH_API FESolidSolver2 : public FENewtonSolver
+class FEM_EXPORT FESolidSolver2 : public FENewtonSolver
 {
 	enum ARC_LENGTH_METHOD {
 		NONE,
@@ -74,21 +46,21 @@ public:
 public:
 	//{ --- evaluation and update ---
 		//! Perform an update
-		void Update(vector<double>& ui) override;
+		void Update(std::vector<double>& ui) override;
 
 		//! perform an updated where ui also contains displacement increments of prescribed displacements
 		//! NOTE: This is a temporary hack that is only by the JFNKMatrix
-		void Update2(const vector<double>& ui) override;
+		void Update2(const std::vector<double>& ui) override;
 
 		//! update nodal positions, velocities, accelerations, etc.
-		virtual void UpdateKinematics(vector<double>& ui);
+		virtual void UpdateKinematics(std::vector<double>& ui);
 
 		//! Update EAS
-		void UpdateEAS(vector<double>& ui);
-		void UpdateIncrementsEAS(vector<double>& ui, const bool binc);
+		void UpdateEAS(std::vector<double>& ui);
+		void UpdateIncrementsEAS(std::vector<double>& ui, const bool binc);
 
 		//! update DOF increments
-		virtual void UpdateIncrements(vector<double>& Ui, vector<double>& ui, bool emap);
+		virtual void UpdateIncrements(std::vector<double>& Ui, std::vector<double>& ui, bool emap);
 	//}
 
 	//{ --- Solution functions ---
@@ -121,7 +93,7 @@ public:
 		void ContactForces(FEGlobalVector& R);
 
 		//! Calculates residual
-		virtual bool Residual(vector<double>& R) override;
+		virtual bool Residual(std::vector<double>& R) override;
 
 		//! Calculate nonlinear constraint forces
 		void NonLinearConstraintForces(FEGlobalVector& R, const FETimeInfo& tp);
@@ -143,10 +115,10 @@ public:
 	int		m_nreq;			//!< start of rigid body equations
 
 public:
-	vector<double> m_Fr;	//!< nodal reaction forces
-	vector<double> m_Fint;	//!< internal load vector
-	vector<double> m_Fext;	//!< external load vector
-	vector<double> m_Uip;	//!< previous converged displacement increment
+	std::vector<double> m_Fr;	//!< nodal reaction forces
+	std::vector<double> m_Fint;	//!< internal load std::vector
+	std::vector<double> m_Fext;	//!< external load std::vector
+	std::vector<double> m_Uip;	//!< previous converged displacement increment
 
     // generalized alpha method (for dynamic analyses)
     double  m_rhoi;         //!< spectral radius

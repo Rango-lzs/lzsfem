@@ -394,6 +394,7 @@ bool FEAnalysis::Solve()
 
 		// Inform that the time is about to change. (Plugins can use 
 		// this callback to modify time step)
+		// 使用观察者模式
 		fem.DoCallback(CB_UPDATE_TIME);
 
 		// update time
@@ -502,6 +503,7 @@ bool FEAnalysis::Solve()
 
 	return bconv;
 }
+
 
 //-----------------------------------------------------------------------------
 // This function calls the FE Solver for solving this analysis and also handles
