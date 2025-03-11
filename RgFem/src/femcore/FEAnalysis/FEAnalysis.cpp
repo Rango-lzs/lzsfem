@@ -183,24 +183,6 @@ void FEAnalysis::SetOutputLevel(int n) { m_noutput = n; }
 int FEAnalysis::GetOutputLevel() { return m_noutput; }
 
 //-----------------------------------------------------------------------------
-void FEAnalysis::Reset()
-{
-	m_ntotref    = 0;		// total nr of stiffness reformations
-	m_ntotiter   = 0;		// total nr of non-linear iterations
-	m_ntimesteps = 0;		// time steps completed
-	m_ntotrhs    = 0;		// total nr of right hand side evaluations
-
-	m_dt = m_dt0;
-
-	if (m_timeController) m_timeController->Reset();
-
-	// Deactivate the step
-	Deactivate();
-
-	if (m_psolver) m_psolver->Reset();
-}
-
-//-----------------------------------------------------------------------------
 FESolver* FEAnalysis::GetFESolver() 
 { 
 	return m_psolver; 
@@ -226,98 +208,6 @@ bool FEAnalysis::Init()
 	}
 	if (m_nplot_stride <= 0) return false;
 	return Validate();
-}
-
-//-----------------------------------------------------------------------------
-//! See if this step is active
-bool FEAnalysis::IsActive()
-{
-	return m_bactive;
-}
-
-//-----------------------------------------------------------------------------
-//! This function gets called right before the step needs to be solved.
-bool FEAnalysis::Activate()
-{
-	FEModel& fem = *GetFEModel();
-
-	// Make sure we are not activated yet
-	// This can happen after a restart during FEModel::Solve
-	if (m_bactive) return true;
-
-	// activate the time step
-	m_bactive = true;
-
-	// set first time step
-	// We can't do this since it will mess up the value from a restart
-//	m_dt = m_dt0;
-
-	// determine the end time
-	double Dt;
-	if (m_ntime == -1) Dt = m_final_time; else Dt = m_dt0*m_ntime;
-	m_tstart = fem.GetStartTime();
-	m_tend = m_tstart + Dt;
-
-	// For now, add all domains to the analysis step
-	FEMesh& mesh = fem.GetMesh();
-	int ndom = mesh.Domains();
-	ClearDomains();
-	for (int i=0; i<ndom; ++i) AddDomain(i);
-
-	// activate the model components assigned to this step
-	// NOTE: This currently does not ensure that initial conditions are
-	// applied first. This is important since relative prescribed displacements must 
-	// be applied after initial conditions.
-	for (int i=0; i<(int) m_MC.size(); ++i) m_MC[i]->Activate();
-
-	// Next, we need to determine which degrees of freedom are active. 
-	// We start by resetting all nodal degrees of freedom.
-	for (int i=0; i<mesh.Nodes(); ++i)
-	{
-		FENode& node = mesh.Node(i);
-		for (int j=0; j<(int)node.dofs(); ++j) node.set_inactive(j);
-	}
-
-    // Then, we activate the domains.
-    // This will activate the relevant degrees of freedom
-    // NOTE: this must be done after the model components are activated.
-    // This is to make sure that all initial and prescribed values are applied.
-    // Activate all domains
-    for (int i=0; i<mesh.Domains(); ++i)
-    {
-        FEDomain& dom = mesh.Domain(i);
-        if (dom.Class() != FE_DOMAIN_SHELL)
-            dom.Activate();
-    }
-    // but activate shell domains last (to deal with sandwiched shells)
-    for (int i=0; i<mesh.Domains(); ++i)
-    {
-        FEDomain& dom = mesh.Domain(i);
-        if (dom.Class() == FE_DOMAIN_SHELL)
-            dom.Activate();
-    }
-
-	// active the linear constraints
-	fem.GetLinearConstraintManager().Activate();
-
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-//! This function deactivates all boundary conditions and contact interfaces.
-//! It also gives the linear solver to clean its data.
-//! This is called at the completion of an analysis step.
-void FEAnalysis::Deactivate()
-{
-	// deactivate the model components
-	for (size_t i=0; i<(int) m_MC.size(); ++i) m_MC[i]->Deactivate();
-
-	// clean up solver data (i.e. destroy linear solver)
-	FESolver* solver = GetFESolver();
-	if (solver) solver->Clean();
-
-	// deactivate the time step
-	m_bactive = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -503,7 +393,6 @@ bool FEAnalysis::Solve()
 
 	return bconv;
 }
-
 
 //-----------------------------------------------------------------------------
 // This function calls the FE Solver for solving this analysis and also handles

@@ -26,20 +26,8 @@ public:
 	//! Initialization
 	virtual bool Init() override;
 
-	//! Activation
-	virtual bool Activate();
-
-	//! See if this step is active
-	bool IsActive();
-
 	//! Reset analysis data
 	virtual void Reset();
-
-	//! Solve the analysis step
-	virtual bool Solve();
-
-	//! wrap it up
-	virtual void Deactivate();
 
 	//! Serialize data from and to a binary archive
 	virtual void Serialize(DumpStream& ar) override;
@@ -51,6 +39,16 @@ public:
 	void SetFESolver(FESolver* psolver);
 
 	FESolver* GetFESolver();
+
+	// initialize the solver
+    bool InitSolver();
+
+    // Call the FE Solver to solve the time step
+    // Returns an error code
+    // 0 = all is well, continue
+    // 1 = solver has failed, but try auto-time step
+    // 2 = abort
+    int SolveTimeStep();
 
 public:
 	//! Get active domains
@@ -102,16 +100,6 @@ public:
 
 	//! Get the output level
 	int GetOutputLevel();
-
-	// initialize the solver
-	bool InitSolver();
-
-	// Call the FE Solver to solve the time step
-	// Returns an error code
-	// 0 = all is well, continue
-	// 1 = solver has failed, but try auto-time step
-	// 2 = abort
-	int SolveTimeStep();
 
 public:
 	// --- Control Data ---

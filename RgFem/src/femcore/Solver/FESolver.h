@@ -17,14 +17,6 @@ enum EQUATION_SCHEME
 };
 
 //-----------------------------------------------------------------------------
-enum EQUATION_ORDER
-{
-	NORMAL_ORDER,
-	REVERSE_ORDER,
-	FEBIO2_ORDER
-};
-
-//-----------------------------------------------------------------------------
 // Solution variable
 class FESolutionVariable
 {
@@ -90,10 +82,6 @@ public:
 
 	// Initialize linear equation system
 	virtual bool InitEquations() = 0;
-
-	// New equation initialization procedure
-	// TODO: work in progress
-	virtual bool InitEquations2();
 
 	//! add equations
 	void AddEquations(int neq, int partition = 0);
