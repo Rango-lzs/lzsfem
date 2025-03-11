@@ -68,14 +68,6 @@ int FESolver::GetPartitionSize(int partition)
 	else return 0;
 }
 
-
-//-----------------------------------------------------------------------------
-//! get the current load std::vector
-std::std::vector<double> FESolver::GetLoadstd::vector()
-{
-	return std::std::vector<double>();
-}
-
 //-----------------------------------------------------------------------------
 void FESolver::Clean()
 {
@@ -107,7 +99,7 @@ int FESolver::MatrixSymmetryFlag() const
 //! get matrix type
 Matrix_Type FESolver::MatrixType() const
 {
-	return (Matrix_Type)mtype;
+	return (Matrix_Type)m_msymm;
 }
 
 //-----------------------------------------------------------------------------
@@ -124,13 +116,6 @@ double FESolver::ExtractSolutionNorm(const std::vector<double>& v, const FEDofLi
 		}
 	}
 	return norm;
-}
-
-//-----------------------------------------------------------------------------
-// return the solution std::vector
-std::std::vector<double> FESolver::GetSolutionstd::vector() const
-{
-	return std::std::vector<double>();
 }
 
 //-----------------------------------------------------------------------------
@@ -515,7 +500,7 @@ void FESolver::Serialize(DumpStream& ar)
 
 //-----------------------------------------------------------------------------
 //! Update the state of the model
-void FESolver::Update(std::std::vector<double>& u)
+void FESolver::Update(std::vector<double>& u)
 { 
 	assert(false); 
 };

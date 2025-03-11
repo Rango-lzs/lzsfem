@@ -304,8 +304,6 @@ bool FEAnalysis::Solve()
 		feLog("\n===== beginning time step %d : %lg =====\n", m_ntimesteps + 1, newTime);
 
 		// initialize the solver step
-		// (This basically evaluates all the parameter lists, but let's the solver
-		//  customize this process to the specific needs of the solver)
 		if (GetFESolver()->InitStep(newTime) == false)
 		{
 			bconv = false;

@@ -7,13 +7,13 @@
  *********************************************************************/
 
 #pragma once
-#include "FEBoundingBox.h"
+#include "datastructure/FEBoundingBox.h"
 #include "FEDiscreteSet.h"
 #include "FEElementSet.h"
 #include "FEFacetSet.h"
 #include "FENode.h"
 #include "FENodeElemList.h"
-#include "FENodeSet.h"
+#include "femcore/FENodeSet.h"
 #include "FESegmentSet.h"
 #include "FEShellElement.h"
 #include "FESolidElement.h"
@@ -114,16 +114,6 @@ public:
     //! Finds an element from a given ID
     FEElement* FindElementFromID(int nid);
 
-    //! Finds the solid element in which y lies
-    FESolidElement* FindSolidElement(vec3d y, double r[3]);
-
-    FENodeElemList& NodeElementList()
-    {
-        if (m_NEL.Size() != m_Node.size())
-            m_NEL.Create(*this);
-        return m_NEL;
-    }
-
     //! See if all elements are of a particular shape
     bool IsType(FE_Element_Shape eshape);
 
@@ -214,36 +204,6 @@ public:
     {
         m_Edge.push_back(ps);
     }
-
-    // --- Segment Sets ---
-    int SegmentSets()
-    {
-        return (int)m_LineSet.size();
-    }
-    FESegmentSet& SegmentSet(int n)
-    {
-        return *m_LineSet[n];
-    }
-    void AddSegmentSet(FESegmentSet* ps)
-    {
-        m_LineSet.push_back(ps);
-    }
-    FESegmentSet* FindSegmentSet(const std::string& name);
-
-    // --- Discrete Element Sets ---
-    int DiscreteSets()
-    {
-        return (int)m_DiscSet.size();
-    }
-    FEDiscreteSet& DiscreteSet(int n)
-    {
-        return *m_DiscSet[n];
-    }
-    void AddDiscreteSet(FEDiscreteSet* ps)
-    {
-        m_DiscSet.push_back(ps);
-    }
-    FEDiscreteSet* FindDiscreteSet(const std::string& name);
 
     // --- FACETSETS ---
     int FacetSets()

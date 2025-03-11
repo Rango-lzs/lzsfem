@@ -1,42 +1,14 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
 
-#include "SparseMatrix.h"
-#include "FECoreBase.h"
-#include "fecore_enum.h"
+#include "femcore/FEObjectBase.h"
+#include "femcore/Matrix/SparseMatrix.h"
+#include "femcore/fecore_enum.h"
 #include <vector>
 
 class FEModel;
 
 //-----------------------------------------------------------------------------
-struct FECORE_API LinearSolverStats
+struct  LinearSolverStats
 {
 	int		backsolves;		// number of times backsolve was called
 	int		iterations;		// total number of iterations
@@ -50,10 +22,9 @@ struct FECORE_API LinearSolverStats
 //! method factorizes the matrix, and then BackSolve() solves the system for a given 
 //! right hand side vector using the previously factored matrix. 
 
-class FECORE_API LinearSolver : public FECoreBase
+class FEM_EXPORT LinearSolver : public FEObjectBase
 {
-	FECORE_SUPER_CLASS(FELINEARSOLVER_ID)
-	FECORE_BASE_CLASS(LinearSolver)
+	META_CLASS_DECLARE(LinearSolver, FEObjectBase);
 
 public:
 	//! constructor
@@ -92,7 +63,7 @@ public:
 
 	//! Used by block solvers do determine the block partition
 	//! The partition is where the global matrix will be divided into blocks
-	void SetPartitions(const vector<int>& part);
+	void SetPartitions(const std::vector<int>& part);
 	void SetPartitions(int npart0, int npart1);
 
 	// nr of partitions
@@ -108,7 +79,7 @@ public:
 	}
 
 	//! convenience function for solving linear systems
-	bool Solve(vector<double>& x, vector<double>& y);
+	bool Solve(std::vector<double>& x, std::vector<double>& y);
 
 	// returns whether this is an iterative solver or not
 	virtual bool IsIterative() const;
@@ -132,7 +103,7 @@ private:
 
 //-----------------------------------------------------------------------------
 // base class for iterative solvers
-class FECORE_API IterativeLinearSolver : public LinearSolver
+class FEM_EXPORT IterativeLinearSolver : public LinearSolver
 {
 public:
 	// constructor
