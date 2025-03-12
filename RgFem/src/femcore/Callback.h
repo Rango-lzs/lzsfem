@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #pragma once
 #include <list>
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 //-----------------------------------------------------------------------------
 // Forward declarations.
@@ -68,7 +68,7 @@ struct FECORE_CALLBACK {
 
 //-----------------------------------------------------------------------------
 // class that handles callbacks
-class FECORE_API CallbackHandler
+class FEM_EXPORT CallbackHandler
 {
 public:
 	enum CBInsertPolicy

@@ -27,11 +27,11 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 class DumpStream;
 
 //-----------------------------------------------------------------------------
-class FECORE_API FETimeInfo
+class FEM_EXPORT FETimeInfo
 {
 public:
 	FETimeInfo();

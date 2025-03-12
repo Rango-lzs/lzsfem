@@ -29,7 +29,7 @@ SOFTWARE.*/
 #pragma once
 #include "LinearSolver.h"
 #include "DenseMatrix.h"
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 //-----------------------------------------------------------------------------
 //! LU decomposition solver
@@ -40,7 +40,7 @@ SOFTWARE.*/
 //! solver. It should only be used for small problems and only when the other
 //! solvers are not adequate.
 
-class FECORE_API LUSolver : public LinearSolver
+class FEM_EXPORT LUSolver : public LinearSolver
 {
 public:
 	//! constructor

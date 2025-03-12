@@ -28,10 +28,10 @@ SOFTWARE.*/
 
 #pragma once
 #include <vector>
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 // This class represents a sparse matrix in the row-compressed format (3-array format)
-class FECORE_API CSRMatrix
+class FEM_EXPORT CSRMatrix
 {
 public:
 	// default constructor

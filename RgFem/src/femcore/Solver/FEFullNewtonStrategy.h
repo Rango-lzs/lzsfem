@@ -31,7 +31,7 @@ SOFTWARE.*/
 #include "FENewtonStrategy.h"
 
 //-----------------------------------------------------------------------------
-class FECORE_API FEFullNewtonStrategy : public FENewtonStrategy
+class FEM_EXPORT FEFullNewtonStrategy : public FENewtonStrategy
 {
 public:
 	//! constructor

@@ -4,6 +4,7 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(${TARGET_NAME} SHARED "")
 target_compile_definitions(RgFem PRIVATE RgFem_Module)
 
+
 target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
 
 #Add CLI11 Library, a head only comand parse library

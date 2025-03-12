@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 #include "fecore_enum.h"
 #include "FECoreBase.h"
 

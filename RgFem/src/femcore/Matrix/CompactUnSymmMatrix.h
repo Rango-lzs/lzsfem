@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #pragma once
 #include "CompactMatrix.h"
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 struct MatrixItem
 {
@@ -38,7 +38,7 @@ struct MatrixItem
 
 //=============================================================================
 //! This class stores a general, sparse matrix in Compact Row Storage format
-class FECORE_API CRSSparseMatrix : public CompactMatrix
+class FEM_EXPORT CRSSparseMatrix : public CompactMatrix
 {
 public:
 	class Iterator
@@ -126,7 +126,7 @@ public:
 //=============================================================================
 //! This class stores a sparse matrix in Compact Column Storage format
 
-class FECORE_API CCSSparseMatrix : public CompactMatrix
+class FEM_EXPORT CCSSparseMatrix : public CompactMatrix
 {
 public:
 	//! constructor

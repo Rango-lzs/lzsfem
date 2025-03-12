@@ -35,7 +35,7 @@ namespace FECore {
 //! This class implements a full matrix
 //! that is a matrix that stores all its elements.
 
-class FECORE_API DenseMatrix : public SparseMatrix
+class FEM_EXPORT DenseMatrix : public SparseMatrix
 {
 public:
 	// con/de-structor

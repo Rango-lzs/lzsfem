@@ -27,10 +27,10 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 // abstract base class for matrix operators, i.e. a class that can calculate a matrix-vector product
-class FECORE_API MatrixOperator
+class FEM_EXPORT MatrixOperator
 {
 public:
 	MatrixOperator() {}

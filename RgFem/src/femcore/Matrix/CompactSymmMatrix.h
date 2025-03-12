@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #pragma once
 #include "CompactMatrix.h"
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 //=============================================================================
 //! This class stores a sparse matrix in Harwell-Boeing format (i.e. column major, lower triangular compact).
@@ -36,7 +36,7 @@ SOFTWARE.*/
 //! This class also assumes the matrix is symmetric and therefor only stores
 //! the lower triangular matrix
 
-class FECORE_API CompactSymmMatrix : public CompactMatrix
+class FEM_EXPORT CompactSymmMatrix : public CompactMatrix
 {
 public:
 	//! class constructor

@@ -40,7 +40,7 @@ public:
     FEElement* Find(int nid);
 
 private:
-    vector<FEElement*> m_elem;
+    std::vector<FEElement*> m_elem;
     int m_minID, m_maxID;
 };
 
@@ -282,18 +282,18 @@ public:  // data maps
     FEDataMap* GetDataMap(int i);
 
 private:
-    vector<FENode> m_Node;              //!< nodes
-    vector<FEDomain*> m_Domain;         //!< list of domains
-    vector<FESurface*> m_Surf;          //!< surfaces
-    vector<FEEdge*> m_Edge;             //!< Edges
+    std::vector<FENode> m_Node;              //!< nodes
+    std::vector<FEDomain*> m_Domain;         //!< list of domains
+    std::vector<FESurface*> m_Surf;          //!< surfaces
+    std::vector<FEEdge*> m_Edge;             //!< Edges
+ 
+    std::vector<FENodeSet*> m_NodeSet;       //!< node sets
+    std::vector<FEElementSet*> m_ElemSet;    //!< element sets
+    std::vector<FEDiscreteSet*> m_DiscSet;   //!< discrete element sets
+    std::vector<FEFacetSet*> m_FaceSet;      //!< facet sets
+    std::vector<FESurfacePair*> m_SurfPair;  //!< facet set pairs
 
-    vector<FENodeSet*> m_NodeSet;       //!< node sets
-    vector<FEElementSet*> m_ElemSet;    //!< element sets
-    vector<FEDiscreteSet*> m_DiscSet;   //!< discrete element sets
-    vector<FEFacetSet*> m_FaceSet;      //!< facet sets
-    vector<FESurfacePair*> m_SurfPair;  //!< facet set pairs
-
-    vector<FEDataMap*> m_DataMap;       //!< all data maps
+    std::vector<FEDataMap*> m_DataMap;       //!< all data maps
 
     FEBoundingBox m_box;                //!< bounding box
 

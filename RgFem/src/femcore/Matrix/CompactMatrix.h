@@ -35,7 +35,7 @@ SOFTWARE.*/
 
 //! This is the base class for the symmetric and unsymmetric classes
 
-class FECORE_API CompactMatrix : public SparseMatrix
+class FEM_EXPORT CompactMatrix : public SparseMatrix
 {
 public:
 	//! constructor

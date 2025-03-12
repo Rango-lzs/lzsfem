@@ -37,7 +37,7 @@ SOFTWARE.*/
 //! The BFGSSolver solves a nonlinear system of equations using the BFGS method.
 //! It depends on the NonLinearSystem to evaluate the function and its jacobian.
 
-class FECORE_API BFGSSolver : public FENewtonStrategy
+class FEM_EXPORT BFGSSolver : public FENewtonStrategy
 {
 public:
 	//! constructor

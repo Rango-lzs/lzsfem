@@ -176,9 +176,9 @@ protected:
 	int	m_nsize;	// size of matrix (ie. total nr of elements = nr*nc)
 };
 
-std::vector<double> FECORE_API operator / (std::vector<double>& b, matrix& m);
-std::vector<double> FECORE_API operator * (matrix& m, std::vector<double>& b);
-matrix FECORE_API outer_product(std::vector<double>& a);
+std::vector<double> FEM_EXPORT operator / (std::vector<double>& b, matrix& m);
+std::vector<double> FEM_EXPORT operator * (matrix& m, std::vector<double>& b);
+matrix FEM_EXPORT outer_product(std::vector<double>& a);
 
 inline void matrix::set(int i, int j, const mat3d& a)
 {

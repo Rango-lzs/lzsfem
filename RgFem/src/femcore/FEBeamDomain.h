@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 //-----------------------------------------------------------------------------
 //! Abstract base class for beam domains
-class FECORE_API FEBeamDomain : public FEDomain
+class FEM_EXPORT FEBeamDomain : public FEDomain
 {
 	FECORE_SUPER_CLASS(FEBEAMDOMAIN_ID)
 	FECORE_BASE_CLASS(FEBeamDomain)

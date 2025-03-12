@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdexcept>
 #include "FECoreBase.h"
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 //-----------------------------------------------------------------------------
 // forward declaration
@@ -26,7 +26,7 @@ enum FEDataRecordType {
 
 //-----------------------------------------------------------------------------
 // Exception thrown when parsing fails
-class FECORE_API UnknownDataField : public std::runtime_error
+class FEM_EXPORT UnknownDataField : public std::runtime_error
 {
 public:
 	UnknownDataField(const char* sz);
@@ -34,7 +34,7 @@ public:
 
 //-----------------------------------------------------------------------------
 
-class FECORE_API DataRecord : public FECoreBase
+class FEM_EXPORT DataRecord : public FECoreBase
 {
 	FECORE_SUPER_CLASS(FEDATARECORD_ID)
 	FECORE_BASE_CLASS(DataRecord)
@@ -88,7 +88,7 @@ protected:
 
 //=========================================================================
 // Super class for log data classes. 
-class FECORE_API FELogData : public FECoreBase
+class FEM_EXPORT FELogData : public FECoreBase
 {
 public:
 	FELogData(FEModel* fem);

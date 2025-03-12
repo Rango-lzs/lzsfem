@@ -29,7 +29,7 @@ SOFTWARE.*/
 
 //-----------------------------------------------------------------------------
 //! Abstract base class for shell element domains
-class FECORE_API FEShellDomain : public FEDomain
+class FEM_EXPORT FEShellDomain : public FEDomain
 {
 	FECORE_SUPER_CLASS(FESHELLDOMAIN_ID)
 	FECORE_BASE_CLASS(FEShellDomain)
@@ -77,7 +77,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // Old director-based shell formulation
-class FECORE_API FEShellDomainOld : public FEShellDomain
+class FEM_EXPORT FEShellDomainOld : public FEShellDomain
 {
 public:
 	FEShellDomainOld(FEModel* fem);
@@ -106,7 +106,7 @@ protected:
 
 //-----------------------------------------------------------------------------
 // New shell formulation
-class FECORE_API FEShellDomainNew : public FEShellDomain
+class FEM_EXPORT FEShellDomainNew : public FEShellDomain
 {
 public:
 	FEShellDomainNew(FEModel* fem);

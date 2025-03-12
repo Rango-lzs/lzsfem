@@ -39,7 +39,7 @@ SOFTWARE.*/
 //! was easier to implement :). In the future I would like to extend it to
 //! work with the actual sparse matrix. 
 
-class FECORE_API FENodeReorder
+class FEM_EXPORT FENodeReorder
 {
 
 public:

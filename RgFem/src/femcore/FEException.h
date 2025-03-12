@@ -27,12 +27,12 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 #include <string>
 
 class FEElement;
 
-class FECORE_API FEException
+class FEM_EXPORT FEException
 {
 public:
 	enum {
@@ -57,7 +57,7 @@ private:
 	int	m_level;
 };
 
-class FECORE_API NegativeJacobian : public FEException
+class FEM_EXPORT NegativeJacobian : public FEException
 {
 public:
 	NegativeJacobian(int iel, int ng, double vol, FEElement* pe = 0);
@@ -77,7 +77,7 @@ public:
 	static bool m_bthrown;
 };
 
-class FECORE_API ZeroDiagonal : public FEException
+class FEM_EXPORT ZeroDiagonal : public FEException
 {
 private:
 	struct EQUATION
@@ -90,71 +90,71 @@ public:
 	ZeroDiagonal(int node, int dof);
 };
 
-class FECORE_API EnergyDiverging : public FEException {
+class FEM_EXPORT EnergyDiverging : public FEException {
 public: EnergyDiverging() : FEException("Problem diverging uncontrollably.") {}
 };
 
-class FECORE_API MaxStiffnessReformations : public FEException {
+class FEM_EXPORT MaxStiffnessReformations : public FEException {
 public: MaxStiffnessReformations() : FEException("Max nr of reformations reached.") {}
 };
 
-class FECORE_API ZeroLinestepSize : public FEException {
+class FEM_EXPORT ZeroLinestepSize : public FEException {
 public: ZeroLinestepSize() : FEException("Zero line step size.") {}
 };
 
-class FECORE_API ForceConversion : public FEException {
+class FEM_EXPORT ForceConversion : public FEException {
 public: ForceConversion() : FEException("User forced conversion.\nSolution might not be stable.", FEException::Warning) {}
 };
 
-class FECORE_API IterationFailure : public FEException {
+class FEM_EXPORT IterationFailure : public FEException {
 public: IterationFailure() : FEException("User forced iteration failure.", FEException::Warning) {}
 };
 
-class FECORE_API MaxResidualError : public FEException {
+class FEM_EXPORT MaxResidualError : public FEException {
 public: MaxResidualError() : FEException("Maximum residual exceeded.", FEException::Warning) {}
 };
 
-struct FECORE_API FENodalDofInfo;
+struct FEM_EXPORT FENodalDofInfo;
 
-class FECORE_API NANInResidualDetected : public FEException {
+class FEM_EXPORT NANInResidualDetected : public FEException {
 public: 
 	NANInResidualDetected() : FEException("NAN detected") {}
 	NANInResidualDetected(const FENodalDofInfo& ndi);
 };
 
-class FECORE_API NANInSolutionDetected : public FEException {
+class FEM_EXPORT NANInSolutionDetected : public FEException {
 public:
 	NANInSolutionDetected() : FEException("NAN detected") {}
 	NANInSolutionDetected(const FENodalDofInfo& ndi);
 };
 
-class FECORE_API FatalError : public FEException{
+class FEM_EXPORT FatalError : public FEException{
 public: FatalError() : FEException("Fatal error") {}
 };
 
-class FECORE_API DoRunningRestart : public FEException {
+class FEM_EXPORT DoRunningRestart : public FEException {
 public: DoRunningRestart() : FEException("Running restart requested", FEException::Warning) {}
 };
 
-class FECORE_API FEMultiScaleException : public FEException
+class FEM_EXPORT FEMultiScaleException : public FEException
 {
 public:
 	FEMultiScaleException(int eid, int gpt);
 };
 
-class FECORE_API LinearSolverFailed : public FEException {
+class FEM_EXPORT LinearSolverFailed : public FEException {
 public: LinearSolverFailed() : FEException("Linear solver failed to find solution. Aborting run.") {}
 };
 
-class FECORE_API FactorizationError : public FEException{
+class FEM_EXPORT FactorizationError : public FEException{
 public: FactorizationError() : FEException("Fatal error in factorization of stiffness matrix. Aborting run.") {}
 };
 
-class FECORE_API NegativeJacobianDetected : public FEException {
+class FEM_EXPORT NegativeJacobianDetected : public FEException {
 public: NegativeJacobianDetected() : FEException("Negative jacobian was detected.") {}
 };
 
-class FECORE_API ConcentrationChangeDetected : public FEException {
+class FEM_EXPORT ConcentrationChangeDetected : public FEException {
 public:
     ConcentrationChangeDetected() : FEException("Concentration change detected") {}
     ConcentrationChangeDetected(const FENodalDofInfo& ndi);

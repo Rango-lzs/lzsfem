@@ -46,7 +46,7 @@ class FEElementSet;
 //-----------------------------------------------------------------------------
 //! This class describes a mesh partition, that is, a group of elements that represent
 //! a part of the mesh.
-class FECORE_API FEMeshPartition : public FECoreBase
+class FEM_EXPORT FEMeshPartition : public FECoreBase
 {
 public:
 	//! constructor

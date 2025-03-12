@@ -60,7 +60,7 @@ class FEElement;
 //! base class. Instead they'll use one of the more specialized classes
 //! defined below.
 //!
-class FECORE_API FEPlotData : public FECoreBase
+class FEM_EXPORT FEPlotData : public FECoreBase
 {
 	FECORE_SUPER_CLASS(FEPLOTDATA_ID)
 
@@ -132,7 +132,7 @@ private:
 //-----------------------------------------------------------------------------
 //! Base class for global data. Data that wish to store data that is not directly
 //! evaluated on a part of the mesh should inherit from this class. 
-class FECORE_API FEPlotGlobalData : public FEPlotData
+class FEM_EXPORT FEPlotGlobalData : public FEPlotData
 {
 	FECORE_BASE_CLASS(FEPlotGlobalData)
 
@@ -143,7 +143,7 @@ public:
 //-----------------------------------------------------------------------------
 //! This is the base class for node data. Classes that wish to store data
 //! associated with each node of the mesh, will use this base class.
-class FECORE_API FEPlotNodeData : public FEPlotData
+class FEM_EXPORT FEPlotNodeData : public FEPlotData
 {
 	FECORE_BASE_CLASS(FEPlotNodeData)
 
@@ -154,7 +154,7 @@ public:
 //-----------------------------------------------------------------------------
 //! This is the base class for domain data. Classes that wish to store data
 //! associated with each element or node of a domain, will use this base class.
-class FECORE_API FEPlotDomainData : public FEPlotData
+class FEM_EXPORT FEPlotDomainData : public FEPlotData
 {
 	FECORE_BASE_CLASS(FEPlotDomainData)
 
@@ -165,7 +165,7 @@ public:
 //-----------------------------------------------------------------------------
 //! This is the base class for surface data. Classes that wish to store data
 //! associated with each node or facet of a surface, will use this base class.
-class FECORE_API FEPlotSurfaceData : public FEPlotData
+class FEM_EXPORT FEPlotSurfaceData : public FEPlotData
 {
 	FECORE_BASE_CLASS(FEPlotSurfaceData)
 

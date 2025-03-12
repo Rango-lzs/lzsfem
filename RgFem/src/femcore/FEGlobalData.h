@@ -32,7 +32,7 @@ SOFTWARE.*/
 //-----------------------------------------------------------------------------
 //! This class can be used to define global model data and will be placed in the
 //! global date section of the FEModel class
-class FECORE_API FEGlobalData : public FEModelComponent
+class FEM_EXPORT FEGlobalData : public FEModelComponent
 {
 	FECORE_SUPER_CLASS(FEGLOBALDATA_ID)
 	FECORE_BASE_CLASS(FEGlobalData)

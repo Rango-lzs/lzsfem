@@ -23,54 +23,75 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
-#pragma once
-#include "FEM_EXPORT.h"
-#include <vector>
-#include <string>
 
-class DumpStream;
 
-class FEM_EXPORT FEPlotVariable
+
+#include "stdafx.h"
+#include "FEDomainList.h"
+#include "DumpStream.h"
+#include "FEDomain.h"
+#include "FEMesh.h"
+#include <assert.h>
+using namespace std;
+
+FEDomainList::FEDomainList()
 {
-public:
-	FEPlotVariable();
-	FEPlotVariable(const FEPlotVariable& pv);
-	void operator = (const FEPlotVariable& pv);
 
-	FEPlotVariable(const std::string& var, std::vector<int>& item, const char* szdom = "");
+}
 
-	void Serialize(DumpStream& ar);
-
-	const std::string& Name() const { return m_svar; }
-	const std::string& DomainName() const { return m_sdom; }
-
-public:
-	std::string			m_svar;		//!< name of output variable
-	std::string			m_sdom;		//!< (optional) name of domain
-	std::vector<int>	m_item;		//!< (optional) list of items
-};
-
-class FEM_EXPORT FEPlotDataStore
+FEDomainList::FEDomainList(FEDomainList& domList)
 {
-public:
-	FEPlotDataStore();
-	FEPlotDataStore(const FEPlotDataStore&);
-	void operator = (const FEPlotDataStore&);
+	m_dom = domList.m_dom;
+}
 
-	void AddPlotVariable(const char* szvar, std::vector<int>& item, const char* szdom = "");
+//! Clear the domain list
+void FEDomainList::Clear()
+{
+	m_dom.clear();
+}
 
-	int GetPlotCompression() const;
-	void SetPlotCompression(int n);
+void FEDomainList::AddDomain(FEDomain* dom)
+{
+	// see if this domain is already a member of this list
+	if (IsMember(dom))
+	{
+//		assert(false);
+		return;
+	}
 
-	void SetPlotFileType(const std::string& fileType);
+	// it's not, so let's add it
+	m_dom.push_back(dom);
+}
 
-	void Serialize(DumpStream& ar);
+//! Add a domain list
+void FEDomainList::AddDomainList(const FEDomainList& domList)
+{
+	for (int i = 0; i < domList.Domains(); ++i)
+	{
+		FEDomain* d = const_cast<FEDomain*>(domList.GetDomain(i));
+		AddDomain(d);
+	}
+}
 
-	int PlotVariables() const { return (int)m_plot.size(); }
-	FEPlotVariable& GetPlotVariable(int n) { return m_plot[n]; }
+bool FEDomainList::IsMember(const FEDomain* dom) const
+{
+	// loop over all the domains
+	for (size_t i = 0; i < m_dom.size(); ++i)
+	{
+		if (m_dom[i] == dom)
+		{
+			// found it!
+			return true;
+		}
+	}
 
-private:
-	std::string					m_splot_type;
-	std::vector<FEPlotVariable>	m_plot;
-	int							m_nplot_compression;
-};
+	// better luck next time!
+	return false;
+}
+
+//! serialization
+void FEDomainList::Serialize(DumpStream& ar)
+{
+	if (ar.IsShallow()) return;
+	ar & m_dom;
+}

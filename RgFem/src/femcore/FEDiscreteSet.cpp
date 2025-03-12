@@ -23,54 +23,53 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
-#pragma once
-#include "FEM_EXPORT.h"
-#include <vector>
-#include <string>
 
-class DumpStream;
 
-class FEM_EXPORT FEPlotVariable
+
+#include "stdafx.h"
+#include "FEDiscreteSet.h"
+#include "DumpStream.h"
+
+//-----------------------------------------------------------------------------
+void FEDiscreteSet::NodePair::Serialize(DumpStream& ar)
 {
-public:
-	FEPlotVariable();
-	FEPlotVariable(const FEPlotVariable& pv);
-	void operator = (const FEPlotVariable& pv);
+	ar & n0 & n1;
+}
 
-	FEPlotVariable(const std::string& var, std::vector<int>& item, const char* szdom = "");
-
-	void Serialize(DumpStream& ar);
-
-	const std::string& Name() const { return m_svar; }
-	const std::string& DomainName() const { return m_sdom; }
-
-public:
-	std::string			m_svar;		//!< name of output variable
-	std::string			m_sdom;		//!< (optional) name of domain
-	std::vector<int>	m_item;		//!< (optional) list of items
-};
-
-class FEM_EXPORT FEPlotDataStore
+//-----------------------------------------------------------------------------
+FEDiscreteSet::FEDiscreteSet(FEMesh* pm) : m_pmesh(pm)
 {
-public:
-	FEPlotDataStore();
-	FEPlotDataStore(const FEPlotDataStore&);
-	void operator = (const FEPlotDataStore&);
 
-	void AddPlotVariable(const char* szvar, std::vector<int>& item, const char* szdom = "");
+}
 
-	int GetPlotCompression() const;
-	void SetPlotCompression(int n);
+//-----------------------------------------------------------------------------
+void FEDiscreteSet::create(int n)
+{
+	m_pair.resize(n);
+}
 
-	void SetPlotFileType(const std::string& fileType);
+//-----------------------------------------------------------------------------
+void FEDiscreteSet::add(int n0, int n1)
+{
+	NodePair p = { n0, n1 };
+	m_pair.push_back(p);
+}
 
-	void Serialize(DumpStream& ar);
+//-----------------------------------------------------------------------------
+void FEDiscreteSet::SetName(const std::string& name)
+{
+	m_name = name;
+}
 
-	int PlotVariables() const { return (int)m_plot.size(); }
-	FEPlotVariable& GetPlotVariable(int n) { return m_plot[n]; }
+//-----------------------------------------------------------------------------
+const std::string& FEDiscreteSet::GetName() const
+{
+	return m_name;
+}
 
-private:
-	std::string					m_splot_type;
-	std::vector<FEPlotVariable>	m_plot;
-	int							m_nplot_compression;
-};
+//-----------------------------------------------------------------------------
+void FEDiscreteSet::Serialize(DumpStream& ar)
+{
+	ar & m_name;
+	ar & m_pair;
+}

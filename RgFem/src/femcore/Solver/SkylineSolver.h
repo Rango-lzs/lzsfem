@@ -30,12 +30,12 @@ SOFTWARE.*/
 
 #include "LinearSolver.h"
 #include "SkylineMatrix.h"
-#include "fecore_api.h"
+#include "FEM_EXPORT.h"
 
 //-----------------------------------------------------------------------------
 //! Implements a linear solver that uses a skyline format
 
-class FECORE_API SkylineSolver : public LinearSolver
+class FEM_EXPORT SkylineSolver : public LinearSolver
 {
 public:
 	//! constructor

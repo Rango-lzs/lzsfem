@@ -41,7 +41,7 @@ class FEElement;
 //-----------------------------------------------------------------------------
 //! This class represents an element matrix, i.e. a matrix of values and the row and
 //! column indices of the corresponding matrix elements in the global matrix. 
-class FECORE_API FEElementMatrix : public matrix
+class FEM_EXPORT FEElementMatrix : public matrix
 {
 public:
 	// default constructor
@@ -101,7 +101,7 @@ private:
 
 //! \todo I think the SparseMatrixProfile can handle all of the build functions.
 
-class FECORE_API FEGlobalMatrix
+class FEM_EXPORT FEGlobalMatrix
 {
 protected:
 	enum { MAX_LM_SIZE = 64000 };

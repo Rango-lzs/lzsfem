@@ -39,7 +39,7 @@ SOFTWARE.*/
 //! simplify in- and output.
 //! \sa FEM::Serialize()
 
-class FECORE_API DumpFile : public DumpStream
+class FEM_EXPORT DumpFile : public DumpStream
 {
 public:
 	// overloaded from DumpStream

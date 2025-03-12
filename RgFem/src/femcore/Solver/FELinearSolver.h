@@ -39,7 +39,7 @@ class LinearSolver;
 //-----------------------------------------------------------------------------
 //! Abstract Base class for finite element solution algorithms (i.e. "FE solvers") that require the solution
 //! of a linear system of equations.
-class FECORE_API FELinearSolver : public FESolver
+class FEM_EXPORT FELinearSolver : public FESolver
 {
 public:
 	//! constructor

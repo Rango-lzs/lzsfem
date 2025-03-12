@@ -11,7 +11,7 @@ class FEDomain;
 class DumpStream;
 
 //-----------------------------------------------------------------------------
-class FECORE_API FEMaterialBase : public FEModelComponent
+class FEM_EXPORT FEMaterialBase : public FEModelComponent
 {
 public:
 	FEMaterialBase(FEModel* fem);
@@ -30,7 +30,7 @@ public:
 //! Abstract base class for material types
 //! From this class all other material classes are derived.
 
-class FECORE_API FEMaterial : public FEMaterialBase
+class FEM_EXPORT FEMaterial : public FEMaterialBase
 {
 	FECORE_SUPER_CLASS(FEMATERIAL_ID)
 	FECORE_BASE_CLASS(FEMaterial)
@@ -74,7 +74,7 @@ private:
 
 //-----------------------------------------------------------------------------
 // Material properties are classes that can only be defined as properties of other materials
-class FECORE_API FEMaterialProperty : public FEMaterialBase
+class FEM_EXPORT FEMaterialProperty : public FEMaterialBase
 {
 	FECORE_SUPER_CLASS(FEMATERIALPROP_ID)
 

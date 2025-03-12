@@ -35,7 +35,7 @@ class FENewtonSolver;
 // This is a class that just mimics a sparse matrix.
 // It is only used by the JFNK strategy. 
 // The only function it implements is the mult_vector.
-class FECORE_API JFNKMatrix : public SparseMatrix
+class FEM_EXPORT JFNKMatrix : public SparseMatrix
 {
 public:
 	enum MultiplyPolicy {

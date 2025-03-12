@@ -32,7 +32,7 @@ SOFTWARE.*/
 
 //-----------------------------------------------------------------------------
 //! This class implements the Broyden quasi-newton strategy. 
-class FECORE_API FEBroydenStrategy : public FENewtonStrategy
+class FEM_EXPORT FEBroydenStrategy : public FENewtonStrategy
 {
 public:
 	//! constructor
