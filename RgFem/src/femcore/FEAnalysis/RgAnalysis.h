@@ -1,106 +1,113 @@
-/*********************************************************************
- * \file   RgAnalysis.h
- * \brief  
- * 
- * \author Leizs
- * \date   March 2025
- *********************************************************************/
-
 #pragma once
+#include "femcore/FEObjectBase.h"
 
-class AnalysisBase
+#include <memory>
+#include <vector>
+
+//-----------------------------------------------------------------------------
+// 前置声明
+class FEModel;
+class FESolver;
+class FEDomain;
+class DumpStream;
+class FEStepComponent;
+class FETimeStepController;
+
+//-----------------------------------------------------------------------------
+//! 有限元分析步骤基类（职责分离、模块化设计）
+class FEM_EXPORT FEAnalysis : public FEObjectBase
 {
+    //---------------------- 嵌套结构定义 ----------------------
+    struct TimeStepData
+    {
+        int stepCount = 0;         // 时间步数
+        double startTime = 0.0;    // 起始时间
+        double endTime = 1.0;      // 终止时间
+        double currentTime = 0.0;  // 当前时间
+        double initialStep = 0.1;  // 初始步长
+        double minStep = 1e-6;     // 最小步长
+        double maxStep = 1.0;      // 最大步长
+    };
+
+    struct SolverMetrics
+    {
+        int totalRhsEvals = 0;       // 右端项计算次数
+        int totalMatrixReforms = 0;  // 刚度矩阵重组次数
+        int totalIterations = 0;     // 总迭代次数
+    };
+
+    struct OutputSettings
+    {
+        int plotLevel = 0;                          // 输出详细级别
+        int outputStride = 1;                       // 输出间隔步长
+        std::pair<int, int> plotRange{0, INT_MAX};  // 输出时间范围
+        bool plotInitialState = true;               // 是否输出初始状态
+        int plotHint = 0;                           // 输出模式标识
+    };
+
+    //---------------------- 核心接口 ----------------------
 public:
-    virtual ~AnalysisBase() = default;
+    explicit FEAnalysis(FEModel* model);
+    virtual ~FEAnalysis();
 
-    // 核心接口
-    virtual void initialize() = 0;      // 初始化分析
-    virtual void execute() = 0;         // 执行计算
-    virtual void finalize() = 0;        // 后处理
-    virtual void validate() const = 0;  // 输入验证
+    // 生命周期管理
+    bool initialize() override;
+    void reset();
+    void serialize(DumpStream& stream) override;
 
-    // 通用参数配置
-    virtual void set_time_increment(double dt)
+    // 执行控制
+    enum class Status
     {
-        m_dt = dt;
-    }
-    virtual void set_output_interval(int interval)
-    {
-        m_output_interval = interval;
-    }
+        Ready,
+        Running,
+        Converged,
+        Failed
+    };
+    Status run();  // 主执行入口
+    void abort();  // 终止分析
 
-protected:
-    double m_dt = 0.0;          // 时间步长
-    int m_output_interval = 1;  // 结果输出间隔
-};
+    // 域管理
+    void addDomain(int domainId);
+    void clearDomains();
+    FEDomain* getDomain(size_t index) const;
+    size_t domainCount() const noexcept;
 
-//---------------------- 派生类示例 ----------------------
-class StaticAnalysis : public AnalysisBase
-{
-public:
-    void initialize() override
-    {
-        // 初始化线性方程组求解器
-        std::cout << "Initializing static solver...\n";
-    }
+    // 组件管理
+    void addComponent(FEStepComponent* component);
+    FEStepComponent* getComponent(size_t index) const;
+    size_t componentCount() const noexcept;
 
-    void execute() override
-    {
-        // 执行静力平衡迭代
-        std::cout << "Solving static equilibrium...\n";
-    }
+    // 求解器配置
+    void setSolver(FESolver* solver);
+    FESolver* getSolver() const noexcept;
 
-    void validate() const override
-    {
-        // 验证静力分析参数
-        if (m_dt != 0.0)
-            throw std::runtime_error("Static analysis doesn't need time increment");
-    }
-    // ...其他接口实现
-};
+    // 时间步控制
+    void configureTimeStepping(double start, double end, double initStep);
+    void setTimeController(FETimeStepController* controller);
 
-class ExplicitDynamicAnalysis : public AnalysisBase
-{
-public:
-    void initialize() override
-    {
-        // 显式动力学特定初始化
-        std::cout << "Initializing explicit time integration...\n";
-    }
+    // 输出配置
+    void setOutputSettings(const OutputSettings& settings);
+    const OutputSettings& getOutputSettings() const noexcept;
 
-    void execute() override
-    {
-        // 显式时间步推进
-        for (int step = 0; step < m_total_steps; ++step)
-        {
-            update_velocity();
-            update_position();
-            calculate_forces();
-            // 条件输出
-            if (step % m_output_interval == 0)
-                write_results(step);
-        }
-    }
-
-    void set_contact_algorithm(const std::string& algo)
-    {
-        m_contact_algo = algo;
-    }
-
+    //---------------------- 实现细节 ----------------------
 private:
-    std::string m_contact_algo = "Penalty";
-    int m_total_steps = 1000;
+    bool validateModel() const;     // 模型验证
+    void prepareStep();             // 步进准备
+    void finalizeStep();            // 步进收尾
+    void writeOutput(double time);  // 结果输出
 
-    void update_velocity()
-    { /* 速度更新实现 */
-    }
-    void update_position()
-    { /* 位置更新实现 */
-    }
-    void calculate_forces()
-    { /* 内力计算实现 */
-    }
-    void write_results(int step)
-    { /* 结果输出实现 */
-    }
+    // 模块化子组件
+    FEModel* const m_model;              // 所属模型（不可变）
+    std::unique_ptr<FESolver> m_solver;  // 求解器（独占所有权）
+    std::unique_ptr<FETimeStepController> m_timeController;
+
+    // 数据分组
+    TimeStepData m_timeData;
+    SolverMetrics m_metrics;
+    OutputSettings m_output;
+
+    // 动态内容
+    std::vector<int> m_activeDomains;                            // 激活的域ID列表
+    std::vector<std::unique_ptr<FEStepComponent>> m_components;  // 步骤组件
+    Status m_status = Status::Ready;                             // 当前状态
 };

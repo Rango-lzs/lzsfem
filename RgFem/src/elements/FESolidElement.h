@@ -11,7 +11,7 @@ public:
 	//! default constructor
 	FESolidElement() {}
 
-	//! copy constructor
+	//! copy constructorÂð
 	FESolidElement(const FESolidElement& el);
 
 	//! assignment operator

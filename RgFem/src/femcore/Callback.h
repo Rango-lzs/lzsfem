@@ -1,31 +1,3 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
 #include <list>
 #include "FEM_EXPORT.h"
@@ -95,3 +67,127 @@ private:
 	std::list<FECORE_CALLBACK>	m_pcb;	//!< pointer to callback function
 	unsigned int	m_event;			//!< reason for current callback (or zero)
 };
+
+
+
+// 使用强类型枚举替代原生的宏定义
+enum class FEModelEvent
+{
+    Init = 0x00000001,
+    StepActive = 0x00000002,
+    MajorIteration = 0x00000004,
+    // ... 其他事件类型
+    UserDefined1 = 0x01000000
+};
+
+class FEObserver
+{
+public:
+    virtual ~FEObserver() = default;
+
+    // 返回true表示继续执行，false表示中断流程
+    virtual bool handleEvent(FEModel* model, FEModelEvent event) = 0;
+};
+
+
+class FESubject
+{
+public:
+    virtual ~FESubject() = default;
+
+    // 注册观察者（带优先级控制）
+    virtual void attach(FEObserver* observer, int priority = 0) = 0;
+
+    // 注销观察者
+    virtual void detach(FEObserver* observer) = 0;
+
+    // 通知观察者
+    virtual bool notify(FEModelEvent event) = 0;
+};
+
+
+class FEFilteredObserver : public FEObserver
+{
+public:
+    explicit FEFilteredObserver(FEModelEvent relevantEvents)
+        : m_relevantEvents(static_cast<uint32_t>(relevantEvents))
+    {
+    }
+
+    bool handleEvent(FEModel* model, FEModelEvent event) override
+    {
+        if (static_cast<uint32_t>(event) & m_relevantEvents)
+        {
+            return onEvent(model, event);
+        }
+        return true;
+    }
+
+protected:
+    virtual bool onEvent(FEModel* model, FEModelEvent event) = 0;
+
+private:
+    uint32_t m_relevantEvents;
+};
+
+class FEModelSubject : public FESubject
+{
+public:
+    void attach(FEObserver* observer, int priority = 0) override
+    {
+        m_observers.emplace(priority, observer);
+    }
+
+    void detach(FEObserver* observer) override
+    {
+        auto it = std::find_if(m_observers.begin(), m_observers.end(),
+                               [observer](const auto& pair) { return pair.second == observer; });
+
+        if (it != m_observers.end())
+        {
+            m_observers.erase(it);
+        }
+    }
+
+    bool notify(FEModelEvent event) override
+    {
+        // 按优先级降序通知
+        for (auto it = m_observers.rbegin(); it != m_observers.rend(); ++it)
+        {
+            if (!it->second->handleEvent(m_model, event))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+private:
+    FEModel* m_model;
+    std::multimap<int, FEObserver*, std::greater<>> m_observers;
+};
+
+class ConvergenceMonitor : public FEFilteredObserver
+{
+public:
+    ConvergenceMonitor()
+        : FEFilteredObserver(FEModelEvent::MajorIteration | FEModelEvent::MinorIteration)
+    {
+    }
+
+protected:
+    bool onEvent(FEModel* model, FEModelEvent event) override
+    {
+        switch (event)
+        {
+            case FEModelEvent::MajorIteration:
+                logConvergence(model->getResidual());
+                break;
+            case FEModelEvent::MinorIteration:
+                updateProgress(model->getIteration());
+                break;
+        }
+        return true;
+    }
+};
+
