@@ -1,15 +1,14 @@
 #include "FEAnalysis.h"
 #include "femcore/FEModel.h"
 #include "logger/log.h"
-#include "DOFS.h"
-#include "MatrixProfile.h"
-#include "FEBoundaryCondition.h"
-#include "DumpMemStream.h"
-#include "FELinearConstraintManager.h"
-#include "FEShellDomain.h"
-#include "FEMeshAdaptor.h"
+#include "femcore/DOFS.h"
+#include "femcore/Matrix/MatrixProfile.h"
+#include "femcore/FEBoundaryCondition.h"
+#include "basicio/DumpMemStream.h"
+#include "femcore/FELinearConstraintManager.h"
+#include "femcore/FEShellDomain.h"
 #include "femcore/TimeStep/FETimeStepController.h"
-#include "FEModule.h"
+#include "femcore/FEModule.h"
 
 //---------------------------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FEAnalysis, FEObjectBase)

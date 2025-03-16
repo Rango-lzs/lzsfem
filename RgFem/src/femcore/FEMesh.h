@@ -9,14 +9,13 @@
 #pragma once
 #include "datastructure/FEBoundingBox.h"
 #include "FEDiscreteSet.h"
-#include "FEElementSet.h"
+#include "elements/FEElementSet.h"
 #include "FEFacetSet.h"
 #include "FENode.h"
 #include "FENodeElemList.h"
 #include "femcore/FENodeSet.h"
-#include "FESegmentSet.h"
-#include "FEShellElement.h"
-#include "FESolidElement.h"
+#include "elements/FEShellElement.h"
+#include "elements/FESolidElement.h"
 #include "FESurfacePair.h"
 
 //-----------------------------------------------------------------------------

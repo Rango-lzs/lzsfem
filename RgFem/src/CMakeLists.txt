@@ -4,7 +4,6 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(${TARGET_NAME} SHARED "")
 target_compile_definitions(RgFem PRIVATE RgFem_Module)
 
-
 target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
 
 #Add CLI11 Library, a head only comand parse library
@@ -19,7 +18,6 @@ target_include_directories(${TARGET_NAME} PRIVATE ${Eigen_Root})
 #set(Eigen3_INCLUDE_DIR "D:/ThirdParty/eigen3") //at home
 
 message(status "flzs****${CMAKE_MODULE_PATH}")
-
 
 # ’“µΩEigenø‚
 #find_package(Eigen3 3.3 REQUIRED)
