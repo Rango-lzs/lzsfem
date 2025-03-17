@@ -165,7 +165,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-BEGIN_FECORE_CLASS(FEModel, FECoreBase)
+BEGIN_PARAM_DEFINE(FEModel, FEObjectBase)
 
 	// model parameters
 	ADD_PARAMETER(m_imp->m_timeInfo.currentTime, "time");
@@ -182,10 +182,10 @@ BEGIN_FECORE_CLASS(FEModel, FECoreBase)
 	ADD_PROPERTY(m_imp->m_MD  , "mesh_data"      );
 	ADD_PROPERTY(m_imp->m_Step, "step"           );
 
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEModel::FEModel(void) : FECoreBase(this), m_imp(new FEModel::Impl(this))
+FEModel::FEModel(void) : FEObjectBase(this), m_imp(new FEModel::Impl(this))
 {
 	// set the name
 	SetName("fem");

@@ -1,41 +1,10 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
-#include "matrix.h"
+#include "Matrix.h"
+#include "datastructure/Vector3d.h"
+#include "datastructure//Matrix3d.h"
 #include <assert.h>
 #include <math.h>
 #include <memory>
 using namespace std;
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------------------------
 // These functions are defined in colsol.cpp
@@ -44,17 +13,17 @@ void ludcmp(double**a, int n, int* indx);
 
 //-----------------------------------------------------------------------------
 // These functions are defined in svd.cpp
-void svbksb(matrix& u, vector<double>& w, matrix& v, vector<double>& b, vector<double>& x);
-void svdcmp(matrix& a, vector<double>& w, matrix& v);
+void svbksb(Matrix& u, vector<double>& w, Matrix& v, vector<double>& b, vector<double>& x);
+void svdcmp(Matrix& a, vector<double>& w, Matrix& v);
 
 //-----------------------------------------------------------------------------
-vector<double> operator / (vector<double>& b, matrix& m)
+vector<double> operator / (vector<double>& b, Matrix& m)
 {
 	int n = (int)b.size();
 
 	vector<double> x(b);
 	vector<int> indx(n);
-	matrix a(m);
+	Matrix a(m);
 
 	ludcmp(a, n, &indx[0]);
 	lubksb(a, n, &indx[0], &x[0]);
@@ -62,7 +31,7 @@ vector<double> operator / (vector<double>& b, matrix& m)
 	return x;
 }
 
-vector<double> operator * (matrix& m, vector<double>& b)
+vector<double> operator * (Matrix& m, vector<double>& b)
 {
 	int i, j;
 	int NR = m.rows();
@@ -79,7 +48,7 @@ vector<double> operator * (matrix& m, vector<double>& b)
 }
 
 //-----------------------------------------------------------------------------
-void matrix::alloc(int nr, int nc)
+void Matrix::alloc(int nr, int nc)
 {
 	m_nr = nr;
 	m_nc = nc;
@@ -91,15 +60,15 @@ void matrix::alloc(int nr, int nc)
 }
 
 //-----------------------------------------------------------------------------
-//! Constructor for matrix class. 
-matrix::matrix(int nr, int nc)
+//! Constructor for Matrix class. 
+Matrix::Matrix(int nr, int nc)
 {
 	alloc(nr, nc);
 }
 
 //-----------------------------------------------------------------------------
-//! matrix destructor
-void matrix::clear()
+//! Matrix destructor
+void Matrix::clear()
 {
 	if (m_pr) delete [] m_pr;
 	if (m_pd) delete [] m_pd;
@@ -109,8 +78,8 @@ void matrix::clear()
 }
 
 //-----------------------------------------------------------------------------
-//! Copy constructor for matrix class. 
-matrix::matrix(const matrix& m)
+//! Copy constructor for Matrix class. 
+Matrix::Matrix(const Matrix& m)
 {
 	alloc(m.m_nr, m.m_nc);
 	for (int i=0; i<m_nsize; ++i) m_pd[i] = m.m_pd[i];
@@ -118,7 +87,7 @@ matrix::matrix(const matrix& m)
 
 //-----------------------------------------------------------------------------
 //! constructor
-matrix::matrix(const mat3d& m)
+Matrix::Matrix(const Matrix3d& m)
 {
 	alloc(3, 3);
 	m_pr[0][0] = m[0][0]; m_pr[0][1] = m[0][1]; m_pr[0][2] = m[0][2];
@@ -128,7 +97,7 @@ matrix::matrix(const mat3d& m)
 
 //-----------------------------------------------------------------------------
 //! assignment operator
-matrix& matrix::operator = (const mat3d& m)
+Matrix& Matrix::operator = (const Matrix3d& m)
 {
 	resize(3, 3);
 	m_pr[0][0] = m[0][0]; m_pr[0][1] = m[0][1]; m_pr[0][2] = m[0][2];
@@ -138,7 +107,7 @@ matrix& matrix::operator = (const mat3d& m)
 }
 
 //-----------------------------------------------------------------------------
-matrix& matrix::operator = (const matrix& m)
+Matrix& Matrix::operator = (const Matrix& m)
 {
 	if ((m.m_nr != m_nr) || (m.m_nc != m_nc))
 	{
@@ -151,7 +120,7 @@ matrix& matrix::operator = (const matrix& m)
 }
 
 //-----------------------------------------------------------------------------
-void matrix::resize(int nr, int nc)
+void Matrix::resize(int nr, int nc)
 {
 	if ((nr != m_nr) || (nc != m_nc))
 	{
@@ -161,19 +130,19 @@ void matrix::resize(int nr, int nc)
 }
 
 //-----------------------------------------------------------------------------
-matrix matrix::operator * (double a) const
+Matrix Matrix::operator * (double a) const
 {
-	matrix m(m_nr, m_nc);
+	Matrix m(m_nr, m_nc);
 	int n = m_nr*m_nc;
 	for (int i = 0; i < n; ++i) m.m_pd[i] = m_pd[i] * a;
 	return m;
 }
 
 //-----------------------------------------------------------------------------
-matrix matrix::operator * (const matrix& m) const
+Matrix Matrix::operator * (const Matrix& m) const
 {
 	assert(m_nc == m.m_nr);
-	matrix a(m_nr, m.m_nc);
+	Matrix a(m_nr, m.m_nc);
 
 	// NOTE: commented this out since this can be called for small matrices.
 	// TODO: make a separate function that implements a parallel version. (e.g. pmult) 
@@ -196,50 +165,12 @@ matrix matrix::operator * (const matrix& m) const
 }
 
 //-----------------------------------------------------------------------------
-void matrix::add(int i, int j, const matrix& m)
-{
-	int mr = m.rows();
-	int mc = m.columns();
-	for (int r = 0; r < mr; ++r)
-		for (int c = 0; c < mc; ++c)
-			m_pr[i + r][j + c] += m[r][c];
-}
-
-//-----------------------------------------------------------------------------
-void matrix::add(int i, int j, const vec3d&  a)
-{
-	m_pr[i  ][j] += a.x;
-	m_pr[i+1][j] += a.y;
-	m_pr[i+2][j] += a.z;
-}
-
-//-----------------------------------------------------------------------------
-void matrix::adds(int i, int j, const matrix& m, double s)
-{
-	int mr = m.rows();
-	int mc = m.columns();
-	for (int r = 0; r < mr; ++r)
-		for (int c = 0; c < mc; ++c) 
-			m_pr[i + r][j + c] += m[r][c]*s;
-}
-
-//-----------------------------------------------------------------------------
-void matrix::adds(const matrix& m, double s)
-{
-	const int mr = m.rows();
-	const int mc = m.columns();
-	for (int r = 0; r < mr; ++r)
-		for (int c = 0; c < mc; ++c)
-			m_pr[r][c] += m[r][c] * s;
-}
-
-//-----------------------------------------------------------------------------
-// Calculate the LU decomposition of this matrix. Note that this will modify
-// the matrix. This is used for repeated solves of a linear system. Use 
+// Calculate the LU decomposition of this Matrix. Note that this will modify
+// the Matrix. This is used for repeated solves of a linear system. Use 
 // lusolve for solving after lufactor.
-void matrix::lufactor(vector<int>& indx)
+void Matrix::lufactor(vector<int>& indx)
 {
-	// make sure this is a square matrix
+	// make sure this is a square Matrix
 	assert(m_nr == m_nc);
 
 	// do a LU decomposition
@@ -251,30 +182,30 @@ void matrix::lufactor(vector<int>& indx)
 //-----------------------------------------------------------------------------
 // Solve the linear system Ax=b, where A has been factored using lufactor.
 // The indx array is the same one that was returned from lufactor
-void matrix::lusolve(vector<double>& b, vector<int>& indx)
+void Matrix::lusolve(vector<double>& b, vector<int>& indx)
 {
-	// make sure this is a square matrix
+	// make sure this is a square Matrix
 	assert(m_nr == m_nc);
 	lubksb(*(this), m_nr, &indx[0], &b[0]);
 }
 
 //-----------------------------------------------------------------------------
-matrix matrix::inverse()
+Matrix Matrix::inverse()
 {
-	// make sure this is a square matrix
+	// make sure this is a square Matrix
 	assert(m_nr == m_nc);
 
-	// make a copy of this matrix
+	// make a copy of this Matrix
 	// since we don't want to change it
-	matrix a(*this);
+	Matrix a(*this);
 
 	// do a LU decomposition
 	int n = m_nr;
 	vector<int> indx(n);
 	ludcmp(a, n, &indx[0]);
 
-	// allocate the inverse matrix
-	matrix ai(n, n);
+	// allocate the inverse Matrix
+	Matrix ai(n, n);
 
 	// do a backsubstituation on the columns of a
 	vector<double> b; b.assign(n, 0);
@@ -295,16 +226,16 @@ matrix matrix::inverse()
 
 //-----------------------------------------------------------------------------
 // Matrix using singular value decomposition
-matrix matrix::svd_inverse()
+Matrix Matrix::svd_inverse()
 {
-	matrix U(*this);
-	matrix V(m_nr, m_nc);
+	Matrix U(*this);
+	Matrix V(m_nr, m_nc);
 	vector<double> w(m_nc);
 
 	// calculate the decomposition
 	svdcmp(U, w, V);
 
-	matrix Ai(m_nc, m_nr); // inverse
+	Matrix Ai(m_nc, m_nr); // inverse
 	for (int i=0; i<m_nc; ++i)
 		for (int j=0; j<m_nr; ++j)
 		{
@@ -322,17 +253,17 @@ matrix matrix::svd_inverse()
 }
 
 //-----------------------------------------------------------------------------
-matrix matrix::transpose()
+Matrix Matrix::transpose()
 {
 	int i, j;
-	matrix At(m_nc, m_nr);
+	Matrix At(m_nc, m_nr);
 	for (i=0; i<m_nr; ++i)
 		for (j=0; j<m_nc; ++j) At[j][i] = m_pr[i][j];
 	return At;
 }
 
 //-----------------------------------------------------------------------------
-matrix& matrix::operator += (const matrix& m)
+Matrix& Matrix::operator += (const Matrix& m)
 {
 	assert((m_nr == m.m_nr ) && (m_nc == m.m_nc));
 	for (int i=0; i<m_nsize; ++i) m_pd[i] += m.m_pd[i];
@@ -340,7 +271,7 @@ matrix& matrix::operator += (const matrix& m)
 }
 
 //-----------------------------------------------------------------------------
-matrix& matrix::operator -= (const matrix& m)
+Matrix& Matrix::operator -= (const Matrix& m)
 {
 	assert((m_nr == m.m_nr ) && (m_nc == m.m_nc));
 	for (int i=0; i<m_nsize; ++i) m_pd[i] -= m.m_pd[i];
@@ -348,11 +279,11 @@ matrix& matrix::operator -= (const matrix& m)
 }
 
 //-----------------------------------------------------------------------------
-matrix matrix::operator * (const vec3d& v) const
+Matrix Matrix::operator * (const Vector3d& v) const
 {
 	assert(m_nc == 3);
-	matrix A(m_nr, 1);
-	const matrix& T = *this;
+	Matrix A(m_nr, 1);
+	const Matrix& T = *this;
 	for (int i = 0; i < m_nr; ++i)
 	{
 		A[i][0] = T[i][0]*v.x + T[i][1] * v.y + T[i][2] * v.z;
@@ -361,11 +292,11 @@ matrix matrix::operator * (const vec3d& v) const
 }
 
 //-----------------------------------------------------------------------------
-// calculate outer product of a vector to produce a matrix
-matrix outer_product(vector<double>& a)
+// calculate outer product of a vector to produce a Matrix
+Matrix outer_product(vector<double>& a)
 {
 	int n = (int) a.size();
-	matrix m(n,n);
+	Matrix m(n,n);
 	for (int i=0; i<n; ++i)
 	{
 		for (int j=0; j<n; ++j) m[i][j] = a[i]*a[j];
@@ -375,9 +306,9 @@ matrix outer_product(vector<double>& a)
 
 //-----------------------------------------------------------------------------
 // Calculates the infinity norm. That is, the max of the absolute row sum.
-double matrix::inf_norm()
+double Matrix::inf_norm()
 {
-	matrix& self = (*this);
+	Matrix& self = (*this);
 	double m = 0;
 	for (int j=0; j<m_nr; ++j)
 	{
@@ -389,16 +320,16 @@ double matrix::inf_norm()
 }
 
 //-----------------------------------------------------------------------------
-void matrix::get(int i, int j, int rows, int cols, matrix& A) const
+void Matrix::get(int i, int j, int rows, int cols, Matrix& A) const
 {
-	// make sure we create a valid matrix
+	// make sure we create a valid Matrix
 	if ((rows <= 0) || (cols <= 0)) return;
 
-	// initialize the matrix
+	// initialize the Matrix
 	A.resize(rows, cols);
 	A.zero();
 
-	// make sure the bounds are within this matrix
+	// make sure the bounds are within this Matrix
 	if ((i >= m_nr) || (j >= m_nc)) return;
 	if ((i + rows <= 0) || (j + cols <= 0)) return;
 
@@ -418,8 +349,8 @@ void matrix::get(int i, int j, int rows, int cols, matrix& A) const
 }
 
 //-----------------------------------------------------------------------------
-// fill a matrix
-void matrix::fill(int i, int j, int rows, int cols, double val)
+// fill a Matrix
+void Matrix::fill(int i, int j, int rows, int cols, double val)
 {
 	if ((i >= m_nr) || (j >= m_nc)) return;
 	if ((i + rows <= 0) || (j + cols <= 0)) return;
@@ -440,9 +371,9 @@ void matrix::fill(int i, int j, int rows, int cols, double val)
 
 //-----------------------------------------------------------------------------
 // solve the linear system Ax=b
-void matrix::solve(vector<double>& x, const vector<double>& b)
+void Matrix::solve(vector<double>& x, const vector<double>& b)
 {
-	matrix A(*this);
+	Matrix A(*this);
 	vector<int> index;
 	A.lufactor(index);
 	x = b;
@@ -450,9 +381,9 @@ void matrix::solve(vector<double>& x, const vector<double>& b)
 }
 
 //-----------------------------------------------------------------------------
-matrix matrix::operator + (const matrix& m) const
+Matrix Matrix::operator + (const Matrix& m) const
 {
-	matrix s(*this);
+	Matrix s(*this);
 	for (int i=0; i<m_nr; ++i)
 		for (int j=0; j<m_nc; ++j)
 			s(i,j) += m(i,j);
@@ -461,9 +392,9 @@ matrix matrix::operator + (const matrix& m) const
 }
 
 //-----------------------------------------------------------------------------
-matrix matrix::operator - (const matrix& m) const
+Matrix Matrix::operator - (const Matrix& m) const
 {
-	matrix s(*this);
+	Matrix s(*this);
 	for (int i = 0; i<m_nr; ++i)
 		for (int j = 0; j<m_nc; ++j)
 			s(i, j) -= m(i, j);
@@ -472,7 +403,7 @@ matrix matrix::operator - (const matrix& m) const
 }
 
 //-----------------------------------------------------------------------------
-void matrix::mult(vector<double>& x, vector<double>& y)
+void Matrix::mult(vector<double>& x, vector<double>& y)
 {
 	for (int i = 0; i < m_nr; ++i)
 	{
@@ -482,11 +413,11 @@ void matrix::mult(vector<double>& x, vector<double>& y)
 	}
 }
 
-// Here y = this*m*x. This is useful if this*m is a very large matrix, 
+// Here y = this*m*x. This is useful if this*m is a very large Matrix, 
 // but is then immediately multiplied by a vector, brining its size down 
 // to m_nr x 1. In this unique circumstance, the memory requrements can be 
 // drastically lower. 
-void matrix::mult(const matrix& m, std::vector<double>& x, std::vector<double>& y)
+void Matrix::mult(const Matrix& m, std::vector<double>& x, std::vector<double>& y)
 {
     assert(m_nc == m.m_nr);
     assert(m_nr == x.size());
@@ -516,7 +447,7 @@ void matrix::mult(const matrix& m, std::vector<double>& x, std::vector<double>& 
 }
 
 //-----------------------------------------------------------------------------
-void matrix::mult_transpose(vector<double>& x, vector<double>& y)
+void Matrix::mult_transpose(vector<double>& x, vector<double>& y)
 {
 	for (int i = 0; i < m_nc; ++i) y[i] = 0.0;
 
@@ -528,9 +459,9 @@ void matrix::mult_transpose(vector<double>& x, vector<double>& y)
 }
 
 //-----------------------------------------------------------------------------
-void matrix::mult_transpose_self(matrix& AAt)
+void Matrix::mult_transpose_self(Matrix& AAt)
 {
-	matrix& A = *this;
+	Matrix& A = *this;
 	int N = m_nc;
 	int R = m_nr;
 	for (int i = 0; i < N; ++i)
@@ -543,7 +474,7 @@ void matrix::mult_transpose_self(matrix& AAt)
 }
 
 //-----------------------------------------------------------------------------
-bool matrix::lsq_solve(vector<double>& x, vector<double>& b)
+bool Matrix::lsq_solve(vector<double>& x, vector<double>& b)
 {
 	if ((int)x.size() != m_nc) return false;
 	if ((int)b.size() != m_nr) return false;
@@ -551,7 +482,7 @@ bool matrix::lsq_solve(vector<double>& x, vector<double>& b)
 	vector<double> y(m_nc);
 	mult_transpose(b, y);
 
-	matrix AA(m_nc, m_nc);
+	Matrix AA(m_nc, m_nc);
 	mult_transpose_self(AA);
 
 	AA.solve(x, y);
@@ -562,9 +493,9 @@ bool matrix::lsq_solve(vector<double>& x, vector<double>& b)
 #define ROTATE(a, i, j, k, l) g=a[i][j]; h=a[k][l];a[i][j]=g-s*(h+g*tau); a[k][l] = h + s*(g - h*tau);
 
 //-----------------------------------------------------------------------------
-bool matrix::eigen_vectors(matrix& Eigen, vector<double>& eigen_values)
+bool Matrix::eigen_vectors(Matrix& Eigen, vector<double>& eigen_values)
 {
-	matrix& A = *this;
+	Matrix& A = *this;
 	int N = m_nc;
 	int R = m_nr;
 	const int NMAX = 50;

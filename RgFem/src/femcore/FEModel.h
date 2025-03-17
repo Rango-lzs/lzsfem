@@ -290,7 +290,7 @@ public: // Global data
 	double GetGlobalConstant(const string& s);
 
 	int GlobalVariables() const;
-	void AddGlobalVariable(const string& s, double v);
+	void AddGlobalVariable(const std::string& s, double v);
 	const FEGlobalVariable& GetGlobalVariable(int n);
 
 public: // Data retrieval
@@ -331,5 +331,5 @@ protected:
 private:
 	class Impl;
 	std::unique_ptr<Impl> m_imp;
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
