@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #pragma once
 #include <math.h>
-#include "vec2d.h"
+#include "datastructure/Vector2d"
 
 class Vector3d
 {
@@ -37,7 +37,7 @@ public:
 	Vector3d() : x(0), y(0), z(0) {}
 	explicit Vector3d(double a) : x(a), y(a), z(a) {}
 	Vector3d(double X, double Y, double Z) : x(X), y(Y), z(Z) {}
-	Vector3d(const vec2d& v) { x = v.r[0]; y = v.r[1]; z = 0.0; }
+	Vector3d(const Vector2d& v) { x = v.r[0]; y = v.r[1]; z = 0.0; }
 
 	// operators
 	Vector3d operator + (const Vector3d& r) const { return Vector3d(x+r.x, y+r.y, z+r.z); }

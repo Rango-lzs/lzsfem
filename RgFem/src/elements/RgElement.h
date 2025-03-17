@@ -8,7 +8,7 @@
 
 #include <vector>
 
-class FEMaterialPoint;
+class RgMaterialPoint;
 
 /**
  *@~English
@@ -34,10 +34,6 @@ class FEMaterialPoint;
 class FEM_EXPORT FEElement
 {
 public:
-    static constexpr int MAX_NODES = 27;
-    static constexpr int MAX_INTPOINTS = 27;
-
-public:
     // Element Info
     FEElement();
     virtual ~FEElement()
@@ -50,16 +46,10 @@ public:
     int getMatID() const;
     void setMatID(int id);
 
-    void SetLocalID(int lid)
-    {
-        m_loc_id = lid;
-    }
-    int GetLocalID() const
-    {
-        return m_loc_id;
-    }
+    void SetLocalID(int lid);
+    int GetLocalID() const;
 
-    virtual std::string elementType() = 0;
+    virtual ElementType elementType() = 0;
     virtual void setNode(FENode* n, int i);
     virtual std::vector<FENode*> getElementNodes();
     virtual FENode* giveNode(int i) const = 0;
