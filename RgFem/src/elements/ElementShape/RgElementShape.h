@@ -14,7 +14,7 @@ struct NaturalCoord
 class RgElementShape 
 {
 public:
-    RgElementShape(FE_Element_Shape shape, int nodes);
+    RgElementShape(ElementShapeType shape, int nodes);
 
 	//! values of shape functions
 	virtual std::vector<double> evalH(NaturalCoord coord) = 0;
@@ -26,6 +26,6 @@ public:
     virtual std::vector<std::vector<double>> evalDeriv2(NaturalCoord coord) = 0;
 
 private:
-    FE_Element_Shape shape mShpType;
+    ElementShapeType  mShpType;
     int mNodes;
 };

@@ -14,7 +14,7 @@ public:
 
 	//! values of shape function derivatives
 	virtual void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t) = 0;
-
+	 
 	//! values of shape function second derivatives
 	virtual void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t) = 0;
 };

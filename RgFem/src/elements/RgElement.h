@@ -50,8 +50,8 @@ public:
     int getMatID() const;
     void setMatID(int id);
 
-    void SetLocalID(int lid);
-    int GetLocalID() const;
+    void setLocalID(int lid);
+    int getLocalID() const;
 
     virtual ElementType elementType() = 0;
     virtual void setNode(FENode* n, int i);
@@ -59,7 +59,7 @@ public:
     virtual FENode* giveNode(int i) const = 0;
 
     //! Set the type of the element and initialize the traits by type
-    void SetType(int ntype)
+    void setType(int ntype)
     {
         FEElementLibrary::SetElementTraits(*this, ntype);
     }

@@ -9,7 +9,7 @@
 #pragma once
 
 // 单元的类别
-enum FE_Element_Category
+enum ElementCategory
 {
 	FE_ELEM_INVALID_CLASS,
 	FE_ELEM_SOLID,
@@ -26,7 +26,7 @@ enum FE_Element_Category
 // This defines the general element shape classes. This classification differs from the
 // element types below, in that the latter is defined by a shape and integration rule.
 // Do not change the order of these enums!
-enum FE_Element_Shape {
+enum ElementShape {
 	// 3D elements
 	ET_TET4,
 	ET_TET5,
@@ -65,8 +65,8 @@ enum FE_Element_Shape {
 //  with the entries into this array
 //
 
-enum FE_Element_Type {
-	// 3D solid elements
+enum ElementType {
+	// 3D soid elements
 	FE_HEX8G8,	
 	FE_HEX8RI,
 	FE_HEX8G1,	
