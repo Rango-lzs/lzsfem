@@ -1,12 +1,16 @@
 #pragma once
 
+#include "datastructure/Matrix3d.h"
 #include "elements/FEElementLibrary.h"
 #include "elements/FEElementTraits.h"
 #include "elements/RgElementState.h"
 #include "femcore/fem_export.h"
-#include "datastructure/Matrix3d.h"
 
 #include <vector>
+
+using NodeId = int;
+using ElemId = int;
+using MatId = int;
 
 class RgMaterialPoint;
 
@@ -75,7 +79,7 @@ public:
         return m_pTraits->m_neln;
     }
 
-public:  //Shape function
+public:  // Shape function
     //! return number of integration points
     int GaussPoints() const
     {
@@ -141,14 +145,10 @@ public:  // Filed evalulate
     double* H(int order, int n);
 
 protected:
-    int m_id;                 //!< element ID
-    int m_loc_id;             //!< local ID
-    int m_mat_id;             //!< material index
-
-    std::vector<int> m_node;  //!< connectivity
-    // This array stores the local node numbers, that is the node numbers
-    // into the node list of a domain.
-    std::vector<int> m_loc_node;  //!< local connectivity
+    ElemId m_id;                 //!< element ID
+    ElemId m_loc_id;             //!< local ID
+    MatId m_mat_id;              //!< material index
+    std::vector<NodeId> m_node;  //!< connectivity
 
     FEElementState m_state;
     FEElementTraits* m_pTraits;  //!< pointer to element traits

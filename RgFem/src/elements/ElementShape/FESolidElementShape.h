@@ -1,33 +1,9 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
 #pragma once
 #include "FEElementShape.h"
 
 //=============================================================================
 // Base class for defining element shape classes for (3D) solid elements
+// 只计算形状函数、以及形状函数对自然坐标的导数
 class FESolidElementShape : public FEElementShape
 {
 public:
@@ -83,12 +59,15 @@ public:
 	FEHex8() : FESolidElementShape(ET_HEX8, 8) {}
 
 	//! values of shape functions
+	//! H<8>
 	void shape_fnc(double* H, double r, double s, double t);
 
 	//! values of shape function derivatives
+	//! H<3,8>
 	void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
 
 	//! values of shape function second derivatives
+	//! H<6,8>
 	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t);
 };
 
