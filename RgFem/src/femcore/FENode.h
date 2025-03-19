@@ -15,6 +15,8 @@
 
 class DumpStream;
 
+using GlobalDofId = int;
+
 //-----------------------------------------------------------------------------
 //! This class defines a finite element node
 
@@ -184,7 +186,7 @@ public:
 
     int dofs() const
     {
-        return (int)m_ID.size();
+        return (int)m_dofs.size();
     }
 
 public:
@@ -210,10 +212,10 @@ private:
     std::vector<double> m_val_p;   //!< previous nodal DOF values
     std::vector<double> m_Fr;      //!< equivalent nodal forces
 
-    std::vector<GlobalDof> mGDof;  //!< nodal equation numbers
+    std::vector<GlobalDofId> m_dofs;  //!< nodal equation numbers
 
     // geometry data
-    Vector3d m_r0;  //!< initial position
+    Vector3d m_r0;  //!< initial position , the coordinate~
     Vector3d m_rt;  //!< current position
     Vector3d m_ra;  //!< used by rigid solver
 
