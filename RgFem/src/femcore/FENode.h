@@ -207,7 +207,7 @@ public:
 private:
     NodeId mId;                    //!< nodal ID
 
-    std::vector<int> m_BC;         //!< boundary condition array
+    std::vector<int> m_BC;         //!< boundary condition array, 用于标识自由度的状态，fix ，free， prescribe
     std::vector<double> m_val_t;   //!< current nodal DOF values
     std::vector<double> m_val_p;   //!< previous nodal DOF values
     std::vector<double> m_Fr;      //!< equivalent nodal forces

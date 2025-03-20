@@ -29,11 +29,9 @@ if(Eigen3_FOUND)
   include_directories(${Eigen3_INCLUDE_DIR})
 endif()
 
-
 file(GLOB rootfiles *.cpp *.h)
 source_group("" FILES ${rootfiles})
 target_sources(${TARGET_NAME} PRIVATE ${rootfiles})
-
 
 sub_dir_list(SUB_DIRS ${SOURCE_DIR})
  
