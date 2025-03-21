@@ -136,7 +136,7 @@ void FEElasticShellDomain::PreSolveUpdate(const FETimeInfo& timeInfo)
     m_alpham = timeInfo.alpham;
     m_beta = timeInfo.beta;
     
-    vec3d r0, rt;
+    Vector3d r0, rt;
     for (size_t i=0; i<m_Elem.size(); ++i)
     {
         FEShellElement& el = m_Elem[i];
@@ -202,7 +202,7 @@ void FEElasticShellDomain::ElementInternalForce(FEShellElement& el, vector<doubl
 		double detJt = (m_alphaf == 1.0 ? detJ(el, n) : detJ(el, n, m_alphaf))*gw[n];
 
 		// get base vectors
-		vec3d gcnt[3];
+		Vector3d gcnt[3];
 		if (m_alphaf == 1.0)
 			ContraBaseVectors(el, n, gcnt);
 		else
@@ -219,11 +219,11 @@ void FEElasticShellDomain::ElementInternalForce(FEShellElement& el, vector<doubl
         
 		for (int i=0; i<neln; ++i)
 		{
-            vec3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
-            vec3d gradMu = (gradM*(1+eta) + gcnt[2]*M[i])/2;
-            vec3d gradMd = (gradM*(1-eta) - gcnt[2]*M[i])/2;
-            vec3d fu = s*gradMu;
-            vec3d fd = s*gradMd;
+            Vector3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
+            Vector3d gradMu = (gradM*(1+eta) + gcnt[2]*M[i])/2;
+            Vector3d gradMd = (gradM*(1-eta) - gcnt[2]*M[i])/2;
+            Vector3d fu = s*gradMu;
+            Vector3d fd = s*gradMd;
             
             // calculate internal force
 			// the '-' sign is so that the internal forces get subtracted
@@ -294,12 +294,12 @@ void FEElasticShellDomain::ElementBodyForce(FEBodyForce& BF, FEShellElement& el,
         eta = el.gt(n);
         
         // get the force
-        vec3d f = BF.force(mp);
+        Vector3d f = BF.force(mp);
         
         for (int i=0; i<neln; ++i)
         {
-            vec3d fu = f*(dens*M[i]*(1+eta)/2*detJt);
-            vec3d fd = f*(dens*M[i]*(1-eta)/2*detJt);
+            Vector3d fu = f*(dens*M[i]*(1+eta)/2*detJt);
+            Vector3d fd = f*(dens*M[i]*(1-eta)/2*detJt);
             
             fe[6*i  ] -= fu.x;
             fe[6*i+1] -= fu.y;
@@ -361,8 +361,8 @@ void FEElasticShellDomain::ElementInertialForce(FEShellElement& el, vector<doubl
         
         for (int i=0; i<neln; ++i)
         {
-            vec3d fu = pt.m_a*(dens*M[i]*(1+eta)/2*J0);
-            vec3d fd = pt.m_a*(dens*M[i]*(1-eta)/2*J0);
+            Vector3d fu = pt.m_a*(dens*M[i]*(1+eta)/2*J0);
+            Vector3d fd = pt.m_a*(dens*M[i]*(1-eta)/2*J0);
             
             fe[6*i  ] -= fu.x;
             fe[6*i+1] -= fu.y;
@@ -540,7 +540,7 @@ void FEElasticShellDomain::ElementStiffness(int iel, matrix& ke)
     const int neln = el.Nodes();
     
     const double* Mr, *Ms, *M;
-    vec3d gradMu[FEElement::MAX_NODES], gradMd[FEElement::MAX_NODES];
+    Vector3d gradMu[FEElement::MAX_NODES], gradMd[FEElement::MAX_NODES];
     
     // jacobian matrix determinant
     double detJt;
@@ -549,7 +549,7 @@ void FEElasticShellDomain::ElementStiffness(int iel, matrix& ke)
     const double *gw = el.GaussWeights();
     double eta;
     
-    vec3d gcnt[3];
+    Vector3d gcnt[3];
     
     // calculate element stiffness matrix
     ke.zero();
@@ -580,7 +580,7 @@ void FEElasticShellDomain::ElementStiffness(int iel, matrix& ke)
         
         for (i=0; i<neln; ++i)
         {
-            vec3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
+            Vector3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
             gradMu[i] = (gradM*(1+eta) + gcnt[2]*M[i])/2;
             gradMd[i] = (gradM*(1-eta) - gcnt[2]*M[i])/2;
         }
@@ -740,12 +740,12 @@ void FEElasticShellDomain::ElementBodyForce(FEModel& fem, FEShellElement& el, ve
                 eta = el.gt(n);
                 
                 // get the force
-                vec3d f = pbf->force(mp);
+                Vector3d f = pbf->force(mp);
                 
                 for (int i=0; i<neln; ++i)
                 {
-                    vec3d fu = f*(dens0*M[i]*(1+eta)/2);
-                    vec3d fd = f*(dens0*M[i]*(1-eta)/2);
+                    Vector3d fu = f*(dens0*M[i]*(1+eta)/2);
+                    Vector3d fd = f*(dens0*M[i]*(1-eta)/2);
                     
                     fe[6*i  ] -= fu.x*detJt;
                     fe[6*i+1] -= fu.y*detJt;
@@ -807,9 +807,9 @@ void FEElasticShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
     int neln = el.Nodes();
     
     const int NELN = FEElement::MAX_NODES;
-	vec3d r0[NELN], s0[NELN], r[NELN], s[NELN];
-    vec3d v[NELN], w[NELN];
-    vec3d a[NELN], b[NELN];
+	Vector3d r0[NELN], s0[NELN], r[NELN], s[NELN];
+    Vector3d v[NELN], w[NELN];
+    Vector3d a[NELN], b[NELN];
     // nodal coordinates
     GetCurrentNodalCoordinates(el, r, m_alphaf, false);
     GetCurrentNodalCoordinates(el, s, m_alphaf, true);
@@ -822,10 +822,10 @@ void FEElasticShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
         for (int j=0; j<neln; ++j)
         {
             FENode& node = m_pMesh->Node(el.m_node[j]);
-            v[j] = node.get_vec3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1-m_alphaf);
-            w[j] = node.get_vec3d(m_dofSV[0], m_dofSV[1], m_dofSV[2])*m_alphaf + node.get_vec3d_prev(m_dofSV[0], m_dofSV[1], m_dofSV[2])*(1-m_alphaf);
+            v[j] = node.get_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1-m_alphaf);
+            w[j] = node.get_Vector3d(m_dofSV[0], m_dofSV[1], m_dofSV[2])*m_alphaf + node.get_Vector3d_prev(m_dofSV[0], m_dofSV[1], m_dofSV[2])*(1-m_alphaf);
             a[j] = node.m_at*m_alpham + node.m_ap*(1-m_alpham);
-            b[j] = node.get_vec3d(m_dofSA[0], m_dofSA[1], m_dofSA[2])*m_alpham + node.get_vec3d_prev(m_dofSA[0], m_dofSA[1], m_dofSA[2])*(1-m_alpham);
+            b[j] = node.get_Vector3d(m_dofSA[0], m_dofSA[1], m_dofSA[2])*m_alpham + node.get_Vector3d_prev(m_dofSA[0], m_dofSA[1], m_dofSA[2])*(1-m_alpham);
         }
     }
 

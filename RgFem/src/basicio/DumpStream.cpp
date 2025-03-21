@@ -332,7 +332,7 @@ bool DumpStream::readBlock(DataBlock& d)
 	case TypeID::TYPE_FLOAT   : { float        v; read_raw(v); d.m_pd = new float       (v); } break;
 	case TypeID::TYPE_DOUBLE  : { double       v; read_raw(v); d.m_pd = new double      (v); } break;
 	case TypeID::TYPE_VEC2D   : { vec2d        v; read_raw(v); d.m_pd = new vec2d       (v); } break;
-	case TypeID::TYPE_VEC3D   : { vec3d        v; read_raw(v); d.m_pd = new vec3d       (v); } break;
+	case TypeID::TYPE_Vector3d   : { Vector3d        v; read_raw(v); d.m_pd = new Vector3d       (v); } break;
 	case TypeID::TYPE_MAT2D   : { mat2d        v; read_raw(v); d.m_pd = new mat2d       (v); } break;
 	case TypeID::TYPE_MAT3D   : { mat3d        v; read_raw(v); d.m_pd = new mat3d       (v); } break;
 	case TypeID::TYPE_MAT3DD  : { mat3dd       v; read_raw(v); d.m_pd = new mat3dd      (v); } break;

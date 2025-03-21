@@ -1,5 +1,5 @@
 #pragma once
-#include "vec3d.h"
+#include "Vector3d.h"
 
 //-----------------------------------------------------------------------------
 //  This class stores the coordinates of a bounding box
@@ -8,11 +8,11 @@ class FEBoundingBox
 {
 public:
 	FEBoundingBox() {}
-	FEBoundingBox(const vec3d& x) : r0(x), r1(x) {}
-	FEBoundingBox(const vec3d& x0, const vec3d& x1) : r0(x0), r1(x1) {}
+	FEBoundingBox(const Vector3d& x) : r0(x), r1(x) {}
+	FEBoundingBox(const Vector3d& x0, const Vector3d& x1) : r0(x0), r1(x1) {}
 
 	// center of box
-	vec3d center() const { return (r0 + r1)*0.5; }
+	Vector3d center() const { return (r0 + r1)*0.5; }
 
 	// dimensions of box
 	double width() const { return (r1.x - r0.x); }
@@ -33,7 +33,7 @@ public:
 	}
 
 	// add a point and grow the box if necessary
-	void add(const vec3d& r)
+	void add(const Vector3d& r)
 	{
 		if (r.x < r0.x) r0.x = r.x;
 		if (r.y < r0.y) r0.y = r.y;
@@ -52,18 +52,18 @@ public:
 	}
 
 	// translate the box
-	void translate(const vec3d& t)
+	void translate(const Vector3d& t)
 	{
 		r0 += t;
 		r1 += t;
 	}
 
 	// check whether a point is inside or not
-	bool IsInside(const vec3d& r) const
+	bool IsInside(const Vector3d& r) const
 	{
 		return ((r.x >= r0.x) && (r.y >= r0.y) && (r.z >= r0.z) && (r.x <= r1.x) && (r.y <= r1.y) && (r.z <= r1.z));
 	}
 
 private:
-	vec3d	r0, r1; // coordinates of opposite corners
+	Vector3d	r0, r1; // coordinates of opposite corners
 };

@@ -192,9 +192,9 @@ template <> void fecore_print_T<mat3dd>(mat3dd* pd)
 	}
 }
 
-template <> void fecore_print_T<vec3d>(vec3d* pd)
+template <> void fecore_print_T<Vector3d>(Vector3d* pd)
 {
-	vec3d& v = *pd;
+	Vector3d& v = *pd;
 	cout << v.x << endl;
 	cout << v.y << endl;
 	cout << v.z << endl;

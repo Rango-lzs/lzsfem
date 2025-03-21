@@ -31,7 +31,7 @@ SOFTWARE.*/
 #include "FEM_EXPORT.h"
 
 class vec2d;
-class vec3d;
+class Vector3d;
 class mat3d;
 class mat3ds;
 
@@ -49,9 +49,9 @@ template <> struct fecoreType<vec2d>
 	static int size() { return 2; }
 };
 
-template <> struct fecoreType<vec3d>
+template <> struct fecoreType<Vector3d>
 {
-	static FEDataType type() { return FE_VEC3D; }
+	static FEDataType type() { return FE_Vector3d; }
 	static int size() { return 3; }
 };
 

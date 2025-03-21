@@ -579,7 +579,7 @@ void FEExplicitSolidSolver::UpdateKinematics(vector<double>& ui)
 	{
 		FENode& node = mesh.Node(i);
 		if (node.m_rid == -1)
-			node.m_rt = node.m_r0 + node.get_vec3d(m_dofU[0], m_dofU[1], m_dofU[2]);
+			node.m_rt = node.m_r0 + node.get_Vector3d(m_dofU[0], m_dofU[1], m_dofU[2]);
 	}
 }
 
@@ -636,7 +636,7 @@ void FEExplicitSolidSolver::UpdateRigidBodies(vector<double>& ui)
 		RB.m_rt.y = RB.m_rp.y + du[1];
 		RB.m_rt.z = RB.m_rp.z + du[2];
 
-		vec3d r = vec3d(du[3], du[4], du[5]);
+		Vector3d r = Vector3d(du[3], du[4], du[5]);
 		double w = sqrt(r.x*r.x + r.y*r.y + r.z*r.z);
 		quatd dq = quatd(w, r);
 
@@ -664,8 +664,8 @@ void FEExplicitSolidSolver::UpdateRigidBodies(vector<double>& ui)
 		FENode& node = mesh.Node(i);
 		if (node.m_rid >= 0)
 		{
-			vec3d ut = node.m_rt - node.m_r0;
-			node.set_vec3d(m_dofU[0], m_dofU[1], m_dofU[2], ut);
+			Vector3d ut = node.m_rt - node.m_r0;
+			node.set_Vector3d(m_dofU[0], m_dofU[1], m_dofU[2], ut);
 		}
 	}
 }
@@ -765,7 +765,7 @@ void FEExplicitSolidSolver::PrepStep()
 	{
 		FENode& ni = mesh.Node(i);
 		ni.m_rp = ni.m_rt;
-		ni.m_vp = ni.get_vec3d(m_dofV[0], m_dofV[1], m_dofV[2]);
+		ni.m_vp = ni.get_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2]);
 		ni.m_ap = ni.m_at;
 		ni.UpdateValues();
 	}
@@ -814,15 +814,15 @@ void FEExplicitSolidSolver::PrepStep()
 			else
 			{
 				double* dul = RB.m_dul;
-				vec3d dr = vec3d(dul[0], dul[1], dul[2]);
+				Vector3d dr = Vector3d(dul[0], dul[1], dul[2]);
 				
-				vec3d v = vec3d(dul[3], dul[4], dul[5]);
+				Vector3d v = Vector3d(dul[3], dul[4], dul[5]);
 				double w = sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 				quatd dq = quatd(w, v);
 
 				FERigidBody* pprb = RB.m_prb;
 
-				vec3d r0 = RB.m_rt;
+				Vector3d r0 = RB.m_rt;
 				quatd Q0 = RB.GetRotation();
 
 				dr = Q0*dr;
@@ -830,7 +830,7 @@ void FEExplicitSolidSolver::PrepStep()
 
 				while (pprb)
 				{
-					vec3d r1 = pprb->m_rt;
+					Vector3d r1 = pprb->m_rt;
 					dul = pprb->m_dul;
 
 					quatd Q1 = pprb->GetRotation();
@@ -838,8 +838,8 @@ void FEExplicitSolidSolver::PrepStep()
 					dr = r0 + dr - r1;
 
 					// grab the parent's local displacements
-					vec3d dR = vec3d(dul[0], dul[1], dul[2]);
-					v = vec3d(dul[3], dul[4], dul[5]);
+					Vector3d dR = Vector3d(dul[0], dul[1], dul[2]);
+					v = Vector3d(dul[3], dul[4], dul[5]);
 					w = sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 					quatd dQ = quatd(w, v);
 
@@ -913,7 +913,7 @@ bool FEExplicitSolidSolver::DoSolve()
 	for (int i = 0; i < mesh.Nodes(); ++i)
 	{
 		FENode& node = mesh.Node(i);
-		vec3d vt = node.get_vec3d(m_dofV[0], m_dofV[1], m_dofV[2]);
+		Vector3d vt = node.get_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2]);
 		int n;
 		if ((n = node.m_ID[m_dofU[0]]) >= 0) { un[n] = node.m_rt.x - node.m_r0.x; vn[n] = vt.x; an[n] = node.m_at.x; }
 		if ((n = node.m_ID[m_dofU[1]]) >= 0) { un[n] = node.m_rt.y - node.m_r0.y; vn[n] = vt.y; an[n] = node.m_at.y; }
@@ -1027,7 +1027,7 @@ bool FEExplicitSolidSolver::Residual(vector<double>& R)
 	for (int i=0; i<NRB; ++i)
 	{
 		FERigidBody& RB = *fem.GetRigidBody(i);
-		RB.m_Fr = RB.m_Mr = vec3d(0,0,0);
+		RB.m_Fr = RB.m_Mr = Vector3d(0,0,0);
 	}
 
 	// get the mesh

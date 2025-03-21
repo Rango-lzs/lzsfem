@@ -139,14 +139,14 @@ void FEElasticShellDomainOld::Activate()
 
 //-----------------------------------------------------------------------------
 //! calculates covariant basis vectors at an integration point
-void FEElasticShellDomainOld::CoBaseVectors0(FEShellElementOld& el, int n, vec3d g[3])
+void FEElasticShellDomainOld::CoBaseVectors0(FEShellElementOld& el, int n, Vector3d g[3])
 {
 	int i;
 
 	int neln = el.Nodes();
 
 	// current nodal coordinates and directors
-	vec3d r[FEElement::MAX_NODES], D[FEElement::MAX_NODES];
+	Vector3d r[FEElement::MAX_NODES], D[FEElement::MAX_NODES];
 	for (i = 0; i<neln; ++i)
 	{
 		FENode& ni = m_pMesh->Node(el.m_node[i]);
@@ -161,7 +161,7 @@ void FEElasticShellDomainOld::CoBaseVectors0(FEShellElementOld& el, int n, vec3d
 	double* M = el.H(n);
 
 	// initialize covariant basis vectors
-	g[0] = g[1] = g[2] = vec3d(0, 0, 0);
+	g[0] = g[1] = g[2] = Vector3d(0, 0, 0);
 
 	for (i = 0; i<neln; ++i)
 	{
@@ -173,9 +173,9 @@ void FEElasticShellDomainOld::CoBaseVectors0(FEShellElementOld& el, int n, vec3d
 
 //-----------------------------------------------------------------------------
 //! calculates contravariant basis vectors at an integration point
-void FEElasticShellDomainOld::ContraBaseVectors0(FEShellElementOld& el, int n, vec3d gcnt[3])
+void FEElasticShellDomainOld::ContraBaseVectors0(FEShellElementOld& el, int n, Vector3d gcnt[3])
 {
-	vec3d gcov[3];
+	Vector3d gcov[3];
 	CoBaseVectors0(el, n, gcov);
 
 	mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
@@ -183,16 +183,16 @@ void FEElasticShellDomainOld::ContraBaseVectors0(FEShellElementOld& el, int n, v
 		gcov[0].z, gcov[1].z, gcov[2].z);
 	mat3d Ji = J.inverse();
 
-	gcnt[0] = vec3d(Ji(0, 0), Ji(0, 1), Ji(0, 2));
-	gcnt[1] = vec3d(Ji(1, 0), Ji(1, 1), Ji(1, 2));
-	gcnt[2] = vec3d(Ji(2, 0), Ji(2, 1), Ji(2, 2));
+	gcnt[0] = Vector3d(Ji(0, 0), Ji(0, 1), Ji(0, 2));
+	gcnt[1] = Vector3d(Ji(1, 0), Ji(1, 1), Ji(1, 2));
+	gcnt[2] = Vector3d(Ji(2, 0), Ji(2, 1), Ji(2, 2));
 
 }
 
 //-----------------------------------------------------------------------------
 double FEElasticShellDomainOld::invjac0(FEShellElementOld& el, double Ji[3][3], int n)
 {
-	vec3d gcov[3];
+	Vector3d gcov[3];
 	CoBaseVectors0(el, n, gcov);
 
 	mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
@@ -226,7 +226,7 @@ double FEElasticShellDomainOld::invjac0(FEShellElementOld& el, double Ji[3][3], 
 //! Calculate jacobian with respect to reference frame
 double FEElasticShellDomainOld::detJ0(FEShellElementOld &el, int n)
 {
-	vec3d gcov[3];
+	Vector3d gcov[3];
 	CoBaseVectors0(el, n, gcov);
 
 	mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
@@ -237,19 +237,19 @@ double FEElasticShellDomainOld::detJ0(FEShellElementOld &el, int n)
 
 //-----------------------------------------------------------------------------
 //! calculates covariant basis vectors at an integration point
-void FEElasticShellDomainOld::CoBaseVectors(FEShellElementOld& el, int n, vec3d g[3])
+void FEElasticShellDomainOld::CoBaseVectors(FEShellElementOld& el, int n, Vector3d g[3])
 {
     int i;
     
     int neln = el.Nodes();
 
     // current nodal coordinates and directors
-    vec3d r[FEElement::MAX_NODES], D[FEElement::MAX_NODES];
+    Vector3d r[FEElement::MAX_NODES], D[FEElement::MAX_NODES];
     for (i=0; i<neln; ++i)
     {
         FENode& ni = m_pMesh->Node(el.m_node[i]);
         r[i] = ni.m_rt;
-        D[i] = el.m_D0[i] + ni.get_vec3d(m_dofSR[0], m_dofSR[1], m_dofSR[2]);
+        D[i] = el.m_D0[i] + ni.get_Vector3d(m_dofSR[0], m_dofSR[1], m_dofSR[2]);
     }
     
     double eta = el.gt(n);
@@ -259,7 +259,7 @@ void FEElasticShellDomainOld::CoBaseVectors(FEShellElementOld& el, int n, vec3d 
     double* M  = el.H(n);
     
     // initialize covariant basis vectors
-    g[0] = g[1] = g[2] = vec3d(0,0,0);
+    g[0] = g[1] = g[2] = Vector3d(0,0,0);
     
     for (i=0; i<neln; ++i)
     {
@@ -271,9 +271,9 @@ void FEElasticShellDomainOld::CoBaseVectors(FEShellElementOld& el, int n, vec3d 
 
 //-----------------------------------------------------------------------------
 //! calculates contravariant basis vectors at an integration point
-void FEElasticShellDomainOld::ContraBaseVectors(FEShellElementOld& el, int n, vec3d gcnt[3])
+void FEElasticShellDomainOld::ContraBaseVectors(FEShellElementOld& el, int n, Vector3d gcnt[3])
 {
-    vec3d gcov[3];
+    Vector3d gcov[3];
     CoBaseVectors(el, n, gcov);
     
     mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
@@ -281,9 +281,9 @@ void FEElasticShellDomainOld::ContraBaseVectors(FEShellElementOld& el, int n, ve
                     gcov[0].z, gcov[1].z, gcov[2].z);
     mat3d Ji = J.inverse();
     
-    gcnt[0] = vec3d(Ji(0,0),Ji(0,1),Ji(0,2));
-    gcnt[1] = vec3d(Ji(1,0),Ji(1,1),Ji(1,2));
-    gcnt[2] = vec3d(Ji(2,0),Ji(2,1),Ji(2,2));
+    gcnt[0] = Vector3d(Ji(0,0),Ji(0,1),Ji(0,2));
+    gcnt[1] = Vector3d(Ji(1,0),Ji(1,1),Ji(1,2));
+    gcnt[2] = Vector3d(Ji(2,0),Ji(2,1),Ji(2,2));
 
 }
 
@@ -291,7 +291,7 @@ void FEElasticShellDomainOld::ContraBaseVectors(FEShellElementOld& el, int n, ve
 // jacobian with respect to current frame
 double FEElasticShellDomainOld::detJ(FEShellElementOld& el, int n)
 {
-    vec3d gcov[3];
+    Vector3d gcov[3];
     CoBaseVectors(el, n, gcov);
     
     mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
@@ -303,7 +303,7 @@ double FEElasticShellDomainOld::detJ(FEShellElementOld& el, int n)
 //-----------------------------------------------------------------------------
 double FEElasticShellDomainOld::defgrad(FEShellElementOld& el, mat3d& F, int n)
 {
-    vec3d gcov[3], Gcnt[3];
+    Vector3d gcov[3], Gcnt[3];
     CoBaseVectors(el, n, gcov);
     ContraBaseVectors0(el, n, Gcnt);
     
@@ -320,7 +320,7 @@ double FEElasticShellDomainOld::defgrad(FEShellElementOld& el, mat3d& F, int n)
 //! is the determinant of the jacobian (not the inverse!)
 double FEElasticShellDomainOld::invjact(FEShellElementOld& el, double Ji[3][3], int n)
 {
-    vec3d gcov[3];
+    Vector3d gcov[3];
     CoBaseVectors(el, n, gcov);
     
     mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
@@ -400,7 +400,7 @@ void FEElasticShellDomainOld::ElementInternalForce(FEShellElementOld& el, vector
 	double*	gw = el.GaussWeights();
 	double eta;
     
-    vec3d gcnt[3];
+    Vector3d gcnt[3];
 
 	// repeat for all integration points
 	for (n=0; n<nint; ++n)
@@ -425,10 +425,10 @@ void FEElasticShellDomainOld::ElementInternalForce(FEShellElementOld& el, vector
 
 		for (i=0; i<neln; ++i)
 		{
-            vec3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
-            vec3d gradP = (gradM*eta + gcnt[2]*M[i])/2;
-            vec3d fu = s*gradM;
-            vec3d fd = s*gradP;
+            Vector3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
+            Vector3d gradP = (gradM*eta + gcnt[2]*M[i])/2;
+            Vector3d fu = s*gradM;
+            Vector3d fd = s*gradP;
 
 			// calculate internal force
 			// the '-' sign is so that the internal forces get subtracted
@@ -502,12 +502,12 @@ void FEElasticShellDomainOld::ElementBodyForce(FEBodyForce& BF, FEShellElementOl
 		eta = el.gt(n);
 
 		// get the force
-		vec3d f = BF.force(mp);
+		Vector3d f = BF.force(mp);
 
 		for (int i=0; i<neln; ++i)
 		{
-            vec3d fu = f*(dens*M[i]);
-            vec3d fd = fu*(eta/2);
+            Vector3d fu = f*(dens*M[i]);
+            Vector3d fd = fu*(eta/2);
             
 			fe[6*i  ] -= fu.x*detJt;
 			fe[6*i+1] -= fu.y*detJt;
@@ -564,7 +564,7 @@ void FEElasticShellDomainOld::ElementStiffness(int iel, matrix& ke)
 	const int neln = el.Nodes();
 
     const double* Mr, *Ms, *M;
-    vec3d gradM[FEElement::MAX_NODES], gradP[FEElement::MAX_NODES];
+    Vector3d gradM[FEElement::MAX_NODES], gradP[FEElement::MAX_NODES];
 
     // jacobian matrix determinant
     double detJt;
@@ -573,7 +573,7 @@ void FEElasticShellDomainOld::ElementStiffness(int iel, matrix& ke)
 	const double *gw = el.GaussWeights();
     double eta;
     
-    vec3d gcnt[3];
+    Vector3d gcnt[3];
 
 	// calculate element stiffness matrix
 	ke.zero();
@@ -707,12 +707,12 @@ void FEElasticShellDomainOld::ElementBodyForce(FEModel& fem, FEShellElementOld& 
                 eta = el.gt(n);
                 
                 // get the force
-                vec3d f = pbf->force(mp);
+                Vector3d f = pbf->force(mp);
                 
                 for (int i=0; i<neln; ++i)
                 {
-                    vec3d fu = f*(dens*M[i]);
-                    vec3d fd = fu*(eta/2);
+                    Vector3d fu = f*(dens*M[i]);
+                    Vector3d fd = fu*(eta/2);
                     
                     fe[6*i  ] -= fu.x*detJt;
                     fe[6*i+1] -= fu.y*detJt;
@@ -731,7 +731,7 @@ void FEElasticShellDomainOld::ElementBodyForce(FEModel& fem, FEShellElementOld& 
 void FEElasticShellDomainOld::Update(const FETimeInfo& tp)
 {
 	FEMesh& mesh = *GetMesh();
-	vec3d r0[FEElement::MAX_NODES], rt[FEElement::MAX_NODES];
+	Vector3d r0[FEElement::MAX_NODES], rt[FEElement::MAX_NODES];
 
 	int n;
 	for (int i=0; i<(int) m_Elem.size(); ++i)
@@ -756,7 +756,7 @@ void FEElasticShellDomainOld::Update(const FETimeInfo& tp)
 		for (int j=0; j<neln; ++j)
 		{
 			FENode& nj = mesh.Node(el.m_node[j]);
-			vec3d D = el.m_D0[j] + nj.get_vec3d(m_dofSU[0], m_dofSU[1], m_dofSU[2]);
+			Vector3d D = el.m_D0[j] + nj.get_Vector3d(m_dofSU[0], m_dofSU[1], m_dofSU[2]);
 			double h = D.norm();
 
 			el.m_ht[j] = h;

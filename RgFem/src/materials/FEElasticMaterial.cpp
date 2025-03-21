@@ -68,8 +68,8 @@ mat3ds FEElasticMaterial::SecantStress(FEMaterialPoint& mp, bool PK2)
 
 	// create deformation gradient increment
 	double eps = 1e-9;
-	vec3d e[3];
-	e[0] = vec3d(1, 0, 0); e[1] = vec3d(0, 1, 0); e[2] = vec3d(0, 0, 1);
+	Vector3d e[3];
+	e[0] = Vector3d(1, 0, 0); e[1] = Vector3d(0, 1, 0); e[2] = Vector3d(0, 0, 1);
 	mat3ds S(0.0);
 	for (int k = 0; k < 3; ++k) {
 		for (int l = k; l < 3; ++l) {

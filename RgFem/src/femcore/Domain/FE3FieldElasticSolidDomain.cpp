@@ -272,7 +272,7 @@ void FE3FieldElasticSolidDomain::ElementMaterialStiffness(int iel, matrix &ke)
 
 	// global derivatives of shape functions
 	const int NME = FEElement::MAX_NODES;
-	vec3d G[NME];
+	Vector3d G[NME];
 
 	double Gxi, Gyi, Gzi;
 	double Gxj, Gyj, Gzj;
@@ -495,13 +495,13 @@ void FE3FieldElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& 
 
 	// nodal coordinates
 	const int NME = FEElement::MAX_NODES;
-	vec3d r0[NME], r[NME], vel[NME], acc[NME];
+	Vector3d r0[NME], r[NME], vel[NME], acc[NME];
 	for (int j=0; j<neln; ++j)
 	{
         FENode& node = m_pMesh->Node(el.m_node[j]);
 		r0[j] = node.m_r0;
         r[j] = node.m_rt*m_alphaf + node.m_rp*(1-m_alphaf);
-        vel[j] = node.get_vec3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1-m_alphaf);
+        vel[j] = node.get_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1-m_alphaf);
         acc[j] = node.m_at*m_alpham + node.m_ap*(1-m_alpham);
 	}
 

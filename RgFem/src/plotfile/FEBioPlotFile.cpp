@@ -1564,7 +1564,7 @@ void FEBioPlotFile::WriteObject(PlotObject* po)
 	m_ar.WriteChunk(PLT_OBJECT_NAME, po->m_name.c_str());
 	m_ar.WriteChunk(PLT_OBJECT_TAG, po->m_tag);
 
-	vec3d& r = po->m_pos;
+	Vector3d& r = po->m_pos;
 	float f[3] = { (float)r.x, (float)r.y, (float)r.z };
 	m_ar.WriteChunk(PLT_OBJECT_POS, f, 3);
 
@@ -1575,8 +1575,8 @@ void FEBioPlotFile::WriteObject(PlotObject* po)
 	if (dynamic_cast<LineObject*>(po))
 	{
 		LineObject* pl = dynamic_cast<LineObject*>(po);
-		vec3d r1 = pl->m_r1;
-		vec3d r2 = pl->m_r2;
+		Vector3d r1 = pl->m_r1;
+		Vector3d r2 = pl->m_r2;
 		float c[6] = { (float)r1.x, (float)r1.y, (float)r1.z, (float)r2.x, (float)r2.y, (float)r2.z };
 		m_ar.WriteChunk(PLT_LINE_COORDS, c, 6);
 	}
@@ -2075,7 +2075,7 @@ void FEBioPlotFile::WriteObjectsState()
 		{
 			m_ar.WriteChunk(PLT_OBJECT_ID, po->m_id);
 
-			vec3d r = po->m_pos;
+			Vector3d r = po->m_pos;
 			float f[3] = { (float)r.x, (float)r.y, (float)r.z };
 			m_ar.WriteChunk(PLT_OBJECT_POS, f, 3);
 
@@ -2103,7 +2103,7 @@ void FEBioPlotFile::WriteObjectsState()
 		{
 			m_ar.WriteChunk(PLT_OBJECT_ID, po->m_id);
 
-			vec3d r = po->m_pos;
+			Vector3d r = po->m_pos;
 			float f[3] = { (float)r.x, (float)r.y, (float)r.z };
 			m_ar.WriteChunk(PLT_OBJECT_POS, f, 3);
 
@@ -2111,8 +2111,8 @@ void FEBioPlotFile::WriteObjectsState()
 			float a[4] = { (float)q.x, (float)q.y, (float)q.z, (float)q.w };
 			m_ar.WriteChunk(PLT_OBJECT_ROT, a, 4);
 
-			vec3d r1 = po->m_r1;
-			vec3d r2 = po->m_r2;
+			Vector3d r1 = po->m_r1;
+			Vector3d r2 = po->m_r2;
 			float c[6] = { (float)r1.x, (float)r1.y, (float)r1.z, (float)r2.x, (float)r2.y, (float)r2.z };
 			m_ar.WriteChunk(PLT_LINE_COORDS, c, 6);
 

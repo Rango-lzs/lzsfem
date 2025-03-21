@@ -27,7 +27,7 @@ SOFTWARE.*/
 
 
 #pragma once
-#include <FECore/vec3d.h>
+#include <FECore/Vector3d.h>
 #include <vector>
 #include <string>
 #include <FECore/FEElement.h>
@@ -46,7 +46,7 @@ public:
 	struct NODE
 	{
 		int		id;	// Nodal ID
-		vec3d	r;	// Node position
+		Vector3d	r;	// Node position
 	};
 
 	struct ELEMENT

@@ -1,32 +1,3 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FE3FieldElasticSolidDomain.h"
 #include "FEUncoupledMaterial.h"
 #include <FECore/FEModel.h>
@@ -272,7 +243,7 @@ void FE3FieldElasticSolidDomain::ElementMaterialStiffness(int iel, matrix &ke)
 
 	// global derivatives of shape functions
 	const int NME = FEElement::MAX_NODES;
-	vec3d G[NME];
+	Vector3d G[NME];
 
 	double Gxi, Gyi, Gzi;
 	double Gxj, Gyj, Gzj;
@@ -495,13 +466,13 @@ void FE3FieldElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& 
 
 	// nodal coordinates
 	const int NME = FEElement::MAX_NODES;
-	vec3d r0[NME], r[NME], vel[NME], acc[NME];
+	Vector3d r0[NME], r[NME], vel[NME], acc[NME];
 	for (int j=0; j<neln; ++j)
 	{
         FENode& node = m_pMesh->Node(el.m_node[j]);
 		r0[j] = node.m_r0;
         r[j] = node.m_rt*m_alphaf + node.m_rp*(1-m_alphaf);
-        vel[j] = node.get_vec3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1-m_alphaf);
+        vel[j] = node.get_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1-m_alphaf);
         acc[j] = node.m_at*m_alpham + node.m_ap*(1-m_alpham);
 	}
 

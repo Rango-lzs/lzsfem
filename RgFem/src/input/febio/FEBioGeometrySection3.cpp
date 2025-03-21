@@ -39,8 +39,8 @@ SOFTWARE.*/
 
 //-----------------------------------------------------------------------------
 // functions defined in FEBioGeometrySection
-void set_element_fiber(FEElement& el, const vec3d& v, int ncomp);
-void set_element_mat_axis(FEElement& el, const vec3d& v1, const vec3d& v2, int ncomp);
+void set_element_fiber(FEElement& el, const Vector3d& v, int ncomp);
+void set_element_mat_axis(FEElement& el, const Vector3d& v1, const Vector3d& v2, int ncomp);
 
 //-----------------------------------------------------------------------------
 void FEBioGeometrySection3::Parse(XMLTag& tag)
@@ -178,7 +178,7 @@ void FEBioGeometrySection3::ParseInstanceSection(XMLTag& tag)
 					{
 						double r[3];
 						tag.value(r, 3);
-						transform.SetPosition(vec3d(r[0], r[1], r[2]));
+						transform.SetPosition(Vector3d(r[0], r[1], r[2]));
 					}
 					else if (tag == "rotate")
 					{
@@ -196,7 +196,7 @@ void FEBioGeometrySection3::ParseInstanceSection(XMLTag& tag)
 						{
 							double v[3];
 							tag.value(v, 3);
-							transform.SetRotation(vec3d(v[0], v[1], v[2]));
+							transform.SetRotation(Vector3d(v[0], v[1], v[2]));
 						}
 						else if (strcmp(sztype, "Euler") == 0)
 						{

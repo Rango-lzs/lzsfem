@@ -51,8 +51,8 @@ void FEElementTraits::project_to_nodes(mat3d* si, mat3d* so) const
 }
 
 //-----------------------------------------------------------------------------
-//! project vec3d integration point data to nodes
-void FEElementTraits::project_to_nodes(vec3d* si, vec3d* so) const
+//! project Vector3d integration point data to nodes
+void FEElementTraits::project_to_nodes(Vector3d* si, Vector3d* so) const
 {
 	double ai[FEElement::MAX_INTPOINTS];
 	double ao[FEElement::MAX_NODES];

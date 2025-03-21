@@ -585,14 +585,14 @@ bool AbaqusImport::read_ngen(char* szline, FILE* fp)
 		{
 			AbaqusModel::Tnode_itr pc = part.FindNode(lc);
 
-			vec3d m1(pn1->x - pc->x, pn1->y - pc->y, pn1->z - pc->z);
-			vec3d m2(pn2->x - pc->x, pn2->y - pc->y, pn2->z - pc->z);
+			Vector3d m1(pn1->x - pc->x, pn1->y - pc->y, pn1->z - pc->z);
+			Vector3d m2(pn2->x - pc->x, pn2->y - pc->y, pn2->z - pc->z);
 			double L1 = m1.Length();
 			double L2 = m2.Length();
 			m1.Normalize();
 			m2.Normalize();
 			quatd qt(m1, m2), q;
-			vec3d p = qt.GetVector(), r;
+			Vector3d p = qt.GetVector(), r;
 			double w = qt.GetAngle(), L;
 
 			for (i=l1+linc; i<l2; i += linc)
@@ -1623,15 +1623,15 @@ bool AbaqusImport::build_mesh()
 			// apply translation
 			double t[3];
 			pinst->GetTranslation(t);
-			po->GetTransform().SetPosition(vec3d(t[0], t[1], t[2]));
+			po->GetTransform().SetPosition(Vector3d(t[0], t[1], t[2]));
 
 			// apply rotation
 			double R[7];
 			pinst->GetRotation(R);
 			if (R[6] != 0.0)
 			{
-				vec3d a = vec3d(R[0], R[1], R[2]);
-				vec3d b = vec3d(R[3], R[4], R[5]);
+				Vector3d a = Vector3d(R[0], R[1], R[2]);
+				Vector3d b = Vector3d(R[3], R[4], R[5]);
 				po->GetTransform().Rotate(a, b, R[6]);
 			}
 
@@ -2018,13 +2018,13 @@ GObject* AbaqusImport::build_part(AbaqusModel::PART* pg)
 						AbaqusModel::Distribution::ENTRY& e = dist->m_data[j];
 						int eid = part.FindElement(e.elem)->lid;
 
-						vec3d a = vec3d(e.val[0], e.val[1], e.val[2]);
-						vec3d b = vec3d(e.val[3], e.val[4], e.val[5]);
+						Vector3d a = Vector3d(e.val[0], e.val[1], e.val[2]);
+						Vector3d b = Vector3d(e.val[3], e.val[4], e.val[5]);
 						FSElement& el = pm->Element(eid);
 
-						vec3d e1 = a; e1.Normalize();
-						vec3d e3 = a ^ b; e3.Normalize();
-						vec3d e2 = e3 ^ e1;
+						Vector3d e1 = a; e1.Normalize();
+						Vector3d e3 = a ^ b; e3.Normalize();
+						Vector3d e2 = e3 ^ e1;
 
 						mat3d Q;
 						Q[0][0] = e1.x; Q[0][1] = e2.x; Q[0][2] = e3.x;
@@ -2069,13 +2069,13 @@ GObject* AbaqusImport::build_part(AbaqusModel::PART* pg)
 						AbaqusModel::Distribution::ENTRY& e = dist->m_data[j];
 						int eid = part.FindElement(e.elem)->lid;
 
-						vec3d a = vec3d(e.val[0], e.val[1], e.val[2]);
-						vec3d b = vec3d(e.val[3], e.val[4], e.val[5]);
+						Vector3d a = Vector3d(e.val[0], e.val[1], e.val[2]);
+						Vector3d b = Vector3d(e.val[3], e.val[4], e.val[5]);
 						FSElement& el = pm->Element(eid);
 
-						vec3d e1 = a; e1.Normalize();
-						vec3d e3 = a ^ b; e3.Normalize();
-						vec3d e2 = e3 ^ e1;
+						Vector3d e1 = a; e1.Normalize();
+						Vector3d e3 = a ^ b; e3.Normalize();
+						Vector3d e2 = e3 ^ e1;
 
 						mat3d Q;
 						Q[0][0] = e1.x; Q[0][1] = e2.x; Q[0][2] = e3.x;

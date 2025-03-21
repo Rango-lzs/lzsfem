@@ -35,7 +35,7 @@ FEElasticMaterialPoint::FEElasticMaterialPoint(FEMaterialPointData* mp) : FEMate
 	m_F.unit();
 	m_J = 1;
 	m_s.zero();
-    m_v = m_a = m_gradJ = vec3d(0, 0, 0);
+    m_v = m_a = m_gradJ = Vector3d(0, 0, 0);
     m_buncoupled = false;
     m_Wt = m_Wp = 0;
     m_p = 0;
@@ -58,7 +58,7 @@ void FEElasticMaterialPoint::Init()
 
 	m_s.zero();
 
-    m_v = m_a = m_gradJ = vec3d(0, 0, 0);
+    m_v = m_a = m_gradJ = Vector3d(0, 0, 0);
     m_L.zero();
     
     m_Wt = m_Wp = 0;
@@ -164,7 +164,7 @@ mat3ds FEElasticMaterialPoint::RightStretch() const
     // get the right stretch tensor
     mat3ds C = RightCauchyGreen();
     double l2[3];
-    vec3d v[3];
+    Vector3d v[3];
     C.eigen2(l2, v);
     mat3ds U = dyad(v[0])*sqrt(l2[0]) + dyad(v[1])*sqrt(l2[1]) + dyad(v[2])*sqrt(l2[2]);
     
@@ -179,7 +179,7 @@ mat3ds FEElasticMaterialPoint::LeftStretch() const
     // get the left stretch tensor
     mat3ds B = LeftCauchyGreen();
     double l2[3];
-    vec3d v[3];
+    Vector3d v[3];
     B.eigen2(l2, v);
     mat3ds V = dyad(v[0])*sqrt(l2[0]) + dyad(v[1])*sqrt(l2[1]) + dyad(v[2])*sqrt(l2[2]);
     
@@ -194,7 +194,7 @@ mat3ds FEElasticMaterialPoint::RightStretchInverse() const
     // get the right stretch tensor
     mat3ds C = RightCauchyGreen();
     double l2[3];
-    vec3d v[3];
+    Vector3d v[3];
     C.eigen2(l2, v);
     mat3ds U = dyad(v[0])/sqrt(l2[0]) + dyad(v[1])/sqrt(l2[1]) + dyad(v[2])/sqrt(l2[2]);
     
@@ -209,7 +209,7 @@ mat3ds FEElasticMaterialPoint::LeftStretchInverse() const
     // get the left stretch tensor
     mat3ds B = LeftCauchyGreen();
     double l2[3];
-    vec3d v[3];
+    Vector3d v[3];
     B.eigen2(l2, v);
     mat3ds V = dyad(v[0])/sqrt(l2[0]) + dyad(v[1])/sqrt(l2[1]) + dyad(v[2])/sqrt(l2[2]);
     
@@ -224,7 +224,7 @@ mat3ds FEElasticMaterialPoint::RightHencky() const
     // get the right stretch tensor
     mat3ds C = RightCauchyGreen();
     double l2[3];
-    vec3d v[3];
+    Vector3d v[3];
     C.eigen2(l2, v);
     mat3ds H = dyad(v[0])*log(l2[0])/2 + dyad(v[1])*log(l2[1])/2 + dyad(v[2])*log(l2[2])/2;
     
@@ -239,7 +239,7 @@ mat3ds FEElasticMaterialPoint::LeftHencky() const
     // get the left stretch tensor
     mat3ds B = LeftCauchyGreen();
     double l2[3];
-    vec3d v[3];
+    Vector3d v[3];
     B.eigen2(l2, v);
     mat3ds h = dyad(v[0])*log(l2[0])/2 + dyad(v[1])*log(l2[1])/2 + dyad(v[2])*log(l2[2])/2;
     

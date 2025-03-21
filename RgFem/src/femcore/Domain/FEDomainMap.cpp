@@ -164,20 +164,20 @@ void FEDomainMap::setValue(int n, const vec2d& v)
 }
 
 //-----------------------------------------------------------------------------
-void FEDomainMap::setValue(int n, const vec3d& v)
+void FEDomainMap::setValue(int n, const Vector3d& v)
 {
 	if ((m_fmt == FMT_MULT) || (m_fmt == FMT_MATPOINTS))
 	{
 		int index = n*m_maxElemNodes;
-		for (int i = 0; i < m_maxElemNodes; ++i) set<vec3d>(index + i, v);
+		for (int i = 0; i < m_maxElemNodes; ++i) set<Vector3d>(index + i, v);
 	}
 	else if (m_fmt == FMT_ITEM)
 	{
-		set<vec3d>(n, v);
+		set<Vector3d>(n, v);
 	}
 	else if (m_fmt == FMT_NODE)
 	{
-		set<vec3d>(n, v);
+		set<Vector3d>(n, v);
 	}
 }
 
@@ -230,9 +230,9 @@ void FEDomainMap::fillValue(const vec2d& v)
 }
 
 //-----------------------------------------------------------------------------
-void FEDomainMap::fillValue(const vec3d& v)
+void FEDomainMap::fillValue(const Vector3d& v)
 {
-	set<vec3d>(v);
+	set<Vector3d>(v);
 }
 
 //-----------------------------------------------------------------------------
@@ -299,7 +299,7 @@ double FEDomainMap::value(const FEMaterialPoint& pt)
 
 //-----------------------------------------------------------------------------
 //! get the value at a material point
-vec3d FEDomainMap::valueVec3d(const FEMaterialPoint& pt)
+Vector3d FEDomainMap::valueVector3d(const FEMaterialPoint& pt)
 {
 	// get the element this material point is in
 	FEElement* pe = pt.m_elem;
@@ -310,7 +310,7 @@ vec3d FEDomainMap::valueVec3d(const FEMaterialPoint& pt)
 	int lid = m_elset->GetLocalIndex(*pe);
 	assert((lid >= 0));
 
-	vec3d v(0, 0, 0);
+	Vector3d v(0, 0, 0);
 	if (m_fmt == FMT_MULT)
 	{
 		// get shape functions
@@ -318,13 +318,13 @@ vec3d FEDomainMap::valueVec3d(const FEMaterialPoint& pt)
 		int ne = pe->Nodes();
 		for (int i = 0; i < ne; ++i)
 		{
-			vec3d vi = value<vec3d>(lid, i);
+			Vector3d vi = value<Vector3d>(lid, i);
 			v += vi*H[i];
 		}
 	}
 	else if (m_fmt == FMT_ITEM)
 	{
-		return get<vec3d>(lid);
+		return get<Vector3d>(lid);
 	}
 
 	return v;

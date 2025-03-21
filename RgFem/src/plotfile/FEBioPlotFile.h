@@ -263,7 +263,7 @@ public:
 		int		m_id;	// object ID
 		int		m_tag;	// user tag
 
-		vec3d	m_pos;	// object's position
+		Vector3d	m_pos;	// object's position
 		quatd	m_rot;	// object's orientation
 
 		std::string	m_name;	// object's name
@@ -277,7 +277,7 @@ public:
 		PointObject() {}
 
 	public:
-		vec3d	m_r;	// point position
+		Vector3d	m_r;	// point position
 	};
 
 	class LineObject : public PlotObject
@@ -286,8 +286,8 @@ public:
 		LineObject() {}
 
 	public:
-		vec3d	m_r1;	// point 1
-		vec3d	m_r2;	// point 2
+		Vector3d	m_r1;	// point 1
+		Vector3d	m_r2;	// point 2
 	};
 
 public:

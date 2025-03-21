@@ -11,7 +11,7 @@
 #include "femcore/fem_export.h"
 
 #include "datastructure/matrix.h"
-#include "datastructure/vec3d.h"
+#include "datastructure/Vector3d.h"
 #include "datastructure/mat3d.h"
 #include "fecore_enum.h"
 #include <vector>
@@ -47,7 +47,7 @@ public:
 
 	// project integration point data to nodes
 	virtual void project_to_nodes(double* ai, double* ao) const {}
-	virtual void project_to_nodes(vec3d*  ai, vec3d*  ao) const;
+	virtual void project_to_nodes(Vector3d*  ai, Vector3d*  ao) const;
 	virtual void project_to_nodes(mat3ds* ai, mat3ds* ao) const;
 	virtual void project_to_nodes(mat3d*  ai, mat3d*  ao) const;
 

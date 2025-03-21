@@ -88,10 +88,10 @@ public: // overrides from FEElasticDomain
 
 public:
 	//! calculates covariant basis vectors at an integration point
-	void CoBaseVectors0(FEShellElementOld& el, int n, vec3d g[3]);
+	void CoBaseVectors0(FEShellElementOld& el, int n, Vector3d g[3]);
 
 	//! calculates contravariant basis vectors at an integration point
-	void ContraBaseVectors0(FEShellElementOld& el, int n, vec3d g[3]);
+	void ContraBaseVectors0(FEShellElementOld& el, int n, Vector3d g[3]);
 
 	// inverse jacobian with respect to reference frame
 	double invjac0(FEShellElementOld& el, double J[3][3], int n);
@@ -100,10 +100,10 @@ public:
 	double detJ0(FEShellElementOld& el, int n);
 
     //! calculates covariant basis vectors at an integration point
-	void CoBaseVectors(FEShellElementOld& el, int n, vec3d g[3]);
+	void CoBaseVectors(FEShellElementOld& el, int n, Vector3d g[3]);
     
     //! calculates contravariant basis vectors at an integration point
-	void ContraBaseVectors(FEShellElementOld& el, int n, vec3d g[3]);
+	void ContraBaseVectors(FEShellElementOld& el, int n, Vector3d g[3]);
     
     // jacobian with respect to current frame
 	double detJ(FEShellElementOld& el, int n);

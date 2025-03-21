@@ -34,7 +34,7 @@ SOFTWARE.*/
 #include <stdlib.h>
 #include "matrix.h"
 #include "mat3d.h"
-#include "vec3d.h"
+#include "Vector3d.h"
 #include "tens4d.h"
 #include "FEM_EXPORT.h"
 
@@ -48,7 +48,7 @@ template <> void fecore_print_T<mat3d>(mat3d* pd);
 template <> void fecore_print_T<mat3ds>(mat3ds* pd);
 template <> void fecore_print_T<mat3da>(mat3da* pd);
 template <> void fecore_print_T<mat3dd>(mat3dd* pd);
-template <> void fecore_print_T<vec3d>(vec3d* pd);
+template <> void fecore_print_T<Vector3d>(Vector3d* pd);
 template <> void fecore_print_T<tens4ds>(tens4ds* pd);
 template <> void fecore_print_T<std::vector<double> >(std::vector<double>* pv);
 template <> void fecore_print_T<std::vector<int> >(std::vector<int>* pv);

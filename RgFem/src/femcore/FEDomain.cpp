@@ -59,7 +59,7 @@ void FEDomain::CreateMaterialPointData()
 	FEMesh* mesh = GetMesh();
 	if (pmat) ForEachElement([=](FEElement& el) {
 
-		vec3d r[FEElement::MAX_NODES];
+		Vector3d r[FEElement::MAX_NODES];
 		int ne = el.Nodes();
 		for (int i = 0; i < ne; ++i) r[i] = mesh->Node(el.m_node[i]).m_r0;
 

@@ -76,7 +76,7 @@ double FEDomain2D::invjac0(FEElement2D& el, double Ji[2][2], int n)
     double y[FEElement::MAX_NODES];
     for (int i=0; i<neln; ++i)
     {
-        vec3d& ri = m_pMesh->Node(el.m_node[i]).m_r0;
+        Vector3d& ri = m_pMesh->Node(el.m_node[i]).m_r0;
 		x[i] = ri.x;
 		y[i] = ri.y;
     }
@@ -122,7 +122,7 @@ double FEDomain2D::invjact(FEElement2D& el, double Ji[2][2], int n)
     double y[FEElement::MAX_NODES];
     for (int i=0; i<neln; ++i)
     {
-        vec3d& ri = m_pMesh->Node(el.m_node[i]).m_rt;
+        Vector3d& ri = m_pMesh->Node(el.m_node[i]).m_rt;
 		x[i] = ri.x;
 		y[i] = ri.y;
     }
@@ -239,13 +239,13 @@ mat2d FEDomain2D::gradient(FEElement2D& el, vec2d* fn, int n)
 //-----------------------------------------------------------------------------
 //! calculate spatial gradient of function at integration points
 //! A 2D element is assumed to have no variation through the thickness.
-mat3d FEDomain2D::gradient(FEElement2D& el, vec3d* fn, int n)
+mat3d FEDomain2D::gradient(FEElement2D& el, Vector3d* fn, int n)
 {
     double Ji[2][2];
     invjact(el, Ji, n);
 				
-    vec3d g1(Ji[0][0],Ji[0][1],0.0);
-    vec3d g2(Ji[1][0],Ji[1][1],0.0);
+    Vector3d g1(Ji[0][0],Ji[0][1],0.0);
+    Vector3d g2(Ji[1][0],Ji[1][1],0.0);
     
     double* Gr = el.Hr(n);
     double* Gs = el.Hs(n);
@@ -269,7 +269,7 @@ double FEDomain2D::detJ0(FEElement2D &el, int n)
     double y[FEElement::MAX_NODES];
     for (int i=0; i<neln; ++i)
     {
-        vec3d& ri = m_pMesh->Node(el.m_node[i]).m_r0;
+        Vector3d& ri = m_pMesh->Node(el.m_node[i]).m_r0;
 		x[i] = ri.x;
 		y[i] = ri.y;
     }
@@ -300,7 +300,7 @@ double FEDomain2D::detJt(FEElement2D &el, int n)
     double y[FEElement::MAX_NODES];
     for (int i=0; i<neln; ++i)
     {
-        vec3d& ri = m_pMesh->Node(el.m_node[i]).m_rt;
+        Vector3d& ri = m_pMesh->Node(el.m_node[i]).m_rt;
         x[i] = ri.x;
         y[i] = ri.y;
     }

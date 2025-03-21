@@ -1,5 +1,6 @@
 #pragma once
 
+class FEMaterialPoint;
 class FEM_EXPORT FEElementState
 {
 public:

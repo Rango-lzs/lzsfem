@@ -263,7 +263,7 @@ void FEElasticSolidDomain::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 		double density = m_pMat->Density(mp);
 
 		// get the force
-		vec3d f = bodyForce->force(mp);
+		Vector3d f = bodyForce->force(mp);
 
 		// get element shape functions
 		double* H = mp.m_shape;
@@ -283,7 +283,7 @@ void FEElasticSolidDomain::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 void FEElasticSolidDomain::ElementGeometricalStiffness(FESolidElement &el, matrix &ke)
 {
 	// spatial derivatives of shape functions
-	vec3d G[FEElement::MAX_NODES];
+	Vector3d G[FEElement::MAX_NODES];
 
 	// weights at gauss points
 	const double *gw = el.GaussWeights();
@@ -325,7 +325,7 @@ void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, matrix &
 	const int neln = el.Nodes();
 
 	// global derivatives of shape functions
-	vec3d G[FEElement::MAX_NODES];
+	Vector3d G[FEElement::MAX_NODES];
 
 	double Gxi, Gyi, Gzi;
 	double Gxj, Gyj, Gzj;
@@ -589,7 +589,7 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 
 	// nodal coordinates
     const int NELN = FEElement::MAX_NODES;
-    vec3d r[NELN], v[NELN], a[NELN];
+    Vector3d r[NELN], v[NELN], a[NELN];
 	GetCurrentNodalCoordinates(el, r, m_alphaf);
 
 	// update dynamic quantities
@@ -598,7 +598,7 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 		for (int j = 0; j<neln; ++j)
 		{
 			FENode& node = m_pMesh->Node(el.m_node[j]);
-			v[j] = node.get_vec3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1 - m_alphaf);
+			v[j] = node.get_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1 - m_alphaf);
 			a[j] = node.m_at*m_alpham + node.m_ap*(1 - m_alpham);
 		}
 	}

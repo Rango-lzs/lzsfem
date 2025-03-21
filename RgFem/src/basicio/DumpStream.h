@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec3d.h"
+#include "Vector3d.h"
 #include "mat3d.h"
 #include "quatd.h"
 #include "tens3d.h"
@@ -25,7 +25,7 @@ enum TypeID
 	TYPE_FLOAT,
 	TYPE_DOUBLE,
 	TYPE_VEC2D,
-	TYPE_VEC3D,
+	TYPE_Vector3d,
 	TYPE_MAT2D,
 	TYPE_MAT3D,
 	TYPE_MAT3DD,
@@ -65,7 +65,7 @@ public:
                     case TypeID::TYPE_FLOAT: delete (float*) m_pd; break;
                     case TypeID::TYPE_DOUBLE: delete (double*) m_pd; break;
                     case TypeID::TYPE_VEC2D: delete (vec2d*) m_pd; break;
-                    case TypeID::TYPE_VEC3D: delete (vec3d*) m_pd; break;
+                    case TypeID::TYPE_Vector3d: delete (Vector3d*) m_pd; break;
                     case TypeID::TYPE_MAT2D: delete (mat2d*) m_pd; break;
                     case TypeID::TYPE_MAT3D: delete (mat3d*) m_pd; break;
                     case TypeID::TYPE_MAT3DD: delete (mat3dd*) m_pd; break;
@@ -226,7 +226,7 @@ template <> class typeInfo<unsigned int> { public: static uchar typeId() { retur
 template <> class typeInfo<float>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_FLOAT;   }};
 template <> class typeInfo<double>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_DOUBLE;  }};
 template <> class typeInfo<vec2d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_VEC2D;   }};
-template <> class typeInfo<vec3d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_VEC3D;   }};
+template <> class typeInfo<Vector3d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_Vector3d;   }};
 template <> class typeInfo<mat2d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3D;   }};
 template <> class typeInfo<mat3d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3D;   }};
 template <> class typeInfo<mat3dd>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DD;  }};
@@ -261,7 +261,7 @@ template <> inline DumpStream& DumpStream::operator << (int&          o) { retur
 template <> inline DumpStream& DumpStream::operator << (unsigned int& o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (double&   o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (vec2d&    o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (vec3d&    o) { return write_raw(o); }
+template <> inline DumpStream& DumpStream::operator << (Vector3d&    o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (quatd&    o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (mat2d&    o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (mat3d&    o) { return write_raw(o); }
@@ -276,7 +276,7 @@ template <> inline DumpStream& DumpStream::operator >> (int&          o) { retur
 template <> inline DumpStream& DumpStream::operator >> (unsigned int& o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (double&   o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (vec2d&    o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (vec3d&    o) { return read_raw(o); }
+template <> inline DumpStream& DumpStream::operator >> (Vector3d&    o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (quatd&    o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (mat2d&    o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (mat3d&    o) { return read_raw(o); }

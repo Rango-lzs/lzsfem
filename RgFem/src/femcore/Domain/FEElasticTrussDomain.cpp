@@ -98,7 +98,7 @@ bool FEElasticTrussDomain::Init()
 		FETrussElement& el = m_Elem[i];
 
 		// nodal coordinates
-		vec3d r0[2];
+		Vector3d r0[2];
 		for (int j = 0; j < 2; ++j) r0[j] = m_pMesh->Node(el.m_node[j]).m_r0;
 
 		// initial length
@@ -228,7 +228,7 @@ void FEElasticTrussDomain::ElementStiffness(int iel, matrix& ke)
 	double T = tau*V/l;
 
 	// element normal
-	vec3d n = TrussNormal(el);
+	Vector3d n = TrussNormal(el);
 
 	// calculate the tangent matrix
 	ke.resize(6, 6);
@@ -251,7 +251,7 @@ void FEElasticTrussDomain::ElementStiffness(int iel, matrix& ke)
 void FEElasticTrussDomain::ElementMassMatrix(FETrussElement& el, matrix& me)
 {
 	// nodal coordinates
-	vec3d r0[2];
+	Vector3d r0[2];
 	for (int i = 0; i < 2; ++i)
 	{
 		r0[i] = m_pMesh->Node(el.m_node[i]).m_r0;
@@ -291,15 +291,15 @@ void FEElasticTrussDomain::ElementInternalForces(FETrussElement& el, vector<doub
 	FEElasticMaterialPoint& pt = *(mp.ExtractData<FEElasticMaterialPoint>());
 
 	// get the element's normal
-	vec3d n = TrussNormal(el);
+	Vector3d n = TrussNormal(el);
 
 	// nodal coordinates
-	vec3d r0[2] = {
+	Vector3d r0[2] = {
 		m_pMesh->Node(el.m_node[0]).m_r0,
 		m_pMesh->Node(el.m_node[1]).m_r0
 	};
 
-	vec3d rt[2] = {
+	Vector3d rt[2] = {
 		m_pMesh->Node(el.m_node[0]).m_rt,
 		m_pMesh->Node(el.m_node[1]).m_rt
 	};
@@ -346,7 +346,7 @@ void FEElasticTrussDomain::Update(const FETimeInfo& tp)
 		FETrussElement& el = m_Elem[i];
 
 		// nodal coordinates
-		vec3d r0[2], rt[2];
+		Vector3d r0[2], rt[2];
 		for (int j=0; j<2; ++j)
 		{
 			r0[j] = m_pMesh->Node(el.m_node[j]).m_r0;

@@ -54,9 +54,9 @@ public:
 	// deformation data at intermediate time
 	mat3d	m_F;	//!< deformation gradient
 	double	m_J;	//!< determinant of F
-    vec3d   m_gradJ;  //!< gradient of J
-    vec3d   m_v;    //!< velocity
-    vec3d   m_a;    //!< acceleration
+    Vector3d   m_gradJ;  //!< gradient of J
+    Vector3d   m_v;    //!< velocity
+    Vector3d   m_a;    //!< acceleration
     mat3d   m_L;    //!< spatial velocity gradient
 
 	// solid material data

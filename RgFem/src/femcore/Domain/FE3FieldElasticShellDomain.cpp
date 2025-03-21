@@ -166,8 +166,8 @@ void FE3FieldElasticShellDomain::ElementDilatationalStiffness(FEModel& fem, int 
     assert(pmi);
     
     // average global derivatives
-    vector<vec3d> gradMu(neln,vec3d(0,0,0));
-    vector<vec3d> gradMd(neln,vec3d(0,0,0));
+    vector<Vector3d> gradMu(neln,Vector3d(0,0,0));
+    vector<Vector3d> gradMd(neln,Vector3d(0,0,0));
     
     // initial element volume
     double Ve = 0;
@@ -175,7 +175,7 @@ void FE3FieldElasticShellDomain::ElementDilatationalStiffness(FEModel& fem, int 
     // global derivatives of shape functions
     const double *gw = elem.GaussWeights();
     double eta;
-    vec3d gcnt[3];
+    Vector3d gcnt[3];
 
     // jacobian
     double Jt, J0;
@@ -202,7 +202,7 @@ void FE3FieldElasticShellDomain::ElementDilatationalStiffness(FEModel& fem, int 
 
         for (i=0; i<neln; ++i)
         {
-            vec3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
+            Vector3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
             gradMu[i] += ((gradM*(1+eta) + gcnt[2]*M[i])/2)*Jt;
             gradMd[i] += ((gradM*(1-eta) - gcnt[2]*M[i])/2)*Jt;
         }
@@ -267,7 +267,7 @@ void FE3FieldElasticShellDomain::ElementStiffness(int iel, matrix& ke)
     const int neln = el.Nodes();
     
     const double* Mr, *Ms, *M;
-    vec3d gradMu[FEElement::MAX_NODES], gradMd[FEElement::MAX_NODES];
+    Vector3d gradMu[FEElement::MAX_NODES], gradMd[FEElement::MAX_NODES];
     
     // jacobian matrix determinant
     double detJt;
@@ -276,7 +276,7 @@ void FE3FieldElasticShellDomain::ElementStiffness(int iel, matrix& ke)
     const double *gw = el.GaussWeights();
     double eta;
     
-    vec3d gcnt[3];
+    Vector3d gcnt[3];
     
     // get the material
     FEUncoupledMaterial& mat = dynamic_cast<FEUncoupledMaterial&>(*m_pMat);
@@ -321,7 +321,7 @@ void FE3FieldElasticShellDomain::ElementStiffness(int iel, matrix& ke)
         
         for (i=0; i<neln; ++i)
         {
-            vec3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
+            Vector3d gradM = gcnt[0]*Mr[i] + gcnt[1]*Ms[i];
             gradMu[i] = (gradM*(1+eta) + gcnt[2]*M[i])/2;
             gradMd[i] = (gradM*(1-eta) - gcnt[2]*M[i])/2;
         }
@@ -442,9 +442,9 @@ void FE3FieldElasticShellDomain::UpdateElementStress(int iel)
     
     // nodal coordinates
     const int NELN = FEElement::MAX_NODES;
-    vec3d r0[NELN], s0[NELN], r[NELN], s[NELN];
-    vec3d v[NELN], w[NELN];
-    vec3d a[NELN], b[NELN];
+    Vector3d r0[NELN], s0[NELN], r[NELN], s[NELN];
+    Vector3d v[NELN], w[NELN];
+    Vector3d a[NELN], b[NELN];
     // nodal coordinates
     GetCurrentNodalCoordinates(el, r, m_alphaf, false);
     GetCurrentNodalCoordinates(el, s, m_alphaf, true);
@@ -457,10 +457,10 @@ void FE3FieldElasticShellDomain::UpdateElementStress(int iel)
         for (int j=0; j<neln; ++j)
         {
             FENode& node = m_pMesh->Node(el.m_node[j]);
-            v[j] = node.get_vec3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1-m_alphaf);
-            w[j] = node.get_vec3d(m_dofSV[0], m_dofSV[1], m_dofSV[2])*m_alphaf + node.get_vec3d_prev(m_dofSV[0], m_dofSV[1], m_dofSV[2])*(1-m_alphaf);
+            v[j] = node.get_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1-m_alphaf);
+            w[j] = node.get_Vector3d(m_dofSV[0], m_dofSV[1], m_dofSV[2])*m_alphaf + node.get_Vector3d_prev(m_dofSV[0], m_dofSV[1], m_dofSV[2])*(1-m_alphaf);
             a[j] = node.m_at*m_alpham + node.m_ap*(1-m_alpham);
-            b[j] = node.get_vec3d(m_dofSA[0], m_dofSA[1], m_dofSA[2])*m_alpham + node.get_vec3d_prev(m_dofSA[0], m_dofSA[1], m_dofSA[2])*(1-m_alpham);
+            b[j] = node.get_Vector3d(m_dofSA[0], m_dofSA[1], m_dofSA[2])*m_alpham + node.get_Vector3d_prev(m_dofSA[0], m_dofSA[1], m_dofSA[2])*(1-m_alpham);
         }
     }
 

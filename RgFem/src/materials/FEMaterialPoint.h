@@ -1,7 +1,7 @@
 #pragma once
 
 #include "femcore/fem_export.h"
-#include "datastructure/mat3d.h"
+#include "datastructure/Matrix3d.h"
 #include "datastructure/quatd.h"
 #include "femcore/FETimeInfo.h"
 #include <vector>
@@ -110,11 +110,10 @@ public:
 	template <class T> const T* ExtractData() const;
 
 public:
-	vec3d		m_r0;		//!< material point position
-	vec3d		m_rt;		//!< current point position
+	Vector3d		m_r0;		//!< material point position
+	Vector3d		m_rt;		//!< current point position
 	double		m_J0;		//!< reference Jacobian
 	double		m_Jt;		//!< current Jacobian
-	quatd		m_Q;		//!< local coordinates
 	FEElement* m_elem;		//!< Element where this material point is
 	int			m_index;	//!< local integration point index 
 

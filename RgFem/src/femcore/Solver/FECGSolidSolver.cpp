@@ -419,7 +419,7 @@ void FECGSolidSolver::PrepStep()
 	//{
 	//	FENode& ni = mesh.Node(i);
 	//	ni.m_rp = ni.m_rt;
-	//	ni.m_vp = ni.get_vec3d(m_dofV[0], m_dofV[1], m_dofV[2]);
+	//	ni.m_vp = ni.get_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2]);
 	//	ni.m_ap = ni.m_at;
 	//}
 
@@ -470,15 +470,15 @@ void FECGSolidSolver::PrepStep()
 			else
 			{
 				double* dul = RB.m_dul;
-				vec3d dr = vec3d(dul[0], dul[1], dul[2]);
+				Vector3d dr = Vector3d(dul[0], dul[1], dul[2]);
 
-				vec3d v = vec3d(dul[3], dul[4], dul[5]);
+				Vector3d v = Vector3d(dul[3], dul[4], dul[5]);
 				double w = sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 				quatd dq = quatd(w, v);
 
 				FERigidBody* pprb = RB.m_prb;
 
-				vec3d r0 = RB.m_rt;
+				Vector3d r0 = RB.m_rt;
 				quatd Q0 = RB.GetRotation();
 
 				dr = Q0*dr;
@@ -486,7 +486,7 @@ void FECGSolidSolver::PrepStep()
 
 				while (pprb)
 				{
-					vec3d r1 = pprb->m_rt;
+					Vector3d r1 = pprb->m_rt;
 					dul = pprb->m_dul;
 
 					quatd Q1 = pprb->GetRotation();
@@ -494,8 +494,8 @@ void FECGSolidSolver::PrepStep()
 					dr = r0 + dr - r1;
 
 					// grab the parent's local displacements
-					vec3d dR = vec3d(dul[0], dul[1], dul[2]);
-					v = vec3d(dul[3], dul[4], dul[5]);
+					Vector3d dR = Vector3d(dul[0], dul[1], dul[2]);
+					v = Vector3d(dul[3], dul[4], dul[5]);
 					w = sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 					quatd dQ = quatd(w, v);
 
@@ -555,15 +555,15 @@ void FECGSolidSolver::PrepStep()
 	//		if (n.m_rid >= 0)
 	//		{
 	//			FERigidBody& rb = *fem.GetRigidBody(n.m_rid);
-	//			vec3d V = rb.m_vt;
-	//			vec3d W = rb.m_wt;
-	//			vec3d r = n.m_rt - rb.m_rt;
+	//			Vector3d V = rb.m_vt;
+	//			Vector3d W = rb.m_wt;
+	//			Vector3d r = n.m_rt - rb.m_rt;
 
-	//			vec3d v = V + (W ^ r);
+	//			Vector3d v = V + (W ^ r);
 	//			n.m_vp = v;
-	//			n.set_vec3d(m_dofV[0], m_dofV[1], m_dofV[2], v);
+	//			n.set_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2], v);
 
-	//			vec3d a = (W ^ V)*2.0 + (W ^ (W ^ r));
+	//			Vector3d a = (W ^ V)*2.0 + (W ^ (W ^ r));
 	//			n.m_ap = n.m_at = a;
 	//		}
 	//	}
@@ -982,7 +982,7 @@ void FECGSolidSolver::UpdateKinematics(vector<double>& ui)
 	{
 		FENode& node = mesh.Node(i);
 		if (node.m_rid == -1)
-			node.m_rt = node.m_r0 + node.get_vec3d(m_dofU[0], m_dofU[1], m_dofU[2]);
+			node.m_rt = node.m_r0 + node.get_Vector3d(m_dofU[0], m_dofU[1], m_dofU[2]);
 	}
 }
 
@@ -1252,7 +1252,7 @@ bool FECGSolidSolver::Residual(vector<double>& R)
 	for (int i = 0; i<NRB; ++i)
 	{
 		FERigidBody& RB = *fem.GetRigidBody(i);
-		RB.m_Fr = RB.m_Mr = vec3d(0, 0, 0);
+		RB.m_Fr = RB.m_Mr = Vector3d(0, 0, 0);
 	}
 
 	// get the mesh
@@ -1361,10 +1361,10 @@ void FECGSolidSolver::InertialForces(FEGlobalVector& R)
 	for (int i = 0; i<mesh.Nodes(); ++i)
 	{
 		FENode& node = mesh.Node(i);
-		vec3d& rt = node.m_rt;
-		vec3d& rp = node.m_rp;
-		vec3d& vp = node.m_vp;
-		vec3d& ap = node.m_ap;
+		Vector3d& rt = node.m_rt;
+		Vector3d& rp = node.m_rp;
+		Vector3d& vp = node.m_vp;
+		Vector3d& ap = node.m_ap;
 
 		F[3 * i] = b*(rt.x - rp.x) - a*vp.x + c * ap.x;
 		F[3 * i + 1] = b*(rt.y - rp.y) - a*vp.y + c * ap.y;
@@ -1404,7 +1404,7 @@ void FECGSolidSolver::AssembleResidual(int node_id, int dof, double f, vector<do
 		FERigidBody& RB = *fem.GetRigidBody(node.m_rid);
 
 		// get the relative position
-		vec3d a = node.m_rt - RB.m_rt;
+		Vector3d a = node.m_rt - RB.m_rt;
 
 		int* lm = RB.m_LM;
 		if (dof == m_dofU[0])
@@ -1489,9 +1489,9 @@ void FECGSolidSolver::UpdateRigidBodies(vector<double>& ui)
 		RB.m_Ut[4] = RB.m_Up[4] + du[4];
 		RB.m_Ut[5] = RB.m_Up[5] + du[5];
 
-		RB.m_rt = RB.m_r0 + vec3d(RB.m_Ut[0], RB.m_Ut[1], RB.m_Ut[2]);
+		RB.m_rt = RB.m_r0 + Vector3d(RB.m_Ut[0], RB.m_Ut[1], RB.m_Ut[2]);
 
-		vec3d Rt(RB.m_Ut[3], RB.m_Ut[4], RB.m_Ut[5]);
+		Vector3d Rt(RB.m_Ut[3], RB.m_Ut[4], RB.m_Ut[5]);
 		RB.SetRotation(quatd(Rt));
 	}
 
@@ -1506,8 +1506,8 @@ void FECGSolidSolver::UpdateRigidBodies(vector<double>& ui)
 		FENode& node = mesh.Node(i);
 		if (node.m_rid >= 0)
 		{
-			vec3d ut = node.m_rt - node.m_r0;
-			node.set_vec3d(m_dofU[0], m_dofU[1], m_dofU[2], ut);
+			Vector3d ut = node.m_rt - node.m_r0;
+			node.set_Vector3d(m_dofU[0], m_dofU[1], m_dofU[2], ut);
 		}
 	}
 }

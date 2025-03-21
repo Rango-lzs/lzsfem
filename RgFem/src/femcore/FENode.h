@@ -1,10 +1,10 @@
-/*****************************************************************/ /**
-                                                                     * \file   RgNode.h
-                                                                     * \brief
-                                                                     *
-                                                                     * \author 11914
-                                                                     * \date   February 2025
-                                                                     *********************************************************************/
+/*****************************************************************
+ * \file   RgNode.h
+ * \brief
+ *
+ * \author 11914
+ * \date   February 2025
+ *********************************************************************/
 
 #pragma once
 #include "datastructure/Vector3d.h"
@@ -205,12 +205,12 @@ public:
     }
 
 private:
-    NodeId mId;                    //!< nodal ID
+    NodeId mId;             //!< nodal ID
 
-    std::vector<int> m_BC;         //!< boundary condition array, 用于标识自由度的状态，fix ，free， prescribe
-    std::vector<double> m_val_t;   //!< current nodal DOF values
-    std::vector<double> m_val_p;   //!< previous nodal DOF values
-    std::vector<double> m_Fr;      //!< equivalent nodal forces
+    std::vector<int> m_BC;  //!< boundary condition array, 用于标识自由度的状态，fix ，free， prescribe
+    std::vector<double> m_val_t;      //!< current nodal DOF values
+    std::vector<double> m_val_p;      //!< previous nodal DOF values
+    std::vector<double> m_Fr;         //!< equivalent nodal forces
 
     std::vector<GlobalDofId> m_dofs;  //!< nodal equation numbers
 
@@ -225,7 +225,7 @@ private:
     Vector3d m_vp;  //!< previous velocity
     Vector3d m_ap;  //!< previous acceleration
 
-    //和 shell的 back node相关
+    // 和 shell的 back node相关
     Vector3d m_d0;  //!< initial director
     Vector3d m_dt;  //!< current director
     Vector3d m_dp;  //!< director at previous time step

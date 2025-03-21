@@ -67,8 +67,8 @@ bool AbaqusExport::Write(const char* szfile)
 		for (int i = 0; i < NN; ++i)
 		{
 			FSNode& node = mesh->Node(i);
-			vec3d r0 = node.pos();
-			vec3d r = T.LocalToGlobal(r0);
+			Vector3d r0 = node.pos();
+			Vector3d r = T.LocalToGlobal(r0);
 			fprintf(fp, "%d, %.7lg, %.7lg, %.7lg\n", nc, r.x, r.y, r.z);
 			node.m_ntag = nc++;
 		}
