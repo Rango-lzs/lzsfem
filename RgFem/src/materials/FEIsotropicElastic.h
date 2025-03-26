@@ -1,8 +1,6 @@
-
 #pragma once
-#include "FEElasticMaterial.h"
+#include "materials/FEElasticMaterial.h"
 
-//-----------------------------------------------------------------------------
 class FEIsotropicElastic : public FEElasticMaterial
 {
 public:
@@ -23,11 +21,11 @@ public:
 	virtual double StrainEnergyDensity(FEMaterialPoint& pt) override;
     
     //! calculate the 2nd Piola-Kirchhoff stress at material point
-    Matrix3ds PK2Stress(FEMaterialPoint& pt, const mat3ds E) override;
+    Matrix3ds PK2Stress(FEMaterialPoint& pt, const Matrix3ds E) override;
     
     //! calculate material tangent stiffness at material point
-    tens4dmm MaterialTangent(FEMaterialPoint& pt, const mat3ds E) override;
+    tens4dmm MaterialTangent(FEMaterialPoint& pt, const Matrix3ds E) override;
     
 	// declare the parameter list
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };

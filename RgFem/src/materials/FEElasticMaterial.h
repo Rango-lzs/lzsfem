@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 //! Base class for (hyper-)elastic materials
 
-class FEBIOMECH_API FEElasticMaterial : public FESolidMaterial
+class FEM_EXPORT FEElasticMaterial : public FESolidMaterial
 {
 public:
 	//! constructor 
