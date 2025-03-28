@@ -21,7 +21,7 @@ const MetaClass* MetaObject::staic_meta()
     return gsMetaObjClass;
 }
 
-std::string class_name()
+std::string MetaObject::class_name()
 {
     return "MetaObject";
 }

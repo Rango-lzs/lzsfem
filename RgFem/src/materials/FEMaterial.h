@@ -1,6 +1,6 @@
 #pragma once
-#include "femcore/FEDomainList.h"
-#include "femcore/FEDomainParameter.h"
+#include "femcore/Domain/FEDomainList.h"
+#include "femcore/Domain/FEDomainParameter.h"
 #include "femcore/FEModelComponent.h"
 #include "femcore/FEModelParam.h"
 #include "datastructure/Matrix3d.h"

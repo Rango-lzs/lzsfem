@@ -1,41 +1,13 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
-#include "FEScalarValuator.h"
-#include "FEVec3dValuator.h"
-#include "FEMat3dValuator.h"
-#include "FEMat3dsValuator.h"
-#include "FEItemList.h"
+#include "femcore/FEScalarValuator.h"
+#include "femcore/FEVec3dValuator.h"
+#include "femcore/FEMat3dValuator.h"
+#include "femcore/FEMat3dsValuator.h"
+#include "femcore/FEItemList.h"
 
 //---------------------------------------------------------------------------------------
-// Base for model parameters.
-class FECORE_API FEModelParam
+// 定义模型的一些参数，买这些参数可以通过Valuator进行计算，有点类似表达式.
+class FEM_EXPORT FEModelParam
 {
 public:
 	FEModelParam();
@@ -62,7 +34,7 @@ protected:
 };
 
 //---------------------------------------------------------------------------------------
-class FECORE_API FEParamDouble : public FEModelParam
+class FEM_EXPORT FEParamDouble : public FEModelParam
 {
 public:
 	FEParamDouble();
@@ -101,7 +73,7 @@ private:
 //=======================================================================================
 
 //---------------------------------------------------------------------------------------
-class FECORE_API FEParamVec3 : public FEModelParam
+class FEM_EXPORT FEParamVec3 : public FEModelParam
 {
 public:
 	FEParamVec3();
@@ -112,7 +84,7 @@ public:
 	bool Init();
 
 	// set the value
-	void operator = (const vec3d& v);
+	void operator = (const Vector3d& v);
 	void operator = (const FEParamVec3& p);
 
 	// set the valuator
@@ -120,16 +92,16 @@ public:
 	FEVec3dValuator* valuator();
 
 	// evaluate the parameter at a material point
-	vec3d operator () (const FEMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
+	Vector3d operator () (const FEMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
 
 	// return a unit vector
-	vec3d unitVector(const FEMaterialPoint& pt) { return (*this)(pt).normalized(); }
+	Vector3d unitVector(const FEMaterialPoint& pt) { return (*this)(pt).normalized(); }
 
 	// is this a const
 	bool isConst() const { return m_val->isConst(); }
 
 	// (return value undefined if param is not const)
-	vec3d& constValue() { assert(isConst()); return *m_val->constValue(); };
+	Vector3d& constValue() { assert(isConst()); return *m_val->constValue(); };
 
 	void Serialize(DumpStream& ar) override;
 
@@ -140,7 +112,7 @@ private:
 //=======================================================================================
 
 //---------------------------------------------------------------------------------------
-class FECORE_API FEParamMat3d : public FEModelParam
+class FEM_EXPORT FEParamMat3d : public FEModelParam
 {
 public:
 	FEParamMat3d();
@@ -149,7 +121,7 @@ public:
 	FEParamMat3d(const FEParamMat3d& p);
 
 	// set the value
-	void operator = (const mat3d& v);
+	void operator = (const Matrix3d& v);
 	void operator = (const FEParamMat3d& v);
 
 	bool Init();
@@ -161,13 +133,13 @@ public:
 	FEMat3dValuator* valuator();
 
 	// evaluate the parameter at a material point
-	mat3d operator () (const FEMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
+	Matrix3d operator () (const FEMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
 
 	// is this a const
 	bool isConst() const { return m_val->isConst(); }
 
 	// (return value undefined if not constant)
-	mat3d& constValue() { assert(isConst()); return *m_val->constValue(); };
+	Matrix3d& constValue() { assert(isConst()); return *m_val->constValue(); };
 
 	void Serialize(DumpStream& ar) override;
 
@@ -177,7 +149,7 @@ private:
 
 
 //---------------------------------------------------------------------------------------
-class FECORE_API FEParamMat3ds : public FEModelParam
+class FEM_EXPORT FEParamMat3ds : public FEModelParam
 {
 public:
 	FEParamMat3ds();

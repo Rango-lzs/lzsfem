@@ -325,9 +325,6 @@ public:
 	void SetUnits(const char* szunits);
 	const char* GetUnits() const;
 
-protected:
-	FEParamValue GetMeshParameter(const ParamString& paramString);
-
 private:
 	class Impl;
 	std::unique_ptr<Impl> m_imp;

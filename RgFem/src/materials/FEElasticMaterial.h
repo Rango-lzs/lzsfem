@@ -37,7 +37,7 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-class FEBIOMECH_API FEElasticStress : public FEDomainParameter
+class FEM_EXPORT FEElasticStress : public FEDomainParameter
 {
 public:
 	FEElasticStress();
