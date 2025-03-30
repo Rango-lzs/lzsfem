@@ -27,26 +27,22 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FEBioImport.h"
-#include "FEBModel.h"
+#include "febiolib_api.h"
 
 //-----------------------------------------------------------------------------
-// Mesh section
-class FEBioMeshSection4 : public FEBioFileSection
+// class used to create an abstract interface to a screen
+class FEBIOLIB_API LogStream
 {
 public:
-	FEBioMeshSection4(FEBioImport* pim);
+	LogStream() {}
+	virtual ~LogStream() {}
 
-	void Parse(XMLTag& tag);
+	// override function to print
+	virtual void print(const char* sz) = 0;
 
-protected:
-	void ParseNodeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfaceSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseNodeSetSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSetSection (XMLTag& tag, FEBModel::Part* part);
-	void ParsePartListSection   (XMLTag& tag, FEBModel::Part* part);
-	void ParseEdgeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfacePairSection(XMLTag& tag, FEBModel::Part* part);
-	void ParseDiscreteSetSection(XMLTag& tag, FEBModel::Part* part);
+	// function to print variable output
+	void printf(const char* sz, ...);
+
+	// flush the stream
+	virtual void flush() {}
 };

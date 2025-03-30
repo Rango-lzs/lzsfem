@@ -28,7 +28,7 @@ public:
 /**
  * 定义整个求解模型. 包含所有的FEM组件，此类可进一步精简，定义每个组件的Manager
  */
-class FE_EXPORT FEModel: public FEObjectBase
+class FEM_EXPORT FEModel: public FEObjectBase
 {
 public:
 	FEModel(void);
@@ -223,22 +223,7 @@ public: // --- parameter functions ---
 	//! evaluate all load parameters
 	virtual bool EvaluateLoadParameters();
 
-	//! Find a model parameter
-	FEParam* FindParameter(const ParamString& s) override;
-
-	//! return a reference to the named parameter
-	virtual FEParamValue GetParameterValue(const ParamString& param);
-
-	//! Find property 
-	//! Note: Can't call this FindProperty, since this is already defined in base class
-	FECoreBase* FindComponent(const ParamString& prop);
-
-	//! Set the print parameters flag
-	void SetPrintParametersFlag(bool b);
-
-	//! Get the print parameter flag
-	bool GetPrintParametersFlag() const;
-
+	//! return a reference to the named parameter 
 public:	// --- Miscellaneous routines ---
 
 	//! call the callback function
@@ -266,17 +251,6 @@ public:	// --- Miscellaneous routines ---
 
 	//! get the module name
 	string GetModuleName() const;
-
-public:
-	//! Log a message
-	void Logf(int ntag, const char* msg, ...);
-	void BlockLog();
-	void UnBlockLog();
-	bool LogBlocked() const;
-
-public:
-	// Derived classes can use this to implement the actual logging mechanism
-	virtual void Log(int ntag, const char* msg);
 
 public: // Global data
 	void AddGlobalData(FEGlobalData* psd);

@@ -28,25 +28,14 @@ SOFTWARE.*/
 
 #pragma once
 #include "FEBioImport.h"
-#include "FEBModel.h"
 
-//-----------------------------------------------------------------------------
-// Mesh section
-class FEBioMeshSection4 : public FEBioFileSection
+class FEBioRigidSection : public FEFileSection
 {
 public:
-	FEBioMeshSection4(FEBioImport* pim);
-
+	FEBioRigidSection(FEFileImport* pim) : FEFileSection(pim){}
 	void Parse(XMLTag& tag);
 
 protected:
-	void ParseNodeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfaceSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseNodeSetSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSetSection (XMLTag& tag, FEBModel::Part* part);
-	void ParsePartListSection   (XMLTag& tag, FEBModel::Part* part);
-	void ParseEdgeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfacePairSection(XMLTag& tag, FEBModel::Part* part);
-	void ParseDiscreteSetSection(XMLTag& tag, FEBModel::Part* part);
+	void ParseRigidBC(XMLTag& tag);
+	void ParseRigidConnector(XMLTag& tag);
 };

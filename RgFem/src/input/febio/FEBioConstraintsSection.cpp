@@ -669,7 +669,7 @@ void FEBioConstraintsSection2::ParseRigidConstraint20(XMLTag& tag)
 		else if (tag == "initial_velocity")
 		{
 			// get the initial velocity
-			Vector3d v;
+			vec3d v;
 			value(tag, v);
 
 			// create the initial condition
@@ -683,7 +683,7 @@ void FEBioConstraintsSection2::ParseRigidConstraint20(XMLTag& tag)
 		else if (tag == "initial_angular_velocity")
 		{
 			// get the initial angular velocity
-			Vector3d w;
+			vec3d w;
 			value(tag, w);
 
 			// create the initial condition

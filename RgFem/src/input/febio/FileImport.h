@@ -1,40 +1,12 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
 #include <stdio.h>
-#include <XML/XMLReader.h>
-#include <FECore/vec3d.h>
-#include <FECore/mat3d.h>
-#include <FECore/tens3d.h>
-#include <FECore/FECoreBase.h>
-#include "FEModelBuilder.h"
-#include "febioxml_api.h"
+#include "femcore/fem_export.h"
+#include "input/XML/XMLReader.h"
+#include "datastructure/Vector3d.h"
+#include "datastructure/Matrix3d.h"
+
+#include "input/febio/FEModelBuilder.h"
+#include "input/febio/febioxml_api.h"
 #include <map>
 
 //-----------------------------------------------------------------------------
@@ -45,7 +17,7 @@ class FEFileImport;
 //-----------------------------------------------------------------------------
 // Base class for FEBio import exceptions
 // Derived classes should set the error string in their constructor
-class FEBIOXML_API FEFileException
+class FEM_EXPORT FEFileException
 {
 public:
 	enum { MAX_ERR_STRING = 1024 };
@@ -191,7 +163,7 @@ public:
 //! This class also manages "xml parameters". This is a feature of FEBio files that allow users to use parameters
 //! as values for xml tag. A parameter is defined by a name-value pair and referenced in the input file using the $(parameter_name) syntax.
 
-class FEBIOXML_API FEFileImport
+class FEM_EXPORT FEFileImport
 {
 public:
 	//! constructor

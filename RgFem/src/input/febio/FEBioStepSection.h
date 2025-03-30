@@ -28,25 +28,30 @@ SOFTWARE.*/
 
 #pragma once
 #include "FEBioImport.h"
-#include "FEBModel.h"
 
 //-----------------------------------------------------------------------------
-// Mesh section
-class FEBioMeshSection4 : public FEBioFileSection
+// Step Section (old format)
+class FEBioStepSection : public FEBioFileSection
 {
 public:
-	FEBioMeshSection4(FEBioImport* pim);
-
+	FEBioStepSection(FEBioImport* pim) : FEBioFileSection(pim){}
 	void Parse(XMLTag& tag);
+};
 
-protected:
-	void ParseNodeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfaceSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseNodeSetSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSetSection (XMLTag& tag, FEBModel::Part* part);
-	void ParsePartListSection   (XMLTag& tag, FEBModel::Part* part);
-	void ParseEdgeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfacePairSection(XMLTag& tag, FEBModel::Part* part);
-	void ParseDiscreteSetSection(XMLTag& tag, FEBModel::Part* part);
+//-----------------------------------------------------------------------------
+// Step Section (2.0 format)
+class FEBioStepSection2 : public FEBioFileSection
+{
+public:
+	FEBioStepSection2(FEBioImport* pim) : FEBioFileSection(pim){}
+	void Parse(XMLTag& tag);
+};
+
+//-----------------------------------------------------------------------------
+// Step Section (2.5 format)
+class FEBioStepSection25 : public FEFileSection
+{
+public:
+	FEBioStepSection25(FEFileImport* pim) : FEFileSection(pim){}
+	void Parse(XMLTag& tag);
 };

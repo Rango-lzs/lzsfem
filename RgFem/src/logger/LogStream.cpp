@@ -26,27 +26,21 @@ SOFTWARE.*/
 
 
 
-#pragma once
-#include "FEBioImport.h"
-#include "FEBModel.h"
+#include "stdafx.h"
+#include "LogStream.h"
+#include <stdarg.h>
+#include <stdio.h>
 
-//-----------------------------------------------------------------------------
-// Mesh section
-class FEBioMeshSection4 : public FEBioFileSection
+void LogStream::printf(const char* sz, ...)
 {
-public:
-	FEBioMeshSection4(FEBioImport* pim);
+	// get a pointer to the argument list
+	va_list	args;
 
-	void Parse(XMLTag& tag);
+	// make the message
+	char sztxt[1024] = { 0 };
+	va_start(args, sz);
+	vsprintf(sztxt, sz, args);
+	va_end(args);
 
-protected:
-	void ParseNodeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfaceSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseNodeSetSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSetSection (XMLTag& tag, FEBModel::Part* part);
-	void ParsePartListSection   (XMLTag& tag, FEBModel::Part* part);
-	void ParseEdgeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfacePairSection(XMLTag& tag, FEBModel::Part* part);
-	void ParseDiscreteSetSection(XMLTag& tag, FEBModel::Part* part);
-};
+	print(sztxt);
+}

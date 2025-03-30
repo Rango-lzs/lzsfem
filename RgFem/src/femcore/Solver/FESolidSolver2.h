@@ -2,9 +2,9 @@
 
 #include "femcore/Solver/FENewtonSolver.h"
 #include "femcore/FETimeInfo.h"
-#include "FECore/FEGlobalVector.h"
+#include "femcore/FEGlobalVector.h"
 #include "femcore/Solver/FERigidSolver.h"
-#include <FECore/FEDofList.h>
+#include "femcore/FEDofList.h"
 
 //-----------------------------------------------------------------------------
 //! The FESolidSolver2 class solves large deformation solid mechanics problems
@@ -35,7 +35,6 @@ public:
 
 	//! Initialize linear equation system
 	bool InitEquations() override;
-	bool InitEquations2() override;
 
     //! Generate warnings if needed
     void SolverWarnings();
@@ -146,5 +145,5 @@ protected:
     FERigidSolverNew	m_rigidSolver;
 
 	// declare the parameter list
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };

@@ -27,16 +27,29 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FEBioBoundarySection.h"
+#include "FEBioImport.h"
 
 //-----------------------------------------------------------------------------
-// version 3.0
-class FEBioBoundarySection3 : public FEBioBoundarySection
+// Control Section
+class FEBioControlSection : public FEBioFileSection
 {
 public:
-	FEBioBoundarySection3(FEFileImport* imp) : FEBioBoundarySection(imp) {}
+	FEBioControlSection(FEBioImport* pim) : FEBioFileSection(pim) {}
 	void Parse(XMLTag& tag);
-	void ParseBC(XMLTag& tag);
-	void ParseBCRigid(XMLTag& tag);	// read rigid contact section
-	void ParseLinearConstraint(XMLTag& tag);
+
+protected:
+	bool ParseCommonParams(XMLTag& tag);
+	void ParseIntegrationRules(XMLTag& tag);
+};
+
+//-----------------------------------------------------------------------------
+// Control Section for steps
+class FEStepControlSection : public FEFileSection
+{
+public:
+	FEStepControlSection(FEFileImport* pim) : FEFileSection(pim) {}
+	void Parse(XMLTag& tag);
+
+protected:
+	bool ParseCommonParams(XMLTag& tag);
 };

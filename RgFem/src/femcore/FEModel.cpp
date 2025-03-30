@@ -10,7 +10,7 @@
 #include "FEInitialCondition.h"
 #include "FESurfacePairConstraint.h"
 #include "FENLConstraint.h"
-#include "FEAnalysis.h"
+#include "femcore/FEAnalysis/FEAnalysis.h"
 #include "FEGlobalData.h"
 #include "FECoreKernel.h"
 #include "FELinearConstraintManager.h"
@@ -43,54 +43,6 @@ using namespace std;
 // Impl class for the FEModel class
 class FEModel::Impl
 {
-public:
-    struct LoadParam
-    {
-        FEParam* param;
-        int lc;
-
-        double m_scl;
-        vec3d m_vscl;
-
-        LoadParam()
-        {
-            m_scl = 1.0;
-            m_vscl = vec3d(0, 0, 0);
-        }
-
-        void Serialize(DumpStream& ar)
-        {
-            ar& lc;
-            ar& m_scl& m_vscl;
-
-            if (ar.IsShallow() == false)
-            {
-                // we can't save the FEParam* directly, so we need to store meta data and try to find it on loading
-                if (ar.IsSaving())
-                {
-                    FECoreBase* pc = dynamic_cast<FECoreBase*>(param->parent());
-                    assert(pc);
-                    ar << pc;
-                    ar << param->name();
-                }
-                else
-                {
-                    FECoreBase* pc = nullptr;
-                    ar >> pc;
-                    assert(pc);
-
-                    char name[256] = {0};
-                    ar >> name;
-
-                    param = pc->FindParameter(name);
-                    assert(param);
-                }
-            }
-            else
-                param = nullptr;
-        }
-    };
-
 public:
 	Impl(FEModel* fem) : m_fem(fem), m_mesh(fem), m_dmp(*fem)
 	{
@@ -131,7 +83,6 @@ public:
 	std::vector<FENLConstraint*>			m_NLC;		//!< nonlinear constraints
 	std::vector<FELoadController*>			m_LC;		//!< load controller data
 	std::vector<FEAnalysis*>				m_Step;		//!< array of analysis steps
-	std::vector<LoadParam>		m_Param;	//!< list of parameters controller by load controllers
 	std::vector<Timer>			m_timers;	// list of timers
 
 public:

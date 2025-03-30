@@ -27,26 +27,46 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FEBioImport.h"
-#include "FEBModel.h"
+#include <vector>
+#include "fecore_api.h"
+
+class FEModel;
 
 //-----------------------------------------------------------------------------
-// Mesh section
-class FEBioMeshSection4 : public FEBioFileSection
+//! This class represents a global system array. It provides functions to assemble
+//! local (element) vectors into this array
+//! TODO: remove FEModel dependency!
+class FECORE_API FEGlobalVector
 {
 public:
-	FEBioMeshSection4(FEBioImport* pim);
+	//! constructor
+	FEGlobalVector(FEModel& fem, std::vector<double>& R, std::vector<double>& Fr);
 
-	void Parse(XMLTag& tag);
+	//! destructor
+	virtual ~FEGlobalVector();
+
+	//! Assemble the element vector into this global vector
+	virtual void Assemble(std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe, bool bdom = false);
+
+	//! Assemble into this global vector
+	virtual void Assemble(std::vector<int>& lm, std::vector<double>& fe);
+
+	//! assemble a nodel value
+	virtual void Assemble(int node, int dof, double f);
+    
+	//! access operator
+	double& operator [] (int i) { return m_R[i]; }
+
+	//! Get the FE model
+	FEModel& GetFEModel() { return m_fem; }
+
+	//! get the size of the vector
+	int Size() const { return (int) m_R.size(); }
+
+	operator std::vector<double>& () { return m_R; }
 
 protected:
-	void ParseNodeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfaceSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseNodeSetSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSetSection (XMLTag& tag, FEBModel::Part* part);
-	void ParsePartListSection   (XMLTag& tag, FEBModel::Part* part);
-	void ParseEdgeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfacePairSection(XMLTag& tag, FEBModel::Part* part);
-	void ParseDiscreteSetSection(XMLTag& tag, FEBModel::Part* part);
+	FEModel&			m_fem;	//!< model
+	std::vector<double>&		m_R;	//!< residual
+	std::vector<double>&		m_Fr;	//!< nodal reaction forces \todo I want to remove this
 };

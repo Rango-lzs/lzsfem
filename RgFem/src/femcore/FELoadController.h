@@ -14,8 +14,7 @@
 // of model parameters during the analysis. 
 class FEM_EXPORT FELoadController : public FEModelComponent
 {
-	FECORE_SUPER_CLASS(FELOADCONTROLLER_ID)
-	FECORE_BASE_CLASS(FELoadController);
+	META_CLASS_DECLARE(FELoadController, FEModelComponent);
 
 public:
 	FELoadController(FEModel* fem);

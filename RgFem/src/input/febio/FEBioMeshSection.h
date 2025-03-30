@@ -26,53 +26,40 @@ SOFTWARE.*/
 
 
 
-#include "stdafx.h"
-#include "FEBioInitialSection3.h"
-#include <FECore/FEInitialCondition.h>
+#pragma once
+#include "FEBioImport.h"
+#include "FEBModel.h"
 
-FEBioInitialSection3::FEBioInitialSection3(FEFileImport* pim) : FEFileSection(pim) 
+//-----------------------------------------------------------------------------
+// Mesh section
+class FEBioMeshSection : public FEBioFileSection
 {
-}
+public:
+	FEBioMeshSection(FEBioImport* pim);
 
-void FEBioInitialSection3::Parse(XMLTag& tag)
+	void Parse(XMLTag& tag);
+
+protected:
+	void ParseNodeSection       (XMLTag& tag, FEBModel::Part* part);
+	void ParseSurfaceSection    (XMLTag& tag, FEBModel::Part* part);
+	void ParseElementSection    (XMLTag& tag, FEBModel::Part* part);
+	void ParseNodeSetSection    (XMLTag& tag, FEBModel::Part* part);
+	void ParseElementSetSection (XMLTag& tag, FEBModel::Part* part);
+	void ParseEdgeSection       (XMLTag& tag, FEBModel::Part* part);
+	void ParseSurfacePairSection(XMLTag& tag, FEBModel::Part* part);
+	void ParseDiscreteSetSection(XMLTag& tag, FEBModel::Part* part);
+};
+
+//-----------------------------------------------------------------------------
+// MeshDomains section
+class FEBioMeshDomainsSection : public FEBioFileSection
 {
-	if (tag.isleaf()) return;
+public:
+	FEBioMeshDomainsSection(FEBioImport* pim);
 
-	++tag;
-	do
-	{
-		if (tag == "ic") ParseIC(tag);
-		else throw XMLReader::InvalidTag(tag);
-		++tag;
-	}
-	while (!tag.isend());
-}
+	void Parse(XMLTag& tag);
 
-void FEBioInitialSection3::ParseIC(XMLTag& tag)
-{
-	FEModel* fem = GetFEModel();
-	FEMesh& mesh = fem->GetMesh();
-
-	// read the type attribute
-	const char* sztype = tag.AttributeValue("type");
-
-	// try to allocate the initial condition
-	FEInitialCondition* pic = fecore_new<FEInitialCondition>(sztype, fem);
-	if (pic == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
-
-	// add it to the model
-	GetBuilder()->AddInitialCondition(pic);
-
-	FENodalIC* nic = dynamic_cast<FENodalIC*>(pic);
-	if (nic)
-	{
-		// read required node_set attribute
-		const char* szset = tag.AttributeValue("node_set");
-		FENodeSet* nodeSet = GetBuilder()->FindNodeSet(szset);
-		if (nodeSet == nullptr) throw XMLReader::InvalidAttributeValue(tag, "node_set", szset);
-		nic->SetNodeSet(nodeSet);
-	}
-
-	// Read the parameter list
-	ReadParameterList(tag, pic);
-}
+protected:
+	void ParseSolidDomainSection(XMLTag& tag);
+	void ParseShellDomainSection(XMLTag& tag);
+};

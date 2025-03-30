@@ -27,26 +27,44 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FEBioImport.h"
-#include "FEBModel.h"
+#include "LogStream.h"
+#include "stdio.h"
+#include <string>
 
 //-----------------------------------------------------------------------------
-// Mesh section
-class FEBioMeshSection4 : public FEBioFileSection
+// A stream that outputs to a file
+class FEBIOLIB_API LogFileStream : public LogStream
 {
 public:
-	FEBioMeshSection4(FEBioImport* pim);
+	// constructor
+	LogFileStream();
 
-	void Parse(XMLTag& tag);
+	// destructor
+	~LogFileStream();
 
-protected:
-	void ParseNodeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfaceSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseNodeSetSection    (XMLTag& tag, FEBModel::Part* part);
-	void ParseElementSetSection (XMLTag& tag, FEBModel::Part* part);
-	void ParsePartListSection   (XMLTag& tag, FEBModel::Part* part);
-	void ParseEdgeSection       (XMLTag& tag, FEBModel::Part* part);
-	void ParseSurfacePairSection(XMLTag& tag, FEBModel::Part* part);
-	void ParseDiscreteSetSection(XMLTag& tag, FEBModel::Part* part);
+	// open the file
+	bool open(const char* szfile);
+
+	// open for appending
+	bool append(const char* szfile);
+
+	// close the file stream
+	void close();
+
+	// get the file handle
+	FILE* GetFileHandle() { return m_fp; }
+
+	// get the file name
+	const std::string& GetFileName() const { return m_fileName; }
+
+public:
+	// print text to the file
+	void print(const char* sz);
+
+	// flush the stream
+	void flush();
+
+private:
+	FILE*		m_fp;
+	std::string	m_fileName;
 };

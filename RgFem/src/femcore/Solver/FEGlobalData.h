@@ -25,15 +25,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 
+
 #pragma once
-#include "FEBioImport.h"
+#include "FEModelComponent.h"
 
 //-----------------------------------------------------------------------------
-// Initial Section
-class FEBioInitialSection3 : public FEFileSection
+//! This class can be used to define global model data and will be placed in the
+//! global date section of the FEModel class
+class FECORE_API FEGlobalData : public FEModelComponent
 {
+	FECORE_SUPER_CLASS(FEGLOBALDATA_ID)
+	FECORE_BASE_CLASS(FEGlobalData)
+
 public:
-	FEBioInitialSection3(FEFileImport* pim);
-	void Parse(XMLTag& tag);
-	void ParseIC(XMLTag& tag);
+	//! constructor
+	FEGlobalData(FEModel* fem);
 };
