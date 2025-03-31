@@ -87,7 +87,7 @@ public:
 	void AddEquations(int neq, int partition = 0);
 
 	//! initialize the step (This is called before SolveStep)
-	virtual bool InitStep(double time);
+	virtual bool InitStep(double time) = 0;
 
 	//! Solve an analysis step
 	virtual bool SolveStep() = 0;

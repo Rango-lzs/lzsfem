@@ -27,7 +27,7 @@ public:
 	virtual bool Init() override;
 
 	//! Reset analysis data
-	virtual void Reset();
+    virtual void Reset(){}
 
 	//! Serialize data from and to a binary archive
 	virtual void Serialize(DumpStream& ar) override;
@@ -42,6 +42,8 @@ public:
 
 	// initialize the solver
     bool InitSolver();
+
+	bool virtual Solve();
 
     // Call the FE Solver to solve the time step
     // Returns an error code
@@ -125,7 +127,7 @@ public:
 		int		m_ntotrhs;		//!< total nr of right hand side evaluations
 		int		m_ntotref;		//!< total nr of stiffness reformations
 		int		m_ntotiter;		//!< total nr of non-linear iterations
-		int		m_ntimesteps;	//!< time steps completed
+		int		m_ntimesteps;	//时间增量步数
 	//}
 
 	// --- I/O Data ---

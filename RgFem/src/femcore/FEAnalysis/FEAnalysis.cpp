@@ -1,513 +1,551 @@
 #include "FEAnalysis.h"
-#include "femcore/FEModel.h"
-#include "logger/log.h"
-#include "femcore/DOFS.h"
-#include "femcore/Matrix/MatrixProfile.h"
-#include "femcore/FEBoundaryCondition.h"
+
 #include "basicio/DumpMemStream.h"
+#include "femcore/DOFS.h"
+#include "femcore/FEBoundaryCondition.h"
 #include "femcore/FELinearConstraintManager.h"
-#include "femcore/FEShellDomain.h"
-#include "femcore/TimeStep/FETimeStepController.h"
+#include "femcore/FEModel.h"
 #include "femcore/FEModule.h"
+#include "femcore/FEShellDomain.h"
+#include "femcore/Matrix/MatrixProfile.h"
+#include "femcore/Solver/FESolver.h"
+#include "femcore/TimeStep/FETimeStepController.h"
+#include "logger/log.h"
 
 //---------------------------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FEAnalysis, FEObjectBase)
 
-	BEGIN_PARAM_GROUP("Analysis");
-		ADD_PARAMETER(m_nanalysis, "analysis");// , 0, "STATIC\0DYNAMIC\0STEADY-STATE\0TRANSIENT=1\0");
-	END_PARAM_GROUP();
+BEGIN_PARAM_GROUP("Analysis");
+ADD_PARAMETER(m_nanalysis, "analysis");  // , 0, "STATIC\0DYNAMIC\0STEADY-STATE\0TRANSIENT=1\0");
+END_PARAM_GROUP();
 
-	BEGIN_PARAM_GROUP("Time stepping");
-		ADD_PARAMETER(m_ntime       , FE_RANGE_GREATER_OR_EQUAL(-1) , "time_steps");
-		ADD_PARAMETER(m_dt0         , FE_RANGE_GREATER_OR_EQUAL(0.0), "step_size")->setUnits(UNIT_TIME)->SetFlags(0);
-		ADD_PARAMETER(m_final_time  , FE_RANGE_GREATER_OR_EQUAL(0.0), "final_time")->SetFlags(FE_PARAM_HIDDEN);
-	END_PARAM_GROUP();
+BEGIN_PARAM_GROUP("Time stepping");
+ADD_PARAMETER(m_ntime, FE_RANGE_GREATER_OR_EQUAL(-1), "time_steps");
+ADD_PARAMETER(m_dt0, FE_RANGE_GREATER_OR_EQUAL(0.0), "step_size")->setUnits(UNIT_TIME)->SetFlags(0);
+ADD_PARAMETER(m_final_time, FE_RANGE_GREATER_OR_EQUAL(0.0), "final_time")->SetFlags(FE_PARAM_HIDDEN);
+END_PARAM_GROUP();
 
-	BEGIN_PARAM_GROUP("Output");
-		ADD_PARAMETER(m_bplotZero, "plot_zero_state");
-		ADD_PARAMETER(m_nplotRange, 2, "plot_range");
-		ADD_PARAMETER(m_nplot, "plot_level", 0, "PLOT_NEVER\0PLOT_MAJOR_ITRS\0PLOT_MINOR_ITRS\0PLOT_MUST_POINTS\0PLOT_FINAL\0PLOT_AUGMENTATIONS\0PLOT_STEP_FINAL\0");
-		ADD_PARAMETER(m_noutput, "output_level", 0, "OUTPUT_NEVER\0OUTPUT_MAJOR_ITRS\0OUTPUT_MINOR_ITRS\0OUTPUT_MUST_POINTS\0OUTPUT_FINAL\0");
-		ADD_PARAMETER(m_nplot_stride, "plot_stride");
-	END_PARAM_GROUP();
+BEGIN_PARAM_GROUP("Output");
+ADD_PARAMETER(m_bplotZero, "plot_zero_state");
+ADD_PARAMETER(m_nplotRange, 2, "plot_range");
+ADD_PARAMETER(m_nplot, "plot_level", 0,
+              "PLOT_NEVER\0PLOT_MAJOR_ITRS\0PLOT_MINOR_ITRS\0PLOT_MUST_POINTS\0PLOT_FINAL\0PLOT_AUGMENTATIONS\0PLOT_"
+              "STEP_FINAL\0");
+ADD_PARAMETER(m_noutput, "output_level", 0,
+              "OUTPUT_NEVER\0OUTPUT_MAJOR_ITRS\0OUTPUT_MINOR_ITRS\0OUTPUT_MUST_POINTS\0OUTPUT_FINAL\0");
+ADD_PARAMETER(m_nplot_stride, "plot_stride");
+END_PARAM_GROUP();
 
-	BEGIN_PARAM_GROUP("Advanced settings");
-		ADD_PARAMETER(m_badaptorReSolve, "adaptor_re_solve")->setLongName("re-solve after adaptation");
-	END_PARAM_GROUP();
+BEGIN_PARAM_GROUP("Advanced settings");
+ADD_PARAMETER(m_badaptorReSolve, "adaptor_re_solve")->setLongName("re-solve after adaptation");
+END_PARAM_GROUP();
 
-	ADD_PROPERTY(m_timeController, "time_stepper", FEProperty::Preferred)->SetDefaultType("default").SetLongName("Auto time stepper");
-	FEProperty* solver = ADD_PROPERTY(m_psolver, "solver");
+ADD_PROPERTY(m_timeController, "time_stepper", FEProperty::Preferred)
+    ->SetDefaultType("default")
+    .SetLongName("Auto time stepper");
+FEProperty* solver = ADD_PROPERTY(m_psolver, "solver");
 
-	// the default type of the solver should match the active module's name
-	FECoreKernel& fecore = FECoreKernel::GetInstance();
-	const char* szmod = fecore.GetActiveModule()->GetName();
-	solver->SetDefaultType(szmod);
+// the default type of the solver should match the active module's name
+FECoreKernel& fecore = FECoreKernel::GetInstance();
+const char* szmod = fecore.GetActiveModule()->GetName();
+solver->SetDefaultType(szmod);
 
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEAnalysis::FEAnalysis(FEModel* fem) : FEObjectBase(fem)
+FEAnalysis::FEAnalysis(FEModel* fem)
+    : FEObjectBase(fem)
 {
-	m_psolver = nullptr;
-	m_tend = 0.0;
+    m_psolver = nullptr;
+    m_tend = 0.0;
 
-	m_timeController = nullptr;
+    m_timeController = nullptr;
 
-	// --- Analysis data ---
-	m_nanalysis = 0;
-	m_badaptorReSolve = true;
+    // --- Analysis data ---
+    m_nanalysis = 0;
+    m_badaptorReSolve = true;
 
-	// --- Time Step Data ---
-	m_ntime = 10;
-	m_final_time = 0.0;
-	m_dt0 = 0.1;
-	m_dt = 0;
+    // --- Time Step Data ---
+    m_ntime = 10;
+    m_final_time = 0.0;
+    m_dt0 = 0.1;
+    m_dt = 0;
 
-	// initialize counters
-	m_ntotref    = 0;		// total nr of stiffness reformations
-	m_ntotiter   = 0;		// total nr of non-linear iterations
-	m_ntimesteps = 0;		// time steps completed
-	m_ntotrhs    = 0;		// total nr of right hand side evaluations
+    // initialize counters
+    m_ntotref = 0;     // total nr of stiffness reformations
+    m_ntotiter = 0;    // total nr of non-linear iterations
+    m_ntimesteps = 0;  // time steps completed
+    m_ntotrhs = 0;     // total nr of right hand side evaluations
 
-	// --- I/O Data ---
-	m_nplot   = FE_PLOT_MAJOR_ITRS;
-	m_noutput = FE_OUTPUT_MAJOR_ITRS;
-	m_nplot_stride = 1;
-	m_nplotRange[0] = 0; // by default, will store step zero.
-	m_nplotRange[1] = -1; // by default, store last time step
-	m_bplotZero = false; // don't force plotting step zero.
-	m_plotHint = 0;
+    // --- I/O Data ---
+    m_nplot = FE_PLOT_MAJOR_ITRS;
+    m_noutput = FE_OUTPUT_MAJOR_ITRS;
+    m_nplot_stride = 1;
+    m_nplotRange[0] = 0;   // by default, will store step zero.
+    m_nplotRange[1] = -1;  // by default, store last time step
+    m_bplotZero = false;   // don't force plotting step zero.
+    m_plotHint = 0;
 
-	m_bactive = false;
+    m_bactive = false;
 }
 
 //-----------------------------------------------------------------------------
 FEAnalysis::~FEAnalysis()
 {
-	if (m_psolver) delete m_psolver;
+    if (m_psolver)
+        delete m_psolver;
 }
 
 //-----------------------------------------------------------------------------
 //! copy data from another analysis
 void FEAnalysis::CopyFrom(FEAnalysis* step)
 {
-	m_nanalysis = step->m_nanalysis;
+    m_nanalysis = step->m_nanalysis;
 
-	m_ntime      = step->m_ntime;
-	m_final_time = step->m_final_time;
-	m_dt         = step->m_dt;
-	m_dt0        = step->m_dt0;
-	m_tstart     = step->m_tstart;
-	m_tend       = step->m_tend;
+    m_ntime = step->m_ntime;
+    m_final_time = step->m_final_time;
+    m_dt = step->m_dt;
+    m_dt0 = step->m_dt0;
+    m_tstart = step->m_tstart;
+    m_tend = step->m_tend;
 
-	if (step->m_timeController)
-	{
-		m_timeController = new FETimeStepController(GetFEModel());
-		m_timeController->SetAnalysis(this);
-		m_timeController->CopyFrom(step->m_timeController);
-	}
+    if (step->m_timeController)
+    {
+        m_timeController = new FETimeStepController(GetFEModel());
+        m_timeController->SetAnalysis(this);
+        m_timeController->CopyFrom(step->m_timeController);
+    }
 }
 
 //-----------------------------------------------------------------------------
 //! Return a domain
 FEDomain* FEAnalysis::Domain(int i)
 {
-	return &(GetFEModel()->GetMesh().Domain(m_Dom[i])); 
+    return &(GetFEModel()->GetMesh().Domain(m_Dom[i]));
 }
 
 //-----------------------------------------------------------------------------
 void FEAnalysis::AddStepComponent(FEStepComponent* pmc)
 {
-	if (pmc) m_MC.push_back(pmc);
+    if (pmc)
+        m_MC.push_back(pmc);
 }
 
 //-----------------------------------------------------------------------------
 int FEAnalysis::StepComponents() const
 {
-	return (int) m_MC.size();
+    return (int)m_MC.size();
 }
 
 //-----------------------------------------------------------------------------
 //! get a model component
 FEStepComponent* FEAnalysis::GetStepComponent(int i)
 {
-	return m_MC[i];
+    return m_MC[i];
 }
 
 //-----------------------------------------------------------------------------
 //! sets the plot level
-void FEAnalysis::SetPlotLevel(int n) { m_nplot = n; }
+void FEAnalysis::SetPlotLevel(int n)
+{
+    m_nplot = n;
+}
 
 //-----------------------------------------------------------------------------
 //! sets the plot stride
-void FEAnalysis::SetPlotStride(int n) { m_nplot_stride = n; }
+void FEAnalysis::SetPlotStride(int n)
+{
+    m_nplot_stride = n;
+}
 
 //-----------------------------------------------------------------------------
 //! sets the plot range
 void FEAnalysis::SetPlotRange(int n0, int n1)
 {
-	m_nplotRange[0] = n0;
-	m_nplotRange[1] = n1;
+    m_nplotRange[0] = n0;
+    m_nplotRange[1] = n1;
 }
 
 //-----------------------------------------------------------------------------
 //! sets the zero-state plot flag
 void FEAnalysis::SetPlotZeroState(bool b)
 {
-	m_bplotZero = b;
+    m_bplotZero = b;
 }
 
 //-----------------------------------------------------------------------------
 //! sets the plot hint
 void FEAnalysis::SetPlotHint(int plotHint)
 {
-	m_plotHint = plotHint;
+    m_plotHint = plotHint;
 }
 
 //-----------------------------------------------------------------------------
 //! get the plot hint
 int FEAnalysis::GetPlotHint() const
 {
-	return m_plotHint;
+    return m_plotHint;
 }
 
 //-----------------------------------------------------------------------------
 //! get the plot level
-int FEAnalysis::GetPlotLevel() { return m_nplot; }
+int FEAnalysis::GetPlotLevel()
+{
+    return m_nplot;
+}
 
 //! Set the output level
-void FEAnalysis::SetOutputLevel(int n) { m_noutput = n; }
+void FEAnalysis::SetOutputLevel(int n)
+{
+    m_noutput = n;
+}
 
 //! Get the output level
-int FEAnalysis::GetOutputLevel() { return m_noutput; }
+int FEAnalysis::GetOutputLevel()
+{
+    return m_noutput;
+}
 
 //-----------------------------------------------------------------------------
-FESolver* FEAnalysis::GetFESolver() 
-{ 
-	return m_psolver; 
+FESolver* FEAnalysis::GetFESolver()
+{
+    return m_psolver;
 }
 
 //-----------------------------------------------------------------------------
 void FEAnalysis::SetFESolver(FESolver* psolver)
 {
-	if (m_psolver) delete m_psolver;
-	m_psolver = psolver;
+    if (m_psolver)
+        delete m_psolver;
+    m_psolver = psolver;
 }
 
 //-----------------------------------------------------------------------------
 //! Data initialization and data checking.
 bool FEAnalysis::Init()
 {
-	m_dt = m_dt0;
+    m_dt = m_dt0;
 
-	if (m_timeController)
-	{
-		m_timeController->SetAnalysis(this);
-		if (m_timeController->Init() == false) return false;
-	}
-	if (m_nplot_stride <= 0) return false;
-	return Validate();
+    if (m_timeController)
+    {
+        m_timeController->SetAnalysis(this);
+        if (m_timeController->Init() == false)
+            return false;
+    }
+    if (m_nplot_stride <= 0)
+        return false;
+    return Validate();
 }
 
 //-----------------------------------------------------------------------------
 // initialize the solver
 bool FEAnalysis::InitSolver()
 {
-	FEModel& fem = *GetFEModel();
+    FEModel& fem = *GetFEModel();
 
-	// initialize equations
-	FESolver* psolver = GetFESolver();
-	if (psolver == nullptr) return false;
+    // initialize equations
+    FESolver* pSolver = GetFESolver();
+    if (pSolver == nullptr)
+        return false;
 
-	if (psolver->InitEquations() == false) return false;
+    if (!pSolver->InitEquations())
+        return false;
 
-	// do initialization of solver data
-	if (psolver->Init() == false) return false;
+    // do initialization of solver data
+    if (!pSolver->Init())
+        return false;
 
-	// initialize linear constraints
-	// Must be done after equations are initialized
-	if (fem.GetLinearConstraintManager().Initialize() == false) return false;
+    // initialize linear constraints
+    // Must be done after equations are initialized
+    if (!fem.GetLinearConstraintManager().Initialize())
+        return false;
 
-	return true;
+    return true;
 }
 
 //-----------------------------------------------------------------------------
-//分析步求解算法流程
+// 分析步求解算法流程
 bool FEAnalysis::Solve()
 {
-	FEModel& fem = *GetFEModel();
+    FEModel& fem = *GetFEModel();
 
-	fem.GetTime().timeIncrement = m_dt0;
+    fem.GetTime().timeIncrement = m_dt0;
 
-	// Initialize the solver
-	if (InitSolver() == false) return false;
+    // Initialize the solver
+    if (!InitSolver())
+        return false;
 
-	// convergence flag
-	// we initialize it to true so that when a restart is performed after 
-	// the last time step we terminate normally.
-	bool bconv = true;
+    // convergence flag
+    bool bConv = true;
+    double startTime = fem.GetStartTime();
+    double endTime = m_tend;
+    const double eps = endTime * 1e-7;
 
-	// calculate end time value
-	double starttime = fem.GetStartTime();
-//	double endtime = fem.m_ftime0 + m_ntime*m_dt0;
-	double endtime = m_tend;
-	const double eps = endtime*1e-7;
+    // if we restarted we need to update the timestep before continuing
+    //重启动不是从第一个时间增量步开始
+    if (m_ntimesteps != 0)
+    {
+        // update time step
+        if (m_timeController && (fem.GetCurrentTime() + eps < endTime))
+            m_timeController->AutoTimeStep(GetFESolver()->m_niter);
+    }
+    else
+    {
+        //第一个时间增量步
+        // make sure that the timestep is at least the min time step size
+        if (m_timeController)
+            m_timeController->AutoTimeStep(0);
+    }
 
-	// if we restarted we need to update the timestep
-	// before continuing
-	if (m_ntimesteps != 0)
-	{
-		// update time step
-		if (m_timeController && (fem.GetCurrentTime() + eps < endtime)) m_timeController->AutoTimeStep(GetFESolver()->m_niter);
-	}
-	else
-	{
-		// make sure that the timestep is at least the min time step size
-		if (m_timeController) m_timeController->AutoTimeStep(0);
-	}
+    // dump stream for running restarts
+    DumpMemStream dmp(fem);
 
-	// dump stream for running restarts
-	DumpMemStream dmp(fem);
+    // repeat for all timesteps
+    if (m_timeController)
+        m_timeController->m_nretries = 0;
 
-	// repeat for all timesteps
-	if (m_timeController) m_timeController->m_nretries = 0;
-	while (endtime - fem.GetCurrentTime() > eps)
-	{
-		// keep a copy of the current state, in case
-		// we need to retry this time step
-		if (m_timeController && (m_timeController->m_maxretries > 0))
-		{ 
-			dmp.clear();
-			fem.Serialize(dmp); 
-		}
+    while (endTime - fem.GetCurrentTime() > eps)
+    {
+        // keep a copy of the current state, in case
+        // we need to retry this time step
+        if (m_timeController && (m_timeController->m_maxretries > 0))
+        {
+            dmp.clear();
+            fem.Serialize(dmp);
+        }
 
-		// Inform that the time is about to change. (Plugins can use 
-		// this callback to modify time step)
-		// 使用观察者模式
-		fem.DoCallback(CB_UPDATE_TIME);
+        // Inform that the time is about to change. (Plugins can use
+        // this callback to modify time step)
+        // 使用观察者模式
+        fem.DoCallback(CB_UPDATE_TIME);
 
-		// update time
-		FETimeInfo& tp = fem.GetTime();
-		double newTime = tp.currentTime + m_dt;
-		if (newTime > endtime)
-		{
-			tp.timeIncrement = endtime - tp.currentTime;
-			tp.currentTime = endtime;
-		}
-		else
-		{
-			tp.currentTime = newTime;
-			tp.timeIncrement = m_dt;
-		}
-		tp.timeStep = m_ntimesteps;
-		feLog("\n===== beginning time step %d : %lg =====\n", m_ntimesteps + 1, newTime);
+        // update time
+        FETimeInfo& tp = fem.GetTime();
+        double newTime = tp.currentTime + m_dt;
+        if (newTime > endTime)
+        {
+            tp.timeIncrement = endTime - tp.currentTime;
+            tp.currentTime = endTime;
+        }
+        else
+        {
+            tp.currentTime = newTime;
+            tp.timeIncrement = m_dt;
+        }
+        tp.timeStep = m_ntimesteps;
+        feLog("\n===== beginning time step %d : %lg =====\n", m_ntimesteps + 1, newTime);
 
-		// initialize the solver step
-		if (GetFESolver()->InitStep(newTime) == false)
-		{
-			bconv = false;
-			break;
-		}
+        // initialize the solver step
+        if (GetFESolver()->InitStep(newTime) == false)
+        {
+            bConv = false;
+            break;
+        }
 
-		// Solve the time step
-		int ierr = SolveTimeStep();
+        // Solve the time step
+        int ierr = SolveTimeStep();
 
-		// see if we want to abort
-		if (ierr == 2) 
-		{
-			bconv = false;
-			break;
-		}
+        // see if we want to abort
+        if (ierr == 2)
+        {
+            bConv = false;
+            break;
+        }
 
-		// update counters
-		FESolver* psolver = GetFESolver();
-		m_ntotref  += psolver->m_ntotref;
-		m_ntotiter += psolver->m_niter;
-		m_ntotrhs  += psolver->m_nrhs;
+        // update counters
+        FESolver* psolver = GetFESolver();
+        m_ntotref += psolver->m_ntotref;
+        m_ntotiter += psolver->m_niter;
+        m_ntotrhs += psolver->m_nrhs;
 
-		// see if we have converged
-		if (ierr == 0)
-		{
-			bconv = true;
+        // see if we have converged
+        if (ierr == 0)
+        {
+            bConv = true;
 
-			// Yes! We have converged!
-			feLog("\n------- converged at time : %lg\n\n", fem.GetCurrentTime());
+            // Yes! We have converged!
+            feLog("\n------- converged at time : %lg\n\n", fem.GetCurrentTime());
 
-			// update nr of completed timesteps
-			m_ntimesteps++;
+            // update nr of completed timesteps
+            m_ntimesteps++;
 
-			// call callback function
-			if (fem.DoCallback(CB_MAJOR_ITERS) == false)
-			{
-				bconv = false;
-				feLogWarning("Early termination on user's request");
-				break;
-			}
+            // call callback function
+            if (fem.DoCallback(CB_MAJOR_ITERS) == false)
+            {
+                bConv = false;
+                feLogWarning("Early termination on user's request");
+                break;
+            }
 
-			// reset retry counter
-			if (m_timeController) m_timeController->m_nretries = 0;
+            // reset retry counter
+            if (m_timeController)
+                m_timeController->m_nretries = 0;
 
-			// update time step
-			if (m_timeController && (fem.GetCurrentTime() + eps < endtime)) m_timeController->AutoTimeStep(psolver->m_niter);
-		}
-		else 
-		{
-			// We failed to converge. 
-			bconv = false;
+            // update time step
+            if (m_timeController && (fem.GetCurrentTime() + eps < endTime))
+                m_timeController->AutoTimeStep(psolver->m_niter);
+        }
+        else
+        {
+            // We failed to converge.
+            bConv = false;
 
-			// This will allow states that have negative Jacobians to be stored
-			fem.DoCallback(CB_MINOR_ITERS);
+            // This will allow states that have negative Jacobians to be stored
+            fem.DoCallback(CB_MINOR_ITERS);
 
-			// Report the sad news to the user.
-			feLog("\n\n------- failed to converge at time : %lg\n\n", fem.GetCurrentTime());
+            // Report the sad news to the user.
+            feLog("\n\n------- failed to converge at time : %lg\n\n", fem.GetCurrentTime());
 
-			// If we have auto time stepping, decrease time step and let's retry
-			if (m_timeController && (m_timeController->m_nretries < m_timeController->m_maxretries))
-			{
-				// restore the previous state
-				dmp.Open(false, true);
-				fem.Serialize(dmp);
-				
-				// let's try again
-				m_timeController->Retry();
+            // If we have auto time stepping, decrease time step and let's retry
+            if (m_timeController && (m_timeController->m_nretries < m_timeController->m_maxretries))
+            {
+                // restore the previous state
+                dmp.Open(false, true);
+                fem.Serialize(dmp);
 
-				// rewind the solver
-				GetFESolver()->Rewind();
-			}
-			else 
-			{
-				// can't retry, so abort
-				if (m_timeController && (m_timeController->m_nretries >= m_timeController->m_maxretries))
-					feLog("Max. nr of retries reached.\n\n");
+                // let's try again
+                m_timeController->Retry();
 
-				break;
-			}
-		}
-	}
+                // rewind the solver
+                GetFESolver()->Rewind();
+            }
+            else
+            {
+                // can't retry, so abort
+                if (m_timeController && (m_timeController->m_nretries >= m_timeController->m_maxretries))
+                    feLog("Max. nr of retries reached.\n\n");
 
-	// TODO: Why is this here?
-	fem.SetStartTime(fem.GetCurrentTime());
+                break;
+            }
+        }
+    }
 
-	return bconv;
+    // TODO: Why is this here?
+    fem.SetStartTime(fem.GetCurrentTime());
+    return bConv;
 }
 
 //-----------------------------------------------------------------------------
 // This function calls the FE Solver for solving this analysis and also handles
-// all the exceptions. 
+// all the exceptions.
 int FEAnalysis::SolveTimeStep()
 {
-	int nerr = 0;
-	try
-	{
-		// solve this timestep,
-		int niter = 0;
-		bool bconv = false;
-		while (bconv == false) {
-			
-			// solve the time step
-			bconv = GetFESolver()->SolveStep();
+    int nerr = 0;
+    try
+    {
+        // solve this timestep,
+        int niter = 0;
+        bool bconv = false;
+        while (bconv == false)
+        {
 
-			// Apply any mesh adaptors
-			if (bconv)
-			{
-				FEModel& fem = *GetFEModel();
+            // solve the time step
+            bconv = GetFESolver()->SolveStep();
 
-				if (fem.DoCallback(CB_TIMESTEP_SOLVED) == false)
-				{
-					return false;
-				}				
-			}
-			else break;
-		}
-		nerr = (bconv ? 0 : 1);
-	}
-	catch (LinearSolverFailed e)
-	{
-		feLogError(e.what());
-		nerr = 2;
-	}
-	catch (FactorizationError e)
-	{
-		feLogError(e.what());
-		nerr = 2;
-	}
-	catch (NANInResidualDetected e)
-	{
-		feLogError(e.what());
-		nerr = 1;	// don't abort, instead let's retry the step
-	}	
-	catch (NANInSolutionDetected e)
-	{
-		feLogError(e.what());
-		nerr = 1;	// don't abort, instead let's retry the step
-	}
-	catch (FEMultiScaleException)
-	{
-		feLogError("The RVE problem has failed. Aborting macro run.");
-		nerr = 2;
-	}
-	catch (std::bad_alloc e)
-	{
-		feLogError("A memory allocation failure has occured.\nThe program will now be terminated.");
-		nerr = 2;
-	}
-	catch (std::exception e)
-	{
-		feLogError("Exception detected: %s\n", e.what());
-		nerr = 2;
-	}
-	catch (...)
-	{
-		nerr = 2;
-	}
+            // Apply any mesh adaptors
+            if (bconv)
+            {
+                FEModel& fem = *GetFEModel();
 
-	return nerr;
+                if (fem.DoCallback(CB_TIMESTEP_SOLVED) == false)
+                {
+                    return false;
+                }
+            }
+            else
+                break;
+        }
+        nerr = (bconv ? 0 : 1);
+    }
+    catch (LinearSolverFailed e)
+    {
+        feLogError(e.what());
+        nerr = 2;
+    }
+    catch (FactorizationError e)
+    {
+        feLogError(e.what());
+        nerr = 2;
+    }
+    catch (NANInResidualDetected e)
+    {
+        feLogError(e.what());
+        nerr = 1;  // don't abort, instead let's retry the step
+    }
+    catch (NANInSolutionDetected e)
+    {
+        feLogError(e.what());
+        nerr = 1;  // don't abort, instead let's retry the step
+    }
+    catch (FEMultiScaleException)
+    {
+        feLogError("The RVE problem has failed. Aborting macro run.");
+        nerr = 2;
+    }
+    catch (std::bad_alloc e)
+    {
+        feLogError("A memory allocation failure has occured.\nThe program will now be terminated.");
+        nerr = 2;
+    }
+    catch (std::exception e)
+    {
+        feLogError("Exception detected: %s\n", e.what());
+        nerr = 2;
+    }
+    catch (...)
+    {
+        nerr = 2;
+    }
+
+    return nerr;
 }
 
 //-----------------------------------------------------------------------------
 void FEAnalysis::Serialize(DumpStream& ar)
 {
-	FEModel& fem = *GetFEModel();
+    FEModel& fem = *GetFEModel();
 
-	// --- analysis data ---
-	ar & m_nanalysis;
-	ar & m_bactive;
+    // --- analysis data ---
+    ar& m_nanalysis;
+    ar& m_bactive;
 
-	// --- Time Step Data ---
-	ar & m_ntime;
-	ar & m_final_time;
-	ar & m_dt0 & m_dt;
-	ar & m_tstart & m_tend;
-	ar & m_ntotrhs;
-	ar & m_ntotref;
-	ar & m_ntotiter;
-	ar & m_ntimesteps;
+    // --- Time Step Data ---
+    ar& m_ntime;
+    ar& m_final_time;
+    ar& m_dt0& m_dt;
+    ar& m_tstart& m_tend;
+    ar& m_ntotrhs;
+    ar& m_ntotref;
+    ar& m_ntotiter;
+    ar& m_ntimesteps;
 
-	// --- I/O Data ---
-	ar & m_nplot;
-	ar & m_noutput;
-	ar & m_nplot_stride;
-	ar & m_nplotRange;
-	ar & m_bplotZero;
+    // --- I/O Data ---
+    ar& m_nplot;
+    ar& m_noutput;
+    ar& m_nplot_stride;
+    ar& m_nplotRange;
+    ar& m_bplotZero;
 
-	// Serialize solver data
-	ar & m_psolver;
+    // Serialize solver data
+    ar& m_psolver;
 
-	// don't serialize for shallow copies
-	if (ar.IsShallow()) return;
+    // don't serialize for shallow copies
+    if (ar.IsShallow())
+        return;
 
-	// Serialize model components
-	ar & m_MC;
+    // Serialize model components
+    ar& m_MC;
 
-	if (ar.IsSaving() == false)
-	{
-		// For now, add all domains to the analysis step
-		FEMesh& mesh = fem.GetMesh();
-		int ndom = mesh.Domains();
-		ClearDomains();
-		for (int i = 0; i<ndom; ++i) AddDomain(i);
-	}
+    if (ar.IsSaving() == false)
+    {
+        // For now, add all domains to the analysis step
+        FEMesh& mesh = fem.GetMesh();
+        int ndom = mesh.Domains();
+        ClearDomains();
+        for (int i = 0; i < ndom; ++i)
+            AddDomain(i);
+    }
 
-	// serialize time controller
-	ar & m_timeController;
+    // serialize time controller
+    ar& m_timeController;
 }

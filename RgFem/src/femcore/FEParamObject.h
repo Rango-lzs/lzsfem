@@ -24,38 +24,26 @@ class FEM_EXPORT FEParamObject : public MetaObject
 {
     DECLARE_META_CLASS(FEParamObject, MetaObject);
 public:
-    //! constructor
-    FEParamObject();
 
-    //! destructor
+    FEParamObject();
     virtual ~FEParamObject();
 
-    //! return the material's parameter list
+    //return the material's parameter list
     FEParameterList& GetParameterList();
     const FEParameterList& GetParameterList() const;
 
-    //! find a parameter using it's name
+    //find a parameter using it's name
     virtual FEParam* GetParameter(const std::string& strName);
     virtual FEParam* FindParameter(const std::string& strName);
 
-    //! find a parameter using a pointer to the variable
+    //find a parameter using a pointer to the variable
     virtual FEParam* FindParameterFromData(void* pv);
 
-    //! serialize parameter data
+    //serialize parameter data
     virtual void Serialize(DumpStream& ar);
 
-    //! validate material parameters.
-    //! This function returns false on the first parameter encountered
-    //! that is not valid (i.e. is outside its defined range).
-    //! Overload this function to do additional validation. Make sure to always call the base class.
-    //! Use fecore_get_error_string() to find out which parameter failed validation.
+    //validate material parameters.
     virtual bool Validate();
-
-public:
-    //! This copies the state of a parameter list (i.e. assigned load curve IDs)
-    //! This function assumes that there is a one-to-one correspondence between
-    //! source and target parameter lists.
-    void CopyParameterListState(const FEParameterList& pl);
 
 public:
     void BeginParameterGroup(const char* szname);
