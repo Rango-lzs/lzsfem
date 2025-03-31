@@ -737,7 +737,7 @@ bool FESolidSolver2::Quasin()
 	FEModel& fem = *GetFEModel();
 
 	// Get the current step
-	FEAnalysis* pstep = fem.GetCurrentStep();
+	FEAnalysis* pStep = fem.GetCurrentStep();
 
 	// set the time information
 	FETimeInfo& tp = fem.GetTime();

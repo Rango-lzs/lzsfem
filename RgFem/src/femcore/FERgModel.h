@@ -46,86 +46,10 @@ public:
 	//! Initializes data structures
 	bool Init() override;
 
-	//! Resets data structures
-	bool Reset() override;
-
 public: // --- I/O functions ---
 
 	//! input data from file
 	bool Input(const char* szfile);
-
-	//! handle output
-	void Write(unsigned int nwhen);
-
-	// write to plot file
-	void WritePlot(unsigned int nevent);
-
-	//! write data to log file
-	void WriteData(unsigned int nevent);
-
-	//! dump data to archive for restart
-	void DumpData(int nevent);
-
-	//! add to log 
-	void Log(int ntag, const char* szmsg) override;
-
-	// get the log file
-	Logfile& GetLogFile() { return m_log; }
-
-public:
-	//! set the problem title
-	void SetTitle(const char* sz);
-
-	//! get the problem title
-	const std::string& GetTitle() const;
-
-public: //! --- serialization for restarts ---
-	
-	//! Write or read data from archive
-	void Serialize(DumpStream& ar) override;
-
-private:
-	static bool handleCB(FEModel* fem, unsigned int nwhen, void* pd);
-	bool processEvent(int nevent);
-
-	void on_cb_solved();
-	void on_cb_stepSolved();
-
-protected:
-	// helper functions for serialization
-	void SerializeIOData   (DumpStream& ar);
-	void SerializeDataStore(DumpStream& ar);
-	void SerializePlotData (DumpStream& ar);
-
-	bool InitLogFile();
-	bool InitPlotFile();
-
-
-public: // --- I/O functions ---
-	//! Add data record
-	void AddDataRecord(DataRecord* pd);
-
-	//! Get the plot file
-	PlotFile* GetPlotFile();
-
-	// set the i/o files
-	void SetInputFilename(const std::string& sfile);
-	void SetLogFilename  (const std::string& sfile);
-	void SetPlotFilename (const std::string& sfile);
-	void SetDumpFilename (const std::string& sfile);
-
-	//! Get the I/O file names
-	const std::string& GetInputFileName();
-	const std::string& GetLogfileName  ();
-	const std::string& GetPlotFileName ();
-	const std::string& GetDumpFileName ();
-
-	//! get the file title
-	const std::string& GetFileTitle();
-
-	// set append-on-restart flag
-	void SetAppendOnRestart(bool b);
-	bool AppendOnRestart() const;
 
 public:
 	double GetEndTime() const;
@@ -137,44 +61,6 @@ public: // Timers
 
 	//! return number of seconds of time spent in linear solver
 	int GetLinearSolverTime();
-
-public:
-	//! set the debug level
-	void SetDebugLevel(int debugLvl);
-
-	//! get the debug level
-	int GetDebugLevel();
-
-	//! set the dump level (for cold restarts)
-	void SetDumpLevel(int dumpLevel);
-
-	//! get the dump level
-	int GetDumpLevel() const;
-
-	//! Set the dump stride
-	void SetDumpStride(int n);
-
-	//! get the dump stride
-	int GetDumpStride() const;
-
-	//! Set the log level
-	void SetLogLevel(int logLevel);
-
-	//! Get the stats 
-	ModelStats GetModelStats() const;
-
-	// flag to show warnings and errors
-	void ShowWarningsAndErrors(bool b);
-	bool ShowWarningsAndErrors() const;
-
-private:
-	void print_parameter(FEParam& p, int level = 0);
-	void print_parameter_list(FEParameterList& pl, int level = 0);
-	void print_parameter_list(FECoreBase* pc, int level = 0);
-	void echo_input();
-
-private:
-	void UpdatePlotObjects();
 
 private:
 	Timer		m_InputTime;	//!< timer to track time to read model

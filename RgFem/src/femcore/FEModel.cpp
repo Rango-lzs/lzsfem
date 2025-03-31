@@ -117,22 +117,8 @@ public:
 
 //-----------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FEModel, FEObjectBase)
-
 	// model parameters
 	ADD_PARAMETER(m_imp->m_timeInfo.currentTime, "time");
-
-	// model properties
-	ADD_PROPERTY(m_imp->m_MAT , "material"       );
-	ADD_PROPERTY(m_imp->m_BC  , "bc"             );
-	ADD_PROPERTY(m_imp->m_ML  , "load"           );
-	ADD_PROPERTY(m_imp->m_IC  , "initial"        );
-	ADD_PROPERTY(m_imp->m_CI  , "contact"        );
-	ADD_PROPERTY(m_imp->m_NLC , "constraint"     );
-	ADD_PROPERTY(m_imp->m_MA  , "mesh_adaptor"   );
-	ADD_PROPERTY(m_imp->m_LC  , "load_controller");
-	ADD_PROPERTY(m_imp->m_MD  , "mesh_data"      );
-	ADD_PROPERTY(m_imp->m_Step, "step"           );
-
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------

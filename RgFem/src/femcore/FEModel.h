@@ -34,26 +34,16 @@ public:
 	FEModel(void);
 	virtual ~FEModel(void);
 
-	// Initialization
 	virtual bool Init() override;
-
-	// solve the model
 	virtual bool Solve();
-
-	//! will return true if the model solved succussfully
 	bool IsSolved() const;
 
 public:
-	// get the FE mesh
+	
 	FEMesh& GetMesh();
-
-	// get the linear constraint manager
 	FELinearConstraintManager& GetLinearConstraintManager();
 
-	//! Validate BC's
 	bool InitBCs();
-
-	//! Initialize the mesh
 	bool InitMesh();
 
 	//! Build the matrix profile for this model
@@ -66,31 +56,22 @@ public:
 	 */
 	virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);
 
-public:	// --- Load controller functions ----
+public:	
 
-	//! Add a load controller to the model
 	void AddLoadController(FELoadController* plc);
-
-	//! replace a load controller
 	void ReplaceLoadController(int n, FELoadController* plc);
-
-	//! get a load controller
 	FELoadController* GetLoadController(int i);
 
-	//! get the number of load controllers
 	int LoadControllers() const;
 
-	//! Attach a load controller to a parameter
 	void AttachLoadController(FEParam* p, int lc);
 	void AttachLoadController(FEParam* p, FELoadController* plc);
 
-	//! Detach a load controller from a parameter
 	bool DetachLoadController(FEParam* p);
-
-	//! Get a load controller for a parameter (returns null if the param is not under load control)
 	FELoadController* GetLoadController(FEParam* p);
 
-public: // --- Material functions ---
+	//--- Material functions ---
+public: 
 
 	//! Add a material to the model
 	void AddMaterial(FEMaterial* pm);
