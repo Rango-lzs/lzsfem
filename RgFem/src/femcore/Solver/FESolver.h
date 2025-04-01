@@ -1,10 +1,10 @@
 #pragma once
 #include "femcore/FEObjectBase.h"
-#include "Timer.h"
-#include "matrix.h"
-#include "vector.h"
+#include "femcore/Timer.h"
+#include "datastructure/matrix.h"
+#include "datastructure/vector_operator.h"
 #include "femcore/FEDofList.h"
-#include "FETimeInfo.h"
+#include "femcore/FETimeInfo.h"
 
 //-----------------------------------------------------------------------------
 // Scheme for assigning equation numbers

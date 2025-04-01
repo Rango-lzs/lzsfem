@@ -1,16 +1,16 @@
 #include "FENewtonSolver.h"
 
-#include "DumpStream.h"
-#include "FEAnalysis.h"
-#include "FEDomain.h"
-#include "FEGlobalMatrix.h"
-#include "FELinearConstraintManager.h"
-#include "FELinearSystem.h"
+#include "basicio/DumpStream.h"
+#include "femcore/FEAnalysis/FEAnalysis.h"
+#include "femcore/Domain/FEDomain.h"
+#include "femcore/FEGlobalMatrix.h"
+#include "femcore/FELinearConstraintManager.h"
+#include "femcore/FELinearSystem.h"
 #include "femcore/FEModel.h"
-#include "FEPrescribedDOF.h"
+#include "femcore/FEPrescribedDOF.h"
 #include "LinearSolver.h"
 #include "logger/log.h"
-#include "sys.h"
+#include "femcore/sys.h"
 
 //-----------------------------------------------------------------------------
 // define the parameter list
@@ -193,7 +193,7 @@ bool FENewtonSolver::ReformStiffness()
         {
             // get the stiffness matrix
             SparseMatrix& K = *m_pK;
-            vector<int> zd;
+            std::vector<int> zd;
             int neq = K.Rows();
             for (int i = 0; i < neq; ++i)
             {
@@ -627,7 +627,6 @@ bool FENewtonSolver::Quasin()
         // do minor iterations callbacks
         fem.DoCallback(CB_MINOR_ITERS);
     }
-
 
     // if converged we update the total solution
     if (bconv)

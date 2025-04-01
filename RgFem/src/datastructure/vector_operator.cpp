@@ -114,7 +114,7 @@ vector<double> operator*(const vector<double>& a, double g)
 	return s;
 }
 
-vector<double> FEM_EXPORT operator - (const vector<double>& a)
+vector<double> FECORE_API operator - (const vector<double>& a)
 {
 	vector<double> s(a.size());
 	for (size_t i = 0; i < s.size(); ++i) s[i] = -a[i];
