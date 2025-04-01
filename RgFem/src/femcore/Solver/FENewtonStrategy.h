@@ -1,8 +1,6 @@
 #pragma once
 #include <vector>
-#include "FEM_EXPORT.h"
-#include "fecore_enum.h"
-#include "FECoreBase.h"
+#include "femcore/FEObjectBase.h"
 
 //-----------------------------------------------------------------------------
 class FENewtonSolver;
@@ -13,7 +11,7 @@ class LinearSolver;
 //! A Base class for newton-type solution strategies
 class FEM_EXPORT FENewtonStrategy : public FEObjectBase
 {
-	META_CLASS_DECLARE(FENewtonStrategy)
+    META_CLASS_DECLARE(FENewtonStrategy, FEObjectBase);
 
 public:
 	FENewtonStrategy(FEModel* fem);
