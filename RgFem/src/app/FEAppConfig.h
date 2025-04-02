@@ -8,6 +8,7 @@
 
 #pragma once
 #include "femcore/fem_export.h"
+#include <string>
 
 class FEM_EXPORT FEAppConfig
 {
@@ -21,4 +22,5 @@ public:
     int m_printParams;
     int m_noutput;
     bool m_bshowErrors;
+    bool m_bRunFile;
 };

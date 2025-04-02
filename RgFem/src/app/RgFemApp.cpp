@@ -7,14 +7,13 @@
  *********************************************************************/
 
 #include "RgFemApp.h"
-#include "app/CmdOptions.h"
 #include "app/AppUtils.h"
 
 #include "CLI/CLI.hpp"
 
 RgFemApp::RgFemApp()
 {
-    mp_fem = nullptr;
+    mp_model = nullptr;
 }
 
 RgFemApp* RgFemApp::Instance()
@@ -38,29 +37,18 @@ bool RgFemApp::Init(int argc, char* argv[])
 	ParseCmdLine(argc, argv);
 
 	// copy some flags to configuration
-	m_config.SetOutputLevel(m_cmd_opts->bsilent ? 0 : 1);
+	m_config.SetOutputLevel(m_cmd_opts.bsilent ? 0 : 1);
 
 	// read the configration file if specified
 	if (m_cmd_opts.szcnf[0])
-		if (ReadConfigure(m_cmd_opts.szcnf, m_config) == false)
-		{
-			fprintf(stderr, "FATAL ERROR: An error occurred reading the configuration file.\n");
-			return false;
-		}
-
-	// read command line plugin if specified, 可以使用开源库来代替,可以先不实现这部分
-	if (m_cmd_opts.szimp[0] != 0)
-	{
-		ImportPlugin(m_cmd_opts.szimp);
-	}
-
+    {
+        if (m_config.ReadConfigure(m_cmd_opts.szcnf, m_config) == false)
+        {
+            fprintf(stderr, "FATAL ERROR: An error occurred reading the configuration file.\n");
+            return false;
+        }
+    }	
 	return true;
-}
-
-//-----------------------------------------------------------------------------
-bool RgFemApp::ReadConfigure(const char* szconfig)
-{
-	return Configure(szconfig, m_config);
 }
 
 //-----------------------------------------------------------------------------
@@ -72,23 +60,22 @@ int RgFemApp::Run()
 //-----------------------------------------------------------------------------
 void RgFemApp::Finish()
 {
-	febio::FinishLibrary();
-
-	Console::GetHandle()->CleanUp();
+	//febio::FinishLibrary();
+	//Console::GetHandle()->CleanUp();
 }
 
 //-----------------------------------------------------------------------------
 // get the current model
-FEBioModel* RgFemApp::GetCurrentModel()
+FEModel* RgFemApp::GetCurrentModel()
 {
-	return m_fem;
+    return mp_model;
 }
 
 //-----------------------------------------------------------------------------
 // set the currently active model
-void RgFemApp::SetCurrentModel(FEBioModel* fem)
+void RgFemApp::SetCurrentModel(FEModel* fem)
 {
-	m_fem = fem;
+    mp_model = fem;
 }
 
 //-----------------------------------------------------------------------------
@@ -100,7 +87,7 @@ int RgFemApp::RunModel()
     SetCurrentModel(&model);
 
 	// read the input file if specified
-	if (m_config.inPutFile[0])
+    if (m_config.m_bRunFile)
 	{
 		// read the input file
         if (!model.Input(m_cmd_opts.szfile))
@@ -109,7 +96,7 @@ int RgFemApp::RunModel()
 		}
 
 	    // apply configuration overrides
-        ApplyConfig(model);
+        //ApplyConfig(model);
 	}
 
 	// solve the model with the task and control file
@@ -126,20 +113,10 @@ int RgFemApp::RunModel()
 	}
 	
 	// reset the current model pointer
-	SetCurrentModel(nullptr);
+    SetCurrentModel(nullptr);
 	return 0;
 }
 
-//-----------------------------------------------------------------------------
-// apply configuration changes to model
-void RgFemApp::ApplyConfig(FEBioModel& fem)
-{
-    if (m_config.m_printParams != -1)
-	{
-        fem.SetPrintParametersFlag(m_config.m_printParams != 0);
-	}
-    fem.ShowWarningsAndErrors(m_config.m_bshowErrors);
-}
 
 //-----------------------------------------------------------------------------
 //!  Parses the command line and returns a CMDOPTIONS structure

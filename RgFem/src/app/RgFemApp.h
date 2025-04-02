@@ -21,35 +21,17 @@ public:
     RgFemApp();
 
     bool Init(int nargs, char* argv[]);
-
-    bool Configure(const char* szconfig);
-
     int Run();
-
     void Finish();
 
     bool ParseCmdLine(int nargs, char* argv[]);
-    void ProcessCommands();
-
-    // run an febio model
     int RunModel();
 
-public:
-    // get the current model
-    FEBioModel* GetCurrentModel();
-
-protected:
-    // show FEBio prompt
-    int prompt();
-
-    // set the currently active model
-    void SetCurrentModel(FEBioModel* fem);
-
-    // apply configuration changes to model
-    void ApplyConfig(FEBioModel& fem);
+    FEModel* GetCurrentModel();
+    void SetCurrentModel(FEModel* fem);
 
 private:
     FEAppConfig m_config;  // configuration options
     CmdOptions m_cmd_opts;
-    FEModel* mp_fem;
+    FEModel* mp_model;
 };

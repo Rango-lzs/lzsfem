@@ -19,6 +19,11 @@ void FEAppConfig::SetOutputLevel(int n)
     m_noutput = n;
 }
 
+bool ReadConfig(std::string filepath)
+{
+    return true;
+}
+
 void FEAppConfig::Defaults()
 {
     m_printParams = -1;

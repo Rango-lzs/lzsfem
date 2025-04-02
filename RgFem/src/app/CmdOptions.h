@@ -7,8 +7,8 @@
  *********************************************************************/
 
 #pragma once
-#include <string>
 #include "femcore/fem_export.h"
+#include <string>
 
 //! This structures stores the command line options that were input by the user
 struct FEM_EXPORT CmdOptions
