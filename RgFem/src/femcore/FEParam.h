@@ -7,8 +7,6 @@
  *********************************************************************/
 
 #pragma once
-#include "datastructure/vec3d.h"
-#include "datastructure/mat3d.h"
 #include "femcore/fem_export.h"
 
 #include <assert.h>
@@ -18,12 +16,11 @@
 //-----------------------------------------------------------------------------
 class FEParamValidator;
 class DumpStream;
-class FEParamContainer;
+class FEParamObject;
 
 //FEParam一般是由FEObject所持有的，比较持久化的参数, 具有更丰富的信息，可能是数组类型
 //FEParamList对其中的FEParam生命周期负责，FEParam对其中具体value的生命周期负责
 //FEParamValue参数里的具体一个值，一般用于运行时取值
-//做减法，而不是做加法
 
 //-----------------------------------------------------------------------------
 // Different supported parameter types
@@ -89,22 +86,22 @@ public:
     {
     }
 
-    FEParamValue(vec2d& v)
+    FEParamValue(Vector2d& v)
         : FEParamValue(0, &v, FE_PARAM_VEC2D)
     {
     }
 
-    FEParamValue(vec3d& v)
+    FEParamValue(Vector3d& v)
         : FEParamValue(0, &v, FE_PARAM_VEC3D)
     {
     }
 
-    FEParamValue(mat3ds& v)
+    FEParamValue(Matrix3ds& v)
         : FEParamValue(0, &v, FE_PARAM_MAT3DS)
     {
     }
 
-    FEParamValue(mat3d& v)
+    FEParamValue(Matrix3d& v)
         : FEParamValue(0, &v, FE_PARAM_MAT3D)
     {
     }
@@ -149,7 +146,7 @@ public:
 class FEM_EXPORT FEParam
 {
 private:
-	void*			m_pv;		// pointer to variable data
+	void*			m_pv;		// pointer to variable data, 指向
 	int				m_dim;		// dimension (in case data is array)
 	FEParamType		m_type;		// type of variable
 	unsigned int	m_flag;		// parameter flags
@@ -164,7 +161,7 @@ private:
 	// parameter validator
 	FEParamValidator*	m_pvalid;
 
-	FEParamContainer* m_parent;	// parent object of parameter
+	FEParamObject* m_parent;	// parent object of parameter
 
 public:
 	// constructor
@@ -217,8 +214,8 @@ public:
 	// This requires that the parameters are compatible (i.e. same type, etc.)
 	bool CopyState(const FEParam& p);
 
-	void setParent(FEParamContainer* pc);
-	FEParamContainer* parent();
+	void setOwner(FEParamObject* pc);
+	const FEParamObject* owner() const;
 
 	FEParam* SetFlags(unsigned int flags);
 	unsigned int GetFlags() const;

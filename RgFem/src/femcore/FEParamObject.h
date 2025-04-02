@@ -2,13 +2,7 @@
 
 #include "femcore/MetaObject.h"
 #include "femcore/RTTI/RTTIMacroDefine.h"
-
-#include "datastructure/Vector2d.h"
-#include "datastructure/Vector3d.h"
-#include "datastructure/Matrix3d.h"
-#include "FEParam.h"
 #include "femcore/fem_export.h"
-#include "femcore/FEParamValidator.h"
 
 #include <assert.h>
 #include <list>
@@ -17,6 +11,7 @@
 
 class DumpStream;
 class FEParameterList;
+class FEParam;
 
 //-----------------------------------------------------------------------------
 //!每一个FEM对象都需要由一些参数定义，这些参数可能是通过输入文件解析，也可以手动设置
@@ -63,10 +58,10 @@ public:
     FEParam* AddParameter(int& v, const char* sz);
     FEParam* AddParameter(bool& v, const char* sz);
     FEParam* AddParameter(double& v, const char* sz);
-    FEParam* AddParameter(vec2d& v, const char* sz);
-    FEParam* AddParameter(vec3d& v, const char* sz);
-    FEParam* AddParameter(mat3d& v, const char* sz);
-    FEParam* AddParameter(mat3ds& v, const char* sz);
+    FEParam* AddParameter(Vector2d& v, const char* sz);
+    FEParam* AddParameter(Vector3d& v, const char* sz);
+    FEParam* AddParameter(Matrix3d& v, const char* sz);
+    FEParam* AddParameter(Matrix3ds& v, const char* sz);
     FEParam* AddParameter(FEParamDouble& v, const char* sz);
     FEParam* AddParameter(FEParamVec3& v, const char* sz);
     FEParam* AddParameter(FEParamMat3d& v, const char* sz);
@@ -76,7 +71,7 @@ public:
     FEParam* AddParameter(std::string& v, const char* sz);
     FEParam* AddParameter(std::vector<int>& v, const char* sz);
     FEParam* AddParameter(std::vector<double>& v, const char* sz);
-    FEParam* AddParameter(std::vector<vec2d>& v, const char* sz);
+    FEParam* AddParameter(std::vector<Vector2d>& v, const char* sz);
     FEParam* AddParameter(std::vector<std::string>& v, const char* sz);
     FEParam* AddParameter(FEMaterialPointProperty& v, const char* sz);
 

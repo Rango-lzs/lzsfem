@@ -8,8 +8,9 @@
 
 #include "RgFemApp.h"
 #include "app/AppUtils.h"
+#include "femcore/FEModel.h"
 
-#include "CLI/CLI.hpp"
+//#include "CLI/CLI.hpp"
 
 RgFemApp::RgFemApp()
 {
@@ -29,10 +30,10 @@ bool RgFemApp::Init(int argc, char* argv[])
 	// 这部分等一些基础类写好后，再进行注册模块的注册
 	//FeModuleInit::InitLibrary();
 
-	CLI::App femApp("Rango FEM Application");
+	/*CLI::App femApp("Rango FEM Application");
     std::string inputFile;
     femApp.add_option("-f,-file", inputFile, "the fem input file");
-	femApp.parse(argc,argv);
+	femApp.parse(argc,argv);*/
 
 	ParseCmdLine(argc, argv);
 
@@ -42,7 +43,7 @@ bool RgFemApp::Init(int argc, char* argv[])
 	// read the configration file if specified
 	if (m_cmd_opts.szcnf[0])
     {
-        if (m_config.ReadConfigure(m_cmd_opts.szcnf, m_config) == false)
+        if (m_config.ReadConfig(m_cmd_opts.szcnf) == false)
         {
             fprintf(stderr, "FATAL ERROR: An error occurred reading the configuration file.\n");
             return false;
@@ -83,14 +84,14 @@ void RgFemApp::SetCurrentModel(FEModel* fem)
 int RgFemApp::RunModel()
 {
 	// create the FEModel object
-	FERgModel model;
-    SetCurrentModel(&model);
+	FEModel* pModel = Rango::CreateFEModel();
+    SetCurrentModel(pModel);
 
 	// read the input file if specified
     if (m_config.m_bRunFile)
 	{
 		// read the input file
-        if (!model.Input(m_cmd_opts.szfile))
+        if (!pModel->Input(m_cmd_opts.szfile))
 		{
 			return 1;
 		}
@@ -101,13 +102,13 @@ int RgFemApp::RunModel()
 
 	// solve the model with the task and control file
     //bool ret = febio::SolveModel(model, m_cmd_opts.sztask, m_cmd_opts.szctrl);
-	if (model.Init())
+	if (pModel->Init())
 	{
 		return 1;
 	}
 
 	
-	if (model.Solve())
+	if (pModel->Solve())
 	{
 		return 1; // should we catch the exception?
 	}
@@ -291,7 +292,7 @@ bool RgFemApp::ParseCmdLine(int nargs, char* argv[])
 			char szbuf[32]={0};
 			strcpy(szbuf, argv[++i]);
 
-			add_break_point(szbuf);
+			//add_break_point(szbuf);
 		}
 		else if (strcmp(sz, "-info")==0)
 		{
@@ -303,7 +304,7 @@ bool RgFemApp::ParseCmdLine(int nargs, char* argv[])
 			}
 			fprintf(fp, "compiled on " __DATE__ "\n");
 
-			char* szver = febio::getVersionString();
+			char* szver = ""; // febio::getVersionString();
 
 #ifdef _DEBUG
 			fprintf(fp, "FEBio version  = %s (DEBUG)\n", szver);

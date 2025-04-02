@@ -1,21 +1,21 @@
 #pragma once
 #include <cstddef>
 #include "femcore/fem_export.h"
-#include "femcore/FERgModel.h"
 #include "FEAppConfig.h"
 #include "cmdoptions.h"
+#include <vector>
 #include <ostream>
 
 class CompactMatrix;
 class LogStream;
+class FeModel;
+class FEMaterial;
 
 //-----------------------------------------------------------------------------
 // Defines the FEBio namespace
 namespace Rango 
 {
-	// get the kernel
-	FEM_EXPORT FECoreKernel* GetFECoreKernel();
-
+	FEM_EXPORT FEModel* CreateFEModel();
 	// Initialize all the FEBio modules
 	FEM_EXPORT void InitLibrary();
 
@@ -44,10 +44,10 @@ namespace Rango
 	FEM_EXPORT void SetOMPThreads(int n);
 
 	// run an FEBioModel
-	FEM_EXPORT bool SolveModel(FEBioModel& fem, const char* sztask = nullptr, const char* szctrl = nullptr);
+	FEM_EXPORT bool SolveModel(FeModel& fem, const char* sztask = nullptr, const char* szctrl = nullptr);
 
 	// run an FEBioModel
-	FEM_EXPORT int RunModel(FEBioModel& fem, CmdOptions* ops);
+	FEM_EXPORT int RunModel(FeModel& fem, CmdOptions* ops);
 
 	// write a matrix to file
 	FEM_EXPORT bool write_hb(CompactMatrix& K, const char* szfile, int mode = 0);
@@ -56,8 +56,8 @@ namespace Rango
 	FEM_EXPORT void print_svg(CompactMatrix* m, std::ostream &out, int i0 = 0, int j0 = 0, int i1 = -1, int j1 = -1);
 
 	// write a vector to file
-	FEM_EXPORT bool write_vector(const vector<double>& a, const char* szfile, int mode = 0);
+	FEM_EXPORT bool write_vector(const std::vector<double>& a, const char* szfile, int mode = 0);
 
 	// run a material test
-	FEM_EXPORT bool RunMaterialTest(FEMaterial* mat, double simtime, int steps, double strain, const char* sztest, std::vector<pair<double, double> >& out);
+	FEM_EXPORT bool RunMaterialTest(FEMaterial* mat, double simtime, int steps, double strain, const char* sztest, std::vector<std::pair<double, double> >& out);
 }

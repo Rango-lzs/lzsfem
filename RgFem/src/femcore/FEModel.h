@@ -8,14 +8,8 @@
 
 #pragma once
 #include "femcore/FEObjectBase.h"
-#include "femcore/FEMesh.h"
-#include "femcore/FELinearConstraintManager.h"
-#include "femcore/FENLConstraint.h"
-#include "femcore/FEGlobalData.h"
-#include "basicio/DataStore.h"
-#include "basicio/FEPlotDataStore.h"
-
 #include <memory>
+#include <string>
 
  // helper class for managing global (user-defined) variables.
 class FEGlobalVariable
@@ -25,6 +19,23 @@ public:
     std::string name;
 };
 
+class FELoadController;
+class FEBoundaryCondition;
+class FEInitialCondition;
+class FEAnalysis;
+class FESurfacePairConstraint;
+class FEModelLoad;
+class FEMesh;
+class FELinearConstraintManager;
+class FEGlobalMatrix;
+class FETimeInfo;
+class FENLConstraint;
+class FEGlobalData;
+class FEPlotDataStore;
+class Timer;
+class DataStore;
+class DOFS;
+
 /**
  * 定义整个求解模型. 包含所有的FEM组件，此类可进一步精简，定义每个组件的Manager
  */
@@ -33,6 +44,8 @@ class FEM_EXPORT FEModel: public FEObjectBase
 public:
 	FEModel(void);
 	virtual ~FEModel(void);
+
+	virtual bool Input(const char* szfile);
 
 	virtual bool Init() override;
 	virtual bool Solve();
@@ -231,7 +244,7 @@ public:	// --- Miscellaneous routines ---
 	void SetActiveModule(const std::string& moduleName);
 
 	//! get the module name
-	string GetModuleName() const;
+	std::string GetModuleName() const;
 
 public: // Global data
 	void AddGlobalData(FEGlobalData* psd);
@@ -241,8 +254,8 @@ public: // Global data
 	int GlobalDataItems();
 
 	// get/set global data
-	void SetGlobalConstant(const string& s, double v);
-	double GetGlobalConstant(const string& s);
+	void SetGlobalConstant(const std::string& s, double v);
+	double GetGlobalConstant(const std::string& s);
 
 	int GlobalVariables() const;
 	void AddGlobalVariable(const std::string& s, double v);
@@ -251,7 +264,7 @@ public: // Global data
 public: // Data retrieval
 
 	// get nodal dof data
-	bool GetNodeData(int dof, vector<double>& data);
+	bool GetNodeData(int dof, std::vector<double>& data);
 
 	//! return the data store
 	DataStore& GetDataStore();
