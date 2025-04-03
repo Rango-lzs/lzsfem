@@ -36,27 +36,18 @@ class PlotFile;
 class FEM_EXPORT FERgModel : public FEModel
 {
 public:
-    //! constructor
     FERgModel();
-
-    //! destructor
     ~FERgModel();
-
-    //! Initializes data structures
     bool Init() override;
 
-public:  // --- I/O functions ---
-    //! input data from file
+public:
+    //input data from file
     bool Input(const char* szfile);
 
 public:
-    double GetEndTime() const;
-
-public:  // Timers
-    //! Return the total timer
+    //Return the total timer
     Timer& GetSolveTimer();
-
-    //! return number of seconds of time spent in linear solver
+    //return number of seconds of time spent in linear solver
     int GetLinearSolverTime();
 
 private:
@@ -70,9 +61,7 @@ private:
     bool m_writeMesh;    //!< write a new mesh section
 
     bool m_bshowErrors;  //!< print warnings and errors
-
     int m_logLevel;      //!< output level for log file
-
     int m_dumpLevel;     //!< level or writing restart file
     int m_dumpStride;    //!< write dump file every nth iterations
 
@@ -95,6 +84,5 @@ protected:
 
 private:
     Logfile m_log;
-
     DECLARE_PARAM_LIST();
 };

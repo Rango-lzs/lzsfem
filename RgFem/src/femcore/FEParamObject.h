@@ -12,6 +12,23 @@
 class DumpStream;
 class FEParameterList;
 class FEParam;
+class RANGE;
+class Vector2d;
+class Vector3d;
+class Matrix3d;
+class Matrix3ds;
+class FEParamDouble;
+class FEParamVec3;
+class FEParamMat3d;
+class FEParamMat3ds;
+class FEDataArray;
+
+/* 参数类的几种设计计方式
+* 1、每个Object对象有一个ParamList，定义Object需要的参数，Object本身没有数据成员，可拓展，无成员访问不方便
+* 2、每个Object对象有一个ParamList，每个Param和Object的数据成员绑定，访问方便，内存占比较大
+* 3、每个Object类有一个ParamList用于定义参数元信息，ParamList通过类提供的get/set函数和具体实例参数交互
+*    ，注册参数信息的时候，需要提供get/set函数， 内存占比小，需要提供get/set函数
+*/
 
 //-----------------------------------------------------------------------------
 //!每一个FEM对象都需要由一些参数定义，这些参数可能是通过输入文件解析，也可以手动设置
@@ -49,10 +66,10 @@ public:
     virtual void BuildParamList() = 0;
 
     //! Add a parameter to the list
-    FEParam* AddParameter(void* pv, FEParamType itype, int ndim, const char* sz, bool* watch = nullptr);
+    FEParam* AddParameter(void* pv, const FEParamType& type, int ndim, const char* sz, bool* watch = nullptr);
 
     //! Add a parameter to the list
-    FEParam* AddParameter(void* pv, FEParamType type, int ndim, RANGE rng, const char* sz);
+    FEParam* AddParameter(void* pv, const FEParamType& type, int ndim, const RANGE& rng, const char* sz);
 
 public:
     FEParam* AddParameter(int& v, const char* sz);
@@ -75,9 +92,9 @@ public:
     FEParam* AddParameter(std::vector<std::string>& v, const char* sz);
     FEParam* AddParameter(FEMaterialPointProperty& v, const char* sz);
 
-    FEParam* AddParameter(int& v, RANGE rng, const char* sz);
-    FEParam* AddParameter(double& v, RANGE rng, const char* sz);
-    FEParam* AddParameter(FEParamDouble& v, RANGE rng, const char* sz);
+    FEParam* AddParameter(int& v, const RANGE& rng, const char* sz);
+    FEParam* AddParameter(double& v, const RANGE& rng, const char* sz);
+    FEParam* AddParameter(FEParamDouble& v, const RANGE& rng, const char* sz);
 
     FEParam* AddParameter(double& v, const char* sz, bool& watch);
 
@@ -85,9 +102,9 @@ public:
     FEParam* AddParameter(double* v, int ndim, const char* sz);
     FEParam* AddParameter(FEParamDouble* v, int ndim, const char* sz);
 
-    FEParam* AddParameter(int* v, int ndim, RANGE rng, const char* sz);
-    FEParam* AddParameter(double* v, int ndim, RANGE rng, const char* sz);
-    FEParam* AddParameter(FEParamDouble* v, int ndim, RANGE rng, const char* sz);
+    FEParam* AddParameter(int* v, int ndim, const RANGE& rng, const char* sz);
+    FEParam* AddParameter(double* v, int ndim, const RANGE& rng, const char* sz);
+    FEParam* AddParameter(FEParamDouble* v, int ndim, const RANGE& rng, const char* sz);
 
     FEParam* AddParameter(int& v, const char* sz, unsigned int flags, const char* szenum);
     FEParam* AddParameter(std::vector<int>& v, const char* sz, unsigned int flags, const char* szenum);

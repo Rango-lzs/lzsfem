@@ -45,7 +45,7 @@ public:
 	FEModel(void);
 	virtual ~FEModel(void);
 
-	virtual bool Input(const char* szfile);
+	virtual bool Input(const char* szfile) = 0;
 
 	virtual bool Init() override;
 	virtual bool Solve();
@@ -121,8 +121,10 @@ public:
 
 public: // --- Analysis steps functions ---
 
-	//! retrieve the number of steps
-	int Steps();
+	//the number of steps
+	int Steps() const;
+
+	int currentStep() const;
 
 	//! clear the steps
 	void ClearSteps();
