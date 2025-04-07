@@ -19,27 +19,27 @@ class FEMesh;
 class FEM_EXPORT FEModelComponent : public FEObjectBase
 {
 public:
-	//! constructor
-	FEModelComponent(FEModel* fem);
+    //! constructor
+    FEModelComponent(FEModel* fem);
 
-	//! destructor
-	virtual ~FEModelComponent();
+    //! destructor
+    virtual ~FEModelComponent();
 
-	//-----------------------------------------------------------------------------------
-	//! Update the component
-	//! This is called whenever the model is updated, i.e. the primary variables were updated.
-	virtual void Update();
+    //-----------------------------------------------------------------------------------
+    //! Update the component
+    //! This is called whenever the model is updated, i.e. the primary variables were updated.
+    virtual void Update();
 
-public: // some convenience functions (to pull data from FEModel without the need to include)
-	double CurrentTime() const;
-	double CurrentTimeIncrement() const;
-	double GetGlobalConstant(const char* sz) const;
-	int GetDOFIndex(const char* szvar, int n) const;
-	int GetDOFIndex(const char* szdof) const;
-	const FETimeInfo& GetTimeInfo() const;
-	void AttachLoadController(const char* szparam, int lc);
-	void AttachLoadController(void* pd, int lc);
+public:  // some convenience functions (to pull data from FEModel without the need to include)
+    double CurrentTime() const;
+    double CurrentTimeIncrement() const;
+    double GetGlobalConstant(const char* sz) const;
+    int GetDOFIndex(const char* szvar, int n) const;
+    int GetDOFIndex(const char* szdof) const;
+    const FETimeInfo& GetTimeInfo() const;
+    void AttachLoadController(const char* szparam, int lc);
+    void AttachLoadController(void* pd, int lc);
 
-	//! Get the model's mesh
-	FEMesh& GetMesh();
+    //! Get the model's mesh
+    FEMesh& GetMesh();
 };

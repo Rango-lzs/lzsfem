@@ -35,7 +35,7 @@ public:
 
 class FEM_EXPORT FEMaterial : public FEMaterialBase
 {
-    META_CLASS_DECLARE(FEMaterial, FEMaterialBase)
+    META_CLASS_DECLARE(FEMaterial, FEMaterialBase);
 
 public:
 

@@ -1,37 +1,25 @@
 #include "FEModel.h"
 
+#include "femcore/FEMesh.h"
+
 #include "basicio/DumpMemStream.h"
 #include "basicio/DumpStream.h"
-#include "FEBodyLoad.h"
+#include "basicio/DataStore.h"
+#include "basicio/FEPlotDataStore.h"
+
 #include "FEBoundaryCondition.h"
-#include "FECoreKernel.h"
-#include "FEDataArray.h"
-#include "FEDataGenerator.h"
-#include "FEDiscreteDomain.h"
-#include "FEDomain2D.h"
-#include "FEEdge.h"
-#include "FEEdgeLoad.h"
 #include "FEGlobalData.h"
 #include "FEInitialCondition.h"
 #include "FELinearConstraintManager.h"
 #include "FELoadController.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
-#include "FEMeshAdaptor.h"
 #include "FEModelLoad.h"
 #include "FEModelParam.h"
 #include "FEModule.h"
 #include "FENLConstraint.h"
-#include "FENodalLoad.h"
-#include "FEPlotDataStore.h"
-#include "FEShellDomain.h"
-#include "FESolidDomain.h"
-#include "FESurfaceConstraint.h"
 #include "FESurfaceLoad.h"
 #include "FESurfacePairConstraint.h"
-#include "FETimeStepController.h"
-#include "FETrussDomain.h"
-#include "LinearSolver.h"
-#include "log.h"
+#include "logger/log.h"
 #include "materials/FEMaterial.h"
 #include "Timer.h"
 
@@ -51,7 +39,7 @@ public:
         , m_dmp(*fem)
     {
         // --- Analysis Data ---
-        m_pStep = 0;
+        mp_CurStep = 0;
         m_nStep = -1;
         m_ftime0 = 0;
 
@@ -93,25 +81,14 @@ public:
     std::string m_units;     // units string
 
 public:
-    // The model
     FEModel* m_fem;
-    // module name
     std::string m_moduleName;
-
     bool m_bsolved;  // solved flag
-    // DOFS data
     DOFS m_dofs;  // meta info of degree of freedoms in this model
-
-    // Geometry data
-    FEMesh m_mesh;  //!< the one and only FE mesh
-
-    // linear constraint data
+    FEMesh m_mesh;  //the one and only FE mesh
     FELinearConstraintManager* m_LCM;
-
     DataStore m_dataStore;       //!< the data store used for data logging
-
     FEPlotDataStore m_plotData;  //!< Output request for plot file
-
     DumpMemStream m_dmp;         // only used by incremental solver
 };
 
@@ -167,13 +144,6 @@ bool FEModel::IsSolved() const
 }
 
 //-----------------------------------------------------------------------------
-// call this function to set the mesh's update flag
-void FEModel::SetMeshUpdateFlag(bool b)
-{
-    m_imp->m_meshUpdate = b;
-}
-
-//-----------------------------------------------------------------------------
 void FEModel::Clear()
 {
     // clear dofs
@@ -201,23 +171,23 @@ void FEModel::Clear()
     for (FELoadController* lc : m_imp->m_LC)
         delete lc;
     m_imp->m_LC.clear();
-    for (FEMeshDataGenerator* md : m_imp->m_MD)
+    /*for (FEMeshDataGenerator* md : m_imp->m_MD)
         delete md;
-    m_imp->m_MD.clear();
+    m_imp->m_MD.clear();*/
     for (FEAnalysis* step : m_imp->m_Step)
         delete step;
     m_imp->m_Step.clear();
 
     // global data
-    for (size_t i = 0; i < m_imp->m_GD.size(); ++i)
-        delete m_imp->m_GD[i];
-    m_imp->m_GD.clear();
-    m_imp->m_Const.clear();
+    /* for (size_t i = 0; i < m_imp->m_GD.size(); ++i)
+         delete m_imp->m_GD[i];
+     m_imp->m_GD.clear();
+     m_imp->m_Const.clear();*/
 
     // global variables (TODO: Should I delete the corresponding parameters?)
-    for (size_t i = 0; i < m_imp->m_Var.size(); ++i)
+    /*for (size_t i = 0; i < m_imp->m_Var.size(); ++i)
         delete m_imp->m_Var[i];
-    m_imp->m_Var.clear();
+    m_imp->m_Var.clear();*/
 
     // clear the linear constraints
     if (m_imp->m_LCM)
@@ -227,7 +197,7 @@ void FEModel::Clear()
     m_imp->m_mesh.Clear();
 
     // clear load parameters
-    m_imp->m_Param.clear();
+    /*m_imp->m_Param.clear();*/
 }
 
 //-----------------------------------------------------------------------------
@@ -292,7 +262,7 @@ void FEModel::AddInitialCondition(FEInitialCondition* pbc)
 
 //-----------------------------------------------------------------------------
 //! retrieve the number of steps
-int FEModel::Steps()
+int FEModel::Steps() const
 {
     return (int)m_imp->m_Step.size();
 }
@@ -322,18 +292,18 @@ FEAnalysis* FEModel::GetStep(int i)
 //! Get the current step
 FEAnalysis* FEModel::GetCurrentStep()
 {
-    return m_imp->m_pStep;
+    return m_imp->mp_CurStep;
 }
 const FEAnalysis* FEModel::GetCurrentStep() const
 {
-    return m_imp->m_pStep;
+    return m_imp->mp_CurStep;
 }
 
 //-----------------------------------------------------------------------------
 //! Set the current step
 void FEModel::SetCurrentStep(FEAnalysis* pstep)
 {
-    m_imp->m_pStep = pstep;
+    m_imp->mp_CurStep = pstep;
 }
 
 //-----------------------------------------------------------------------------
@@ -453,7 +423,7 @@ bool FEModel::Init()
     }
 
     // evaluate all mesh data generators
-    for (int i = 0; i < MeshDataGenerators(); ++i)
+  /*  for (int i = 0; i < MeshDataGenerators(); ++i)
     {
         FEMeshDataGenerator* pmd = m_imp->m_MD[i];
         if (pmd->Init() == false)
@@ -464,7 +434,7 @@ bool FEModel::Init()
             return false;
         }
         pmd->Evaluate(0);
-    }
+    }*/
 
     // check step data
     for (int i = 0; i < (int)m_imp->m_Step.size(); ++i)
@@ -517,33 +487,6 @@ bool FEModel::Init()
 
     // activate all permanent dofs
     Activate();
-
-    // check if all load curves are being used
-    int NLC = LoadControllers();
-    vector<int> tag(NLC, 0);
-    for (int i = 0; i < m_imp->m_Param.size(); ++i)
-    {
-        int lc = m_imp->m_Param[i].lc;
-        tag[lc]++;
-    }
-    for (int i = 0; i < m_imp->m_Step.size(); ++i)
-    {
-        FEAnalysis* step = m_imp->m_Step[i];
-        if (step->m_timeController)
-        {
-            int lc = step->m_timeController->m_nmplc;
-            if (lc >= 0)
-                tag[lc]++;
-        }
-    }
-    int unused = 0;
-    for (int i = 0; i < NLC; ++i)
-        if (tag[i] == 0)
-            unused++;
-    if (unused != 0)
-    {
-        feLogWarning("Model has %d unreferenced load controllers.", unused);
-    }
 
     bool ret = false;
     try
@@ -792,7 +735,7 @@ int FEModel::LoadControllers() const
 //! Attach a load controller to a parameter
 void FEModel::AttachLoadController(FEParam* param, int lc)
 {
-    Impl::LoadParam lp;
+    /*Impl::LoadParam lp;
     lp.param = param;
     lp.lc = lc;
 
@@ -806,7 +749,7 @@ void FEModel::AttachLoadController(FEParam* param, int lc)
             break;
     }
 
-    m_imp->m_Param.push_back(lp);
+    m_imp->m_Param.push_back(lp);*/
 }
 
 //-----------------------------------------------------------------------------
@@ -819,7 +762,7 @@ void FEModel::AttachLoadController(FEParam* p, FELoadController* plc)
 //! Detach a load controller from a parameter
 bool FEModel::DetachLoadController(FEParam* p)
 {
-    for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
+   /* for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
     {
         Impl::LoadParam& pi = m_imp->m_Param[i];
         if (pi.param == p)
@@ -828,42 +771,22 @@ bool FEModel::DetachLoadController(FEParam* p)
             return true;
         }
     }
-    return false;
+    return false;*/
 }
 
 //-----------------------------------------------------------------------------
 //! Get a load controller for a parameter (returns null if the param is not under load control)
 FELoadController* FEModel::GetLoadController(FEParam* p)
 {
-    for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
+    /*for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
     {
         Impl::LoadParam& pi = m_imp->m_Param[i];
         if (pi.param == p)
         {
             return (pi.lc >= 0 ? GetLoadController(pi.lc) : nullptr);
         }
-    }
+    }*/
     return nullptr;
-}
-
-//-----------------------------------------------------------------------------
-//! Add a mesh data generator to the model
-void FEModel::AddMeshDataGenerator(FEMeshDataGenerator* pmd)
-{
-    m_imp->m_MD.push_back(pmd);
-}
-
-//-----------------------------------------------------------------------------
-FEMeshDataGenerator* FEModel::GetMeshDataGenerator(int i)
-{
-    return m_imp->m_MD[i];
-}
-
-//-----------------------------------------------------------------------------
-//! get the number of mesh data generators
-int FEModel::MeshDataGenerators() const
-{
-    return (int)m_imp->m_MD.size();
 }
 
 //-----------------------------------------------------------------------------
@@ -902,116 +825,51 @@ bool FEModel::InitMesh()
             feLogWarning("%d isolated vertices removed.", ni);
     }
 
-    // Initialize shell data
-    // This has to be done before the domains are initialized below
-    InitShells();
+    //// Initialize shell data
+    //// This has to be done before the domains are initialized below
+    //InitShells();
 
-    // reset data
-    // TODO: Not sure why this is here
-    try
-    {
-        mesh.Reset();
-    }
-    catch (NegativeJacobian e)
-    {
-        feLogError("Negative jacobian detected during mesh initialization.");
-        return false;
-    }
+    //// reset data
+    //// TODO: Not sure why this is here
+    //try
+    //{
+    //    mesh.Reset();
+    //}
+    //catch (NegativeJacobian e)
+    //{
+    //    feLogError("Negative jacobian detected during mesh initialization.");
+    //    return false;
+    //}
 
-    // initialize all domains
-    // Initialize shell domains first (in order to establish SSI)
-    // TODO: I'd like to move the initialization of the SSI to InitShells, but I can't
-    //       do that because FESSIShellDomain::FindSSI depends on the FEDomain::m_Node array which is
-    //       initialized in FEDomain::Init.
-    for (int i = 0; i < mesh.Domains(); ++i)
-    {
-        FEDomain& dom = mesh.Domain(i);
-        if (dom.Class() == FE_DOMAIN_SHELL)
-            if (dom.Init() == false)
-                return false;
-    }
-    for (int i = 0; i < mesh.Domains(); ++i)
-    {
-        FEDomain& dom = mesh.Domain(i);
-        if (dom.Class() != FE_DOMAIN_SHELL)
-            if (dom.Init() == false)
-                return false;
-    }
+    //// initialize all domains
+    //// Initialize shell domains first (in order to establish SSI)
+    //// TODO: I'd like to move the initialization of the SSI to InitShells, but I can't
+    ////       do that because FESSIShellDomain::FindSSI depends on the FEDomain::m_Node array which is
+    ////       initialized in FEDomain::Init.
+    //for (int i = 0; i < mesh.Domains(); ++i)
+    //{
+    //    FEDomain& dom = mesh.Domain(i);
+    //    if (dom.Class() == FE_DOMAIN_SHELL)
+    //        if (dom.Init() == false)
+    //            return false;
+    //}
+    //for (int i = 0; i < mesh.Domains(); ++i)
+    //{
+    //    FEDomain& dom = mesh.Domain(i);
+    //    if (dom.Class() != FE_DOMAIN_SHELL)
+    //        if (dom.Init() == false)
+    //            return false;
+    //}
 
-    // initialize surfaces
-    for (int i = 0; i < mesh.Surfaces(); ++i)
-    {
-        if (mesh.Surface(i).Init() == false)
-            return false;
-    }
+    //// initialize surfaces
+    //for (int i = 0; i < mesh.Surfaces(); ++i)
+    //{
+    //    if (mesh.Surface(i).Init() == false)
+    //        return false;
+    //}
 
     // All done
     return true;
-}
-
-//-----------------------------------------------------------------------------
-void FEModel::InitShells()
-{
-    FEMesh& mesh = GetMesh();
-
-    // calculate initial directors for shell nodes
-    int NN = mesh.Nodes();
-    vector<vec3d> D(NN, vec3d(0, 0, 0));
-    vector<int> ND(NN, 0);
-
-    // loop over all domains
-    for (int nd = 0; nd < mesh.Domains(); ++nd)
-    {
-        // Calculate the shell directors as the local node normals
-        if (mesh.Domain(nd).Class() == FE_DOMAIN_SHELL)
-        {
-            FEShellDomain& sd = static_cast<FEShellDomain&>(mesh.Domain(nd));
-            vec3d r0[FEElement::MAX_NODES];
-            for (int i = 0; i < sd.Elements(); ++i)
-            {
-                FEShellElement& el = sd.Element(i);
-
-                int n = el.Nodes();
-                int* en = &el.m_node[0];
-
-                // get the nodes
-                for (int j = 0; j < n; ++j)
-                    r0[j] = mesh.Node(en[j]).m_r0;
-                for (int j = 0; j < n; ++j)
-                {
-                    int m0 = j;
-                    int m1 = (j + 1) % n;
-                    int m2 = (j == 0 ? n - 1 : j - 1);
-
-                    vec3d a = r0[m0];
-                    vec3d b = r0[m1];
-                    vec3d c = r0[m2];
-                    vec3d d = (b - a) ^ (c - a);
-                    d.unit();
-
-                    D[en[m0]] += d * el.m_h0[j];
-                    ++ND[en[m0]];
-                }
-            }
-        }
-    }
-
-    // assign initial directors to shell nodes
-    // make sure we average the directors
-    for (int i = 0; i < NN; ++i)
-        if (ND[i] > 0)
-            mesh.Node(i).m_d0 = D[i] / ND[i];
-
-    // do any other shell initialization
-    for (int nd = 0; nd < mesh.Domains(); ++nd)
-    {
-        FEDomain& dom = mesh.Domain(nd);
-        if (dom.Class() == FE_DOMAIN_SHELL)
-        {
-            FEShellDomain& shellDom = static_cast<FEShellDomain&>(dom);
-            shellDom.InitShells();
-        }
-    }
 }
 
 //-----------------------------------------------------------------------------
@@ -1076,13 +934,13 @@ bool FEModel::Solve()
     {
         // set the current analysis step
         m_imp->m_nStep = (int)iStep;
-        m_imp->m_pStep = m_imp->m_Step[(int)iStep];
+        m_imp->mp_CurStep = m_imp->m_Step[(int)iStep];
 
         // do callback
         DoCallback(CB_STEP_ACTIVE);
 
         // solve the analaysis step
-        bOk = m_imp->m_pStep->Solve();
+        bOk = m_imp->mp_CurStep->Solve();
 
         if (iStep + 1 == Steps())
         {
@@ -1101,302 +959,6 @@ bool FEModel::Solve()
     DoCallback(CB_SOLVED);
 
     return bOk;
-}
-
-//-----------------------------------------------------------------------------
-bool FEModel::RCI_Rewind()
-{
-    return m_imp->PopState();
-}
-
-//-----------------------------------------------------------------------------
-bool FEModel::RCI_ClearRewindStack()
-{
-    if (m_imp->m_dmp.size() == 0)
-        return false;
-    m_imp->m_dmp.clear();
-    return true;
-}
-
-//-----------------------------------------------------------------------------
-bool FEModel::RCI_Init()
-{
-    // start the timer
-    GetTimer(Timer_ModelSolve)->start();
-
-    // reset solver status flag
-    m_imp->m_bsolved = false;
-
-    // loop over all analysis steps
-    int nstep = m_imp->m_nStep;
-    m_imp->m_pStep = m_imp->m_Step[(int)nstep];
-
-    FEAnalysis* step = m_imp->m_pStep;
-
-    // intitialize step data
-    if (step->Activate() == false)
-    {
-        return false;
-    }
-
-    // do callback
-    DoCallback(CB_STEP_ACTIVE);
-
-    // initialize the step's solver
-    if (step->InitSolver() == false)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool FEModel::RCI_Restart()
-{
-    FEAnalysis* step = GetCurrentStep();
-    if (step == nullptr)
-        return false;
-
-    return step->InitSolver();
-}
-
-bool FEModel::RCI_Advance()
-{
-    // get the current step
-    FEAnalysis* step = m_imp->m_pStep;
-    if (step == nullptr)
-        return false;
-
-    // first see if the step has finished
-    const double eps = step->m_tend * 1e-7;
-    double currentTime = GetCurrentTime();
-    if (step->m_tend - currentTime <= eps)
-    {
-        // TODO: not sure why this is needed.
-        SetStartTime(GetCurrentTime());
-
-        // wrap it up
-        DoCallback(CB_STEP_SOLVED);
-        step->Deactivate();
-
-        // go to the next step
-        int nstep = ++m_imp->m_nStep;
-        if (nstep >= m_imp->m_Step.size())
-        {
-            // we're done
-            m_imp->m_bsolved = true;
-            return true;
-        }
-        else
-        {
-            // go to the next step
-            step = m_imp->m_pStep = m_imp->m_Step[nstep];
-            if (step->Activate() == false)
-                return false;
-            DoCallback(CB_STEP_ACTIVE);
-            if (step->InitSolver() == false)
-                return false;
-        }
-    }
-
-    // store current state in case we need to rewind
-    m_imp->PushState();
-
-    // Inform that the time is about to change. (Plugins can use
-    // this callback to modify time step)
-    DoCallback(CB_UPDATE_TIME);
-
-    // update time
-    FETimeInfo& tp = GetTime();
-    double newTime = tp.currentTime + step->m_dt;
-    tp.currentTime = newTime;
-    tp.timeIncrement = step->m_dt;
-    feLog("\n===== beginning time step %d : %lg =====\n", step->m_ntimesteps + 1, newTime);
-
-    // initialize the solver step
-    // (This basically evaluates all the parameter lists, but let's the solver
-    //  customize this process to the specific needs of the solver)
-    if (step->GetFESolver()->InitStep(newTime) == false)
-        return false;
-
-    // Solve the time step
-    int ierr = step->SolveTimeStep();
-    if (ierr != 0)
-        return false;
-
-    // update counters
-    FESolver* psolver = step->GetFESolver();
-    step->m_ntotref += psolver->m_ntotref;
-    step->m_ntotiter += psolver->m_niter;
-    step->m_ntotrhs += psolver->m_nrhs;
-
-    // Yes! We have converged!
-    feLog("\n------- converged at time : %lg\n\n", GetCurrentTime());
-
-    // update nr of completed timesteps
-    step->m_ntimesteps++;
-
-    // call callback function
-    if (DoCallback(CB_MAJOR_ITERS) == false)
-    {
-        feLogWarning("Early termination on user's request");
-        return false;
-    }
-
-    return true;
-}
-
-bool FEModel::RCI_Finish()
-{
-    // stop the timer
-    GetTimer(Timer_ModelSolve)->stop();
-
-    // do the callbacks
-    DoCallback(CB_SOLVED);
-    return true;
-}
-
-//-----------------------------------------------------------------------------
-// Model activation.
-// BC's that are not assigned to a step will not have their Activate() member called
-// so we do it here. This function is called in Init() and Reset()
-void FEModel::Activate()
-{
-    // initial conditions
-    // Must be activated before prescribed BC's
-    // since relative prescribed BC's use the initial values
-    for (int i = 0; i < InitialConditions(); ++i)
-    {
-        FEInitialCondition& ic = *InitialCondition(i);
-        if (ic.IsActive())
-            ic.Activate();
-    }
-
-    // Boundary conditions
-    for (int i = 0; i < BoundaryConditions(); ++i)
-    {
-        FEBoundaryCondition& bc = *BoundaryCondition(i);
-        if (bc.IsActive())
-            bc.Activate();
-    }
-
-    // model loads
-    for (int i = 0; i < ModelLoads(); ++i)
-    {
-        FEModelLoad& FC = *ModelLoad(i);
-        if (FC.IsActive())
-            FC.Activate();
-    }
-
-    // nonlinear constraints
-    for (int i = 0; i < NonlinearConstraints(); ++i)
-    {
-        FENLConstraint* plc = NonlinearConstraint(i);
-        if (plc->IsActive())
-            plc->Activate();
-    }
-
-    // initialize material points before evaluating contact autopenalty
-    m_imp->m_mesh.InitMaterialPoints();
-
-    // contact interfaces
-    for (int i = 0; i < SurfacePairConstraints(); ++i)
-    {
-        FESurfacePairConstraint& ci = *SurfacePairConstraint(i);
-        if (ci.IsActive())
-            ci.Activate();
-    }
-}
-
-//-----------------------------------------------------------------------------
-// TODO: temporary construction. Need to see if I can just use Activate().
-//       This is called after remeshed
-void FEModel::Reactivate()
-{
-    // reactivate BCs
-    for (int i = 0; i < BoundaryConditions(); ++i)
-    {
-        FEBoundaryCondition& bc = *BoundaryCondition(i);
-        if (bc.IsActive())
-            bc.Activate();
-    }
-
-    // reactivate model loads
-    for (int i = 0; i < ModelLoads(); ++i)
-    {
-        FEModelLoad& ml = *ModelLoad(i);
-        if (ml.IsActive())
-            ml.Activate();
-    }
-
-    // update surface interactions
-    for (int i = 0; i < SurfacePairConstraints(); ++i)
-    {
-        FESurfacePairConstraint& ci = *SurfacePairConstraint(i);
-        if (ci.IsActive())
-            ci.Activate();
-    }
-
-    // reactivate the linear constraints
-    GetLinearConstraintManager().Activate();
-}
-
-//-----------------------------------------------------------------------------
-//! \todo Do I really need this function. I think calling FEModel::Init achieves the
-//! same effect.
-bool FEModel::Reset()
-{
-    // reset all timers
-    ResetAllTimers();
-
-    // reset solved flag
-    m_imp->m_bsolved = false;
-
-    // initialize materials
-    for (int i = 0; i < Materials(); ++i)
-    {
-        FEMaterial* pmat = GetMaterial(i);
-        pmat->Init();
-    }
-
-    // reset mesh data
-    m_imp->m_mesh.Reset();
-
-    // set up rigid joints
-    if (m_imp->m_NLC.size() > 0)
-    {
-        int NC = (int)m_imp->m_NLC.size();
-        for (int i = 0; i < NC; ++i)
-        {
-            FENLConstraint* plc = m_imp->m_NLC[i];
-            plc->Reset();
-        }
-    }
-
-    // set the start time
-    m_imp->m_timeInfo.currentTime = 0;
-    m_imp->m_timeInfo.timeIncrement = 0;
-    m_imp->m_ftime0 = 0;
-
-    // set first time step
-    m_imp->m_pStep = m_imp->m_Step[0];
-    m_imp->m_nStep = 0;
-    for (int i = 0; i < Steps(); ++i)
-        GetStep(i)->Reset();
-
-    // reset contact data
-    // TODO: I just call Init which I think is okay
-    InitContact();
-
-    // Call Activate() to activate all permanent BC's
-    Activate();
-
-    // Reevaluate load parameters
-    EvaluateLoadParameters();
-
-    DoCallback(CB_RESET);
-
-    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1437,232 +999,6 @@ void FEModel::SetCurrentTimeStep(double dt)
     assert(step);
     if (step)
         step->m_dt = dt;
-}
-
-//=============================================================================
-//    P A R A M E T E R   F U N C T I O N S
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-FEParam* FEModel::FindParameter(const ParamString& s)
-{
-    // make sure it starts with the name of this model
-    if (s != GetName())
-        return 0;
-    return FECoreBase::FindParameter(s.next());
-}
-
-//-----------------------------------------------------------------------------
-FEParamValue GetComponent(FEParamValue& p, const ParamString& c)
-{
-    switch (p.type())
-    {
-        case FE_PARAM_MAT3DS:
-            if (c == "xx")
-                return p.component(0);
-            if (c == "xy")
-                return p.component(1);
-            if (c == "yy")
-                return p.component(2);
-            if (c == "xz")
-                return p.component(3);
-            if (c == "yz")
-                return p.component(4);
-            if (c == "zz")
-                return p.component(5);
-            break;
-    }
-    return FEParamValue();
-}
-
-//-----------------------------------------------------------------------------
-FEParamValue GetComponent(vec3d& r, const ParamString& c)
-{
-    if (c == "x")
-        return FEParamValue(0, &r.x, FE_PARAM_DOUBLE);
-    if (c == "y")
-        return FEParamValue(0, &r.y, FE_PARAM_DOUBLE);
-    if (c == "z")
-        return FEParamValue(0, &r.z, FE_PARAM_DOUBLE);
-    return FEParamValue();
-}
-
-
-//-----------------------------------------------------------------------------
-//! Return a pointer to the named variable
-//! This function returns a pointer to a named variable.
-
-FEParamValue FEModel::GetParameterValue(const ParamString& paramString)
-{
-    // make sure it starts with the name of this model
-    if (paramString != GetName())
-        return FEParamValue();
-
-    ParamString paramComp = paramString.last();
-    FEParam* param = FindParameter(paramString);
-    if (param)
-    {
-        if ((strcmp(param->name(), paramComp.c_str()) != 0) || (paramComp.Index() != -1))
-            return GetParameterComponent(paramComp, param);
-        else
-        {
-            if (param->type() == FE_PARAM_DOUBLE_MAPPED)
-            {
-                FEParamDouble& v = param->value<FEParamDouble>();
-                if (v.isConst())
-                    return FEParamValue(param, &v.constValue(), FE_PARAM_DOUBLE);
-            }
-            return FEParamValue(param, param->data_ptr(), param->type());
-        }
-    }
-
-    // see what the next reference is
-    ParamString next = paramString.next();
-
-    // if we get here, handle some special cases
-    if (next == "mesh")
-        return GetMeshParameter(next);
-
-    // oh, oh, we didn't find it
-    return FEParamValue();
-}
-
-//-----------------------------------------------------------------------------
-FECoreBase* FEModel::FindComponent(const ParamString& prop)
-{
-    // make sure it starts with the name of this model
-    if (prop != GetName())
-        return 0;
-
-    // see what the next reference is
-    ParamString next = prop.next();
-
-    // next, find the property
-    FECoreBase* pc = GetProperty(next);
-
-    return pc;
-}
-
-//-----------------------------------------------------------------------------
-//! Evaluates all load curves at the specified time
-void FEModel::EvaluateLoadControllers(double time)
-{
-    const int NLC = LoadControllers();
-    for (int i = 0; i < NLC; ++i)
-        GetLoadController(i)->Evaluate(time);
-}
-
-//-----------------------------------------------------------------------------
-//! Evaluates all load curves at the specified time
-void FEModel::EvaluateDataGenerators(double time)
-{
-    for (int i = 0; i < MeshDataGenerators(); ++i)
-        GetMeshDataGenerator(i)->Evaluate(time);
-}
-
-//-----------------------------------------------------------------------------
-//! Set the print parameters flag
-void FEModel::SetPrintParametersFlag(bool b)
-{
-    m_imp->m_printParams = b;
-}
-
-//-----------------------------------------------------------------------------
-//! Get the print parameter flag
-bool FEModel::GetPrintParametersFlag() const
-{
-    return m_imp->m_printParams;
-}
-
-//-----------------------------------------------------------------------------
-bool FEModel::EvaluateLoadParameters()
-{
-    feLog("\n");
-    int NLC = LoadControllers();
-    for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
-    {
-        Impl::LoadParam& pi = m_imp->m_Param[i];
-        int nlc = pi.lc;
-        if ((nlc >= 0) && (nlc < NLC))
-        {
-            double s = GetLoadController(nlc)->Value();
-            FEParam* p = pi.param;
-            FECoreBase* parent = dynamic_cast<FECoreBase*>(p->parent());
-            if (m_imp->m_printParams)
-            {
-                if (parent && (parent->GetName().empty() == false))
-                {
-                    const char* pname = parent->GetName().c_str();
-                    feLog("Setting parameter \"%s.%s\" to : ", pname, p->name());
-                }
-                else
-                    feLog("Setting parameter \"%s\" to : ", p->name());
-            };
-            assert(p->IsVolatile());
-            switch (p->type())
-            {
-                case FE_PARAM_INT:
-                {
-                    p->value<int>() = (int)s;
-                    if (m_imp->m_printParams)
-                        feLog("%d\n", p->value<int>());
-                }
-                break;
-                case FE_PARAM_DOUBLE:
-                {
-                    p->value<double>() = pi.m_scl * s;
-                    if (m_imp->m_printParams)
-                        feLog("%lg\n", p->value<double>());
-                }
-                break;
-                case FE_PARAM_BOOL:
-                {
-                    p->value<bool>() = (s > 0 ? true : false);
-                    if (m_imp->m_printParams)
-                        feLog("%s\n", (p->value<bool>() ? "true" : "false"));
-                }
-                break;
-                case FE_PARAM_VEC3D:
-                {
-                    vec3d& v = p->value<vec3d>();
-                    p->value<vec3d>() = pi.m_vscl * s;
-                    if (m_imp->m_printParams)
-                        feLog("%lg, %lg, %lg\n", v.x, v.y, v.z);
-                }
-                break;
-                case FE_PARAM_DOUBLE_MAPPED:
-                {
-                    FEParamDouble& v = p->value<FEParamDouble>();
-                    double c = 1.0;
-                    if (v.isConst())
-                        c = v.constValue();
-                    v.SetScaleFactor(s * pi.m_scl);
-                    if (m_imp->m_printParams)
-                        feLog("%lg\n", c * p->value<FEParamDouble>().GetScaleFactor());
-                }
-                break;
-                case FE_PARAM_VEC3D_MAPPED:
-                {
-                    FEParamVec3& v = p->value<FEParamVec3>();
-                    v.SetScaleFactor(s * pi.m_scl);
-                    if (m_imp->m_printParams)
-                        feLog("%lg\n", v.GetScaleFactor());
-                }
-                break;
-                default:
-                    feLog("\n");
-                    assert(false);
-            }
-        }
-        else
-        {
-            feLogError("Invalid load curve ID");
-            return false;
-        }
-    }
-    feLog("\n");
-
-    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1716,47 +1052,6 @@ bool FEModel::DoCallback(unsigned int nevent)
     }
 
     return true;
-}
-
-//-----------------------------------------------------------------------------
-void FEModel::Log(int ntag, const char* msg)
-{
-}
-
-//-----------------------------------------------------------------------------
-void FEModel::Logf(int ntag, const char* msg, ...)
-{
-    if (m_imp->m_block_log)
-        return;
-
-    // get a pointer to the argument list
-    va_list args;
-
-    // make the message
-    char sztxt[2048] = {0};
-    va_start(args, msg);
-    vsprintf(sztxt, msg, args);
-    va_end(args);
-
-    Log(ntag, sztxt);
-}
-
-//-----------------------------------------------------------------------------
-void FEModel::BlockLog()
-{
-    m_imp->m_block_log = true;
-}
-
-//-----------------------------------------------------------------------------
-void FEModel::UnBlockLog()
-{
-    m_imp->m_block_log = false;
-}
-
-//-----------------------------------------------------------------------------
-bool FEModel::LogBlocked() const
-{
-    return m_imp->m_block_log;
 }
 
 //-----------------------------------------------------------------------------
@@ -1834,297 +1129,6 @@ int FEModel::GlobalDataItems()
 }
 
 //-----------------------------------------------------------------------------
-FECoreBase* CopyFEBioClass(FECoreBase* pc, FEModel* fem)
-{
-    if ((pc == nullptr) || (fem == nullptr))
-    {
-        assert(false);
-        return nullptr;
-    }
-
-    const char* sztype = pc->GetTypeStr();
-
-    // create a new material
-    FECoreBase* pcnew = fecore_new<FECoreBase>(pc->GetSuperClassID(), sztype, fem);
-    assert(pcnew);
-
-    pcnew->SetID(pc->GetID());
-
-    // copy parameters
-    pcnew->GetParameterList() = pc->GetParameterList();
-
-    // copy properties
-    for (int i = 0; i < pc->PropertyClasses(); ++i)
-    {
-        FEProperty* prop = pc->PropertyClass(i);
-        if (prop->size() > 0)
-        {
-            for (int j = 0; j < prop->size(); ++j)
-            {
-                FECoreBase* pci = prop->get(j);
-                if (pc)
-                {
-                    FECoreBase* pci_new = CopyFEBioClass(pci, fem);
-                    assert(pci_new);
-                    bool b = pcnew->SetProperty(i, pci_new);
-                    assert(b);
-                }
-            }
-        }
-    }
-
-    return pcnew;
-}
-
-//-----------------------------------------------------------------------------
-//! This function copies the model data from the fem object. Note that it only copies
-//! the model definition, i.e. mesh, bc's, contact interfaces, etc..
-void FEModel::CopyFrom(FEModel& fem)
-{
-    // clear the current model data
-    Clear();
-
-    // copy the active module
-    SetActiveModule(fem.GetModuleName());
-
-    // --- Parameters ---
-
-    // copy parameters (not sure if I need/want to copy all of these)
-    m_imp->m_nStep = fem.m_imp->m_nStep;
-    m_imp->m_timeInfo = fem.m_imp->m_timeInfo;
-    m_imp->m_ftime0 = fem.m_imp->m_ftime0;
-    m_imp->m_pStep = 0;
-
-    // copy model variables
-    // we only copy the user created parameters, which presumably don't exist yet
-    // in this model.
-    int NS = fem.GlobalVariables();
-    if (NS > 0)
-    {
-        assert(GlobalVariables() == 0);
-        FEParameterList& PL = GetParameterList();
-        for (int i = 0; i < NS; ++i)
-        {
-            const FEGlobalVariable& var = fem.GetGlobalVariable(i);
-            AddGlobalVariable(var.name, var.v);
-        }
-    }
-
-    // --- Steps ---
-
-    // copy the steps
-    // NOTE: This does not copy the boundary conditions of the steps
-    int NSTEP = fem.Steps();
-    for (int i = 0; i < NSTEP; ++i)
-    {
-        // get the type string
-        FEAnalysis* ps = fem.GetStep(i);
-
-        // create a new step
-        FEAnalysis* pnew = new FEAnalysis(this);
-
-        // copy additional info
-        pnew->CopyFrom(ps);
-
-        // copy the solver
-        FESolver* psolver = ps->GetFESolver();
-        const char* sztype = psolver->GetTypeStr();
-
-        // create a new solver
-        FESolver* pnew_solver = fecore_new<FESolver>(sztype, this);
-        assert(pnew_solver);
-        pnew->SetFESolver(pnew_solver);
-
-        // copy parameters
-        pnew_solver->GetParameterList() = psolver->GetParameterList();
-
-        // add the step
-        AddStep(pnew);
-    }
-
-    // --- Materials ---
-
-    // copy material data
-    int NMAT = fem.Materials();
-    for (int i = 0; i < NMAT; ++i)
-    {
-        // get the type info from the old material
-        FEMaterial* pmat = fem.GetMaterial(i);
-
-        // copy the material
-        FEMaterial* pnew = dynamic_cast<FEMaterial*>(CopyFEBioClass(pmat, this));
-        assert(pnew);
-
-        // copy the name
-        pnew->SetName(pmat->GetName());
-
-        // add the material
-        AddMaterial(pnew);
-    }
-    assert(m_imp->m_MAT.size() == fem.m_imp->m_MAT.size());
-
-    // --- Mesh ---
-
-    // copy the mesh data
-    // NOTE: This will not assign materials to the new domains
-    // A. copy nodes
-    FEMesh& sourceMesh = fem.GetMesh();
-    FEMesh& mesh = GetMesh();
-    int N = sourceMesh.Nodes();
-    mesh.CreateNodes(N);
-    for (int i = 0; i < N; ++i)
-    {
-        mesh.Node(i) = sourceMesh.Node(i);
-    }
-
-    // B. domains
-    // let's first create a table of material indices for the old domains
-    int NDOM = sourceMesh.Domains();
-    vector<int> LUT(NDOM);
-    for (int i = 0; i < NDOM; ++i)
-    {
-        FEMaterial* pm = sourceMesh.Domain(i).GetMaterial();
-        for (int j = 0; j < NMAT; ++j)
-        {
-            if (pm == fem.GetMaterial(j))
-            {
-                LUT[i] = j;
-                break;
-            }
-        }
-    }
-
-    // now allocate domains
-    for (int i = 0; i < NDOM; ++i)
-    {
-        FEDomain& dom = sourceMesh.Domain(i);
-        const char* sz = dom.GetTypeStr();
-
-        // create a new domain
-        FEDomain* pd = nullptr;
-        switch (dom.Class())
-        {
-            case FE_DOMAIN_SOLID:
-                pd = fecore_new<FESolidDomain>(sz, this);
-                break;
-            case FE_DOMAIN_SHELL:
-                pd = fecore_new<FEShellDomain>(sz, this);
-                break;
-            case FE_DOMAIN_BEAM:
-                pd = fecore_new<FEBeamDomain>(sz, this);
-                break;
-            case FE_DOMAIN_2D:
-                pd = fecore_new<FEDomain2D>(sz, this);
-                break;
-            case FE_DOMAIN_DISCRETE:
-                pd = fecore_new<FEDiscreteDomain>(sz, this);
-                break;
-        }
-        assert(pd);
-        pd->SetMaterial(GetMaterial(LUT[i]));
-
-        // copy domain data
-        pd->CopyFrom(&dom);
-
-        // add it to the mesh
-        mesh.AddDomain(pd);
-    }
-
-    // --- boundary conditions ---
-
-    int NDC = fem.BoundaryConditions();
-    for (int i = 0; i < NDC; ++i)
-    {
-        FEBoundaryCondition* pbc = fem.BoundaryCondition(i);
-        const char* sz = pbc->GetTypeStr();
-
-        FEBoundaryCondition* pnew = fecore_new<FEBoundaryCondition>(sz, this);
-        assert(pnew);
-
-        pnew->CopyFrom(pbc);
-
-        // add to model
-        AddBoundaryCondition(pnew);
-    }
-
-    // --- contact interfaces ---
-    int NCI = fem.SurfacePairConstraints();
-    for (int i = 0; i < NCI; ++i)
-    {
-        // get the next interaction
-        FESurfacePairConstraint* pci = fem.SurfacePairConstraint(i);
-        const char* sztype = pci->GetTypeStr();
-
-        // create a new contact interface
-        FESurfacePairConstraint* pnew = fecore_new<FESurfacePairConstraint>(sztype, this);
-        assert(pnew);
-
-        // create a copy
-        pnew->CopyFrom(pci);
-
-        // add the new interface
-        AddSurfacePairConstraint(pnew);
-
-        // add the surfaces to the surface list
-        mesh.AddSurface(pnew->GetSecondarySurface());
-        mesh.AddSurface(pnew->GetPrimarySurface());
-    }
-
-    // --- nonlinear constraints ---
-    int NLC = fem.NonlinearConstraints();
-    for (int i = 0; i < NLC; ++i)
-    {
-        // get the next constraint
-        FENLConstraint* plc = fem.NonlinearConstraint(i);
-        const char* sztype = plc->GetTypeStr();
-
-        // create a new nonlinear constraint
-        FENLConstraint* plc_new = fecore_new<FENLConstraint>(sztype, this);
-        assert(plc_new);
-
-        // create a copy
-        plc_new->CopyFrom(plc);
-
-        // add the nonlinear constraint
-        AddNonlinearConstraint(plc_new);
-
-        //// add the surface to the mesh (if any)
-        //      FESurfaceConstraint* psc = dynamic_cast<FESurfaceConstraint*>(plc_new);
-        //      if (psc)
-        //      {
-        //          FESurface* ps = psc->GetSurface();
-        //          if (ps) mesh.AddSurface(ps);
-        //      }
-    }
-
-    // --- Load curves ---
-    // copy load curves
-    int NLD = fem.LoadControllers();
-    for (int i = 0; i < NLD; ++i)
-    {
-        FELoadController* lc = fem.GetLoadController(i);
-        FELoadController* newlc = fecore_new<FELoadController>(lc->GetTypeStr(), this);
-        assert(newlc);
-        AddLoadController(newlc);
-    }
-
-    // copy linear constraints
-    if (fem.m_imp->m_LCM)
-    {
-        if (m_imp->m_LCM)
-            delete m_imp->m_LCM;
-        m_imp->m_LCM = new FELinearConstraintManager(this);
-        m_imp->m_LCM->CopyFrom(*fem.m_imp->m_LCM);
-    }
-
-    // copy output data
-    m_imp->m_plotData = fem.m_imp->m_plotData;
-
-    // TODO: copy all the properties
-    //	assert(false);
-}
-
-//-----------------------------------------------------------------------------
 // This function serializes data to a stream.
 // This is used for running and cold restarts.
 void FEModel::Impl::Serialize(DumpStream& ar)
@@ -2181,7 +1185,7 @@ void FEModel::Impl::Serialize(DumpStream& ar)
         // stream step data next
         ar& m_nStep;
         ar& m_Step;
-        ar& m_pStep;  // This must be streamed after m_Step
+        ar& mp_CurStep;  // This must be streamed after m_Step
 
         // serialize linear constraints
         if (m_LCM)

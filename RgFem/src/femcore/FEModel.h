@@ -44,12 +44,14 @@ class FEM_EXPORT FEModel: public FEObjectBase
 public:
 	FEModel(void);
 	virtual ~FEModel(void);
+    void Clear(); //do some memory manage
 
 	virtual bool Input(const char* szfile) = 0;
 
 	virtual bool Init() override;
 	virtual bool Solve();
 	bool IsSolved() const;
+    void Update();
 
 public:
 	
@@ -208,18 +210,6 @@ public:	// --- Model Loads ----
 	//! initialize model loads
 	bool InitModelLoads();
 
-public: // --- parameter functions ---
-
-	//! evaluate all load controllers at some time
-	void EvaluateLoadControllers(double time);
-
-	// evaluate all mesh data
-	void EvaluateDataGenerators(double time);
-
-	//! evaluate all load parameters
-	virtual bool EvaluateLoadParameters();
-
-	//! return a reference to the named parameter 
 public:	// --- Miscellaneous routines ---
 
 	//! call the callback function

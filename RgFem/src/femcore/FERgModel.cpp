@@ -1,11 +1,16 @@
 #include "FERgModel.h"
 
+#include "input/febio/FEBioImport.h"
+#include "input/febio/FEBioModelBuilder.h"
+
+#include "logger/log.h"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
 //-----------------------------------------------------------------------------
-BEGIN_PARAM_DEFINE(FERgModel, FEMechModel)
+BEGIN_PARAM_DEFINE(FERgModel, FEModel)
 ADD_PARAMETER(m_title, "title");
 ADD_PARAMETER(m_logLevel, "log_level");
 END_PARAM_DEFINE();
@@ -70,12 +75,6 @@ int FERgModel::GetLinearSolverTime()
 }
 
 //-----------------------------------------------------------------------------
-double FERgModel::GetEndTime() const
-{
-    return GetCurrentStep()->m_tend;
-}
-
-//-----------------------------------------------------------------------------
 //! This function performs one-time-initialization stuff. All the different
 //! modules are initialized here as well. This routine also performs some
 //! data checks
@@ -84,48 +83,48 @@ bool FERgModel::Init()
 {
     TimerTracker t(&m_InitTime);
 
-    // Open the logfile
-    if (m_logLevel != 0)
-    {
-        if (InitLogFile() == false)
-            return false;
-    }
+    //// Open the logfile
+    //if (m_logLevel != 0)
+    //{
+    //    if (InitLogFile() == false)
+    //        return false;
+    //}
 
-    FEBioPlotFile* pplt = nullptr;
-    m_lastUpdate = -1;
+    //FEBioPlotFile* pplt = nullptr;
+    //m_lastUpdate = -1;
 
-    // open plot database file
-    FEAnalysis* step = GetCurrentStep();
-    if (step->GetPlotLevel() != FE_PLOT_NEVER)
-    {
-        if (m_plot == 0)
-            InitPlotFile();
-    }
+    //// open plot database file
+    //FEAnalysis* step = GetCurrentStep();
+    //if (step->GetPlotLevel() != FE_PLOT_NEVER)
+    //{
+    //    if (m_plot == 0)
+    //        InitPlotFile();
+    //}
 
-    // see if a valid dump file name is defined.
-    const std::string& sdmp = GetDumpFileName();
-    if (sdmp.empty())
-    {
-        // if not, we take the input file name and set the extension to .dmp
-        char sz[1024] = {0};
-        strcpy(sz, GetInputFileName().c_str());
-        char* ch = strrchr(sz, '.');
-        if (ch)
-            *ch = 0;
-        strcat(sz, ".dmp");
-        SetDumpFilename(sz);
-    }
+    //// see if a valid dump file name is defined.
+    //const std::string& sdmp = GetDumpFileName();
+    //if (sdmp.empty())
+    //{
+    //    // if not, we take the input file name and set the extension to .dmp
+    //    char sz[1024] = {0};
+    //    strcpy(sz, GetInputFileName().c_str());
+    //    char* ch = strrchr(sz, '.');
+    //    if (ch)
+    //        *ch = 0;
+    //    strcat(sz, ".dmp");
+    //    SetDumpFilename(sz);
+    //}
 
-    // initialize data records
-    DataStore& dataStore = GetDataStore();
-    for (int i = 0; i < dataStore.Size(); ++i)
-    {
-        if (dataStore.GetDataRecord(i)->Initialize() == false)
-            return false;
-    }
+    //// initialize data records
+    //DataStore& dataStore = GetDataStore();
+    //for (int i = 0; i < dataStore.Size(); ++i)
+    //{
+    //    if (dataStore.GetDataRecord(i)->Initialize() == false)
+    //        return false;
+    //}
 
     // initialize model data
-    if (FEMechModel::Init() == false)
+    if (FEModel::Init() == false)
     {
         feLogError("Model initialization failed");
         return false;
@@ -165,21 +164,21 @@ bool FERgModel::Input(const char* szfile)
     else
         feLog("SUCCESS!\n");
 
-    // set the input file name
-    SetInputFilename(szfile);
+    //// set the input file name
+    //SetInputFilename(szfile);
 
-    // see if user redefined output filenames
-    if (fim.m_szdmp[0])
-        SetDumpFilename(fim.m_szdmp);
-    if (fim.m_szlog[0])
-        SetLogFilename(fim.m_szlog);
-    if (fim.m_szplt[0])
-        SetPlotFilename(fim.m_szplt);
+    //// see if user redefined output filenames
+    //if (fim.m_szdmp[0])
+    //    SetDumpFilename(fim.m_szdmp);
+    //if (fim.m_szlog[0])
+    //    SetLogFilename(fim.m_szlog);
+    //if (fim.m_szplt[0])
+    //    SetPlotFilename(fim.m_szplt);
 
-    // add the data records
-    int ND = (int)fim.m_data.size();
-    for (int i = 0; i < ND; ++i)
-        AddDataRecord(fim.m_data[i]);
+    //// add the data records
+    //int ND = (int)fim.m_data.size();
+    //for (int i = 0; i < ND; ++i)
+    //    AddDataRecord(fim.m_data[i]);
 
     // we're done reading
     return true;
