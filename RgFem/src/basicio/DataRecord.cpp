@@ -40,7 +40,7 @@ UnknownDataField::UnknownDataField(const char* sz) : std::runtime_error(sz)
 }
 
 //-----------------------------------------------------------------------------
-DataRecord::DataRecord(FEModel* pfem, int ntype) : FECoreBase(pfem), m_type(ntype)
+DataRecord::DataRecord(FEModel* pfem, int ntype) : FEObjectBase(pfem), m_type(ntype)
 {
 	m_nid = 0;
 	m_szname[0] = 0;
@@ -296,7 +296,7 @@ void DataRecord::Serialize(DumpStream &ar)
 }
 
 //=============================================================================
-FELogData::FELogData(FEModel* fem) : FECoreBase(fem)
+FELogData::FELogData(FEModel* fem) : FEObjectBase(fem)
 {
 
 }

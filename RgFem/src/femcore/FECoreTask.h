@@ -27,7 +27,7 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FECoreBase.h"
+#include "FEObjectBase.h"
 
 //-----------------------------------------------------------------------------
 class FEModel;
@@ -35,7 +35,7 @@ class FEModel;
 //-----------------------------------------------------------------------------
 // The FECoreTask class is the base class for all tasks.
 // A task is simply the highest level module which defines what the code will do.
-class FEM_EXPORT FECoreTask : public FECoreBase
+class FEM_EXPORT FECoreTask : public FEObjectBase
 {
 	FECORE_SUPER_CLASS(FETASK_ID)
 	FECORE_BASE_CLASS(FECoreTask)

@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #include "stdafx.h"
 #include "FECoreFactory.h"
-#include "FECoreBase.h"
+#include "FEObjectBase.h"
 #include "log.h"
 #include <assert.h>
 
@@ -56,10 +56,10 @@ void FECoreFactory::SetModuleID(unsigned int mid)
 }
 
 //-----------------------------------------------------------------------------
-FECoreBase* FECoreFactory::CreateInstance(FEModel* pfem) const
+FEObjectBase* FECoreFactory::CreateInstance(FEModel* pfem) const
 {
 	// create a new instance of this class
-	FECoreBase* pclass = Create(pfem); assert(pclass);
+	FEObjectBase* pclass = Create(pfem); assert(pclass);
 	if (pclass == 0) return 0;
 
 	// store the factory that created the class

@@ -1,44 +1,17 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-#include "stdafx.h"
 #include "FileImport.h"
-#include <FECore/FENodeDataMap.h>
-#include <FECore/FESurfaceMap.h>
-#include <FECore/FEFunction1D.h>
-#include <FECore/FEModel.h>
-#include <FECore/FEMaterial.h>
-#include <FECore/FEModelParam.h>
-#include <FECore/FESurface.h>
-#include <FECore/FESurfaceLoad.h>
-#include <FECore/FEBodyLoad.h>
-#include <FECore/FEDomainMap.h>
-#include <FECore/FEPointFunction.h>
-#include <FECore/FEGlobalData.h>
-#include <FECore/log.h>
+#include "femcore/FENodeDataMap.h"
+#include "femcore/FESurfaceMap.h"
+#include "femcore/FEFunction1D.h"
+#include "femcore/FEModel.h"
+#include "materials/FEMaterial.h"
+#include "femcore/FEModelParam.h"
+#include "femcore/FESurface.h"
+#include "femcore/FESurfaceLoad.h"
+#include "femcore/FEBodyLoad.h"
+#include "femcore/FEDomainMap.h"
+#include "femcore/FEPointFunction.h"
+#include "femcore/FEGlobalData.h"
+#include "logger/log.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -50,7 +23,7 @@ SOFTWARE.*/
 #endif
 
 //-----------------------------------------------------------------------------
-FEObsoleteParamHandler::FEObsoleteParamHandler(XMLTag& tag, FECoreBase* pc) : m_pc(pc) 
+FEObsoleteParamHandler::FEObsoleteParamHandler(XMLTag& tag, FEObjectBase* pc) : m_pc(pc) 
 {
 	m_root = tag.Name();
 }
@@ -100,8 +73,8 @@ void FEObsoleteParamHandler::MapParameters()
 			}
 			else
 			{
-				ParamString ps(p.newName);
-				FEParam* pp = m_pc->FindParameter(ps);
+				//ParamString ps(p.newName);
+                FEParam* pp = m_pc->FindParameter(p.newName);
 				if (pp == nullptr)
 				{
 					feLogErrorEx(fem, "Failed to map obsolete parameter %s. Could not find new parameter %s", p.oldName, p.newName);
@@ -198,7 +171,7 @@ void FEFileSection::value(XMLTag& tag, bool& b)
 }
 
 //-----------------------------------------------------------------------------
-void FEFileSection::value(XMLTag& tag, vec3d& v)
+void FEFileSection::value(XMLTag& tag, Vector3d& v)
 {
 	const char* sz = tag.szvalue();
 	int n = sscanf(sz, "%lg,%lg,%lg", &v.x, &v.y, &v.z);
@@ -206,23 +179,23 @@ void FEFileSection::value(XMLTag& tag, vec3d& v)
 }
 
 //-----------------------------------------------------------------------------
-void FEFileSection::value(XMLTag& tag, mat3d& m)
+void FEFileSection::value(XMLTag& tag, Matrix3d& m)
 {
 	const char* sz = tag.szvalue();
 	double xx, xy, xz, yx, yy, yz, zx, zy, zz;
 	int n = sscanf(sz, "%lg,%lg,%lg,%lg,%lg,%lg,%lg,%lg,%lg", &xx, &xy, &xz, &yx, &yy, &yz, &zx, &zy, &zz);
 	if (n != 9) throw XMLReader::XMLSyntaxError(tag.m_nstart_line);
-	m = mat3d(xx, xy, xz, yx, yy, yz, zx, zy, zz);
+	m = Matrix3d(xx, xy, xz, yx, yy, yz, zx, zy, zz);
 }
 
 //-----------------------------------------------------------------------------
-void FEFileSection::value(XMLTag& tag, mat3ds& m)
+void FEFileSection::value(XMLTag& tag, Matrix3ds& m)
 {
 	const char* sz = tag.szvalue();
 	double x, y, z, xy, yz, xz;
 	int n = sscanf(sz, "%lg,%lg,%lg,%lg,%lg,%lg", &x, &y, &z, &xy, &yz, &xz);
 	if (n != 6) throw XMLReader::XMLSyntaxError(tag.m_nstart_line);
-	m = mat3ds(x, y, z, xy, yz, xz);
+	m = Matrix3ds(x, y, z, xy, yz, xz);
 }
 
 //-----------------------------------------------------------------------------
@@ -568,7 +541,7 @@ std::vector<std::string> split_string(const std::string& s, char delim)
 
 //-----------------------------------------------------------------------------
 //! This function parses a parameter list
-bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* szparam, FECoreBase* pc, bool parseAttributes)
+bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* szparam, FEObjectBase* pc, bool parseAttributes)
 {
 	FEParam* pp = nullptr;
 	if (tag == "add_param")
@@ -656,14 +629,16 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 //				const char* sztype = tag.AttributeValue("type", true);
 //				if (sztype) throw XMLReader::InvalidAttribute(tag, "type");
 
-				value(tag, pp->value<vec3d   >());
+				value(tag, pp->value<Vector3d>());
 			}
 			break;
-		case FE_PARAM_MAT3D: value(tag, pp->value<mat3d   >()); break;
-		case FE_PARAM_MAT3DS: value(tag, pp->value<mat3ds  >()); break;
+		case FE_PARAM_MAT3D: value(tag, pp->value<Matrix3d   >()); break;
+		case FE_PARAM_MAT3DS: value(tag, pp->value<Matrix3ds  >()); break;
 		case FE_PARAM_TENS3DRS: value(tag, pp->value<tens3drs>()); break;
 		case FE_PARAM_STRING: value(tag, pp->cvalue()); break;
-		case FE_PARAM_STD_STRING: value(tag, pp->value<string>()); break;
+        case FE_PARAM_STD_STRING:
+                value(tag, pp->value<std::string>());
+                break;
 		case FE_PARAM_DATA_ARRAY:
 		{
 			// get the surface map
@@ -672,67 +647,67 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 			// Make sure that the tag is a leaf
 			if (!tag.isleaf()) throw XMLReader::InvalidValue(tag);
 
-			// read the surface map data
-			const char* szmap = tag.AttributeValue("surface_data", true);
-			if (szmap)
-			{
-				FESurfaceMap* pmap = dynamic_cast<FESurfaceMap*>(&map);
-				if (pmap == 0) throw XMLReader::InvalidTag(tag);
+			//// read the surface map data
+			//const char* szmap = tag.AttributeValue("surface_data", true);
+			//if (szmap)
+			//{
+			//	FESurfaceMap* pmap = dynamic_cast<FESurfaceMap*>(&map);
+			//	if (pmap == 0) throw XMLReader::InvalidTag(tag);
 
-				FESurfaceMap* pdata = dynamic_cast<FESurfaceMap*>(GetFEModel()->GetMesh().FindDataMap(szmap));
-				if (pdata == 0) throw XMLReader::InvalidAttributeValue(tag, "surface_data");
+			//	FESurfaceMap* pdata = dynamic_cast<FESurfaceMap*>(GetFEModel()->GetMesh().FindDataMap(szmap));
+			//	if (pdata == 0) throw XMLReader::InvalidAttributeValue(tag, "surface_data");
 
-				// make sure the types match
-				if (map.DataSize() != pdata->DataSize()) throw XMLReader::InvalidAttributeValue(tag, "surface_data", szmap);
+			//	// make sure the types match
+			//	if (map.DataSize() != pdata->DataSize()) throw XMLReader::InvalidAttributeValue(tag, "surface_data", szmap);
 
-				// copy data
-				*pmap = *pdata;
-			}
-			else
-			{
-				const char* szmap = tag.AttributeValue("node_data", true);
-				if (szmap)
-				{
-					FENodeDataMap* pmap = dynamic_cast<FENodeDataMap*>(&map);
-					if (pmap == 0) throw XMLReader::InvalidTag(tag);
+			//	// copy data
+			//	*pmap = *pdata;
+			//}
+			//else
+			//{
+			//	const char* szmap = tag.AttributeValue("node_data", true);
+			//	if (szmap)
+			//	{
+			//		FENodeDataMap* pmap = dynamic_cast<FENodeDataMap*>(&map);
+			//		if (pmap == 0) throw XMLReader::InvalidTag(tag);
 
-					FENodeDataMap* pdata = dynamic_cast<FENodeDataMap*>(GetFEModel()->GetMesh().FindDataMap(szmap));
-					if (pdata == 0) throw XMLReader::InvalidAttributeValue(tag, "node_data");
+			//		FENodeDataMap* pdata = dynamic_cast<FENodeDataMap*>(GetFEModel()->GetMesh().FindDataMap(szmap));
+			//		if (pdata == 0) throw XMLReader::InvalidAttributeValue(tag, "node_data");
 
-					// make sure the types match
-					if (map.DataSize() != pdata->DataSize()) throw XMLReader::InvalidAttributeValue(tag, "node_data", szmap);
+			//		// make sure the types match
+			//		if (map.DataSize() != pdata->DataSize()) throw XMLReader::InvalidAttributeValue(tag, "node_data", szmap);
 
-					// copy data
-					*pmap = *pdata;
-				}
-				else
-				{
-					FEDataType dataType = map.DataType();
-					if (dataType == FE_DOUBLE)
-					{
-						double v;
-						tag.value(v);
-						map.fillValue(v);
-					}
-					else if (dataType == FE_VEC2D)
-					{
-						double v[2] = { 0 };
-						tag.value(v, 2);
-						map.fillValue(vec2d(v[0], v[1]));
-					}
-					else if (dataType == FE_VEC3D)
-					{
-						double v[3] = { 0 };
-						tag.value(v, 3);
-						map.fillValue(vec3d(v[0], v[1], v[2]));
-					}
-				}
-			}
+			//		// copy data
+			//		*pmap = *pdata;
+			//	}
+			//	else
+			//	{
+			//		FEDataType dataType = map.DataType();
+			//		if (dataType == FE_DOUBLE)
+			//		{
+			//			double v;
+			//			tag.value(v);
+			//			map.fillValue(v);
+			//		}
+			//		else if (dataType == FE_VEC2D)
+			//		{
+			//			double v[2] = { 0 };
+			//			tag.value(v, 2);
+			//			map.fillValue(vec2d(v[0], v[1]));
+			//		}
+			//		else if (dataType == FE_Vector3d)
+			//		{
+			//			double v[3] = { 0 };
+			//			tag.value(v, 3);
+			//			map.fillValue(Vector3d(v[0], v[1], v[2]));
+			//		}
+			//	}
+			//}
 		};
 		break;
 		case FE_PARAM_STD_VECTOR_VEC2D:
 		{
-			std::vector<vec2d>& data = pp->value< std::vector<vec2d> >();
+            std::vector<Vector2d>& data = pp->value<std::vector<Vector2d>>();
 			data.clear();
 
 			double d[2];
@@ -741,7 +716,7 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 			{
 				int nread = tag.value(d, 2);
 				if (nread != 2) throw XMLReader::InvalidValue(tag);
-				data.push_back(vec2d(d[0], d[1]));
+                data.push_back(Vector2d(d[0], d[1]));
 				++tag;
 			}
 			while (!tag.isend());
@@ -752,10 +727,10 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 			// make sure this is leaf
 			if (tag.isempty()) throw XMLReader::InvalidValue(tag);
 
-			std::vector<string>& data = pp->value< std::vector<string> >();
+			std::vector<std::string>& data = pp->value< std::vector<std::string> >();
 
 			// Note that this parameter is read in item per item, not all at once!
-			string s;
+			std::string s;
 			tag.value(s);
 			data.push_back(s);
 		}
@@ -776,39 +751,39 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 				sztype = (is_number(szval) ? "const" : "math");
 			}
 
-			// allocate valuator
-			FEScalarValuator* val = fecore_new<FEScalarValuator>(sztype, GetFEModel());
-			if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
+			//// allocate valuator
+			//FEScalarValuator* val = fecore_new<FEScalarValuator>(sztype, GetFEModel());
+			//if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
-			// Figure out the item list
-			FEItemList* itemList = nullptr;
-			if (dynamic_cast<FESurfaceLoad*>(pc))
-			{
-				FESurfaceLoad* psl = dynamic_cast<FESurfaceLoad*>(pc);
-				itemList = psl->GetSurface().GetFacetSet();
-			}
+			//// Figure out the item list
+			//FEItemList* itemList = nullptr;
+			//if (dynamic_cast<FESurfaceLoad*>(pc))
+			//{
+			//	FESurfaceLoad* psl = dynamic_cast<FESurfaceLoad*>(pc);
+			//	itemList = psl->GetSurface().GetFacetSet();
+			//}
 
-			p.SetItemList(itemList);
+			//p.SetItemList(itemList);
 
-			// mapped values require special treatment
-			// The value is just the name of the map, but the problem is that 
-			// these maps may not be defined yet.
-			// So, we add them to the FEBioModel, which will process mapped 
-			// parameters after the rest of the file is processed
-			if (strcmp(sztype, "map") == 0)
-			{
-				GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
-			}
-			else {
-				// read the parameter list
-				ReadParameterList(tag, val);
-			}
+			//// mapped values require special treatment
+			//// The value is just the name of the map, but the problem is that 
+			//// these maps may not be defined yet.
+			//// So, we add them to the FEBioModel, which will process mapped 
+			//// parameters after the rest of the file is processed
+			//if (strcmp(sztype, "map") == 0)
+			//{
+			//	GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
+			//}
+			//else {
+			//	// read the parameter list
+			//	ReadParameterList(tag, val);
+			//}
 
-			// assign the valuator to the parameter
-			p.setValuator(val);
+			//// assign the valuator to the parameter
+			//p.setValuator(val);
 		}
 		break;
-		case FE_PARAM_VEC3D_MAPPED:
+		case FE_PARAM_Vector3d_MAPPED:
 		{
 			// get the model parameter
 			FEParamVec3& p = pp->value<FEParamVec3>();
@@ -824,32 +799,32 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 
 			if (sztype == 0) sztype = "vector";
 
-			// allocate valuator
-			FEVec3dValuator* val = fecore_new<FEVec3dValuator>(sztype, GetFEModel());
-			if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
+			//// allocate valuator
+			//FEVector3dValuator* val = fecore_new<FEVector3dValuator>(sztype, GetFEModel());
+			//if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
-			// mapped values require special treatment
-			// The value is just the name of the map, but the problem is that 
-			// these maps may not be defined yet.
-			// So, we add them to the FEBioModel, which will process mapped 
-			// parameters after the rest of the file is processed
-			if (strcmp(sztype, "map") == 0)
-			{
-				GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
-			}
-			else {
-				// read the parameter list
-				ReadParameterList(tag, val);
-			}
+			//// mapped values require special treatment
+			//// The value is just the name of the map, but the problem is that 
+			//// these maps may not be defined yet.
+			//// So, we add them to the FEBioModel, which will process mapped 
+			//// parameters after the rest of the file is processed
+			//if (strcmp(sztype, "map") == 0)
+			//{
+			//	GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
+			//}
+			//else {
+			//	// read the parameter list
+			//	ReadParameterList(tag, val);
+			//}
 
-			// assign the valuator to the parameter
-			p.setValuator(val);
+			//// assign the valuator to the parameter
+			//p.setValuator(val);
 		}
 		break;
-		case FE_PARAM_MAT3D_MAPPED:
+		case FE_PARAM_Matrix3d_MAPPED:
 		{
 			// get the model parameter
-			FEParamMat3d& p = pp->value<FEParamMat3d>();
+			FEParamMatrix3d& p = pp->value<FEParamMatrix3d>();
 
 			// get the type
 			const char* sztype = tag.AttributeValue("type", true);
@@ -858,61 +833,61 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 			// ignore user type
 			if (sztype && (strcmp(sztype, "user") == 0)) return true;
 
-			// allocate valuator
-			FEMat3dValuator* val = fecore_new<FEMat3dValuator>(sztype, GetFEModel());
-			if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
+			//// allocate valuator
+			//FEMatrix3dValuator* val = fecore_new<FEMatrix3dValuator>(sztype, GetFEModel());
+			//if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
-			// mapped values require special treatment
-			// The value is just the name of the map, but the problem is that 
-			// these maps may not be defined yet.
-			// So, we add them to the FEBioModel, which will process mapped 
-			// parameters after the rest of the file is processed
-			if (strcmp(sztype, "map") == 0)
-			{
-				GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
-			}
-			else {
-				// read the parameter list
-				ReadParameterList(tag, val);
-			}
+			//// mapped values require special treatment
+			//// The value is just the name of the map, but the problem is that 
+			//// these maps may not be defined yet.
+			//// So, we add them to the FEBioModel, which will process mapped 
+			//// parameters after the rest of the file is processed
+			//if (strcmp(sztype, "map") == 0)
+			//{
+			//	GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
+			//}
+			//else {
+			//	// read the parameter list
+			//	ReadParameterList(tag, val);
+			//}
 
-			// assign the valuator to the parameter
-			p.setValuator(val);
+			//// assign the valuator to the parameter
+			//p.setValuator(val);
 		}
 		break;
-		case FE_PARAM_MAT3DS_MAPPED:
+		case FE_PARAM_Matrix3dS_MAPPED:
 		{
 			// get the model parameter
-			FEParamMat3ds& p = pp->value<FEParamMat3ds>();
+			FEParamMatrix3ds& p = pp->value<FEParamMatrix3ds>();
 
 			// get the type
 			const char* sztype = tag.AttributeValue("type", true);
 			if (sztype == 0) sztype = "const";
 
-			// allocate valuator
-			FEMat3dsValuator* val = fecore_new<FEMat3dsValuator>(sztype, GetFEModel());
-			if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
+			//// allocate valuator
+			//FEMatrix3dsValuator* val = fecore_new<FEMatrix3dsValuator>(sztype, GetFEModel());
+			//if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
-			// mapped values require special treatment
-			// The value is just the name of the map, but the problem is that 
-			// these maps may not be defined yet.
-			// So, we add them to the FEBioModel, which will process mapped 
-			// parameters after the rest of the file is processed
-			if (strcmp(sztype, "map") == 0)
-			{
-				GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
-			}
-			else {
-				// read the parameter list
-				ReadParameterList(tag, val);
-			}
+			//// mapped values require special treatment
+			//// The value is just the name of the map, but the problem is that 
+			//// these maps may not be defined yet.
+			//// So, we add them to the FEBioModel, which will process mapped 
+			//// parameters after the rest of the file is processed
+			//if (strcmp(sztype, "map") == 0)
+			//{
+			//	GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
+			//}
+			//else {
+			//	// read the parameter list
+			//	ReadParameterList(tag, val);
+			//}
 
-			// assign the valuator to the parameter
-			p.setValuator(val);
+			//// assign the valuator to the parameter
+			//p.setValuator(val);
 
-			// do the initialization.
-			// TODO: Is this a good place to do this?
-			if (val->Init() == false) throw XMLReader::InvalidTag(tag);
+			//// do the initialization.
+			//// TODO: Is this a good place to do this?
+			//if (val->Init() == false) throw XMLReader::InvalidTag(tag);
 		}
 		break;		default:
 			assert(false);
@@ -1085,7 +1060,7 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 }
 
 //-----------------------------------------------------------------------------
-void FEFileSection::ReadAttributes(XMLTag& tag, FECoreBase* pc)
+void FEFileSection::ReadAttributes(XMLTag& tag, FEObjectBase* pc)
 {
 	FEParameterList& pl = pc->GetParameterList();
 
@@ -1137,151 +1112,152 @@ void FEFileSection::ReadAttributes(XMLTag& tag, FECoreBase* pc)
 
 //-----------------------------------------------------------------------------
 //! This function parses a parameter list
-bool FEFileSection::ReadParameter(XMLTag& tag, FECoreBase* pc, const char* szparam, bool parseAttributes)
+bool FEFileSection::ReadParameter(XMLTag& tag, FEObjectBase* pc, const char* szparam, bool parseAttributes)
 {
 	// get the parameter list
 	FEParameterList& pl = pc->GetParameterList();
 
 	// see if we can find this parameter
-	if (ReadParameter(tag, pl, szparam, pc, parseAttributes) == false)
+	if (!ReadParameter(tag, pl, szparam, pc, parseAttributes))
 	{
-		// if we get here, the parameter is not found.
-		// See if the parameter container has defined a property of this name
-		int n = pc->FindPropertyIndex(tag.Name());
-		if (n >= 0)
-		{
-			FEProperty* prop = pc->PropertyClass(n);
-
-			if (prop->IsReference())
-			{
-				// get the reference. It is either defined by the ref attribute
-				// or the value of the tag.
-				if (tag.isleaf() == false) throw XMLReader::InvalidValue(tag);
-
-				const char* szref = tag.AttributeValue("ref", true);
-				if (szref == nullptr) szref = tag.szvalue();
-
-				const char* sztag = tag.Name();
-
-				FEMesh& mesh = GetFEModel()->GetMesh();
-
-				// This property should reference an existing class
-				SUPER_CLASS_ID classID = prop->GetSuperClassID();
-/*				if (classID == FEITEMLIST_ID)
-				{
-					FENodeSet* nodeSet = mesh.FindNodeSet(szref);
-					if (nodeSet == nullptr) throw XMLReader::InvalidValue(tag);
-					prop->SetProperty(nodeSet);
-				}
-				else */if (classID == FESURFACE_ID)
-				{
-					FEModelBuilder* builder = GetBuilder();
-					FEFacetSet* facetSet = mesh.FindFacetSet(szref);
-					if (facetSet == nullptr) throw XMLReader::InvalidValue(tag);
-
-					FESurface* surface = fecore_alloc(FESurface, GetFEModel());
-					GetBuilder()->BuildSurface(*surface, *facetSet);
-					mesh.AddSurface(surface);
-
-					prop->SetProperty(surface);
-				}
-				else throw XMLReader::InvalidTag(tag);
-			}
-			else
-			{
-				// see if the property is already allocated
-				if ((prop->IsArray() == false) && (prop->get(0)))
-				{
-					// If so, let's just read the parameters
-					FECoreBase* pc = prop->get(0);
-					if (tag.isleaf() == false) ReadParameterList(tag, pc);
-				}
-				else
-				{
-					const char* sztype = tag.AttributeValue("type", true);
-
-					// If the type attribute is omitted we try the property's default type,
-					// otherwise assume the tag's name is the default type
-					if (sztype == nullptr)
-					{
-						if (prop->GetDefaultType()) sztype = prop->GetDefaultType();
-						else sztype = tag.Name();
-					}
-
-					// HACK for getting passed the old "user" fiber type.
-					if (strcmp(sztype, "user") == 0) sztype = "map";
-
-					// HACK for mapping load curves to FEFunction1D
-					const char* szlc = tag.AttributeValue("lc", true);
-					if (szlc && (tag.m_att.size() == 1) && (prop->GetSuperClassID() == FEFUNCTION1D_ID))
-					{
-						double v = 1;
-						tag.value(v);
-						FEPointFunction* f = fecore_alloc(FEPointFunction, GetFEModel()); assert(f);
-						prop->SetProperty(f);
-
-						int lc = atoi(szlc) - 1;
-						GetBuilder()->MapLoadCurveToFunction(f, lc, v);
-					}
-					else
-					{
-						// try to allocate the class
-						FECoreBase* pp = fecore_new<FECoreBase>(prop->GetSuperClassID(), sztype, GetFEModel());
-						if (pp == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
-
-						prop->SetProperty(pp);
-
-						// read the property data
-						if (tag.isleaf() == false)
-						{
-							ReadParameterList(tag, pp);
-						}
-						else if (tag.isempty() == false)
-						{
-							if ((tag.szvalue() != nullptr) && (tag.szvalue()[0] != 0))
-							{
-								// parse attributes first
-								ReadAttributes(tag, pp);
-
-								// There should be a parameter with the same name as the type
-								if (ReadParameter(tag, pp->GetParameterList(), sztype, pp) == false)
-									throw XMLReader::InvalidValue(tag);
-							}
-						}
-						else
-						{
-							// we get here if the property was defined with an empty tag.
-							// We should still validate it.
-							int NP = pp->PropertyClasses();
-							for (int i = 0; i < NP; ++i)
-							{
-								FEProperty* pi = pp->PropertyClass(i);
-								bool a = pi->IsRequired();
-								bool b = (pi->size() == 0);
-								if (a && b)
-								{
-									std::string name = pp->GetName();
-									if (name.empty()) name = prop->GetName();
-									throw FEBioImport::MissingProperty(name, pi->GetName());
-								}
-							}
-
-						}
-					}
-				}
-				return true;
-			}
-		}
-		else
-		{
-			// backward compatibility hack for older formats (< v 3.0)
-/*			if (strcmp(tag.Name(), "fiber") == 0)
-			{
-				return ReadParameter(tag, pc, "mat_axis", parseAttributes);
-			}
-			else return false;
-*/			return false;
-		}
+        return false;
+        //		// if we get here, the parameter is not found.
+//		// See if the parameter container has defined a property of this name
+//		int n = pc->FindPropertyIndex(tag.Name());
+//		if (n >= 0)
+//		{
+//			FEProperty* prop = pc->PropertyClass(n);
+//
+//			if (prop->IsReference())
+//			{
+//				// get the reference. It is either defined by the ref attribute
+//				// or the value of the tag.
+//				if (tag.isleaf() == false) throw XMLReader::InvalidValue(tag);
+//
+//				const char* szref = tag.AttributeValue("ref", true);
+//				if (szref == nullptr) szref = tag.szvalue();
+//
+//				const char* sztag = tag.Name();
+//
+//				FEMesh& mesh = GetFEModel()->GetMesh();
+//
+//				// This property should reference an existing class
+//				SUPER_CLASS_ID classID = prop->GetSuperClassID();
+///*				if (classID == FEITEMLIST_ID)
+//				{
+//					FENodeSet* nodeSet = mesh.FindNodeSet(szref);
+//					if (nodeSet == nullptr) throw XMLReader::InvalidValue(tag);
+//					prop->SetProperty(nodeSet);
+//				}
+//				else */if (classID == FESURFACE_ID)
+//				{
+//					FEModelBuilder* builder = GetBuilder();
+//					FEFacetSet* facetSet = mesh.FindFacetSet(szref);
+//					if (facetSet == nullptr) throw XMLReader::InvalidValue(tag);
+//
+//					FESurface* surface = fecore_alloc(FESurface, GetFEModel());
+//					GetBuilder()->BuildSurface(*surface, *facetSet);
+//					mesh.AddSurface(surface);
+//
+//					prop->SetProperty(surface);
+//				}
+//				else throw XMLReader::InvalidTag(tag);
+//			}
+//			else
+//			{
+//				// see if the property is already allocated
+//				if ((prop->IsArray() == false) && (prop->get(0)))
+//				{
+//					// If so, let's just read the parameters
+//					FEObjectBase* pc = prop->get(0);
+//					if (tag.isleaf() == false) ReadParameterList(tag, pc);
+//				}
+//				else
+//				{
+//					const char* sztype = tag.AttributeValue("type", true);
+//
+//					// If the type attribute is omitted we try the property's default type,
+//					// otherwise assume the tag's name is the default type
+//					if (sztype == nullptr)
+//					{
+//						if (prop->GetDefaultType()) sztype = prop->GetDefaultType();
+//						else sztype = tag.Name();
+//					}
+//
+//					// HACK for getting passed the old "user" fiber type.
+//					if (strcmp(sztype, "user") == 0) sztype = "map";
+//
+//					// HACK for mapping load curves to FEFunction1D
+//					const char* szlc = tag.AttributeValue("lc", true);
+//					if (szlc && (tag.m_att.size() == 1) && (prop->GetSuperClassID() == FEFUNCTION1D_ID))
+//					{
+//						double v = 1;
+//						tag.value(v);
+//						FEPointFunction* f = fecore_alloc(FEPointFunction, GetFEModel()); assert(f);
+//						prop->SetProperty(f);
+//
+//						int lc = atoi(szlc) - 1;
+//						GetBuilder()->MapLoadCurveToFunction(f, lc, v);
+//					}
+//					else
+//					{
+//						// try to allocate the class
+//						FEObjectBase* pp = fecore_new<FEObjectBase>(prop->GetSuperClassID(), sztype, GetFEModel());
+//						if (pp == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
+//
+//						prop->SetProperty(pp);
+//
+//						// read the property data
+//						if (tag.isleaf() == false)
+//						{
+//							ReadParameterList(tag, pp);
+//						}
+//						else if (tag.isempty() == false)
+//						{
+//							if ((tag.szvalue() != nullptr) && (tag.szvalue()[0] != 0))
+//							{
+//								// parse attributes first
+//								ReadAttributes(tag, pp);
+//
+//								// There should be a parameter with the same name as the type
+//								if (ReadParameter(tag, pp->GetParameterList(), sztype, pp) == false)
+//									throw XMLReader::InvalidValue(tag);
+//							}
+//						}
+//						else
+//						{
+//							// we get here if the property was defined with an empty tag.
+//							// We should still validate it.
+//							int NP = pp->PropertyClasses();
+//							for (int i = 0; i < NP; ++i)
+//							{
+//								FEProperty* pi = pp->PropertyClass(i);
+//								bool a = pi->IsRequired();
+//								bool b = (pi->size() == 0);
+//								if (a && b)
+//								{
+//									std::string name = pp->GetName();
+//									if (name.empty()) name = prop->GetName();
+//									throw FEBioImport::MissingProperty(name, pi->GetName());
+//								}
+//							}
+//
+//						}
+//					}
+//				}
+//				return true;
+//			}
+//		}
+//		else
+//		{
+//			// backward compatibility hack for older formats (< v 3.0)
+///*			if (strcmp(tag.Name(), "fiber") == 0)
+//			{
+//				return ReadParameter(tag, pc, "mat_axis", parseAttributes);
+//			}
+//			else return false;
+//*/			return false;
+//		}
 	}
 	return true;
 }
@@ -1303,7 +1279,7 @@ void FEFileSection::ReadParameterList(XMLTag& tag, FEParameterList& pl)
 }
 
 //-----------------------------------------------------------------------------
-void FEFileSection::ReadParameterList(XMLTag& tag, FECoreBase* pc)
+void FEFileSection::ReadParameterList(XMLTag& tag, FEObjectBase* pc)
 {
 	// parse attributes first
 	ReadAttributes(tag, pc);

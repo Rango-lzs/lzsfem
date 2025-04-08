@@ -25,10 +25,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 #include "FECoreClass.h"
 
-BEGIN_FECORE_CLASS(FECoreClass, FECoreBase)
+BEGIN_FECORE_CLASS(FECoreClass, FEObjectBase)
 END_FECORE_CLASS();
 
-FECoreClass::FECoreClass(FEModel* fem) : FECoreBase(fem)
+FECoreClass::FECoreClass(FEModel* fem) : FEObjectBase(fem)
 {
 
 }

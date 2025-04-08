@@ -24,13 +24,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 #pragma once
-#include "FECoreBase.h"
+#include "FEObjectBase.h"
 #include <vector>
 #include "matrix.h"
 
 class SparseMatrix;
 
-class FEM_EXPORT EigenSolver : public FECoreBase
+class FEM_EXPORT EigenSolver : public FEObjectBase
 {
 	FECORE_SUPER_CLASS(FEEIGENSOLVER_ID)
 	FECORE_BASE_CLASS(EigenSolver)

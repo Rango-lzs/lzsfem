@@ -1,9 +1,9 @@
 #pragma once
-#include "FECoreBase.h"
+#include "FEObjectBase.h"
 #include "FEM_EXPORT.h"
 
 // Generic base class for classes that don't fit in the super-class structure
-class FEM_EXPORT FECoreClass : public FECoreBase
+class FEM_EXPORT FECoreClass : public FEObjectBase
 {
 	FECORE_SUPER_CLASS(FECLASS_ID)
 

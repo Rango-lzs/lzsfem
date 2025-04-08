@@ -262,7 +262,7 @@ void FECoreKernel::SetAllocatorID(int alloc_id)
 //-----------------------------------------------------------------------------
 //! Create an object. An object is created by specifying the super-class id
 //! and the type-string. 
-FECoreBase* FECoreKernel::Create(int superClassID, const char* sztype, FEModel* pfem)
+FEObjectBase* FECoreKernel::Create(int superClassID, const char* sztype, FEModel* pfem)
 {
 	FECoreFactory* fac = FindFactoryClass(superClassID, sztype);
 	if (fac == nullptr) return nullptr;
@@ -272,7 +272,7 @@ FECoreBase* FECoreKernel::Create(int superClassID, const char* sztype, FEModel* 
 //-----------------------------------------------------------------------------
 //! Create an object. An object is created by specifying the super-class id
 //! and the type-string. 
-FECoreBase* FECoreKernel::Create(const char* szbase, const char* sztype, FEModel* pfem)
+FEObjectBase* FECoreKernel::Create(const char* szbase, const char* sztype, FEModel* pfem)
 {
 	if (szbase == nullptr) return nullptr;
 	if (sztype == nullptr) return nullptr;
@@ -347,7 +347,7 @@ FECoreBase* FECoreKernel::Create(const char* szbase, const char* sztype, FEModel
 
 //-----------------------------------------------------------------------------
 //! Create a specific class
-FECoreBase* FECoreKernel::CreateClass(const char* szclassName, FEModel* fem)
+FEObjectBase* FECoreKernel::CreateClass(const char* szclassName, FEModel* fem)
 {
 	std::vector<FECoreFactory*>::iterator pf;
 	for (pf = m_Fac.begin(); pf != m_Fac.end(); ++pf)
@@ -364,10 +364,10 @@ FECoreBase* FECoreKernel::CreateClass(const char* szclassName, FEModel* fem)
 
 //-----------------------------------------------------------------------------
 //! Create a class from a class descriptor
-FECoreBase* FECoreKernel::Create(int superClassID, FEModel* pfem, const FEClassDescriptor& cd)
+FEObjectBase* FECoreKernel::Create(int superClassID, FEModel* pfem, const FEClassDescriptor& cd)
 {
 	const FEClassDescriptor::ClassVariable* root = cd.Root();
-	FECoreBase* pc = (FECoreBase*)Create(superClassID, root->m_type.c_str(), pfem);
+	FEObjectBase* pc = (FEObjectBase*)Create(superClassID, root->m_type.c_str(), pfem);
 	if (pc == nullptr) return nullptr;
 	pc->SetParameters(cd);
 	return pc;
@@ -394,9 +394,9 @@ bool FECoreKernel::IsModuleActive(int moduleID)
 }
 
 //-----------------------------------------------------------------------------
-FECoreBase* FECoreKernel::CreateInstance(const FECoreFactory* fac, FEModel* fem)
+FEObjectBase* FECoreKernel::CreateInstance(const FECoreFactory* fac, FEModel* fem)
 {
-	FECoreBase* pc = fac->CreateInstance(fem);
+	FEObjectBase* pc = fac->CreateInstance(fem);
 	if ((m_blockEvents == false) && pc && (m_createHandlers.empty() == false))
 	{
 		for (int i = 0; i < m_createHandlers.size(); ++i)

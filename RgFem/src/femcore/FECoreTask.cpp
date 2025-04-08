@@ -30,7 +30,7 @@ SOFTWARE.*/
 #include "FECoreTask.h"
 
 //-----------------------------------------------------------------------------
-FECoreTask::FECoreTask(FEModel* fem) : FECoreBase(fem) 
+FECoreTask::FECoreTask(FEModel* fem) : FEObjectBase(fem) 
 {
 }
 

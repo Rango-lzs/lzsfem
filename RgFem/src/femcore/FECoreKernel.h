@@ -28,7 +28,7 @@ class FECreateHandler{
 public:
 	FECreateHandler() { m_moduleId = -1; }
 	virtual ~FECreateHandler() {}
-	virtual void handle(FECoreBase*) = 0;
+	virtual void handle(FEObjectBase*) = 0;
 
 	int GetModuleID() const { return m_moduleId; }
 	void SetModuleID(int n) { m_moduleId = n; }
@@ -62,16 +62,16 @@ public:
 	void RegisterFactory(FECoreFactory* ptf);
 
 	//! Create a specific using a superclass ID and an alias
-	FECoreBase* Create(int superClassID, const char* szalias, FEModel* pfem);
+	FEObjectBase* Create(int superClassID, const char* szalias, FEModel* pfem);
 
 	//! Create a class from its base class name and type string
-	FECoreBase* Create(const char* baseClassName, const char* typeStr, FEModel* pfem);
+	FEObjectBase* Create(const char* baseClassName, const char* typeStr, FEModel* pfem);
 
 	//! Create a specific class
-	FECoreBase* CreateClass(const char* szclassName, FEModel* fem);
+	FEObjectBase* CreateClass(const char* szclassName, FEModel* fem);
 
 	//! Create a class from a class descriptor
-	FECoreBase* Create(int superClassID, FEModel* pfem, const FEClassDescriptor& cd);
+	FEObjectBase* Create(int superClassID, FEModel* pfem, const FEClassDescriptor& cd);
 
 	//! count the number of registered classes with a given super-class id
 	int Count(SUPER_CLASS_ID sid);
@@ -106,7 +106,7 @@ public:
 	//! generate a allocator ID
 	int GenerateAllocatorID();
 
-	FECoreBase* CreateInstance(const FECoreFactory* fac, FEModel* fem);
+	FEObjectBase* CreateInstance(const FECoreFactory* fac, FEModel* fem);
 
 	bool IsModuleActive(int moduleID);
 
@@ -210,7 +210,7 @@ public:
 		FECoreKernel& fecore = FECoreKernel::GetInstance();
 		fecore.RegisterFactory(this);
 	}
-	FECoreBase* Create(FEModel* pfem) const { return new T(pfem); }
+	FEObjectBase* Create(FEModel* pfem) const { return new T(pfem); }
 };
 
 //-----------------------------------------------------------------------------
@@ -240,7 +240,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // Create an instance of a class.
-// This assumes that TBase is derived from FECoreBase and defines a class ID. 
+// This assumes that TBase is derived from FEObjectBase and defines a class ID. 
 template <typename TBase> inline TBase* fecore_new(const char* sztype, FEModel* pfem)
 {
 	FECoreKernel& fecore = FECoreKernel::GetInstance();
@@ -250,7 +250,7 @@ template <typename TBase> inline TBase* fecore_new(const char* sztype, FEModel* 
 
 //-----------------------------------------------------------------------------
 // Create an instance of a class.
-// This assumes that TBase is derived from FECoreBase and defines a class ID. 
+// This assumes that TBase is derived from FEObjectBase and defines a class ID. 
 template <typename TBase> inline TBase* fecore_new(int classIndex, FEModel* pfem)
 {
 	FECoreKernel& fecore = FECoreKernel::GetInstance();
@@ -288,7 +288,7 @@ template <typename T, SUPER_CLASS_ID sid> class FEPluginFactory_T : public FECor
 {
 public:
 	FEPluginFactory_T(const char* sz) : FECoreFactory(sid, nullptr, sz, nullptr){}
-	FECoreBase* Create(FEModel* pfem) const { return new T(pfem); }
+	FEObjectBase* Create(FEModel* pfem) const { return new T(pfem); }
 };
 
 //------------------------------------------------------------------------------

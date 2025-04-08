@@ -23,7 +23,7 @@ enum SHELL_FORMULATION {
 //! is derived from.
 enum SUPER_CLASS_ID {
 	FEINVALID_ID,					// an invalid ID
-	FEOBJECT_ID,					// derived from FECoreBase (TODO: work in progress)
+	FEOBJECT_ID,					// derived from FEObjectBase (TODO: work in progress)
 	FETASK_ID,                   	// derived from FECoreTask
 	FESOLVER_ID,                 	// derived from FESolver
 	FEMATERIAL_ID,               	// derived from FEMaterial

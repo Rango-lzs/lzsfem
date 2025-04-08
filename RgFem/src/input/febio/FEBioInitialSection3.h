@@ -23,16 +23,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
-#include "stdafx.h"
-#include "EigenSolver.h"
-#include "fecore_enum.h"
 
-EigenSolver::EigenSolver(FEModel* fem) : FEObjectBase(fem)
+
+#pragma once
+#include "FEBioImport.h"
+
+//-----------------------------------------------------------------------------
+// Initial Section
+class FEBioInitialSection3 : public FEFileSection
 {
-
-}
-
-bool EigenSolver::Init()
-{
-	return true;
-}
+public:
+	FEBioInitialSection3(FEFileImport* pim);
+	void Parse(XMLTag& tag);
+	void ParseIC(XMLTag& tag);
+};
