@@ -8,10 +8,13 @@
 #include "femcore/FESurface.h"
 #include "femcore/FESurfaceLoad.h"
 #include "femcore/FEBodyLoad.h"
-#include "femcore/FEDomainMap.h"
+#include "femcore/Domain/FEDomainMap.h"
 #include "femcore/FEPointFunction.h"
 #include "femcore/FEGlobalData.h"
 #include "logger/log.h"
+
+#include "datastructure/tens3d.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -783,7 +786,7 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 			//p.setValuator(val);
 		}
 		break;
-		case FE_PARAM_Vector3d_MAPPED:
+		case FE_PARAM_VEC3D_MAPPED:
 		{
 			// get the model parameter
 			FEParamVec3& p = pp->value<FEParamVec3>();
@@ -821,10 +824,10 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 			//p.setValuator(val);
 		}
 		break;
-		case FE_PARAM_Matrix3d_MAPPED:
+		case FE_PARAM_MAT3D_MAPPED:
 		{
 			// get the model parameter
-			FEParamMatrix3d& p = pp->value<FEParamMatrix3d>();
+			FEParamMat3d& p = pp->value<FEParamMat3d>();
 
 			// get the type
 			const char* sztype = tag.AttributeValue("type", true);
@@ -855,10 +858,10 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 			//p.setValuator(val);
 		}
 		break;
-		case FE_PARAM_Matrix3dS_MAPPED:
+		case FE_PARAM_MAT3DS_MAPPED:
 		{
 			// get the model parameter
-			FEParamMatrix3ds& p = pp->value<FEParamMatrix3ds>();
+            FEParamMat3ds& p = pp->value<FEParamMat3ds>();
 
 			// get the type
 			const char* sztype = tag.AttributeValue("type", true);
@@ -922,9 +925,9 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 				}
 				else if (strcmp(sztype, "math") == 0)
 				{
-					string sval = tag.szvalue();
+					std::string sval = tag.szvalue();
 
-					vector<string> s = split_string(sval, ',');
+					std::vector<std::string> s = split_string(sval, ',');
 					if (s.size() != pp->dim()) throw XMLReader::InvalidValue(tag);
 
 					for (int i = 0; i < pp->dim(); ++i)
@@ -937,9 +940,9 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 				}
 				else if (strcmp(sztype, "map") == 0)
 				{ 
-					string sval = tag.szvalue();
+					std::string sval = tag.szvalue();
 
-					vector<string> s = split_string(sval, ',');
+					std::vector<std::string> s = split_string(sval, ',');
 					if (s.size() != pp->dim()) throw XMLReader::InvalidValue(tag);
 
 					for (int i = 0; i < pp->dim(); ++i)
@@ -995,7 +998,7 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 					}
 					else if (strcmp(sztype, "math") == 0)
 					{
-						string sval = tag.szvalue();
+                        std::string sval = tag.szvalue();
 
 						FEParamDouble& pi = pp->value<FEParamDouble>(n);
 						FEMathValue* v = fecore_alloc(FEMathValue, GetFEModel());
@@ -1307,23 +1310,23 @@ void FEFileSection::ReadParameterList(XMLTag& tag, FEObjectBase* pc)
 		if (ReadParameter(tag, pc, 0, false) == false)
 		{
 			// try a parameter with the type string as name
-			if (ReadParameter(tag, pc, pc->GetTypeStr(), false) == false)
+            if (ReadParameter(tag, pc, pc->GetName().c_str(), false) == false)
 				throw XMLReader::InvalidTag(tag);
 		}
 	}
 
-	// validate the class
-	int NP = pc->PropertyClasses();
-	for (int i = 0; i<NP; ++i)
-	{
-		FEProperty* pi = pc->PropertyClass(i);
-		bool a = pi->IsRequired();
-		bool b = (pi->size() == 0);
-		if (a && b)
-		{
-			throw FEBioImport::MissingProperty(pc->GetName(), pi->GetName());
-		}
-	}
+	//// validate the class
+	//int NP = pc->PropertyClasses();
+	//for (int i = 0; i<NP; ++i)
+	//{
+	//	FEProperty* pi = pc->PropertyClass(i);
+	//	bool a = pi->IsRequired();
+	//	bool b = (pi->size() == 0);
+	//	if (a && b)
+	//	{
+	//		throw FEBioImport::MissingProperty(pc->GetName(), pi->GetName());
+	//	}
+	//}
 
 }
 
@@ -1351,7 +1354,7 @@ void FEFileSectionMap::Parse(XMLTag& tag)
 	++tag;
 	while (!tag.isend())
 	{
-		std::map<string, FEFileSection*>::iterator is = find(tag.Name());
+		std::map<std::string, FEFileSection*>::iterator is = find(tag.Name());
 		if (is != end()) is->second->Parse(tag);
 		else throw XMLReader::InvalidTag(tag);
 

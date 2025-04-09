@@ -106,7 +106,7 @@ private:
 
 //-----------------------------------------------------------------------------
 // Base class for XML sections parsers
-class FEBIOXML_API FEFileSection
+class FEM_EXPORT FEFileSection
 {
 public:
     FEFileSection(FEFileImport* pim)

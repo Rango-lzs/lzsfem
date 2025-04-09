@@ -27,16 +27,45 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FEModelComponent.h"
+#include "FEDataMap.h"
 
-//-----------------------------------------------------------------------------
-//! This class can be used to define global model data and will be placed in the
-//! global date section of the FEModel class
-class FEM_EXPORT FEGlobalData : public FEModelComponent
+class FENodeSet;
+
+class FECORE_API FENodeDataMap : public FEDataMap
 {
-    META_CLASS_DECLARE(FEGlobalData, FEModelComponent);
+public:
+	FENodeDataMap();
+	FENodeDataMap(FEDataType dataType);
+
+	void Create(const FENodeSet* nodeSet, double val = 0.0);
+
+	const FENodeSet* GetNodeSet() const;
+
+	// return the item list associated with this map
+	FEItemList* GetItemList() override;
+
+	void Serialize(DumpStream& ar) override;
 
 public:
-	//! constructor
-	FEGlobalData(FEModel* fem);
+	void setValue(int n, double v) override;
+	void setValue(int n, const vec2d& v) override;
+	void setValue(int n, const vec3d& v) override;
+	void setValue(int n, const mat3d& v) override;
+	void setValue(int n, const mat3ds& v) override;
+
+	double getValue(int n) const;
+
+	void fillValue(double v) override;
+	void fillValue(const vec2d& v) override;
+	void fillValue(const vec3d& v) override;
+	void fillValue(const mat3d& v) override;
+	void fillValue(const mat3ds& v) override;
+
+	double value(const FEMaterialPoint& mp) override;
+	vec3d valueVec3d(const FEMaterialPoint& mp) override;
+	mat3d valueMat3d(const FEMaterialPoint& mp) override;
+	mat3ds valueMat3ds(const FEMaterialPoint& mp) override;
+
+private:
+	const FENodeSet*	m_nodeSet;
 };

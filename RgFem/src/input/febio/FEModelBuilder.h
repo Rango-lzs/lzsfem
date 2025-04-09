@@ -27,7 +27,7 @@ SOFTWARE.*/
 
 
 #pragma once
-#include <FECore/FEModel.h>
+#include "femcore/FEModel.h"
 #include "febioxml_api.h"
 #include "FEBModel.h"
 #include <string>

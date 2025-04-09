@@ -26,17 +26,32 @@ SOFTWARE.*/
 
 
 
-#pragma once
-#include "FEModelComponent.h"
+#include "stdafx.h"
+#include "FEDataMap.h"
+#include "fecore_type.h"
+#include "DumpStream.h"
 
 //-----------------------------------------------------------------------------
-//! This class can be used to define global model data and will be placed in the
-//! global date section of the FEModel class
-class FEM_EXPORT FEGlobalData : public FEModelComponent
-{
-    META_CLASS_DECLARE(FEGlobalData, FEModelComponent);
+FEDataMap::FEDataMap(FEDataMapType mapType, FEDataType dataType) : FEDataArray(mapType, dataType) {}
 
-public:
-	//! constructor
-	FEGlobalData(FEModel* fem);
-};
+//-----------------------------------------------------------------------------
+FEDataMap::FEDataMap(const FEDataMap& map) : FEDataArray(map) {}
+
+//-----------------------------------------------------------------------------
+void FEDataMap::SetName(const std::string& name)
+{
+	m_name = name;
+}
+
+//-----------------------------------------------------------------------------
+const std::string& FEDataMap::GetName() const { return m_name; }
+
+//-----------------------------------------------------------------------------
+void FEDataMap::Serialize(DumpStream& ar)
+{
+	FEDataArray::Serialize(ar);
+	if (ar.IsShallow() == false)
+	{
+		ar & m_name;
+	}
+}

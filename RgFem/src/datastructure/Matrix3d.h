@@ -1,14 +1,14 @@
 #pragma once
+#include "datastructure/Vector3d.h"
+#include "datastructure/Matrix2d.h"
 #include <assert.h>
-#include "Vector3d.h"
-#include "Matrix2d.h"
-
 //-----------------------------------------------------------------------------
 // The following classes are defined in this file
 class Matrix3d;	// general 3D Matrixrix of doubles
 class Matrix3ds;	// symmetric 3D Matrixrix of doubles
 class Matrix3da;	// anti-symmetric 3D Matrixrix of doubles
 class Matrix3dd;	// diagonal Matrixrix of doubles
+class Matrix2d;
 
 
 using StressTensor = Matrix3ds;
@@ -203,9 +203,9 @@ public:
     double invert(Matrix3ds& Ai);
 	
 	// determine eigen values and vectors
-	FEM_EXPORT void eigen(double d[3], Vector3d r[3] = 0) const;
-	FEM_EXPORT void exact_eigen(double l[3]) const;
-	FEM_EXPORT void eigen2(double d[3], Vector3d r[3] = 0) const;
+	void eigen(double d[3], Vector3d r[3] = 0) const;
+	void exact_eigen(double l[3]) const;
+	void eigen2(double d[3], Vector3d r[3] = 0) const;
 
 	// L2-norm 
 	double norm() const;
@@ -217,7 +217,7 @@ public:
 	double effective_norm() const;
 
 	// the "max shear" value
-	FEM_EXPORT double max_shear() const;
+	double max_shear() const;
 
 protected:
 	double m[6];	// stores data in the order xx, xy, yy, xz, yz, zz
@@ -427,8 +427,8 @@ public:
 	double dotdot(const Matrix3d& T) const;
 
 	// polar decomposition
-	FEM_EXPORT void right_polar(Matrix3d& R, Matrix3ds& U) const;
-	FEM_EXPORT void left_polar(Matrix3ds& V, Matrix3d& R) const;
+	void right_polar(Matrix3d& R, Matrix3ds& U) const;
+	void left_polar(Matrix3ds& V, Matrix3d& R) const;
 
 	// return identity Matrixrix
 	static Matrix3d identity() { return Matrix3d(1,0,0, 0,1,0, 0,0,1); }
@@ -557,9 +557,9 @@ public:
 		return Matrix3fs(x / g, y / g, z / g, xy / g, yz / g, xz / g);
 	}
 
-	vec3f operator * (vec3f& r)
+	Vector3f operator*(Vector3f& r)
 	{
-		return vec3f(
+        return Vector3f(
 			x * r.x + xy * r.y + xz * r.z,
 			xy * r.x + y * r.y + yz * r.z,
 			xz * r.x + yz * r.y + z * r.z);
@@ -577,19 +577,19 @@ public:
 	}
 
 	// principle values
-	FEM_EXPORT void Principals(float e[3]) const;
+	void Principals(float e[3]) const;
 
 	// principle directions
-	FEM_EXPORT vec3f PrincDirection(int l);
+	Vector3f PrincDirection(int l);
 
 	// deviatroric principle values
-	FEM_EXPORT void DeviatoricPrincipals(float e[3]) const;
+	void DeviatoricPrincipals(float e[3]) const;
 
 	// max-shear value
-	FEM_EXPORT float MaxShear() const;
+	float MaxShear() const;
 
 	// eigen-vectors and values
-	FEM_EXPORT void eigen(vec3f e[3], float l[3]) const;
+    void eigen(Vector3f e[3], float l[3]) const;
 
 	// trace
 	float tr() const { return x + y + z; }
@@ -608,7 +608,7 @@ public:
 	float xy, yz, xz;
 };
 
-FEM_EXPORT double fractional_anisotropy(const Matrix3fs& m);
+double fractional_anisotropy(const Matrix3fs& m);
 
 ///////////////////////////////////////////////////////////////////
 // Matrix3f
@@ -651,9 +651,9 @@ public:
 		return a;
 	}
 
-	vec3f operator * (const vec3f& a) const
+	Vector3f operator*(const Vector3f& a) const
 	{
-		return vec3f(
+        return Vector3f(
 			d[0][0] * a.x + d[0][1] * a.y + d[0][2] * a.z,
 			d[1][0] * a.x + d[1][1] * a.y + d[1][2] * a.z,
 			d[2][0] * a.x + d[2][1] * a.y + d[2][2] * a.z
@@ -704,9 +704,9 @@ public:
 		d[2][0] = d[2][1] = d[2][2] = 0.f;
 	}
 
-	vec3f col(int i) const
+	Vector3f col(int i) const
 	{
-		vec3f r;
+        Vector3f r;
 		switch (i)
 		{
 		case 0: r.x = d[0][0]; r.y = d[1][0]; r.z = d[2][0]; break;
@@ -716,9 +716,9 @@ public:
 		return r;
 	}
 
-	vec3f row(int i) const
+	Vector3f row(int i) const
 	{
-		vec3f r;
+        Vector3f r;
 		switch (i)
 		{
 		case 0: r.x = d[0][0]; r.y = d[0][1]; r.z = d[0][2]; break;

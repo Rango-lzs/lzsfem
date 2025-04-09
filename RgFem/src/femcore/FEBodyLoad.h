@@ -27,16 +27,45 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FEModelComponent.h"
+#include "FEModelLoad.h"
+#include "FEDomain.h"
+#include "FEDomainList.h"
+#include "FESurface.h"
 
 //-----------------------------------------------------------------------------
-//! This class can be used to define global model data and will be placed in the
-//! global date section of the FEModel class
-class FEM_EXPORT FEGlobalData : public FEModelComponent
+// forward declaration of FEModel class
+class FEModel;
+class FELinearSystem;
+
+//-----------------------------------------------------------------------------
+//! Base class for body-loads
+class FECORE_API FEBodyLoad : public FEModelLoad
 {
-    META_CLASS_DECLARE(FEGlobalData, FEModelComponent);
+	FECORE_BASE_CLASS(FEBodyLoad)
 
 public:
-	//! constructor
-	FEGlobalData(FEModel* fem);
+	FEBodyLoad(FEModel* pfem);
+	virtual ~FEBodyLoad();
+
+	//! initialization
+	bool Init() override;
+
+	//! Serialization
+	void Serialize(DumpStream& ar) override;
+
+public:
+	//! return number of domains this load is applied to
+	int Domains() const;
+
+	//! return a domain 
+	FEDomain* Domain(int i);
+
+	//! add a domain to which to apply this load
+	void SetDomainList(FEElementSet* elset);
+
+	//! get the domain list
+	FEDomainList& GetDomainList();
+    
+private:
+	FEDomainList	m_dom;	//!< list of domains to which to apply the body load
 };

@@ -40,7 +40,7 @@ bool MetaClass::isKindOf(const MetaClass* pParent) const
 	return false;
 }
 
-MetaObject* MetaClass::create()
+MetaObject* MetaClass::create() const
 {
 	return m_constructor();
 }

@@ -31,7 +31,7 @@ public:
     const MetaClass* parent() const;
     bool isKindOf(const MetaClass* pParent) const;
 
-    MetaObject* create();
+    MetaObject* create() const;
 
 private:
     std::string m_name;

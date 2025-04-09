@@ -26,17 +26,5 @@ SOFTWARE.*/
 
 
 
-#pragma once
-#include "FEModelComponent.h"
-
-//-----------------------------------------------------------------------------
-//! This class can be used to define global model data and will be placed in the
-//! global date section of the FEModel class
-class FEM_EXPORT FEGlobalData : public FEModelComponent
-{
-    META_CLASS_DECLARE(FEGlobalData, FEModelComponent);
-
-public:
-	//! constructor
-	FEGlobalData(FEModel* fem);
-};
+#include "stdafx.h"
+#include "tens3d.h"
