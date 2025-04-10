@@ -13,6 +13,7 @@
 // Forward declarations
 class FEModel;
 class FEFileImport;
+class tens3drs;
 
 //-----------------------------------------------------------------------------
 // Base class for FEBio import exceptions

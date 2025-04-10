@@ -1,9 +1,9 @@
 #pragma once
-#include "FEM_EXPORT.h"
-#include "FEItemList.h"
-#include "FEElement.h"
-#include "FEDomainList.h"
-#include "FENodeList.h"
+
+#include "femcore/FEItemList.h"
+#include "elements/RgElement.h"
+#include "femcore/Domain/FEDomainList.h"
+#include "femcore/FENodeList.h"
 #include <vector>
 #include <string>
 

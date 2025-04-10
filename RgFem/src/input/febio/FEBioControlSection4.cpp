@@ -1,23 +1,24 @@
 #include "FEBioControlSection4.h"
-#include "FECore/FEAnalysis.h"
-#include "FECore/FEModel.h"
-#include "FECore/FECoreKernel.h"
+
+#include "femcore/FEAnalysis/FEAnalysis.h"
+#include "femcore/FEModel.h"
 
 //-----------------------------------------------------------------------------
-FEBioControlSection4::FEBioControlSection4(FEFileImport* pim) : FEFileSection(pim)
+FEBioControlSection4::FEBioControlSection4(FEFileImport* pim)
+    : FEFileSection(pim)
 {
 }
 
 //-----------------------------------------------------------------------------
 void FEBioControlSection4::Parse(XMLTag& tag)
 {
-	// get the step (don't allocate solver)
-	FEAnalysis* pstep = GetBuilder()->GetStep(false);
-	if (pstep == 0)
-	{
-		throw XMLReader::InvalidTag(tag);
-	}
+    // get the step (don't allocate solver)
+    FEAnalysis* pstep = GetBuilder()->GetStep(false);
+    if (pstep == 0)
+    {
+        throw XMLReader::InvalidTag(tag);
+    }
 
-	// read the step parameters
-	ReadParameterList(tag, pstep);
+    // read the step parameters
+    ReadParameterList(tag, pstep);
 }

@@ -26,6 +26,7 @@ class FEAnalysis;
 class FESurfacePairConstraint;
 class FEModelLoad;
 class FEMesh;
+class FEMaterial;
 class FELinearConstraintManager;
 class FEGlobalMatrix;
 class FETimeInfo;

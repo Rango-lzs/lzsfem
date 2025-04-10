@@ -1,45 +1,16 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEBioOutputSection.h"
-#include <FECore/NodeDataRecord.h>
-#include <FECore/FaceDataRecord.h>
-#include <FECore/ElementDataRecord.h>
-#include <FEBioMech/ObjectDataRecord.h>
-#include <FECore/NLConstraintDataRecord.h>
-#include <FECore/SurfaceDataRecord.h>
-#include <FECore/DomainDataRecord.h>
-#include <FECore/FEModelDataRecord.h>
-#include <FECore/FEModel.h>
-#include <FECore/FSPath.h>
-#include <FECore/FEPlotDataStore.h>
-#include <FECore/FESurface.h>
+#include <femcore/NodeDataRecord.h>
+#include <femcore/FaceDataRecord.h>
+#include <femcore/ElementDataRecord.h>
+#include <femcore/ObjectDataRecord.h>
+#include <femcore/NLConstraintDataRecord.h>
+#include <femcore/SurfaceDataRecord.h>
+#include <femcore/DomainDataRecord.h>
+#include <femcore/FEModelDataRecord.h>
+#include <femcore/FEModel.h>
+#include <femcore/FSPath.h>
+#include <femcore/FEPlotDataStore.h>
+#include <femcore/FESurface.h>
 
 bool string_to_int_vector(const char* szlist, std::vector<int>& list)
 {
@@ -172,7 +143,7 @@ void FEBioOutputSection::ParseLogfile(XMLTag &tag)
 				FENodeSet* pns = mesh.FindNodeSet(sz);
 				if (pns == 0) throw XMLReader::InvalidAttributeValue(tag, sztmp, sz);
 
-				vector<int> items;
+				std::vector<int> items;
 				int n = pns->Size();
 				assert(n);
 				items.resize(n);
@@ -223,7 +194,7 @@ void FEBioOutputSection::ParseLogfile(XMLTag &tag)
 			const char* sz = tag.AttributeValue(sztmp, true);
 			if (sz)
 			{
-				vector<int> dummy;
+				std::vector<int> dummy;
 				FEElementSet* pes = mesh.FindElementSet(sz);
 				if (pes == 0) throw XMLReader::InvalidAttributeValue(tag, sztmp, sz);
 				pdr->SetItemList(pes, dummy);
@@ -346,7 +317,7 @@ void FEBioOutputSection::ParsePlotfile(XMLTag &tag)
 				const char* szt = tag.AttributeValue("type");
 
 				// get the item list
-				vector<int> item;
+				std::vector<int> item;
 				if (tag.isempty() == false) tag.value(item);
 
                 // see if a surface is referenced

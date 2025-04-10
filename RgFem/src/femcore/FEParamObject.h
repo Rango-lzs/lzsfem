@@ -5,6 +5,7 @@
 #include "femcore/fem_export.h"
 
 #include <assert.h>
+#include <vector>
 #include <list>
 #include <memory>
 #include <stdio.h>
@@ -12,11 +13,13 @@
 class DumpStream;
 class FEParameterList;
 class FEParam;
+class FEParamType;
 class RANGE;
 class Vector2d;
 class Vector3d;
 class Matrix3d;
 class Matrix3ds;
+class tens3drs;
 class FEParamDouble;
 class FEParamVec3;
 class FEParamMat3d;
@@ -90,7 +93,7 @@ public:
     FEParam* AddParameter(std::vector<double>& v, const char* sz);
     FEParam* AddParameter(std::vector<Vector2d>& v, const char* sz);
     FEParam* AddParameter(std::vector<std::string>& v, const char* sz);
-    FEParam* AddParameter(FEMaterialPointProperty& v, const char* sz);
+    //FEParam* AddParameter(FEMaterialPointProperty& v, const char* sz);
 
     FEParam* AddParameter(int& v, const RANGE& rng, const char* sz);
     FEParam* AddParameter(double& v, const RANGE& rng, const char* sz);

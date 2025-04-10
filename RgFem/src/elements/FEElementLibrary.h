@@ -3,6 +3,7 @@
 #include <vector>
 #include "femcore/fecore_enum.h"
 #include "femcore/fem_export.h"
+#include "elements/RgElemTypeDefine.h"
 
 class FEElement;
 class FEElementTraits;
@@ -30,13 +31,13 @@ public:
 	static FEElementTraits* GetElementTraits(int ntype);
 
 	//! return element shape class
-	static FEElementShape* GetElementShapeClass(FE_Element_Shape eshape);
+	static FEElementShape* GetElementShapeClass(ElementShape eshape);
 
 	//! return the element shape of a given element type
-	static FE_Element_Shape GetElementShape(int ntype);
+	static ElementShape GetElementShape(int ntype);
 
 	//! return the element class of a given element type
-	static FE_Element_Category GetElementClass(int ntype);
+	static ElementCategory GetElementClass(int ntype);
 
 	//! initialize library
 	static void Initialize();

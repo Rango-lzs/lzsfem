@@ -5,6 +5,8 @@
 //! This function parses the Module section.
 //! The Module defines the type of problem the user wants to solve (solid, heat, ...)
 //! It is currently only used to allocate the FESolver.
+//! 定义物理模块类型，固体，流体，传热等
+//! 定义单位系统~
 void FEBioModuleSection::Parse(XMLTag& tag)
 {
     int nversion = GetFileReader()->GetFileVersion();

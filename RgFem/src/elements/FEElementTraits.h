@@ -12,8 +12,8 @@
 
 #include "datastructure/matrix.h"
 #include "datastructure/Vector3d.h"
-#include "datastructure/mat3d.h"
-#include "fecore_enum.h"
+#include "datastructure/Matrix3d.h"
+#include "elements/RgElemTypeDefine.h"
 #include <vector>
 
 //-----------------------------------------------------------------------------
@@ -31,25 +31,25 @@ class FEM_EXPORT FEElementTraits
 {
 public:
 	//! constructor
-	FEElementTraits(int ni, int ne, FE_Element_Category c, FE_Element_Shape s, FE_Element_Type t);
+	FEElementTraits(int ni, int ne, ElementCategory c, ElementShape s, ElementType t);
 
 	//! destructor
 	virtual ~FEElementTraits(){}
 
 	//! return the element class
-	FE_Element_Category Class() const { return m_spec.eclass; }
+	ElementCategory Class() const { return m_spec.eclass; }
 
 	//! return the element shape
-	FE_Element_Shape Shape() const { return m_spec.eshape; }
+	ElementShape Shape() const { return m_spec.eshape; }
 
 	//! return the element type
-	FE_Element_Type Type() const { return m_spec.etype; }
+	ElementType Type() const { return m_spec.etype; }
 
 	// project integration point data to nodes
 	virtual void project_to_nodes(double* ai, double* ao) const {}
 	virtual void project_to_nodes(Vector3d*  ai, Vector3d*  ao) const;
-	virtual void project_to_nodes(mat3ds* ai, mat3ds* ao) const;
-	virtual void project_to_nodes(mat3d*  ai, mat3d*  ao) const;
+	virtual void project_to_nodes(Matrix3ds* ai, Matrix3ds* ao) const;
+	virtual void project_to_nodes(Matrix3d*  ai, Matrix3d*  ao) const;
 
 	virtual int ShapeFunctions(int order) { return m_neln; }
 
@@ -59,11 +59,11 @@ public:
 	int m_nint;	//!< number of integration points
 	int	m_neln;	//!< number of element nodes
 
-	matrix m_H;	//!< shape function values at gausspoints.
+	Matrix m_H;	//!< shape function values at gausspoints.
 				//!< The first index refers to the gauss-point,
 				//!< the second index to the shape function
 
-	std::vector<matrix> m_Hp;	//!< shape function values at gausspoints.
+	std::vector<Matrix> m_Hp;	//!< shape function values at gausspoints.
 							//!< The first index refers to the gauss-point,
 							//!< the second index to the shape function
 
