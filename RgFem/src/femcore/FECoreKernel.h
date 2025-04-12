@@ -8,7 +8,6 @@
  *********************************************************************/
 #pragma once
 #include "FECoreFactory.h"
-#include "ClassDescriptor.h"
 #include <vector>
 #include <map>
 #include <string.h>

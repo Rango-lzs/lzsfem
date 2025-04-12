@@ -13,7 +13,7 @@
 class DumpStream;
 class FEParameterList;
 class FEParam;
-class FEParamType;
+enum FEParamType;
 class RANGE;
 class Vector2d;
 class Vector3d;

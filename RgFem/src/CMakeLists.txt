@@ -28,12 +28,18 @@ if(Eigen3_FOUND)
   include_directories(${Eigen3_INCLUDE_DIR})
 endif()
 
+#set(PROJECT_SOURCES "")
+#set(APP_SOURCES "")
+#add_subdirectory(app)
+#source_group("app" FILES ${APP_SOURCES})
+#message(status "resource files is ${APP_SOURCES}")
+#target_sources(${TARGET_NAME} PRIVATE ${PROJECT_SOURCES})
+
 file(GLOB rootfiles *.cpp *.h)
 source_group("" FILES ${rootfiles})
 target_sources(${TARGET_NAME} PRIVATE ${rootfiles})
-
 sub_dir_list(SUB_DIRS ${SOURCE_DIR})
- 
+
 
 foreach(sub_dir ${SUB_DIRS})
     file(GLOB subdir_files ${sub_dir}/*.cpp ${sub_dir}/*.h)

@@ -75,7 +75,6 @@ protected:                      // file names
     std::string m_splot;        //!< plot output file name
     std::string m_slog;         //!< log output file name
     std::string m_sdump;        //!< dump file name
-
     std::string m_title;        //!< model title
 
 protected:

@@ -17,7 +17,7 @@ class MetaClass;
 class FEM_EXPORT MetaObject
 {
 public:
-    using BaseClass = void;
+    using BaseClass = void;   //这个需要单独定义，否则其子类MetaClass构造函数找不到BaseClass
     virtual ~MetaObject() = 0;
 
     virtual const MetaClass* meta() const = 0;  // called by instance

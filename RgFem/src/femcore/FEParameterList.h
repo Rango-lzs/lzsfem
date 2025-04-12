@@ -1,8 +1,8 @@
 
 #pragma once
-#include "datastructure/vec2d.h"
-#include "datastructure/vec3d.h"
-#include "datastructure/mat3d.h"
+#include "datastructure/Vector2d.h"
+#include "datastructure/Vector3d.h"
+#include "datastructure/Matrix3d.h"
 #include "FEParam.h"
 #include "femcore/fem_export.h"
 #include "femcore/FEParamValidator.h"

@@ -1,0 +1,12 @@
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+file(GLOB APP_SOURCES_ *.cpp *.h)
+
+set(APP_SOURCES ${APP_SOURCES_} PARENT_SCOPE)
+
+set(PROJECT_SOURCES 
+    ${PROJECT_SOURCES} 
+    ${APP_SOURCES_} 
+    PARENT_SCOPE
+)
+message(status "resource files is ${PROJECT_SOURCES}")  #belong to parent scope, not visiable here
+source_group("app" FILES ${APP_SOURCES_})

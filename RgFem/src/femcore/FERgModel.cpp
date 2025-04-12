@@ -2,7 +2,7 @@
 
 #include "input/febio/FEBioImport.h"
 #include "input/febio/FEBioModelBuilder.h"
-
+#include "femcore/Callback.h"
 #include "logger/log.h"
 
 #include <fstream>

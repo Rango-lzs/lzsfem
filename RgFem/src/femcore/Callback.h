@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
-#include "FEM_EXPORT.h"
+#include <vector>
+#include "femcore/fem_export.h"
 
 //-----------------------------------------------------------------------------
 // Forward declarations.
@@ -69,13 +70,13 @@ private:
 };
 
 
-
 // 使用强类型枚举替代原生的宏定义
 enum class FEModelEvent
 {
     Init = 0x00000001,
     StepActive = 0x00000002,
     MajorIteration = 0x00000004,
+    MinorIteration = 0x00000008,
     // ... 其他事件类型
     UserDefined1 = 0x01000000
 };
@@ -135,13 +136,13 @@ class FEModelSubject : public FESubject
 public:
     void attach(FEObserver* observer, int priority = 0) override
     {
-        m_observers.emplace(priority, observer);
+        m_observers.emplace_back(observer);
     }
 
     void detach(FEObserver* observer) override
     {
         auto it = std::find_if(m_observers.begin(), m_observers.end(),
-                               [observer](const auto& pair) { return pair.second == observer; });
+                               [observer](const auto& curOb) { return curOb == observer; });
 
         if (it != m_observers.end())
         {
@@ -152,9 +153,9 @@ public:
     bool notify(FEModelEvent event) override
     {
         // 按优先级降序通知
-        for (auto it = m_observers.rbegin(); it != m_observers.rend(); ++it)
+        for (auto it = m_observers.begin(); it != m_observers.end(); ++it)
         {
-            if (!it->second->handleEvent(m_model, event))
+            if (!(*it)->handleEvent(m_model, event))
             {
                 return false;
             }
@@ -164,14 +165,14 @@ public:
 
 private:
     FEModel* m_model;
-    std::multimap<int, FEObserver*, std::greater<>> m_observers;
+    std::vector<FEObserver*> m_observers;
 };
 
 class ConvergenceMonitor : public FEFilteredObserver
 {
 public:
     ConvergenceMonitor()
-        : FEFilteredObserver(FEModelEvent::MajorIteration | FEModelEvent::MinorIteration)
+        : FEFilteredObserver(FEModelEvent::MajorIteration)
     {
     }
 
@@ -181,14 +182,14 @@ protected:
         switch (event)
         {
             case FEModelEvent::MajorIteration:
-                logConvergence(model->getResidual());
+                //logConvergence(model->getResidual());
                 break;
             case FEModelEvent::MinorIteration:
-                updateProgress(model->getIteration());
+                //updateProgress(model->getIteration());
                 break;
         }
         return true;
     }
-};  ；0
+}; 
 
 

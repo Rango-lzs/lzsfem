@@ -1,51 +1,41 @@
-/*****************************************************************//**
- * \file   FEParam.h
- * \brief  
- * 
- * \author 11914
- * \date   December 2024
- *********************************************************************/
-
 #pragma once
 #include "femcore/fem_export.h"
 
 #include <assert.h>
-#include <vector>
 #include <string>
+#include <vector>
 
 //-----------------------------------------------------------------------------
 class FEParamValidator;
 class DumpStream;
 class FEParamObject;
 
-//FEParam一般是由FEObject所持有的，比较持久化的参数, 具有更丰富的信息，可能是数组类型
-//FEParamList对其中的FEParam生命周期负责，FEParam对其中具体value的生命周期负责
-//FEParamValue参数里的具体一个值，一般用于运行时取值
-
-//-----------------------------------------------------------------------------
-// Different supported parameter types
-enum FEParamType {
-	FE_PARAM_INVALID,
-	FE_PARAM_INT,
-	FE_PARAM_BOOL,
-	FE_PARAM_DOUBLE,
-	FE_PARAM_VEC2D,
-	FE_PARAM_VEC3D,
-	FE_PARAM_MAT3D,
-	FE_PARAM_MAT3DS,
-	FE_PARAM_STRING,
-	FE_PARAM_DATA_ARRAY,
-	FE_PARAM_TENS3DRS,
-	FE_PARAM_STD_STRING,
-	FE_PARAM_STD_VECTOR_INT,
-	FE_PARAM_STD_VECTOR_DOUBLE,
-	FE_PARAM_STD_VECTOR_VEC2D,
-	FE_PARAM_STD_VECTOR_STRING,
-	FE_PARAM_DOUBLE_MAPPED,
-	FE_PARAM_VEC3D_MAPPED,
-	FE_PARAM_MAT3D_MAPPED,
-	FE_PARAM_MAT3DS_MAPPED,
-	FE_PARAM_MATERIALPOINT
+// FEParam一般是由FEObject所持有的，比较持久化的参数, 具有更丰富的信息，可能是数组类型
+// FEParamList对其中的FEParam生命周期负责，FEParam对其中具体value的生命周期负责
+// FEParamValue参数里的具体一个值，一般用于运行时取值
+enum FEParamType
+{
+    FE_PARAM_INVALID,
+    FE_PARAM_INT,                // int
+    FE_PARAM_BOOL,               // bool
+    FE_PARAM_DOUBLE,             // double
+    FE_PARAM_VEC2D,              // Vector2d
+    FE_PARAM_VEC3D,              // Vector3d
+    FE_PARAM_MAT3D,              // Matrix3d
+    FE_PARAM_MAT3DS,             // Matrix3ds
+    FE_PARAM_STRING,             // std::string  ? char*?
+    FE_PARAM_DATA_ARRAY,         //
+    FE_PARAM_TENS3DRS,           // tens3drs
+    FE_PARAM_STD_STRING,         // std::string
+    FE_PARAM_STD_VECTOR_INT,     // std::vector<int>
+    FE_PARAM_STD_VECTOR_DOUBLE,  // std::vector<double>
+    FE_PARAM_STD_VECTOR_VEC2D,   // std::vector<Vector2d>
+    FE_PARAM_STD_VECTOR_STRING,  // std::vector<std::string>
+    FE_PARAM_DOUBLE_MAPPED,
+    FE_PARAM_VEC3D_MAPPED,
+    FE_PARAM_MAT3D_MAPPED,
+    FE_PARAM_MAT3DS_MAPPED,
+    FE_PARAM_MATERIALPOINT
 };
 
 // Parameter flags
@@ -84,12 +74,12 @@ public:
         m_param = p;
     }
 
-	FEParamValue(bool& v)
+    FEParamValue(bool& v)
         : FEParamValue(0, &v, FE_PARAM_BOOL)
     {
     }
 
-	FEParamValue(int& v)
+    FEParamValue(int& v)
         : FEParamValue(0, &v, FE_PARAM_INT)
     {
     }
@@ -159,130 +149,151 @@ public:
 class FEM_EXPORT FEParam
 {
 private:
-	void*			m_pv;		// pointer to variable data, 指向
-	int				m_dim;		// dimension (in case data is array)
-	FEParamType		m_type;		// type of variable
-	unsigned int	m_flag;		// parameter flags
-	bool*			m_watch;	// parameter watch (set to true if read in)
-	int				m_group;	// index of parameter group (-1 by default)
+    void* m_pv;                // pointer to variable data, 指向
+    int m_dim;                 // dimension (in case data is array)
+    FEParamType m_type;        // type of variable
+    unsigned int m_flag;       // parameter flags
+    int m_group;               // index of parameter group (-1 by default)
 
-	const char*	m_szname;	// name of the parameter
-	const char*	m_szenum;	// enumerate values for ints
-	const char* m_szunit;	// unit string
-	const char* m_szlongname;	// a longer, more descriptive name (optional)
+    const char* m_szname;      // name of the parameter
+    const char* m_szenum;      // enumerate values for ints
+    const char* m_szunit;      // unit string
+    const char* m_szlongname;  // a longer, more descriptive name (optional)
 
-	// parameter validator
-	FEParamValidator*	m_pvalid;
+    // parameter validator
+    FEParamValidator* m_pvalid;
 
-	FEParamObject* m_parent;	// parent object of parameter
-
-public:
-	// constructor
-	FEParam(void* pdata, FEParamType itype, int ndim, const char* szname, bool* watch = nullptr);
-	FEParam(const FEParam& p);
-	~FEParam();
-	FEParam& operator = (const FEParam& p);
-
-	// set the parameter's validator
-	void SetValidator(FEParamValidator* pvalid);
-
-	// see if the parameter's value is valid
-	bool is_valid() const;
-
-	// return the name of the parameter
-	const char* name() const;
-
-	// return the long name of the parameter
-	const char* longName() const;
-
-	// return the enum values
-	const char* enums() const;
-
-	// get the current enum value (or nullptr)
-	const char* enumKey() const;
-
-	// get the unit string
-	const char* units() const;
-	FEParam* setUnits(const char* szunit);
-
-	// set the enum values (\0 separated. Make sure the end of the string has two \0's)
-	FEParam* setEnums(const char* sz);
-
-	// set the long name
-	FEParam* setLongName(const char* sz);
-
-	// parameter dimension
-	int dim() const;
-
-	// parameter type
-	FEParamType type() const;
-
-	// data pointer
-	void* data_ptr() const;
-
-	// get the param value
-	FEParamValue paramValue(int i = -1);
-
-	// Copy the state of one parameter to this parameter.
-	// This requires that the parameters are compatible (i.e. same type, etc.)
-	bool CopyState(const FEParam& p);
-
-	void setOwner(FEParamObject* pc);
-	const FEParamObject* owner() const;
-
-	FEParam* SetFlags(unsigned int flags);
-	unsigned int GetFlags() const;
-
-	void SetWatchVariable(bool* watchVar);
-	bool* GetWatchVariable();
-	void SetWatchFlag(bool b);
-
-	bool IsHidden() const;
-
-	bool IsVolatile() const;
-
-	FEParam* MakeVolatile(bool b);
-
-	bool IsTopLevel() const;
-	FEParam* MakeTopLevel(bool b);
+    FEParamObject* m_parent;  // parent object of parameter
 
 public:
-	int GetParamGroup() const;
-	void SetParamGroup(int i);
+    // constructor
+    FEParam(void* pdata, FEParamType itype, int ndim, const char* szname, bool* watch = nullptr);
+    FEParam(const FEParam& p);
+    ~FEParam();
+    FEParam& operator=(const FEParam& p);
+
+    // set the parameter's validator
+    void SetValidator(FEParamValidator* pvalid);
+
+    // see if the parameter's value is valid
+    bool is_valid() const;
+
+    // return the name of the parameter
+    const char* name() const;
+
+    // return the long name of the parameter
+    const char* longName() const;
+
+    // return the enum values
+    const char* enums() const;
+
+    // get the current enum value (or nullptr)
+    const char* enumKey() const;
+
+    // get the unit string
+    const char* units() const;
+    FEParam* setUnits(const char* szunit);
+
+    // set the enum values (\0 separated. Make sure the end of the string has two \0's)
+    FEParam* setEnums(const char* sz);
+
+    // set the long name
+    FEParam* setLongName(const char* sz);
+
+    // parameter dimension
+    int dim() const;
+
+    // parameter type
+    FEParamType type() const;
+
+    // data pointer
+    void* data_ptr() const;
+
+    // get the param value
+    FEParamValue paramValue(int i = -1);
+
+    // Copy the state of one parameter to this parameter.
+    // This requires that the parameters are compatible (i.e. same type, etc.)
+    bool CopyState(const FEParam& p);
+
+    void setOwner(FEParamObject* pc);
+    const FEParamObject* owner() const;
+
+    FEParam* SetFlags(unsigned int flags);
+    unsigned int GetFlags() const;
+
+    void SetWatchVariable(bool* watchVar);
+    bool* GetWatchVariable();
+    void SetWatchFlag(bool b);
+
+    bool IsHidden() const;
+
+    bool IsVolatile() const;
+
+    FEParam* MakeVolatile(bool b);
+
+    bool IsTopLevel() const;
+    FEParam* MakeTopLevel(bool b);
 
 public:
-	void Serialize(DumpStream& ar);
-
-	static void SaveClass(DumpStream& ar, FEParam* p);
-	static FEParam* LoadClass(DumpStream& ar, FEParam* p);
+    int GetParamGroup() const;
+    void SetParamGroup(int i);
 
 public:
-	//! retrieves the value for a non-array item
-	template <class T> T& value() { return *((T*) data_ptr()); }
+    void Serialize(DumpStream& ar);
 
-	//! retrieves the value for a non-array item
-	template <class T> const T& value() const { return *((T*) data_ptr()); }
+    static void SaveClass(DumpStream& ar, FEParam* p);
+    static FEParam* LoadClass(DumpStream& ar, FEParam* p);
 
-	//! retrieves the value for an array item
-	template <class T> T* pvalue() { return (T*) data_ptr(); }
+public:
+    //! retrieves the value for a non-array item
+    template <class T>
+    T& value()
+    {
+        return *((T*)data_ptr());
+    }
 
-	//! retrieves the value for an array item
-	template <class T> T& value(int i) { return ((T*)data_ptr())[i]; }
-	template <class T> T value(int i) const { return ((T*) data_ptr())[i]; }
+    //! retrieves the value for a non-array item
+    template <class T>
+    const T& value() const
+    {
+        return *((T*)data_ptr());
+    }
 
-	//! retrieves pointer to element in array
-	template <class T> T* pvalue(int n);
+    //! retrieves the value for an array item
+    template <class T>
+    T* pvalue()
+    {
+        return (T*)data_ptr();
+    }
 
-	//! override the template for char pointers
-	char* cvalue();
+    //! retrieves the value for an array item
+    template <class T>
+    T& value(int i)
+    {
+        return ((T*)data_ptr())[i];
+    }
+    template <class T>
+    T value(int i) const
+    {
+        return ((T*)data_ptr())[i];
+    }
+
+    //! retrieves pointer to element in array
+    template <class T>
+    T* pvalue(int n);
+
+    //! override the template for char pointers
+    char* cvalue();
 };
 
 //-----------------------------------------------------------------------------
 //! Retrieves a pointer to element in array
-template<class T> inline T* FEParam::pvalue(int n)
+template <class T>
+inline T* FEParam::pvalue(int n)
 {
-	assert((n >= 0) && (n < m_dim));
-	return &(pvalue<T>()[n]);
+    assert((n >= 0) && (n < m_dim));
+    return &(pvalue<T>()[n]);
 }
 
 //-----------------------------------------------------------------------------
