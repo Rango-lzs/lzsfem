@@ -1,0 +1,35 @@
+set(HEADERS
+    ArcLength.h
+    IterativeLinearSolver.h
+    Jacobi.h
+    LSolver.h
+    LinearIteration.h
+    LinearIterativeSolver.h
+    LinearIterator.h
+    NLSolver.h
+    NLSolverBiCGStab.h
+    NLSolverCG.h
+    descent/BiCGStab.h
+    descent/ConjugateGradientDescent.h
+    descent/DescentMethod.h
+    descent/GradientDescent.h
+    geneigvalsolvertype.h
+    linsystsolvertype.h
+)
+
+set(SOURCES
+    ArcLength.cpp
+    IterativeLinearSolver.cpp
+    Jacobi.cpp
+    LSolver.cpp
+    LinearIteration.cpp
+    LinearIterativeSolver.cpp
+    LinearIterator.cpp
+    NLSolver.cpp
+    NLSolverBiCGStab.cpp
+    NLSolverCG.cpp
+    descent/BiCGStab.cpp
+    descent/ConjugateGradientDescent.cpp
+    descent/DescentMethod.cpp
+    descent/GradientDescent.cpp
+)

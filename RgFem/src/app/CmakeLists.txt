@@ -1,12 +1,26 @@
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-file(GLOB APP_SOURCES_ *.cpp *.h)
+set(HEADERS
+    app/AppUtils.h
+    app/CmdOptions.h
+    app/FEAppConfig.h
+    app/RgFemApp.h
+)
 
-set(APP_SOURCES ${APP_SOURCES_} PARENT_SCOPE)
+set(SOURCES
+    app/CmdOptions.cpp
+    app/FEAppConfig.cpp
+    app/RgFemApp.cpp
+    app/main.cpp
+)
+
+set(APP_SOURCES_ 
+    ${HEADERS}
+    ${SOURCES}
+)
 
 set(PROJECT_SOURCES 
     ${PROJECT_SOURCES} 
     ${APP_SOURCES_} 
     PARENT_SCOPE
 )
-message(status "resource files is ${PROJECT_SOURCES}")  #belong to parent scope, not visiable here
-source_group("app" FILES ${APP_SOURCES_})
+
+set(APP_SOURCES ${APP_SOURCES_} PARENT_SCOPE)

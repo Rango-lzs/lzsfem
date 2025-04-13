@@ -7,10 +7,10 @@
  *********************************************************************/
 
 #include "FESolver.h"
-#include "FEModel.h"
+#include "femcore/FEModel.h"
 #include "FENodeReorder.h"
 #include "DumpStream.h"
-#include "FEDomain.h"
+#include "femcore/Domain/FEDomain.h"
 #include "FESurfacePairConstraint.h"
 #include "FENLConstraint.h"
 #include "FELinearConstraintManager.h"
@@ -30,14 +30,10 @@ END_PARAM_DEFINE();
 FESolver::FESolver(FEModel* fem) : FEObjectBase(fem)
 { 
 	m_niter = 0;
-
 	m_nref = 0;
-	
 	m_baugment = false;
 	m_naug = 0;
-
 	m_neq = 0;
-
 	m_bwopt = false;
 }
 
@@ -251,14 +247,12 @@ bool FESolver::InitStep(double time)
 {
 	FEModel& fem = *GetFEModel();
 
-	// evaluate load controllers values at current time
-	fem.EvaluateLoadControllers(time);
-
-	// evaluate data generators at current time
-	fem.EvaluateDataGenerators(time);
-
-	// evaluate load parameters
-	fem.EvaluateLoadParameters();
+	//// evaluate load controllers values at current time
+	//fem.EvaluateLoadControllers(time);
+	//// evaluate data generators at current time
+	//fem.EvaluateDataGenerators(time);
+	//// evaluate load parameters
+	//fem.EvaluateLoadParameters();
 
 	// re-validate materials
 	// This is necessary since the material parameters can have changed (e.g. via load curves) and thus 

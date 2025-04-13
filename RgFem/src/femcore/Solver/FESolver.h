@@ -1,10 +1,10 @@
 #pragma once
-#include "femcore/FEObjectBase.h"
-#include "femcore/Timer.h"
 #include "datastructure/matrix.h"
 #include "datastructure/vector_operator.h"
 #include "femcore/FEDofList.h"
+#include "femcore/FEObjectBase.h"
 #include "femcore/FETimeInfo.h"
+#include "femcore/Timer.h"
 
 //-----------------------------------------------------------------------------
 // Scheme for assigning equation numbers
@@ -12,8 +12,8 @@
 // BLOCK    : | a0, a1, ..., an, b0, b1, ..., bn |
 enum EQUATION_SCHEME
 {
-	STAGGERED,
-	BLOCK
+    STAGGERED,
+    BLOCK
 };
 
 //-----------------------------------------------------------------------------
@@ -21,27 +21,27 @@ enum EQUATION_SCHEME
 class FESolutionVariable
 {
 public:
-	FESolutionVariable(const char* szname, FEDofList* dofs = nullptr, int order = 2)
-	{
-		m_szname = szname;
-		m_dofs = dofs;
-		m_order = order;
-	}
+    FESolutionVariable(const char* szname, FEDofList* dofs = nullptr, int order = 2)
+    {
+        m_szname = szname;
+        m_dofs = dofs;
+        m_order = order;
+    }
 
 public:
-	FEDofList*	m_dofs;		// the dof list
-	int			m_order;	// the order of interpolation (0 = constant, 1 = linear, 2 = default)
-	const char* m_szname;	// name of solution variable
+    FEDofList* m_dofs;     // the dof list
+    int m_order;           // the order of interpolation (0 = constant, 1 = linear, 2 = default)
+    const char* m_szname;  // name of solution variable
 };
 
 //-----------------------------------------------------------------------------
 // structure identifying nodal dof info
 struct FEM_EXPORT FENodalDofInfo
 {
-	int		m_eq = -1;		// equation number
-	int		m_node = -1;		// 0-based index into mesh!
-	int		m_dof = -1;		// index into nodal m_ID array
-	const char* szdof = nullptr;
+    int m_eq = -1;    // equation number
+    int m_node = -1;  // 0-based index into mesh!
+    int m_dof = -1;   // index into nodal m_ID array
+    const char* szdof = nullptr;
 };
 
 //-----------------------------------------------------------------------------
@@ -61,112 +61,114 @@ class FEM_EXPORT FESolver : public FEObjectBase
     DECLARE_META_CLASS(FESolver, FEObjectBase);
 
 public:
-	//! constructor
-	FESolver(FEModel* fem);
+    //! constructor
+    FESolver(FEModel* fem);
 
-	//! destructor
-	virtual ~FESolver();
-
-public:
-	//! Data serialization
-	void Serialize(DumpStream& ar) override;
-
-	//! This is called by FEAnalaysis::Deactivate
-	virtual void Clean();
-
-	//! rewind the solver (This is called when the time step fails and needs to retry)
-	virtual void Rewind() {}
-
-	//! called during model reset
-	virtual void Reset();
-
-	// Initialize linear equation system
-	virtual bool InitEquations() = 0;
-
-	//! add equations
-	void AddEquations(int neq, int partition = 0);
-
-	//! initialize the step (This is called before SolveStep)
-	virtual bool InitStep(double time) = 0;
-
-	//! Solve an analysis step
-	virtual bool SolveStep() = 0;
-
-	//! Update the state of the model
-	virtual void Update(std::vector<double>& u);
-
-	//! Do the augmentations
-	virtual bool Augment();
-
-	//! Calculates concentrated nodal loads
-//	virtual void NodalLoads(FEGlobalVector& R, const FETimeInfo& tp);
+    //! destructor
+    virtual ~FESolver();
 
 public:
-	//! Set the equation allocation scheme
-	void SetEquationScheme(int scheme);
+    //! Data serialization
+    void Serialize(DumpStream& ar) override;
 
-	//! set the linear system partitions
-	void SetPartitions(const std::vector<int>& part);
+    //! This is called by FEAnalaysis::Deactivate
+    virtual void Clean();
 
-	//! Get the size of a partition
-	int GetPartitionSize(int partition);
+    //! rewind the solver (This is called when the time step fails and needs to retry)
+    virtual void Rewind()
+    {
+    }
 
-	//! get the current stiffness matrix
-	virtual FEGlobalMatrix* GetStiffnessMatrix() = 0;
+    //! called during model reset
+    virtual void Reset();
 
-	//! get the current load vector
-	virtual std::vector<double> GetLoadVector() = 0;
+    // Initialize linear equation system
+    virtual bool InitEquations() = 0;
 
-	// get the linear solver
-	virtual LinearSolver* GetLinearSolver() = 0;
+    //! add equations
+    void AddEquations(int neq, int partition = 0);
 
-	//! Matrix symmetry flag
-	int MatrixSymmetryFlag() const;
+    //! initialize the step (This is called before SolveStep)
+    virtual bool InitStep(double time) = 0;
 
-	//! get matrix type
-	Matrix_Type MatrixType() const;
+    //! Solve an analysis step
+    virtual bool SolveStep() = 0;
 
-	//! build the matrix profile
-	virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);
+    //! Update the state of the model
+    virtual void Update(std::vector<double>& u);
 
-	// see if the dofs in the dof list are active in this solver
-	bool HasActiveDofs(const FEDofList& dof);
+    //! Do the augmentations
+    virtual bool Augment();
 
-	// get the active dof map (returns nr of functions)
-	int GetActiveDofMap(std::vector<int>& dofMap);
-
-	// return the node (mesh index) from an equation number
-	FENodalDofInfo GetDOFInfoFromEquation(int ieq);
+    //! Calculates concentrated nodal loads
+    //	virtual void NodalLoads(FEGlobalVector& R, const FETimeInfo& tp);
 
 public:
-	// extract the (square) norm of a solution vector
-	double ExtractSolutionNorm(const std::vector<double>& v, const FEDofList& dofs) const;
+    //! Set the equation allocation scheme
+    void SetEquationScheme(int scheme);
 
-	// return the solution vector
-	virtual std::vector<double> GetSolutionVector() const;
+    //! set the linear system partitions
+    void SetPartitions(const std::vector<int>& part);
 
-public: //TODO Move these parameters elsewhere
-	bool				m_bwopt;	    //!< bandwidth optimization flag
-	int					m_msymm;		//!< matrix symmetry flag for linear solver allocation
-	int					m_eq_scheme;	//!< equation number scheme (used in InitEquations)
-	int					m_eq_order;		//!< normal or reverse ordering
-	int					m_neq;			//!< number of equations
-	std::vector<int>	m_part;			//!< partitions of linear system
-	std::vector<int>	m_dofMap;		//!< array stores for each equation the corresponding dof index
+    //! Get the size of a partition
+    int GetPartitionSize(int partition);
 
-	// counters
-	int		m_nrhs;			//!< nr of right hand side evalutations
-	int		m_niter;		//!< nr of quasi-newton iterations
-	int		m_nref;			//!< nr of stiffness retormations
-	int		m_ntotref;		//!< nr of total stiffness reformations
+    //! get the current stiffness matrix
+    virtual FEGlobalMatrix* GetStiffnessMatrix() = 0;
 
-	// augmentation
-	int		m_naug;			//!< nr of augmentations
-	bool	m_baugment;		//!< do augmentations flag
+    //! get the current load vector
+    virtual std::vector<double> GetLoadVector() = 0;
+
+    // get the linear solver
+    virtual LinearSolver* GetLinearSolver() = 0;
+
+    //! Matrix symmetry flag
+    int MatrixSymmetryFlag() const;
+
+    //! get matrix type
+    Matrix_Type MatrixType() const;
+
+    //! build the matrix profile
+    virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);
+
+    // see if the dofs in the dof list are active in this solver
+    bool HasActiveDofs(const FEDofList& dof);
+
+    // get the active dof map (returns nr of functions)
+    int GetActiveDofMap(std::vector<int>& dofMap);
+
+    // return the node (mesh index) from an equation number
+    FENodalDofInfo GetDOFInfoFromEquation(int ieq);
+
+public:
+    // extract the (square) norm of a solution vector
+    double ExtractSolutionNorm(const std::vector<double>& v, const FEDofList& dofs) const;
+
+    // return the solution vector
+    virtual std::vector<double> GetSolutionVector() const;
+
+public:                         // TODO Move these parameters elsewhere
+    bool m_bwopt;               //!< bandwidth optimization flag
+    int m_msymm;                //!< matrix symmetry flag for linear solver allocation
+    int m_eq_scheme;            //!< equation number scheme (used in InitEquations)
+    int m_eq_order;             //!< normal or reverse ordering
+    int m_neq;                  //!< number of equations
+    std::vector<int> m_part;    //!< partitions of linear system
+    std::vector<int> m_dofMap;  //!< array stores for each equation the corresponding dof index
+
+    // counters
+    int m_nrhs;     //!< nr of right hand side evalutations
+    int m_niter;    //!< nr of quasi-newton iterations
+    int m_nref;     //!< nr of stiffness retormations
+    int m_ntotref;  //!< nr of total stiffness reformations
+
+    // augmentation
+    int m_naug;       //!< nr of augmentations
+    bool m_baugment;  //!< do augmentations flag
 
 protected:
-	// list of solution variables
-	std::vector<FESolutionVariable>	m_Var;
+    // list of solution variables
+    std::vector<FESolutionVariable> m_Var;
 
-	DECLARE_PARAM_LIST();
+    DECLARE_PARAM_LIST();
 };

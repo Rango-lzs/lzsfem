@@ -35,8 +35,8 @@ def update_cmakelists(cmake_path, sources, headers):
     保留现有内容并智能更新变量
     """
     # 生成 CMake 格式的变量定义
-    sources_str = "\n    ".join(f'"{s}"' for s in sources)
-    headers_str = "\n    ".join(f'"{h}"' for h in headers)
+    sources_str = "\n    ".join(f'{s}' for s in sources)
+    headers_str = "\n    ".join(f'{h}' for h in headers)
     
     cmake_content = []
     if sources:

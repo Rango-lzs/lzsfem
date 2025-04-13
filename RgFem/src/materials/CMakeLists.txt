@@ -1,0 +1,19 @@
+set(HEADERS
+    ElastoPlasticMaterial.h
+    FEElasticMaterial.h
+    FEElasticMaterialPoint.h
+    FEIsotropicElastic.h
+    FEMaterial.h
+    FEMaterialPoint.h
+    FESolidMaterial.h
+)
+
+set(SOURCES
+    ElastoPlasticMaterial.cpp
+    FEElasticMaterial.cpp
+    FEElasticMaterialPoint.cpp
+    FEIsotropicElastic.cpp
+    FEMaterial.cpp
+    FEMaterialPoint.cpp
+    FESolidMaterial.cpp
+)

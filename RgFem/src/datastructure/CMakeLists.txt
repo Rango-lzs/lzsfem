@@ -1,0 +1,39 @@
+set(HEADERS
+    FEBoundingBox.h
+    MathObject.h
+    MathUtils.h
+    Matrix2d.h
+    Matrix3d.h
+    Matrix3d.hpp
+    MatrixOperator.h
+    MatrixProfile.h
+    Vector2d.h
+    Vector3d.h
+    mathalg.h
+    matrix.h
+    quatd.h
+    tens3d.h
+    tens3d.hpp
+    tens3dls.hpp
+    tens3drs.hpp
+    tens3ds.hpp
+    tens4d.h
+    tens4d.hpp
+    tens4dmm.hpp
+    tens4dms.hpp
+    tens4ds.hpp
+    tensor_base.h
+    units.h
+    vector_operator.h
+)
+
+set(SOURCES
+    MathObject.cpp
+    Matrix3d.cpp
+    mathalg.cpp
+    matrix.cpp
+    quatd.cpp
+    tens3d.cpp
+    tens4d.cpp
+    vector_operator.cpp
+)

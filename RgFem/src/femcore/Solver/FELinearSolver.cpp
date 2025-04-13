@@ -1,42 +1,13 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FELinearSolver.h"
-#include "FEModel.h"
+#include "femcore/FEModel.h"
 #include "LinearSolver.h"
-#include "FEGlobalMatrix.h"
-#include "log.h"
+#include "femcore/FEGlobalMatrix.h"
+#include "logger/log.h"
 #include "FENodeReorder.h"
-#include "FELinearSystem.h"
-#include "FEBoundaryCondition.h"
-#include "FEGlobalVector.h"
-#include "FEDomain.h"
+#include "femcore/FELinearSystem.h"
+#include "femcore/FEBoundaryCondition.h"
+#include "femcore/FEGlobalVector.h"
+#include "femcoe/Domain/FEDomain.h"
 #include "FENodalLoad.h"
 #include "FESurfaceLoad.h"
 #include "FEBodyLoad.h"
@@ -64,7 +35,7 @@ void FELinearSolver::Clean()
 //! This is used in the InitEquations method that initializes the equation numbers
 //! and the Update method which maps the solution of the linear system to the nodal
 //! data.
-void FELinearSolver::SetDOF(vector<int>& dof)
+void FELinearSolver::SetDOF(std::vector<int>& dof)
 {
 	m_dof = dof;
 }
@@ -175,8 +146,8 @@ bool FELinearSolver::SolveStep()
 
 	FEModel& fem = *GetFEModel();
 
-	// Set up the prescribed dof vector
-	// The stiffness matrix assembler uses this to update the RHS vector
+	// Set up the prescribed dof std::vector
+	// The stiffness matrix assembler uses this to update the RHS std::vector
 	// for prescribed dofs.
 	zero(m_u);
 	int nbc = fem.BoundaryConditions();
@@ -189,7 +160,7 @@ bool FELinearSolver::SolveStep()
 	// build the right-hand side
 	// (Is done by the derived class)
 	zero(m_R);
-	vector<double> F(m_neq);
+	std::vector<double> F(m_neq);
 	FEGlobalVector rhs(fem, m_R, F);
 	{
 		TRACK_TIME(TimerID::Timer_Residual);
@@ -203,7 +174,7 @@ bool FELinearSolver::SolveStep()
 	ReformStiffness();
 
 	// solve the equations
-	vector<double> u(m_neq);
+	std::vector<double> u(m_neq);
 	{
 		TRACK_TIME(TimerID::Timer_LinSolve);
 		if (m_pls->BackSolve(u, m_R) == false)
@@ -339,7 +310,7 @@ void FELinearSolver::Serialize(DumpStream& ar)
 }
 
 //-----------------------------------------------------------------------------
-//! Evaluate the right-hand side "force" vector
+//! Evaluate the right-hand side "force" std::vector
 void FELinearSolver::ForceVector(FEGlobalVector& R)
 {
 	// get the modal and mesh
@@ -370,7 +341,7 @@ bool FELinearSolver::StiffnessMatrix(FELinearSystem& K)
 // their local data.
 // TODO: Instead of calling Update on all domains, perhaps I should introduce
 //       a mechanism for solvers only update the domains that are relevant.
-void FELinearSolver::Update(vector<double>& u)
+void FELinearSolver::Update(std::vector<double>& u)
 {
 	FEModel& fem = *GetFEModel();
 	FEMesh& mesh = fem.GetMesh();

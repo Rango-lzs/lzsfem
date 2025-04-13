@@ -1,0 +1,33 @@
+set(HEADERS
+    ElementShape/FEHex8Shape.h
+    ElementShape/FESolidElementShape.h
+    ElementShape/RgElementShape.h
+    FEElemElemList.h
+    FEElementLibrary.h
+    FEElementList.h
+    FEElementSet.h
+    FEElementShape.h
+    FEElementTraits.h
+    FEShellElement.h
+    FESolidElement.h
+    RgBeamElement.h
+    RgElemTypeDefine.h
+    RgElement.h
+    RgElementState.h
+    RgElementStatus.h
+    RgSolidElement2d.h
+    RgTrussElement.h
+)
+
+set(SOURCES
+    ElementShape/FESolidElementShape.cpp
+    FEElemElemList.cpp
+    FEElementLibrary.cpp
+    FEElementList.cpp
+    FEElementSet.cpp
+    FEElementShape.cpp
+    FEElementTraits.cpp
+    FEShellElement.cpp
+    FESolidElement.cpp
+    RgElement.cpp
+)
