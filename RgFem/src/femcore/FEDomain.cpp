@@ -162,7 +162,7 @@ void FEDomain::UnpackLM(FEElement& el, const FEDofList& dof, vector<int>& lm)
 	{
 		int n = el.m_node[i];
 		FENode& node = mesh->Node(n);
-		vector<int>& id = node.m_ID;
+		vector<int>& id = node.m_dofs;
 		for (int j = 0; j<ndofs; ++j) lm[i*ndofs + j] = id[dof[j]];
 	}
 }

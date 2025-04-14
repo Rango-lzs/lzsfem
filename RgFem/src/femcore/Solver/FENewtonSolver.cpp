@@ -1104,9 +1104,9 @@ void FENewtonSolver::Update2(const vector<double>& ui)
         if (node.m_rid == -1)
         {
             vec3d dv(0, 0, 0);
-            for (int j = 0; j < node.m_ID.size(); ++j)
+            for (int j = 0; j < node.m_dofs.size(); ++j)
             {
-                int nj = -node.m_ID[j] - 2;
+                int nj = -node.m_dofs[j] - 2;
                 if (nj >= 0)
                     node.set(j, node.get(j) + ui[nj]);
             }

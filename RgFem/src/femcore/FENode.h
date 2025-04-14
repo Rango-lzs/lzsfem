@@ -1,5 +1,5 @@
 /*****************************************************************
- * \file   RgNode.h
+ * \file   FENode.h
  * \brief
  *
  * \author 11914
@@ -28,7 +28,7 @@ using GlobalDofId = int;
 //! dof is fixed, and (c) < -1 if the dof corresponds to a prescribed dof. In
 //! that case the corresponding equation number is given by -ID-2.
 
-class FEM_EXPORT RgNode
+class FEM_EXPORT FENode
 {
 public:
     // Node status flags
@@ -42,27 +42,34 @@ public:
 
 public:
     //! default constructor
-    RgNode();
+    FENode();
 
     //! copy constructor
-    RgNode(const RgNode& node);
+    FENode(const FENode& node);
 
     //! assignment operator
-    RgNode& operator=(const RgNode& node);
+    FENode& operator=(const FENode& node);
 
     //! Set the number of DOFS
     void SetDOFS(int n);
 
+    int dofs() const
+    {
+        return (int)m_dofs.size();
+    }
+
+    void setDofIdx(int dof, int idx);
+
     //! Get the nodal ID
     int GetID() const
     {
-        return m_nID;
+        return mId;
     }
 
     //! Set the node ID
     void SetID(int n)
     {
-        m_nID = n;
+        mId = n;
     }
 
     //! see if status flags are set
@@ -184,10 +191,7 @@ public:
         return ((m_BC[ndof] & 0xF0) != 0);
     }
 
-    int dofs() const
-    {
-        return (int)m_dofs.size();
-    }
+    
 
 public:
     // return position of shell back-node
@@ -205,7 +209,7 @@ public:
     }
 
 private:
-    NodeId mId;             //!< nodal ID
+    int mId;             //!< nodal ID
 
     std::vector<int> m_BC;  //!< boundary condition array, 用于标识自由度的状态，fix ，free， prescribe
     std::vector<double> m_val_t;      //!< current nodal DOF values

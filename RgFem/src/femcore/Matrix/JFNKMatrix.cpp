@@ -55,9 +55,9 @@ JFNKMatrix::JFNKMatrix(FENewtonSolver* pns, SparseMatrix* K) : m_pns(pns), m_K(K
 	for (int i = 0; i < mesh.Nodes(); ++i)
 	{
 		FENode& node = mesh.Node(i);
-		for (int j = 0; j < node.m_ID.size(); ++j)
+		for (int j = 0; j < node.m_dofs.size(); ++j)
 		{
-			int id = node.m_ID[j];
+			int id = node.m_dofs[j];
 
 			if (id >= 0) m_freeDofs.push_back(id);
 			if (id < -1) m_prescribedDofs.push_back(-id - 2);

@@ -122,12 +122,12 @@ void FEElasticTrussDomain::UnpackLM(FEElement &el, vector<int>& lm)
 	lm.resize(6);
 	FENode& n1 = m_pMesh->Node(el.m_node[0]);
 	FENode& n2 = m_pMesh->Node(el.m_node[1]);
-	lm[0] = n1.m_ID[m_dofU[0]];
-	lm[1] = n1.m_ID[m_dofU[1]];
-	lm[2] = n1.m_ID[m_dofU[2]];
-	lm[3] = n2.m_ID[m_dofU[0]];
-	lm[4] = n2.m_ID[m_dofU[1]];
-	lm[5] = n2.m_ID[m_dofU[2]];
+	lm[0] = n1.m_dofs[m_dofU[0]];
+	lm[1] = n1.m_dofs[m_dofU[1]];
+	lm[2] = n1.m_dofs[m_dofU[2]];
+	lm[3] = n2.m_dofs[m_dofU[0]];
+	lm[4] = n2.m_dofs[m_dofU[1]];
+	lm[5] = n2.m_dofs[m_dofU[2]];
 }
 
 //-----------------------------------------------------------------------------

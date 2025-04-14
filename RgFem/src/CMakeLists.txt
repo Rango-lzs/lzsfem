@@ -179,23 +179,23 @@ set(FEMCORE_HEADERS
     femcore/RTTI/MetaClass.h
     femcore/RTTI/MetaClassStore.h
     femcore/RTTI/RTTIMacroDefine.h
-    femcore/Solver/BFGSSolver.h
-    femcore/Solver/EigenSolver.h
-    femcore/Solver/FEBroydenStrategy.h
+    #femcore/Solver/BFGSSolver.h
+    #femcore/Solver/EigenSolver.h
+    #femcore/Solver/FEBroydenStrategy.h
     femcore/Solver/FECGSolidSolver.h
-    femcore/Solver/FEExplicitSolidSolver.h
-    femcore/Solver/FEFullNewtonStrategy.h
+    #femcore/Solver/FEExplicitSolidSolver.h
+    #femcore/Solver/FEFullNewtonStrategy.h
     femcore/Solver/FEGlobalData.h
     femcore/Solver/FELineSearch.h
     femcore/Solver/FELinearSolver.h
-    femcore/Solver/FEModifiedNewtonStrategy.h
+    #femcore/Solver/FEModifiedNewtonStrategy.h
     femcore/Solver/FENewtonSolver.h
     femcore/Solver/FENewtonStrategy.h
     femcore/Solver/FENodeReorder.h
-    femcore/Solver/FERigidSolver.h
+    #femcore/Solver/FERigidSolver.h
     femcore/Solver/FESolidSolver2.h
     femcore/Solver/FESolver.h
-    femcore/Solver/JFNKStrategy.h
+    #femcore/Solver/JFNKStrategy.h
     femcore/Solver/LUSolver.h
     femcore/Solver/LinearSolver.h
     femcore/Solver/SkylineSolver.h
@@ -211,6 +211,7 @@ set(FEMCORE_HEADERS
     femcore/fem_export.h
     femcore/sys.h
 )
+
 
 set(FEMCORE_SOURCES
     femcore/Callback.cpp
@@ -341,23 +342,23 @@ set(FEMCORE_SOURCES
     femcore/PointCurve.cpp
     femcore/RTTI/MetaClass.cpp
     femcore/RTTI/MetaClassStore.cpp
-    femcore/Solver/BFGSSolver.cpp
-    femcore/Solver/EigenSolver.cpp
-    femcore/Solver/FEBroydenStrategy.cpp
-    femcore/Solver/FECGSolidSolver.cpp
-    femcore/Solver/FEExplicitSolidSolver.cpp
+    #femcore/Solver/BFGSSolver.cpp
+    #femcore/Solver/EigenSolver.cpp
+    #femcore/Solver/FEBroydenStrategy.cpp
+    #femcore/Solver/FECGSolidSolver.cpp
+    #femcore/Solver/FEExplicitSolidSolver.cpp
     femcore/Solver/FEFullNewtonStrategy.cpp
     femcore/Solver/FEGlobalData.cpp
-    femcore/Solver/FELineSearch.cpp
+    #femcore/Solver/FELineSearch.cpp
     femcore/Solver/FELinearSolver.cpp
-    femcore/Solver/FEModifiedNewtonStrategy.cpp
+    #femcore/Solver/FEModifiedNewtonStrategy.cpp
     femcore/Solver/FENewtonSolver.cpp
     femcore/Solver/FENewtonStrategy.cpp
     femcore/Solver/FENodeReorder.cpp
-    femcore/Solver/FERigidSolver.cpp
+    #femcore/Solver/FERigidSolver.cpp
     femcore/Solver/FESolidSolver2.cpp
     femcore/Solver/FESolver.cpp
-    femcore/Solver/JFNKStrategy.cpp
+    #femcore/Solver/JFNKStrategy.cpp
     femcore/Solver/LUSolver.cpp
     femcore/Solver/LinearSolver.cpp
     femcore/Solver/SkylineSolver.cpp

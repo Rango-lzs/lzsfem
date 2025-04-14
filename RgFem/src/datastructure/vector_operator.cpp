@@ -127,7 +127,7 @@ void gather(vector<double>& v, FEMesh& mesh, int ndof)
 	for (int i=0; i<NN; ++i)
 	{
 		FENode& node = mesh.Node(i);
-		int n = node.m_ID[ndof]; if (n >= 0) v[n] = node.get(ndof);
+		int n = node.m_dofs[ndof]; if (n >= 0) v[n] = node.get(ndof);
 	}
 }
 
@@ -140,7 +140,7 @@ void gather(vector<double>& v, FEMesh& mesh, const vector<int>& dof)
 		FENode& node = mesh.Node(i);
 		for (int j=0; j<NDOF; ++j)
 		{
-			int n = node.m_ID[dof[j]]; 
+			int n = node.m_dofs[dof[j]]; 
 			if (n >= 0) v[n] = node.get(dof[j]);
 		}
 	}
@@ -152,7 +152,7 @@ void scatter(vector<double>& v, FEMesh& mesh, int ndof)
 	for (int i=0; i<NN; ++i)
 	{
 		FENode& node = mesh.Node(i);
-		int n = node.m_ID[ndof];
+		int n = node.m_dofs[ndof];
 		if (n >= 0) node.set(ndof, v[n]);
 	}
 }
@@ -165,9 +165,9 @@ void scatter3(vector<double>& v, FEMesh& mesh, int ndof1, int ndof2, int ndof3)
 	{
 		FENode& node = mesh.Node(i);
 		int n;
-		n = node.m_ID[ndof1]; if (n >= 0) node.set(ndof1, v[n]);
-		n = node.m_ID[ndof2]; if (n >= 0) node.set(ndof2, v[n]);
-		n = node.m_ID[ndof3]; if (n >= 0) node.set(ndof3, v[n]);
+		n = node.m_dofs[ndof1]; if (n >= 0) node.set(ndof1, v[n]);
+		n = node.m_dofs[ndof2]; if (n >= 0) node.set(ndof2, v[n]);
+		n = node.m_dofs[ndof3]; if (n >= 0) node.set(ndof3, v[n]);
 	}
 }
 
@@ -179,7 +179,7 @@ void scatter(vector<double>& v, FEMesh& mesh, const FEDofList& dofs)
 		FENode& node = mesh.Node(i);
 		for (int j = 0; j < dofs.Size(); ++j)
 		{
-			int n = node.m_ID[dofs[j]]; if (n >= 0) node.set(dofs[j], v[n]);
+			int n = node.m_dofs[dofs[j]]; if (n >= 0) node.set(dofs[j], v[n]);
 		}
 	}
 }

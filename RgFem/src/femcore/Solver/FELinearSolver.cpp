@@ -353,7 +353,7 @@ void FELinearSolver::Update(std::vector<double>& u)
 		FENode& node = mesh.Node(i);
 		for (int j=0; j<m_dof.size(); ++j)
 		{
-			int n = node.m_ID[m_dof[j]];
+			int n = node.m_dofs[m_dof[j]];
 			if (n >= 0) node.set(m_dof[j], u[n]);
 			else if (-n-2 >= 0) node.set(m_dof[j], u[-n-2]);
 		}

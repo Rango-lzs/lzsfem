@@ -86,7 +86,7 @@ void FEGlobalVector::Assemble(int nodeId, int dof, double f)
 {
 	// get the equation number
 	FENode& node = m_fem.GetMesh().Node(nodeId);
-	int n = node.m_ID[dof];
+	int n = node.m_dofs[dof];
 
 	// assemble into global vector
 	if (n >= 0) {

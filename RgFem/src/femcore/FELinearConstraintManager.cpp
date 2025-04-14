@@ -189,7 +189,7 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 						FELinearConstraint::dof_iterator is = plc->begin();
 						for (int l = ne; l<ne + ns; ++l, ++is) 
 						{
-							int neq = mesh.Node((*is)->node).m_ID[(*is)->dof];
+							int neq = mesh.Node((*is)->node).m_dofs[(*is)->dof];
 							lm[l] = neq;
 						}
 
@@ -219,7 +219,7 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 					for (int j = 0; j<ni; ++j)
 					{
 						const FELinearConstraintDOF& sj = lc.GetChildDof(j);
-						int neq = mesh.Node(sj.node).m_ID[sj.dof];
+						int neq = mesh.Node(sj.node).m_dofs[sj.dof];
 						lm[n++] = neq;
 					}
 				}
@@ -391,7 +391,7 @@ void FELinearConstraintManager::AssembleResidual(vector<double>& R, vector<int>&
 				FELinearConstraint::dof_iterator is = lc.begin();
 				for (int j = 0; j < ns; ++j, ++is)
 				{
-					int I = mesh.Node((*is)->node).m_ID[(*is)->dof];
+					int I = mesh.Node((*is)->node).m_dofs[(*is)->dof];
 					if (I >= 0)
 					{
 						double A = (*is)->val;
@@ -435,7 +435,7 @@ void FELinearConstraintManager::AssembleStiffness(FEGlobalMatrix& G, vector<doub
 				FELinearConstraint::dof_iterator is = Li.begin();
 				for (int k = 0; k < (int)Li.Size(); ++k, ++is)
 				{
-					int I = mesh.Node((*is)->node).m_ID[(*is)->dof];
+					int I = mesh.Node((*is)->node).m_dofs[(*is)->dof];
 					int J = lmj[j];
 					double kij = (*is)->val*ke[i][j];
 					if ((J >= 0) && (I >= 0)) K.add(I, J, kij);
@@ -458,7 +458,7 @@ void FELinearConstraintManager::AssembleStiffness(FEGlobalMatrix& G, vector<doub
 				for (int k = 0; k < (int)Lj.Size(); ++k, ++js)
 				{
 					int I = lmi[i];
-					int J = mesh.Node((*js)->node).m_ID[(*js)->dof];
+					int J = mesh.Node((*js)->node).m_dofs[(*js)->dof];
 					double kij = (*js)->val*ke[i][j];
 					if ((J >= 0) && (I >= 0)) K.add(I, J, kij);
 					else
@@ -494,8 +494,8 @@ void FELinearConstraintManager::AssembleStiffness(FEGlobalMatrix& G, vector<doub
 					js = Lj.begin();
 					for (int l = 0; l < (int)Lj.Size(); ++l, ++js)
 					{
-						int I = mesh.Node((*is)->node).m_ID[(*is)->dof];
-						int J = mesh.Node((*js)->node).m_ID[(*js)->dof];;
+						int I = mesh.Node((*is)->node).m_dofs[(*is)->dof];
+						int J = mesh.Node((*js)->node).m_dofs[(*js)->dof];;
 						double kij = ke[i][j] * (*is)->val*(*js)->val;
 
 						if ((J >= 0) && (I >= 0)) K.add(I, J, kij);
@@ -514,7 +514,7 @@ void FELinearConstraintManager::AssembleStiffness(FEGlobalMatrix& G, vector<doub
 					is = Li.begin();
 					for (int k = 0; k < (int)Li.Size(); ++k, ++is)
 					{
-						int I = mesh.Node((*is)->node).m_ID[(*is)->dof];
+						int I = mesh.Node((*is)->node).m_dofs[(*is)->dof];
 						double ri = (*is)->val * ke[i][j] * m_up[lj];
 						if (I >= 0) R[I] -= ri;
 					}

@@ -83,7 +83,7 @@ public:
     virtual void Reset();
 
     // Initialize linear equation system
-    virtual bool InitEquations() = 0;
+    virtual bool InitEquations();
 
     //! add equations
     void AddEquations(int neq, int partition = 0);

@@ -22,6 +22,7 @@
 #include "logger/log.h"
 #include "materials/FEMaterial.h"
 #include "Timer.h"
+#include "femcore/Callback.h"
 
 #include <map>
 #include <stdarg.h>
@@ -927,22 +928,19 @@ bool FEModel::Solve()
     bool bOk = true;
 
     // loop over all analysis steps
-    // Note that we don't necessarily from step 0.
-    // This is because the user could have restarted
-    // the analysis.
+    // Note that we don't necessarily from step 0 as user can use restart~
     for (size_t iStep = m_imp->m_nStep; iStep < Steps(); ++iStep)
     {
         // set the current analysis step
-        m_imp->m_nStep = (int)iStep;
+        m_imp->m_nStep = iStep;
         m_imp->mp_CurStep = m_imp->m_Step[(int)iStep];
 
-        // do callback
         DoCallback(CB_STEP_ACTIVE);
 
         // solve the analaysis step
         bOk = m_imp->mp_CurStep->Solve();
 
-        if (iStep + 1 == Steps())
+        if (iStep + 1 == Steps())  //the last step
         {
             m_imp->m_bsolved = bOk;
         }
@@ -951,7 +949,7 @@ bool FEModel::Solve()
         DoCallback(CB_STEP_SOLVED);
 
         // break if the step has failed
-        if (bOk == false)
+        if (!bOk)
             break;
     }
 

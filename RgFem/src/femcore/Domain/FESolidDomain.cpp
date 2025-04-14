@@ -2586,7 +2586,7 @@ void FESolidDomain::LoadVector(
 			for (int j = 0; j < neln; ++j)
 			{
 				FENode& node = mesh.Node(el.m_node[j]);
-				vector<int>& ID = node.m_ID;
+				vector<int>& ID = node.m_dofs;
 				for (int k = 0; k < dofPerNode; ++k)
 				{
 					lm[dofPerNode*j + k] = ID[dofList[k]];
@@ -2661,7 +2661,7 @@ void FESolidDomain::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a
 		for (int j = 0; j < neln; ++j)
 		{
 			FENode& node = mesh.Node(el.m_node[j]);
-			std::vector<int>& ID = node.m_ID;
+			std::vector<int>& ID = node.m_dofs;
 
 			for (int k = 0; k < dofPerNode_a; ++k)
 				lma[dofPerNode_a*j + k] = ID[dofList_a[k]];

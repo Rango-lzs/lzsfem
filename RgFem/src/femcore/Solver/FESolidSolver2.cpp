@@ -472,19 +472,19 @@ void FESolidSolver2::UpdateIncrements(vector<double>& Ui, vector<double>& ui, bo
         
 		// displacement dofs
 		// current position = initial + total at prev conv step + total increment so far + current increment
-		if ((n = node.m_ID[m_dofU[0]]) >= 0) Ui[n] += ui[n];
-		if ((n = node.m_ID[m_dofU[1]]) >= 0) Ui[n] += ui[n];
-		if ((n = node.m_ID[m_dofU[2]]) >= 0) Ui[n] += ui[n];
+		if ((n = node.m_dofs[m_dofU[0]]) >= 0) Ui[n] += ui[n];
+		if ((n = node.m_dofs[m_dofU[1]]) >= 0) Ui[n] += ui[n];
+		if ((n = node.m_dofs[m_dofU[2]]) >= 0) Ui[n] += ui[n];
         
         // rotational dofs
-        if ((n = node.m_ID[m_dofSQ[0]]) >= 0) Ui[n] += ui[n];
-        if ((n = node.m_ID[m_dofSQ[1]]) >= 0) Ui[n] += ui[n];
-        if ((n = node.m_ID[m_dofSQ[2]]) >= 0) Ui[n] += ui[n];
+        if ((n = node.m_dofs[m_dofSQ[0]]) >= 0) Ui[n] += ui[n];
+        if ((n = node.m_dofs[m_dofSQ[1]]) >= 0) Ui[n] += ui[n];
+        if ((n = node.m_dofs[m_dofSQ[2]]) >= 0) Ui[n] += ui[n];
         
         // shell dofs
-        if ((n = node.m_ID[m_dofSU[0]]) >= 0) Ui[n] += ui[n];
-        if ((n = node.m_ID[m_dofSU[1]]) >= 0) Ui[n] += ui[n];
-        if ((n = node.m_ID[m_dofSU[2]]) >= 0) Ui[n] += ui[n];
+        if ((n = node.m_dofs[m_dofSU[0]]) >= 0) Ui[n] += ui[n];
+        if ((n = node.m_dofs[m_dofSU[1]]) >= 0) Ui[n] += ui[n];
+        if ((n = node.m_dofs[m_dofSU[2]]) >= 0) Ui[n] += ui[n];
 	}
 
 	for (int i = 0; i < fem.NonlinearConstraints(); ++i)
@@ -535,9 +535,9 @@ void FESolidSolver2::Update2(const vector<double>& ui)
 	{
 		FENode& node = mesh.Node(i);
         vec3d du(0, 0, 0);
-        int nx = -node.m_ID[m_dofU[0]] - 2; if (nx >= 0) du.x = ui[nx];
-        int ny = -node.m_ID[m_dofU[1]] - 2; if (ny >= 0) du.y = ui[ny];
-        int nz = -node.m_ID[m_dofU[2]] - 2; if (nz >= 0) du.z = ui[nz];
+        int nx = -node.m_dofs[m_dofU[0]] - 2; if (nx >= 0) du.x = ui[nx];
+        int ny = -node.m_dofs[m_dofU[1]] - 2; if (ny >= 0) du.y = ui[ny];
+        int nz = -node.m_dofs[m_dofU[2]] - 2; if (nz >= 0) du.z = ui[nz];
         
 		if (node.m_rid == -1)
 		{
@@ -545,9 +545,9 @@ void FESolidSolver2::Update2(const vector<double>& ui)
 			node.m_rt = rt;
 		}
         vec3d db(0, 0, 0);
-        int nbx = -node.m_ID[m_dofSU[0]] - 2; if (nbx >= 0) db.x = ui[nbx];
-        int nby = -node.m_ID[m_dofSU[1]] - 2; if (nby >= 0) db.y = ui[nby];
-        int nbz = -node.m_ID[m_dofSU[2]] - 2; if (nbz >= 0) db.z = ui[nbz];
+        int nbx = -node.m_dofs[m_dofSU[0]] - 2; if (nbx >= 0) db.x = ui[nbx];
+        int nby = -node.m_dofs[m_dofSU[1]] - 2; if (nby >= 0) db.y = ui[nby];
+        int nbz = -node.m_dofs[m_dofSU[2]] - 2; if (nbz >= 0) db.z = ui[nbz];
 
         vec3d dt = node.m_d0 + node.get_vec3d(m_dofU[0], m_dofU[1], m_dofU[2]) + du
         - (node.get_vec3d(m_dofSU[0], m_dofSU[1], m_dofSU[2]) + db);
@@ -1329,14 +1329,14 @@ void FESolidSolver2::ExternalForces(FEGlobalVector& RHS)
 		node.set_load(m_dofU[2], 0);
 
 		int n;
-		if ((n = node.m_ID[m_dofU[0]]) >= 0) node.set_load(m_dofU[0], -m_Fr[n]);
-		if ((n = -node.m_ID[m_dofU[0]] - 2) >= 0) node.set_load(m_dofU[0], -m_Fr[n]);
+		if ((n = node.m_dofs[m_dofU[0]]) >= 0) node.set_load(m_dofU[0], -m_Fr[n]);
+		if ((n = -node.m_dofs[m_dofU[0]] - 2) >= 0) node.set_load(m_dofU[0], -m_Fr[n]);
 
-		if ((n = node.m_ID[m_dofU[1]]) >= 0) node.set_load(m_dofU[1], -m_Fr[n]);
-		if ((n = -node.m_ID[m_dofU[1]] - 2) >= 0) node.set_load(m_dofU[1], -m_Fr[n]);
+		if ((n = node.m_dofs[m_dofU[1]]) >= 0) node.set_load(m_dofU[1], -m_Fr[n]);
+		if ((n = -node.m_dofs[m_dofU[1]] - 2) >= 0) node.set_load(m_dofU[1], -m_Fr[n]);
 
-		if ((n = node.m_ID[m_dofU[2]]) >= 0) node.set_load(m_dofU[2], -m_Fr[n]);
-		if ((n = -node.m_ID[m_dofU[2]] - 2) >= 0) node.set_load(m_dofU[2], -m_Fr[n]);
+		if ((n = node.m_dofs[m_dofU[2]]) >= 0) node.set_load(m_dofU[2], -m_Fr[n]);
+		if ((n = -node.m_dofs[m_dofU[2]] - 2) >= 0) node.set_load(m_dofU[2], -m_Fr[n]);
 
 		// add nodal loads
 		double s = (m_arcLength>0 ? m_al_lam : 1.0);

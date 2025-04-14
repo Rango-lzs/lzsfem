@@ -1019,7 +1019,7 @@ void FEElasticANSShellDomain::UnpackLM(FEElement& el, vector<int>& lm)
     for (int i=0; i<N; ++i)
     {
         FENode& node = m_pMesh->Node(el.m_node[i]);
-        vector<int>& id = node.m_ID;
+        vector<int>& id = node.m_dofs;
         
         // first the displacement dofs
         lm[6*i  ] = id[m_dofU[0]];

@@ -447,7 +447,7 @@ void FESurface::UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, v
 		for (int k = 0; k < dofPerNode; ++k)
 		{
 			if (dofList[k] >= 0)
-				lm[dofPerNode*j + k] = node.m_ID[dofList[k]];
+				lm[dofPerNode*j + k] = node.m_dofs[dofList[k]];
 		}
 	}
 }

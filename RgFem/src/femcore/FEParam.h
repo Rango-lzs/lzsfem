@@ -217,14 +217,10 @@ public:
     bool CopyState(const FEParam& p);
 
     void setOwner(FEParamObject* pc);
-    const FEParamObject* owner() const;
+    FEParamObject* owner() const;
 
     FEParam* SetFlags(unsigned int flags);
     unsigned int GetFlags() const;
-
-    void SetWatchVariable(bool* watchVar);
-    bool* GetWatchVariable();
-    void SetWatchFlag(bool b);
 
     bool IsHidden() const;
 
