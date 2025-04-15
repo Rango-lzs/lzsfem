@@ -11,6 +11,8 @@
 #include "femcore/Solver/FESolver.h"
 #include "femcore/TimeStep/FETimeStepController.h"
 #include "logger/log.h"
+#include "femcore/Callback.h"
+#include "femcore/FEException.h"
 
 //---------------------------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FEAnalysis, FEObjectBase)
@@ -336,7 +338,7 @@ bool FEAnalysis::Solve()
         feLog("\n===== beginning time step %d : %lg =====\n", m_ntimesteps + 1, newTime);
 
         // initialize the solver step
-        if (GetFESolver()->InitStep(newTime) == false)
+        if (!GetFESolver()->InitStep(newTime))
         {
             bConv = false;
             break;
@@ -430,20 +432,20 @@ bool FEAnalysis::Solve()
 // all the exceptions.
 int FEAnalysis::SolveTimeStep()
 {
-    int nerr = 0;
+    int iErr = 0;
     try
     {
         // solve this timestep,
         int niter = 0;
-        bool bconv = false;
-        while (bconv == false)
+        bool bConv = false;
+        while (!bConv)
         {
 
             // solve the time step
-            bconv = GetFESolver()->SolveStep();
+            bConv = GetFESolver()->SolveStep();
 
             // Apply any mesh adaptors
-            if (bconv)
+            if (bConv)
             {
                 FEModel& fem = *GetFEModel();
 
@@ -455,49 +457,49 @@ int FEAnalysis::SolveTimeStep()
             else
                 break;
         }
-        nerr = (bconv ? 0 : 1);
+        iErr = (bConv ? 0 : 1);
     }
     catch (LinearSolverFailed e)
     {
         feLogError(e.what());
-        nerr = 2;
+        iErr = 2;
     }
     catch (FactorizationError e)
     {
         feLogError(e.what());
-        nerr = 2;
+        iErr = 2;
     }
     catch (NANInResidualDetected e)
     {
         feLogError(e.what());
-        nerr = 1;  // don't abort, instead let's retry the step
+        iErr = 1;  // don't abort, instead let's retry the step
     }
     catch (NANInSolutionDetected e)
     {
         feLogError(e.what());
-        nerr = 1;  // don't abort, instead let's retry the step
+        iErr = 1;  // don't abort, instead let's retry the step
     }
     catch (FEMultiScaleException)
     {
         feLogError("The RVE problem has failed. Aborting macro run.");
-        nerr = 2;
+        iErr = 2;
     }
     catch (std::bad_alloc e)
     {
         feLogError("A memory allocation failure has occured.\nThe program will now be terminated.");
-        nerr = 2;
+        iErr = 2;
     }
     catch (std::exception e)
     {
         feLogError("Exception detected: %s\n", e.what());
-        nerr = 2;
+        iErr = 2;
     }
     catch (...)
     {
-        nerr = 2;
+        iErr = 2;
     }
 
-    return nerr;
+    return iErr;
 }
 
 //-----------------------------------------------------------------------------

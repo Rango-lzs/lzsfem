@@ -11,6 +11,7 @@
 #include "LinearSolver.h"
 #include "logger/log.h"
 #include "femcore/sys.h"
+#include "femcore/FEException.h"
 
 //-----------------------------------------------------------------------------
 // define the parameter list
@@ -493,7 +494,7 @@ void FENewtonSolver::Serialize(DumpStream& ar)
 //!	quasi-Newton iterations.
 bool FENewtonSolver::SolveStep()
 {
-    bool bret;
+    bool bRet;
 
     // initialize counters
     m_niter = 0;  // nr of iterations
@@ -505,7 +506,7 @@ bool FENewtonSolver::SolveStep()
     try
     {
         // let's try to call Quasin
-        bret = Quasin();
+        bRet = Quasin();
     }
     catch (FEException e)
     {
@@ -516,7 +517,7 @@ bool FENewtonSolver::SolveStep()
         return false;
     }
 
-    if (bret)
+    if (bRet)
     {
         // print a convergence summary to the felog file
         feLog("\nconvergence summary\n");
@@ -537,7 +538,7 @@ bool FENewtonSolver::SolveStep()
         m_breshape = true;
     }
 
-    return bret;
+    return bRet;
 }
 
 //-----------------------------------------------------------------------------

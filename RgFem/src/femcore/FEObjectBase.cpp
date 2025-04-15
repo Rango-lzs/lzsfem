@@ -192,7 +192,7 @@ bool FEObjectBase::Init()
 	if (Validate() == false) return false;
 
 	// initialize properties
-	const int nprop = (int)m_Prop.size();
+	/*const int nprop = (int)m_Prop.size();
 	for (int i = 0; i<nprop; ++i)
 	{
 		FEProperty* pi = m_Prop[i];
@@ -209,7 +209,7 @@ bool FEObjectBase::Init()
 			feLogError("A nullptr was set for property i");
 			return false;
 		}
-	}
+	}*/
 	return true;
 }
 
