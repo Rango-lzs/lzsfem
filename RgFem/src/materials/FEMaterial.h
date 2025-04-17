@@ -66,7 +66,7 @@ public:
 
 private:
     FEDomainList m_domList;                   //!< list of domains that use this material
-    DECLARE_FECORE_CLASS();
+    DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
@@ -79,5 +79,5 @@ public:
     // evaluate local coordinate system at material point
     Matrix3d GetLocalCS(const FEMaterialPoint& mp) override;
 
-    DECLARE_FECORE_CLASS();
+    DECLARE_PARAM_LIST();
 };

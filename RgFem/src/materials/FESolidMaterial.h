@@ -12,30 +12,31 @@ public:
 	//! constructor
 	FESolidMaterial(FEModel* pfem);
 
-	//! calculate stress at material point
+	//柯西应力 causy stress
 	virtual Matrix3ds Stress(FEMaterialPoint& pt) = 0;
 
-	//! calculate tangent stiffness at material point
+	//calculate spatial tangent stiffness at material point
 	virtual tens4ds Tangent(FEMaterialPoint& pt) = 0;
 
-	//! calculate the 2nd Piola-Kirchhoff stress at material point
+	//calculate the 2nd Piola-Kirchhoff stress at material point
 	virtual Matrix3ds PK2Stress(FEMaterialPoint& pt, const Matrix3ds E);
 
-	//! calculate material tangent stiffness at material point
+	//calculate material tangent stiffness at material poin
 	virtual tens4dmm MaterialTangent(FEMaterialPoint& pt, const Matrix3ds E);
 
-    //! calculate secant tangent stiffness at material point
+    // calculate secant tangent stiffness at material point 割线刚度
     virtual tens4dmm SecantTangent(FEMaterialPoint& pt, bool mat = false);
 
-	//! return the material density
-	void SetDensity(const double d);
+	//the material density
+	void SetDensity(double d);
 
-	//! evaluate density
+	//evaluate density
 	virtual double Density(FEMaterialPoint& pt);
 
 	//! Is this a rigid material or not
 	virtual bool IsRigid() const { return false; }
 
+	//返回切线或割线刚度阵
 	tens4dmm SolidTangent(FEMaterialPoint& pt);
 
 	virtual Matrix3ds SecantStress(FEMaterialPoint& pt, bool PK2 = false);

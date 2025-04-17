@@ -4,7 +4,6 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(${TARGET_NAME} SHARED "")
 target_compile_definitions(RgFem PRIVATE RgFem_Module)
 
-
 target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
 
 #Add CLI11 Library, a head only comand parse library
@@ -74,7 +73,6 @@ set(FEMCORE_HEADERS
     #femcore/FE3FieldElasticSolidDomain.h
     femcore/FEAnalysis/FEAnalysis.h
     femcore/FEAnalysis/RgAnalysis.h
-    femcore/FEBeamDomain.h
     femcore/FEBodyLoad.h
     femcore/FEBoundaryCondition.h
     femcore/FECore.h
@@ -85,9 +83,6 @@ set(FEMCORE_HEADERS
     femcore/FEDataMap.h
     femcore/FEDiscreteSet.h
     femcore/FEDofList.h
-    femcore/FEDomain.h
-    femcore/FEElasticDomain.h
-    femcore/FEElasticSolidDomain.h
     femcore/FEException.h
     femcore/FEFacetSet.h
     femcore/FEFunction1D.h
@@ -127,7 +122,6 @@ set(FEMCORE_HEADERS
     femcore/FEPropertyT.h
     femcore/FERgModel.h
     femcore/FEScalarValuator.h
-    femcore/FEShellDomain.h
     femcore/FESolidAnalysis.h
     femcore/FEStepComponent.h
     femcore/FESurface.h
@@ -246,7 +240,6 @@ set(FEMCORE_SOURCES
     femcore/ElementDataRecord.cpp
     #femcore/FE3FieldElasticSolidDomain.cpp
     femcore/FEAnalysis/FEAnalysis.cpp
-    femcore/FEBeamDomain.cpp
     femcore/FEBodyLoad.cpp
     femcore/FEBoundaryCondition.cpp
     femcore/FECore.cpp
@@ -257,9 +250,6 @@ set(FEMCORE_SOURCES
     femcore/FEDataMap.cpp
     femcore/FEDiscreteSet.cpp
     femcore/FEDofList.cpp
-    femcore/FEDomain.cpp
-    femcore/FEElasticDomain.cpp
-    femcore/FEElasticSolidDomain.cpp
     femcore/FEException.cpp
     femcore/FEFacetSet.cpp
     femcore/FEFunction1D.cpp
@@ -296,7 +286,6 @@ set(FEMCORE_SOURCES
     femcore/FEProperty.cpp
     femcore/FERgModel.cpp
     femcore/FEScalarValuator.cpp
-    femcore/FEShellDomain.cpp
     femcore/FESolidAnalysis.cpp
     femcore/FEStepComponent.cpp
     femcore/FESurface.cpp

@@ -334,6 +334,7 @@ void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, matrix &
 		// we only calculate the upper triangular part
 		// since ke is symmetric. The other part is
 		// determined below using this symmetry.
+		//按照3*3的分块矩阵进行计算
 		for (int i=0, i3=0; i<neln; ++i, i3 += 3)
 		{
 			Gxi = G[i].x;
@@ -388,7 +389,7 @@ void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, matrix &
 }
 
 //-----------------------------------------------------------------------------
-void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& LS)
+void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& ls)
 {
 	// repeat over all solid elements
 	int NE = Elements();
@@ -396,27 +397,27 @@ void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& LS)
 	#pragma omp parallel for shared (NE)
 	for (int iel=0; iel<NE; ++iel)
 	{
-		FESolidElement& el = m_Elem[iel];
+		FESolidElement& elem = m_Elem[iel];
 
-		if (el.isActive()) {
+		if (elem.isActive()) {
 
 			// get the element's LM std::vector
 			std::vector<int> lm;
-			UnpackLM(el, lm);
+			UnpackLM(elem, lm);
 
 			// element stiffness matrix
-			FEElementMatrix ke(el, lm);
+			FEElementMatrix ke(elem, lm);
 
 			// create the element's stiffness matrix
-			int ndof = 3 * el.Nodes();
+			int ndof = 3 * elem.Nodes();
 			ke.resize(ndof, ndof);
 			ke.zero();
 
 			// calculate geometrical stiffness
-			ElementGeometricalStiffness(el, ke);
+			ElementGeometricalStiffness(elem, ke);
 
 			// calculate material stiffness
-			ElementMaterialStiffness(el, ke);
+			ElementMaterialStiffness(elem, ke);
 
 /*			// assign symmetic parts
 			// TODO: Can this be omitted by changing the Assemble routine so that it only
@@ -426,7 +427,7 @@ void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& LS)
 					ke[j][i] = ke[i][j];
 */
 			// assemble element matrix in global stiffness matrix
-			LS.Assemble(ke);
+			ls.Assemble(ke);
 		}
 	}
 }
