@@ -58,6 +58,10 @@ public:
         return (int)m_dofs.size();
     }
 
+    /* 
+    * dof : the local dof index
+    * idx : the global equation number
+    */
     void setDofIdx(int dof, int idx);
 
     //! Get the nodal ID
@@ -169,13 +173,13 @@ public:
 
 public:
     // dof functions
-    void set_bc(int ndof, int bcflag)
+    void setDofState(int idof, int bcflag)
     {
-        m_BC[ndof] = ((m_BC[ndof] & 0xF0) | bcflag);
+        m_BC[idof] = ((m_BC[idof] & 0xF0) | bcflag);
     }
-    void set_active(int ndof)
+    void set_active(int idof)
     {
-        m_BC[ndof] |= 0x10;
+        m_BC[idof] |= 0x10;
     }
     void set_inactive(int ndof)
     {
@@ -211,7 +215,7 @@ public:
 private:
     int mId;             //!< nodal ID
 
-    std::vector<int> m_BC;  //!< boundary condition array, 用于标识自由度的状态，fix ，free， prescribe
+    std::vector<int> m_BC;             //!< boundary condition array, 用于标识自由度的状态，fix ，free， prescribe
     std::vector<double> m_val_t;      //!< current nodal DOF values
     std::vector<double> m_val_p;      //!< previous nodal DOF values
     std::vector<double> m_Fr;         //!< equivalent nodal forces

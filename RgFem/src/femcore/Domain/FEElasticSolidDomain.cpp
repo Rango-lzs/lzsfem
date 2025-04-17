@@ -1,32 +1,3 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEElasticSolidDomain.h"
 #include "FEElasticMaterial.h"
 #include "FEBodyForce.h"
@@ -36,6 +7,7 @@ SOFTWARE.*/
 #include <FECore/sys.h>
 #include "FEBioMech.h"
 #include <FECore/FELinearSystem.h>
+#include "materials/FEElasticMaterialPoint.h"
 
 //-----------------------------------------------------------------------------
 //! constructor
@@ -170,21 +142,21 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 		FESolidElement& el = m_Elem[i];
 
 		if (el.isActive()) {
-			// element force vector
-			vector<double> fe;
-			vector<int> lm;
+			// element force std::vector
+			std::vector<double> fe;
+			std::vector<int> lm;
 
-			// get the element force vector and initialize it to zero
+			// get the element force std::vector and initialize it to zero
 			int ndof = 3 * el.Nodes();
 			fe.assign(ndof, 0);
 
-			// calculate internal force vector
+			// calculate internal force std::vector
 			ElementInternalForce(el, fe);
 
-			// get the element's LM vector
+			// get the element's LM std::vector
 			UnpackLM(el, lm);
 
-			// assemble element 'fe'-vector into global R vector
+			// assemble element 'fe'-std::vector into global R std::vector
 			R.Assemble(el.m_node, lm, fe);
 		}
 	}
@@ -193,7 +165,7 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 //-----------------------------------------------------------------------------
 //! calculates the internal equivalent nodal forces for solid elements
 
-void FEElasticSolidDomain::ElementInternalForce(FESolidElement& el, vector<double>& fe)
+void FEElasticSolidDomain::ElementInternalForce(FESolidElement& el, std::vector<double>& fe)
 {
 	// jacobian matrix, inverse jacobian matrix and determinants
 	double Ji[3][3];
@@ -214,8 +186,8 @@ void FEElasticSolidDomain::ElementInternalForce(FESolidElement& el, vector<doubl
 
 		detJt *= gw[n];
 
-		// get the stress vector for this integration point
-        const mat3ds& s = pt.m_s;
+		// get the stress std::vector for this integration point
+        const Matrix3ds& s = pt.m_s;
 
 		const double* Gr = el.Gr(n);
 		const double* Gs = el.Gs(n);
@@ -231,7 +203,7 @@ void FEElasticSolidDomain::ElementInternalForce(FESolidElement& el, vector<doubl
 
 			// calculate internal force
 			// the '-' sign is so that the internal forces get subtracted
-			// from the global residual vector
+			// from the global residual std::vector
 			fe[3*i  ] -= ( Gx*s.xx() +
 				           Gy*s.xy() +
 					       Gz*s.xz() )*detJt;
@@ -257,7 +229,7 @@ void FEElasticSolidDomain::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 	// dofs for interface nodes (see UnpackLM). Is that an issue?
 
 	// evaluate the residual contribution
-	LoadVector(R, m_dofU, [=](FEMaterialPoint& mp, int node_a, std::vector<double>& fa) {
+	LoadVector(R, m_dofU, [=](FEMaterialPoint& mp, int node_a, std::std::vector<double>& fa) {
 
 		// evaluate density
 		double density = m_pMat->Density(mp);
@@ -301,7 +273,7 @@ void FEElasticSolidDomain::ElementGeometricalStiffness(FESolidElement &el, matri
 		FEElasticMaterialPoint& pt = *(mp.ExtractData<FEElasticMaterialPoint>());
 
 		// element's Cauchy-stress tensor at gauss point n
-		mat3ds& s = pt.m_s;
+		Matrix3ds& s = pt.m_s;
 
 		for (int i = 0; i<neln; ++i)
 			for (int j = 0; j<neln; ++j)
@@ -346,6 +318,8 @@ void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, matrix &
 	for (int n=0; n<nint; ++n)
 	{
 		// calculate jacobian and shape function gradients
+        // alpha,HHT time integration parameters
+		//G £º dH/dx
 		detJt = ShapeGradient(el, n, G, m_alphaf)*gw[n]*m_alphaf;
 
 		// setup the material point
@@ -426,8 +400,8 @@ void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& LS)
 
 		if (el.isActive()) {
 
-			// get the element's LM vector
-			vector<int> lm;
+			// get the element's LM std::vector
+			std::vector<int> lm;
 			UnpackLM(el, lm);
 
 			// element stiffness matrix
@@ -504,7 +478,7 @@ void FEElasticSolidDomain::BodyForceStiffness(FELinearSystem& LS, FEBodyForce& b
 		double dens_n = mat->Density(mp);
 			
 		// get the stiffness
-		mat3d K = bodyForce->stiffness(mp);
+		Matrix3d K = bodyForce->stiffness(mp);
 
 		// shape functions
 		double* H = mp.m_shape;
@@ -615,7 +589,7 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 
 		// get the deformation gradient and determinant at intermediate time
         double Jt;
-        mat3d Ft, Fp;
+        Matrix3d Ft, Fp;
         Jt = defgrad(el, Ft, n);
         defgradp(el, Fp, n);
 
@@ -630,7 +604,7 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
             pt.m_J = pt.m_F.det();
 		}
 
-        mat3d Fi = pt.m_F.inverse();
+        Matrix3d Fi = pt.m_F.inverse();
         pt.m_L = (Ft - Fp)*Fi / dt;
 		if (m_update_dynamic)
 		{
@@ -651,7 +625,7 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 			FEElasticMaterial* pme = dynamic_cast<FEElasticMaterial*>(m_pMat);
 
 			// evaluate strain energy at current time
-			mat3d Ftmp = pt.m_F;
+			Matrix3d Ftmp = pt.m_F;
 			double Jtmp = pt.m_J;
 			pt.m_F = Ft;
 			pt.m_J = Jt;
@@ -659,7 +633,7 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 			pt.m_F = Ftmp;
 			pt.m_J = Jtmp;
 
-            mat3ds D = pt.RateOfDeformation();
+            Matrix3ds D = pt.RateOfDeformation();
             double D2 = D.dotdot(D);
             if (D2 > 0)
                 pt.m_s += D*(((pt.m_Wt-pt.m_Wp)/(dt*pt.m_J) - pt.m_s.dotdot(D))/D2);
@@ -669,14 +643,14 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 
 //-----------------------------------------------------------------------------
 //! Unpack the element LM data. 
-void FEElasticSolidDomain::UnpackLM(FEElement& el, vector<int>& lm)
+void FEElasticSolidDomain::UnpackLM(FEElement& el, std::vector<int>& lm)
 {
 	int N = el.Nodes();
 	lm.resize(N*6);
 	for (int i=0; i<N; ++i)
 	{
 		FENode& node = m_pMesh->Node(el.m_node[i]);
-		vector<int>& id = node.m_dofs;
+		std::vector<int>& id = node.m_dofs;
 
 		// first the displacement dofs
 		lm[3*i  ] = id[m_dofU[0]];
@@ -695,7 +669,7 @@ void FEElasticSolidDomain::UnpackLM(FEElement& el, vector<int>& lm)
     {
         if (sel.m_bitfc[i]) {
             FENode& node = m_pMesh->Node(el.m_node[i]);
-            vector<int>& id = node.m_dofs;
+            std::vector<int>& id = node.m_dofs;
             
             // first the displacement dofs
             lm[3*i  ] = id[m_dofSU[0]];
@@ -707,7 +681,7 @@ void FEElasticSolidDomain::UnpackLM(FEElement& el, vector<int>& lm)
 
 //-----------------------------------------------------------------------------
 // Calculate inertial forces \todo Why is F no longer needed?
-void FEElasticSolidDomain::InertialForces(FEGlobalVector& R, vector<double>& F)
+void FEElasticSolidDomain::InertialForces(FEGlobalVector& R, std::vector<double>& F)
 {
     int NE = Elements();
 #pragma omp parallel for shared(R, F)
@@ -717,28 +691,28 @@ void FEElasticSolidDomain::InertialForces(FEGlobalVector& R, vector<double>& F)
 		FESolidElement& el = m_Elem[i];
 
 		if (el.isActive()) {
-			// element force vector
-			vector<double> fe;
-			vector<int> lm;
+			// element force std::vector
+			std::vector<double> fe;
+			std::vector<int> lm;
 
-			// get the element force vector and initialize it to zero
+			// get the element force std::vector and initialize it to zero
 			int ndof = 3 * el.Nodes();
 			fe.assign(ndof, 0);
 
-			// calculate internal force vector
+			// calculate internal force std::vector
 			ElementInertialForce(el, fe);
 
-			// get the element's LM vector
+			// get the element's LM std::vector
 			UnpackLM(el, lm);
 
-			// assemble element 'fe'-vector into global R vector
+			// assemble element 'fe'-std::vector into global R std::vector
 			R.Assemble(el.m_node, lm, fe);
 		}
     }
 }
 
 //-----------------------------------------------------------------------------
-void FEElasticSolidDomain::ElementInertialForce(FESolidElement& el, vector<double>& fe)
+void FEElasticSolidDomain::ElementInertialForce(FESolidElement& el, std::vector<double>& fe)
 {
     int nint = el.GaussPoints();
     int neln = el.Nodes();

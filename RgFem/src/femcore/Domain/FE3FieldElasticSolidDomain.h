@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 //! The following domain implements the finite element formulation for a three-field
 //! volume element. 
-class FEBIOMECH_API FE3FieldElasticSolidDomain : public FEElasticSolidDomain
+class FEM_EXPORT FE3FieldElasticSolidDomain : public FEElasticSolidDomain
 {
 protected:
 	struct ELEM_DATA
@@ -65,12 +65,12 @@ public:
 	bool DoAugmentations() const;
 
 protected:
-	vector<ELEM_DATA>	m_Data;
+	std::vector<ELEM_DATA>	m_Data;
 
 	bool	m_blaugon;		//!< augmented lagrangian flag
 	double	m_augtol;		//!< augmented lagrangian tolerance
 	int		m_naugmin;		//!< minimum number of augmentations
 	int		m_naugmax;		//!< max number of augmentations
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };

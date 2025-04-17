@@ -31,6 +31,7 @@ endif()
 
 set(PROJECT_SOURCES "")
 
+
 # add app sources
 set(APP_SOURCES "")
 add_subdirectory(app)
@@ -48,8 +49,8 @@ set(FEMCORE_HEADERS
     femcore/DOFS.h
     femcore/DataRecord.h
     femcore/Domain/DomainDataRecord.h
-    femcore/Domain/FE3FieldElasticShellDomain.h
-    femcore/Domain/FE3FieldElasticSolidDomain.h
+    #femcore/Domain/FE3FieldElasticShellDomain.h
+    #femcore/Domain/FE3FieldElasticSolidDomain.h
     femcore/Domain/FEBeamDomain.h
     femcore/Domain/FEDomain.h
     femcore/Domain/FEDomain2D.h
@@ -70,7 +71,7 @@ set(FEMCORE_HEADERS
     femcore/Domain/FETrussDomain.h
     femcore/DomainDataRecord.h
     femcore/ElementDataRecord.h
-    femcore/FE3FieldElasticSolidDomain.h
+    #femcore/FE3FieldElasticSolidDomain.h
     femcore/FEAnalysis/FEAnalysis.h
     femcore/FEAnalysis/RgAnalysis.h
     femcore/FEBeamDomain.h
@@ -211,6 +212,9 @@ set(FEMCORE_HEADERS
     femcore/fecore_type.h
     femcore/fem_export.h
     femcore/sys.h
+    femcore/FELinearSystem.h
+    femcore/FESolidLinearSystem.h
+    femcore/tools.h
 )
 
 
@@ -218,8 +222,8 @@ set(FEMCORE_SOURCES
     femcore/Callback.cpp
     femcore/DataRecord.cpp
     femcore/Domain/DomainDataRecord.cpp
-    femcore/Domain/FE3FieldElasticShellDomain.cpp
-    femcore/Domain/FE3FieldElasticSolidDomain.cpp
+    #femcore/Domain/FE3FieldElasticShellDomain.cpp
+    #femcore/Domain/FE3FieldElasticSolidDomain.cpp
     femcore/Domain/FEBeamDomain.cpp
     femcore/Domain/FEDomain.cpp
     femcore/Domain/FEDomain2D.cpp
@@ -240,7 +244,7 @@ set(FEMCORE_SOURCES
     femcore/Domain/FETrussDomain.cpp
     femcore/DomainDataRecord.cpp
     femcore/ElementDataRecord.cpp
-    femcore/FE3FieldElasticSolidDomain.cpp
+    #femcore/FE3FieldElasticSolidDomain.cpp
     femcore/FEAnalysis/FEAnalysis.cpp
     femcore/FEBeamDomain.cpp
     femcore/FEBodyLoad.cpp
@@ -369,6 +373,9 @@ set(FEMCORE_SOURCES
     femcore/Timer.cpp
     femcore/fecore_debug.cpp
     femcore/fecore_type.cpp
+    femcore/FELinearSystem.cpp
+    femcore/FESolidLinearSystem.cpp
+    femcore/tools.cpp
 )
 
 set(PROJECT_SOURCES

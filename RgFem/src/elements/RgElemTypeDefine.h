@@ -142,3 +142,38 @@ enum ElementType
     // unspecified
     FE_ELEM_INVALID_TYPE = 0xFFFF
 };
+
+//! Helper class for creating domain classes.
+struct FE_Element_Spec
+{
+    ElementCategory eclass;
+    ElementShape eshape;
+    ElementType etype;
+    bool m_bthree_field;
+    int m_shell_formulation;
+    bool m_shell_norm_nodal;
+
+    bool m_but4;
+    double m_ut4_alpha;
+    bool m_ut4_bdev;
+
+    FE_Element_Spec()
+    {
+        eclass = FE_ELEM_INVALID_CLASS;
+        eshape = FE_ELEM_INVALID_SHAPE;
+        etype = FE_ELEM_INVALID_TYPE;
+        m_bthree_field = false;
+        m_shell_formulation = NEW_SHELL;
+        m_shell_norm_nodal = true;
+        m_but4 = false;
+        m_ut4_alpha = 0.05;
+        m_ut4_bdev = false;
+    }
+
+    bool operator==(const FE_Element_Spec& s)
+    {
+        if ((eclass == s.eclass) && (eshape == s.eshape) && (etype == s.etype))
+            return true;
+        return false;
+    }
+};

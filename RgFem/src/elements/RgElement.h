@@ -38,6 +38,8 @@ class RgMaterialPoint;
 class FEM_EXPORT FEElement
 {
 public:
+
+    static constexpr int MAX_NODES = 28;
     // Element Info
     FEElement();
     virtual ~FEElement()

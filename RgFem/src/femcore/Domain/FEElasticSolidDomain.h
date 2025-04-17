@@ -1,9 +1,9 @@
 #pragma once
 #include "FEElasticDomain.h"
-#include "FESolidMaterial.h"
+#include "materials/FESolidMaterial.h"
 
-#include <FECore/FEDofList.h>
-#include <FECore/FESolidDomain.h>
+#include "femcore/FEDofList.h"
+#include "femcore/Domain/FESolidDomain.h"
 
 //-----------------------------------------------------------------------------
 //! domain described by Lagrange-type 3D volumetric elements
@@ -24,7 +24,7 @@ public:
     void PreSolveUpdate(const FETimeInfo& timeInfo) override;
 
     //! Unpack solid element data
-    void UnpackLM(FEElement& el, vector<int>& lm) override;
+    void UnpackLM(FEElement& el, std::vector<int>& lm) override;
 
     //! Set flag for update for dynamic quantities
     void SetDynamicUpdateFlag(bool b);
@@ -53,7 +53,7 @@ public:  // overrides from FEElasticDomain
     virtual void UpdateElementStress(int iel, const FETimeInfo& tp);
 
     //! intertial forces for dynamic problems
-    void InertialForces(FEGlobalVector& R, vector<double>& F) override;
+    void InertialForces(FEGlobalVector& R, std::vector<double>& F) override;
 
     //! internal stress forces
     void InternalForces(FEGlobalVector& R) override;
@@ -84,11 +84,11 @@ public:
 
     // --- R E S I D U A L ---
 
-    //! Calculates the internal stress vector for solid elements
-    void ElementInternalForce(FESolidElement& el, vector<double>& fe);
+    //! Calculates the internal stress std::vector for solid elements
+    void ElementInternalForce(FESolidElement& el, std::vector<double>& fe);
 
-    //! Calculates the inertial force vector for solid elements
-    void ElementInertialForce(FESolidElement& el, vector<double>& fe);
+    //! Calculates the inertial force std::vector for solid elements
+    void ElementInertialForce(FESolidElement& el, std::vector<double>& fe);
 
 protected:
     double m_alphaf;
@@ -119,5 +119,5 @@ public:
 private:
     std::string m_elemType;
 
-    DECLARE_FECORE_CLASS();
+    DECLARE_PARAM_LIST();
 };

@@ -1,34 +1,8 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-#include "stdafx.h"
-#include "FEDomain.h"
-#include "FEMaterial.h"
-#include "DumpStream.h"
-#include "FEMesh.h"
-#include "FEGlobalMatrix.h"
+#include "femcore/FEDomain.h"
+#include "materials/FEMaterial.h"
+#include "basicio/DumpStream.h"
+#include "femcore/FEMesh.h"
+#include "femcore/Matrix/FEGlobalMatrix.h"
 
 //-----------------------------------------------------------------------------
 FEDomain::FEDomain(int nclass, FEModel* fem) : FEMeshPartition(nclass, fem)
@@ -136,7 +110,7 @@ void FEDomain::Serialize(DumpStream& ar)
 
 //-----------------------------------------------------------------------------
 //! Unpack the LM data for an element of this domain
-void FEDomain::UnpackLM(FEElement& el, vector<int>& lm)
+void FEDomain::UnpackLM(FEElement& el, std::vector<int>& lm)
 {
 	UnpackLM(el, GetDOFList(), lm);
 }
@@ -152,17 +126,16 @@ void FEDomain::Activate()
 // This is the default packing method. 
 // It stores all the degrees of freedom for the first node in the order defined
 // by the DOF array, then for the second node, and so on. 
-void FEDomain::UnpackLM(FEElement& el, const FEDofList& dof, vector<int>& lm)
+void FEDomain::UnpackLM(FEElement& ele, const FEDofList& dof, std::vector<int>& lm)
 {
 	FEMesh* mesh = GetMesh();
-	int N = el.Nodes();
+	int N = ele.Nodes();
 	int ndofs = dof.Size();
 	lm.resize(N*ndofs);
 	for (int i = 0; i<N; ++i)
 	{
-		int n = el.m_node[i];
-		FENode& node = mesh->Node(n);
-		vector<int>& id = node.m_dofs;
+		FENode& node = ele.giveNode(i);
+		std::vector<int>& id = node.getDofs();
 		for (int j = 0; j<ndofs; ++j) lm[i*ndofs + j] = id[dof[j]];
 	}
 }
@@ -170,7 +143,7 @@ void FEDomain::UnpackLM(FEElement& el, const FEDofList& dof, vector<int>& lm)
 //-----------------------------------------------------------------------------
 void FEDomain::BuildMatrixProfile(FEGlobalMatrix& M)
 {
-	vector<int> elm;
+	std::vector<int> elm;
 	const int NE = Elements();
 	for (int j = 0; j<NE; ++j)
 	{

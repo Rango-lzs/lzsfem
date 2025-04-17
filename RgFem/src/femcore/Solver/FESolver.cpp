@@ -312,37 +312,37 @@ bool FESolver::InitEquations()
 
     // assign equations based on allocation scheme
     int neq = 0;
-    if (m_eq_scheme == EQUATION_SCHEME::STAGGERED)
+    if (m_eq_scheme == EQUATION_SCHEME::STAGGERED) //[x0 y0  x1 y1 x2 y2]  x,y均为变量，自身可有多个分量
     {
         DOFS& dofs = fem.GetDOFS();
-        for (int i = 0; i < mesh.Nodes(); ++i)
+        for (int i = 0; i < mesh.Nodes(); ++i) //先遍历节点
         {
             FENode& node = mesh.Node(P[i]);
             if (!node.HasFlags(FENode::EXCLUDE))
             {
-                for (int nv = 0; nv < dofs.Variables(); ++nv)
+                for (int iVar = 0; iVar < dofs.Variables(); ++iVar) //变量个数
                 {
-                    int n = dofs.GetVariableSize(nv);
-                    for (int l = 0; l < n; ++l)
+                    int nVar = dofs.GetVariableSize(iVar); //变量分量
+                    for (int j = 0; j < nVar; ++j)
                     {
-                        int nl = dofs.GetDOF(nv, l);
-                        if (node.is_active(nl))
+                        int jDof = dofs.GetDOF(iVar, j);
+                        if (node.is_active(jDof))
                         {
-                            int bcj = node.get_bc(nl);
-                            if (bcj == DOF_OPEN)
+                            int state = node.get_bc(jDof);
+                            if (state == DOF_OPEN)
                             {
-                                node.setDofIdx(nl, neq++);
-                                m_dofMap.push_back(nl);
+                                node.setDofIdx(jDof, neq++);
+                                m_dofMap.push_back(jDof);
                             }
-                            else if (bcj == DOF_FIXED)
+                            else if (state == DOF_FIXED)
                             {
-                                node.setDofIdx(nl, -1);
+                                node.setDofIdx(jDof, -1);
                             }
-                            else if (bcj == DOF_PRESCRIBED)
+                            else if (state == DOF_PRESCRIBED)
                             {
-                                node.setDofIdx(nl, -neq - 2);
+                                node.setDofIdx(jDof, -neq - 2);
                                 neq++;
-                                m_dofMap.push_back(nl);
+                                m_dofMap.push_back(jDof);
                             }
                             else
                             {
@@ -351,7 +351,7 @@ bool FESolver::InitEquations()
                             }
                         }
                         else
-                            node.m_dofs[nl] = -1;
+                            node.setDofIdx(jDof,-1);
                     }
                 }
             }
@@ -362,39 +362,39 @@ bool FESolver::InitEquations()
     }
     else
     {
-        // Assign equations numbers in blocks
+        // Assign equations numbers in blocks [x0 x1 x2 ……  y0 y1 y2]
         assert(m_eq_scheme == EQUATION_SCHEME::BLOCK);
         DOFS& dofs = fem.GetDOFS();
-        for (int nv = 0; nv < dofs.Variables(); ++nv)
+        for (int iVar = 0; iVar < dofs.Variables(); ++iVar)
         {
             int neq0 = neq;
-            for (int i = 0; i < NN; ++i)
+            for (int i = 0; i < mesh.Nodes(); ++i)
             {
                 FENode& node = mesh.Node(P[i]);
                 if (node.HasFlags(FENode::EXCLUDE) == false)
                 {
-                    int n = dofs.GetVariableSize(nv);
-                    for (int l = 0; l < n; ++l)
+                    int nVar = dofs.GetVariableSize(iVar);
+                    for (int j = 0; j < nVar; ++j)
                     {
-                        int nl = dofs.GetDOF(nv, l);
+                        int jDof = dofs.GetDOF(iVar, j);
 
-                        if (node.is_active(nl))
+                        if (node.is_active(jDof))
                         {
-                            int bcl = node.get_bc(nl);
+                            int bcl = node.get_bc(jDof);
                             if (bcl == DOF_FIXED)
                             {
-                                node.m_dofs[nl] = -1;
+                                node.setDofIdx(jDof, -1);
                             }
                             else if (bcl == DOF_OPEN)
                             {
-                                node.m_dofs[nl] = neq++;
-                                m_dofMap.push_back(nl);
+                                node.setDofIdx(jDof, neq++);
+                                m_dofMap.push_back(jDof);
                             }
                             else if (bcl == DOF_PRESCRIBED)
                             {
-                                node.m_dofs[nl] = -neq - 2;
+                                node.setDofIdx(jDof, -neq - 2);
                                 neq++;
-                                m_dofMap.push_back(nl);
+                                m_dofMap.push_back(jDof);
                             }
                             else
                             {
@@ -403,7 +403,7 @@ bool FESolver::InitEquations()
                             }
                         }
                         else
-                            node.m_dofs[nl] = -1;
+                            node.setDofIdx(jDof, -1);
                     }
                 }
             }

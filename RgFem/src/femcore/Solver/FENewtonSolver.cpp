@@ -1,17 +1,18 @@
 #include "FENewtonSolver.h"
 
 #include "basicio/DumpStream.h"
-#include "femcore/FEAnalysis/FEAnalysis.h"
 #include "femcore/Domain/FEDomain.h"
+#include "femcore/FEAnalysis/FEAnalysis.h"
+#include "femcore/FEException.h"
 #include "femcore/FEGlobalMatrix.h"
 #include "femcore/FELinearConstraintManager.h"
 #include "femcore/FELinearSystem.h"
 #include "femcore/FEModel.h"
 #include "femcore/FEPrescribedDOF.h"
+#include "femcore/sys.h"
 #include "LinearSolver.h"
 #include "logger/log.h"
-#include "femcore/sys.h"
-#include "femcore/FEException.h"
+#include "../Callback.h"
 
 //-----------------------------------------------------------------------------
 // define the parameter list
@@ -176,7 +177,7 @@ bool FENewtonSolver::ReformStiffness()
     }
 
     // calculate the global stiffness matrix
-    bool bret = false;
+    bool bRet = false;
     {
         TRACK_TIME(TimerID::Timer_Stiffness);
 
@@ -187,9 +188,9 @@ bool FENewtonSolver::ReformStiffness()
         zero(m_Fd);
 
         // calculate the global stiffness matrix
-        bret = StiffnessMatrix();
+        bRet = StiffnessMatrix();
 
-        // check for zero diagonals
+        // check for zero diagonals,对角元素不能有0
         if (m_bzero_diagonal)
         {
             // get the stiffness matrix
@@ -205,14 +206,14 @@ bool FENewtonSolver::ReformStiffness()
                 }
             }
 
-            if (zd.empty() == false)
+            if (!zd.empty())
                 throw ZeroDiagonal(-1, -1);
         }
     }
 
     // if the stiffness matrix was evaluated successfully,
     // we factor it.
-    if (bret)
+    if (bRet)
     {
         {
             TRACK_TIME(TimerID::Timer_LinSolve);
@@ -231,7 +232,7 @@ bool FENewtonSolver::ReformStiffness()
         m_qnstrategy->m_nups = 0;
     }
 
-    return bret;
+    return bRet;
 }
 
 //-----------------------------------------------------------------------------
@@ -784,31 +785,30 @@ void FENewtonSolver::PrepStep()
 bool FENewtonSolver::QNInit()
 {
     // see if we reform at the start of every time step
-    bool breform = (m_breformtimestep || (m_qnstrategy->m_maxups == 0));
+    bool bReform = (m_breformtimestep || (m_qnstrategy->m_maxups == 0));
 
     // if the force reform flag was set, we force a reform
     // (This will be the case for the first time this is called, or when the previous time step failed)
     if (m_bforceReform)
     {
-        breform = true;
-
+        bReform = true;
         m_bforceReform = false;
     }
 
-    m_qnstrategy->PreSolveUpdate();
+    m_qnstrategy->PreSolveUpdate(); //好像啥也不干
 
     // do the reform
     // NOTE: It is important for JFNK that the matrix is reformed before the
     //       residual is evaluated, so do not switch these two calculations!
-    if (breform)
+    if (bReform)
     {
         // do the first stiffness formation
-        if (m_qnstrategy->ReformStiffness() == false)
+        if (!m_qnstrategy->ReformStiffness())
             return false;
     }
 
-    // calculate initial residual
-    if (m_qnstrategy->Residual(m_R0, true) == false)
+    // calculate initial residual, 计算初始残差，用于启动计算
+    if (!m_qnstrategy->Residual(m_R0, true))
         return false;
 
     // add the contribution from prescribed dofs
@@ -849,7 +849,7 @@ void FENewtonSolver::SolveEquations(std::vector<double>& u, std::vector<double>&
 
     // check for nans in the residual
     double r2 = R * R;
-    //残差发散
+    // 残差发散
     if (ISNAN(r2))
     {
         FENodalDofInfo info;
@@ -1145,10 +1145,10 @@ void FENewtonSolver::UpdateModel()
 bool FENewtonSolver::StiffnessMatrix()
 {
     // setup the linear system
-    FELinearSystem LS(this, *m_pK, m_Fd, m_ui, (m_msymm == REAL_SYMMETRIC));
+    FELinearSystem ls(this, *m_pK, m_Fd, m_ui, (m_msymm == REAL_SYMMETRIC));
 
     // build the stiffness matrix
-    return StiffnessMatrix(LS);
+    return StiffnessMatrix(ls);
 }
 
 //-----------------------------------------------------------------------------
