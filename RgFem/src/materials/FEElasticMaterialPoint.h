@@ -1,5 +1,5 @@
 #pragma once
-#include "material/FEMaterialPoint.h"
+#include "materials/FEMaterialPoint.h"
 #include "datastructure/tens4ds.hpp"
 
 //-----------------------------------------------------------------------------
@@ -20,30 +20,30 @@ public:
 	void Serialize(DumpStream& ar) override;
 
 public:
-	mat3ds Strain() const;
-	mat3ds SmallStrain() const;
+	Matrix3ds Strain() const;
+	Matrix3ds SmallStrain() const;
 
-	mat3ds RightCauchyGreen() const;
-	mat3ds LeftCauchyGreen () const;
+	Matrix3ds RightCauchyGreen() const;
+	Matrix3ds LeftCauchyGreen () const;
 
-	mat3ds DevRightCauchyGreen() const;
-	mat3ds DevLeftCauchyGreen () const;
+	Matrix3ds DevRightCauchyGreen() const;
+	Matrix3ds DevLeftCauchyGreen () const;
     
-    mat3ds RightStretch() const;
-    mat3ds LeftStretch () const;
+    Matrix3ds RightStretch() const;
+    Matrix3ds LeftStretch () const;
     
-    mat3ds RightStretchInverse() const;
-    mat3ds LeftStretchInverse () const;
+    Matrix3ds RightStretchInverse() const;
+    Matrix3ds LeftStretchInverse () const;
     
-    mat3ds RightHencky() const;
-    mat3ds LeftHencky () const;
+    Matrix3ds RightHencky() const;
+    Matrix3ds LeftHencky () const;
     
-    mat3d Rotation() const;
+    Matrix3d Rotation() const;
     
-    mat3ds RateOfDeformation() const { return m_L.sym(); }
+    Matrix3ds RateOfDeformation() const { return m_L.sym(); }
 
-	mat3ds pull_back(const mat3ds& A) const;
-	mat3ds push_forward(const mat3ds& A) const;
+	Matrix3ds pull_back(const Matrix3ds& A) const;
+	Matrix3ds push_forward(const Matrix3ds& A) const;
 
 	tens4ds pull_back(const tens4ds& C) const;
 	tens4ds push_forward(const tens4ds& C) const;
@@ -52,15 +52,15 @@ public:
     bool    m_buncoupled;   //!< set to true if this material point was created by an uncoupled material
     
 	// deformation data at intermediate time
-	mat3d	m_F;	//!< deformation gradient
+	Matrix3d	m_F;	//!< deformation gradient
 	double	m_J;	//!< determinant of F
     Vector3d   m_gradJ;  //!< gradient of J
     Vector3d   m_v;    //!< velocity
     Vector3d   m_a;    //!< acceleration
-    mat3d   m_L;    //!< spatial velocity gradient
+    Matrix3d   m_L;    //!< spatial velocity gradient
 
 	// solid material data
-	mat3ds		m_s;		//!< Cauchy stress
+	Matrix3ds		m_s;		//!< Cauchy stress
     
     // uncoupled pressure
     double      m_p;        //!< only for uncoupled materials

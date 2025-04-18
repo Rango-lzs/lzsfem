@@ -35,6 +35,7 @@
 #include "../FESolidLinearSystem.h"
 #include "../Domain/FEElasticDomain.h"
 #include "femcore/FESolidAnalysis.h"
+#include "femcore/FEResidualVector.h"
 
 //-----------------------------------------------------------------------------
 // define the parameter list
@@ -198,7 +199,7 @@ bool FESolidSolver2::Init()
     m_Ut.assign(m_neq, 0);
     m_Uip.assign(m_neq, 0);
 
-    // we need to fill the total displacement vector m_Ut
+    // we need to fill the total displacement std::vector m_Ut
     FEMesh& mesh = fem.GetMesh();
     gather(m_Ut, mesh, m_dofU[0]);
     gather(m_Ut, mesh, m_dofU[1]);
@@ -359,7 +360,7 @@ bool FESolidSolver2::InitEquations2()
 //-----------------------------------------------------------------------------
 //! Update the kinematics of the model, such as nodal positions, velocities,
 //! accelerations, etc.
-void FESolidSolver2::UpdateKinematics(vector<double>& ui)
+void FESolidSolver2::UpdateKinematics(std::vector<double>& ui)
 {
     FEModel& fem = *GetFEModel();
 
@@ -370,7 +371,7 @@ void FESolidSolver2::UpdateKinematics(vector<double>& ui)
     m_rigidSolver.UpdateRigidBodies(m_Ui, ui);
 
     // total displacements
-    vector<double> U(m_Ut.size());
+    std::vector<double> U(m_Ut.size());
     for (size_t i = 0; i < m_Ut.size(); ++i)
         U[i] = ui[i] + m_Ui[i] + m_Ut[i];
 
@@ -465,7 +466,7 @@ void FESolidSolver2::UpdateKinematics(vector<double>& ui)
 
 //-----------------------------------------------------------------------------
 //! Update DOF increments
-void FESolidSolver2::UpdateIncrements(vector<double>& Ui, vector<double>& ui, bool emap)
+void FESolidSolver2::UpdateIncrements(std::vector<double>& Ui, std::vector<double>& ui, bool emap)
 {
     FEModel& fem = *GetFEModel();
 
@@ -517,7 +518,7 @@ void FESolidSolver2::UpdateIncrements(vector<double>& Ui, vector<double>& ui, bo
 
 //-----------------------------------------------------------------------------
 //! Updates the current state of the model
-void FESolidSolver2::Update(vector<double>& ui)
+void FESolidSolver2::Update(std::vector<double>& ui)
 {
     FEModel& fem = *GetFEModel();
     FETimeInfo& tp = fem.GetTime();
@@ -536,16 +537,16 @@ void FESolidSolver2::Update(vector<double>& ui)
 
 //-----------------------------------------------------------------------------
 //! Updates the current state of the model
-//! NOTE: The ui vector also contains prescribed displacement increments. Also note that this
+//! NOTE: The ui std::vector also contains prescribed displacement increments. Also note that this
 //!       only works for a limited set of FEBio features (no rigid bodies!).
-void FESolidSolver2::Update2(const vector<double>& ui)
+void FESolidSolver2::Update2(const std::vector<double>& ui)
 {
     // get the mesh
     FEModel& fem = *GetFEModel();
     FEMesh& mesh = fem.GetMesh();
 
     // total displacements
-    vector<double> U(m_Ut.size());
+    std::vector<double> U(m_Ut.size());
     for (size_t i = 0; i < m_Ut.size(); ++i)
         U[i] = ui[i] + m_Ui[i] + m_Ut[i];
 
@@ -594,7 +595,7 @@ void FESolidSolver2::Update2(const vector<double>& ui)
 
 //-----------------------------------------------------------------------------
 //! Update EAS
-void FESolidSolver2::UpdateEAS(vector<double>& ui)
+void FESolidSolver2::UpdateEAS(std::vector<double>& ui)
 {
     FEModel& fem = *GetFEModel();
 
@@ -611,7 +612,7 @@ void FESolidSolver2::UpdateEAS(vector<double>& ui)
 
 //-----------------------------------------------------------------------------
 //! Update EAS
-void FESolidSolver2::UpdateIncrementsEAS(vector<double>& ui, const bool binc)
+void FESolidSolver2::UpdateIncrementsEAS(std::vector<double>& ui, const bool binc)
 {
     FEModel& fem = *GetFEModel();
     FEMesh& mesh = fem.GetMesh();
@@ -689,14 +690,14 @@ void FESolidSolver2::PrepStep()
     // apply concentrated nodal forces
     // since these forces do not depend on the geometry
     // we can do this once outside the NR loop.
-    //	vector<double> dummy(m_neq, 0.0);
+    //	std::vector<double> dummy(m_neq, 0.0);
     //	zero(m_Fn);
     //	FEResidualVector Fn(*GetFEModel(), m_Fn, dummy);
     //	NodalLoads(Fn, tp);
 
     // apply boundary conditions
-    // we save the prescribed displacements increments in the ui vector
-    std::vector<double>& ui = m_ui;   //第i个迭代步的位移增量
+    // we save the prescribed displacements increments in the ui std::vector
+    std::std::vector<double>& ui = m_ui;   //第i个迭代步的位移增量
     zero(ui);
     int nBC = fem.BoundaryConditions();
     for (int i = 0; i < nBC; ++i)
@@ -766,8 +767,8 @@ void FESolidSolver2::PrepStep()
 // Performs the quasi-newton iterations.
 bool FESolidSolver2::Quasin()
 {
-    std::vector<double> u0(m_neq);
-    std::vector<double> Rold(m_neq);
+    std::std::vector<double> u0(m_neq);
+    std::std::vector<double> Rold(m_neq);
 
     // convergence norms
     double normR1;  // residual norm
@@ -836,7 +837,7 @@ bool FESolidSolver2::Quasin()
         // NOTE: We don't apply the line search directly to m_ui since we need the unscaled search direction for the QN
         // update below
         int neq = (int)m_Ui.size();
-        std::vector<double> ui(m_ui);
+        std::std::vector<double> ui(m_ui);
         for (int i = 0; i < neq; ++i)
             ui[i] *= s;
 
@@ -1003,7 +1004,7 @@ bool quadratic_solve(double a, double b, double c, double x[2])
 void FESolidSolver2::DoArcLength()
 {
     // auxiliary displacement
-    vector<double> uF(m_neq, 0.0);
+    std::vector<double> uF(m_neq, 0.0);
 
     // the arc-length scale factor
     double psi = m_al_scale;
@@ -1054,11 +1055,11 @@ void FESolidSolver2::DoArcLength()
             }
 
             // two possible solution vectors
-            vector<double> u1 = m_ui + uF * g[0];
-            vector<double> u2 = m_ui + uF * g[1];
+            std::vector<double> u1 = m_ui + uF * g[0];
+            std::vector<double> u2 = m_ui + uF * g[1];
 
             // calculate two s-vectors
-            vector<double> sk(2 * m_neq, 0.0), s1(2 * m_neq, 0.0), s2(2 * m_neq, 0.0);
+            std::vector<double> sk(2 * m_neq, 0.0), s1(2 * m_neq, 0.0), s2(2 * m_neq, 0.0);
             for (int i = 0; i < m_neq; ++i)
             {
                 sk[i] = m_Ui[i];
@@ -1240,12 +1241,12 @@ void FESolidSolver2::ContactForces(FEGlobalVector& R)
 }
 
 //-----------------------------------------------------------------------------
-//! calculates the residual vector
+//! calculates the residual std::vector
 //! Note that the concentrated nodal forces are not calculated here.
 //! This is because they do not depend on the geometry
 //! so we only calculate them once (in Quasin) and then add them here.
 
-bool FESolidSolver2::Residual(vector<double>& R)
+bool FESolidSolver2::Residual(std::vector<double>& R)
 {
     // get the time information
     FEModel& fem = *GetFEModel();
@@ -1254,17 +1255,17 @@ bool FESolidSolver2::Residual(vector<double>& R)
     // zero nodal reaction forces
     zero(m_Fr);
 
-    // setup the global vector
+    // setup the global std::vector
     zero(R);
     FEResidualVector RHS(fem, R, m_Fr);
 
     // zero rigid body reaction forces
     m_rigidSolver.Residual();
 
-    // calculate the internal (stress) forces
-    InternalForces(RHS);
+    // calculate the internal (stress) forces, 内部节点，应力产生的力
+    InternalForces(RHS);  //计算时取了负号
 
-    // calculate nodal reaction forces
+    // calculate nodal reaction forces,这里计算m_Fr的方式？
     for (int i = 0; i < m_neq; ++i)
         m_Fr[i] -= R[i];
 
@@ -1278,7 +1279,7 @@ bool FESolidSolver2::Residual(vector<double>& R)
     if (m_arcLength > 0)
     {
         // Note the negative sign. This is because during residual assembly
-        // a negative sign is applied to the internal force vector.
+        // a negative sign is applied to the internal force std::vector.
         // The model loads assume the residual is Fe - Fi (i.e. -R)
         m_Fint = -R;
     }
@@ -1303,7 +1304,7 @@ bool FESolidSolver2::Residual(vector<double>& R)
     {
         double TOL = 1.e-8;
         bool logused = false;
-        vector<double> RHSlog;
+        std::vector<double> RHSlog;
         RHSlog.resize(R.size());
         for (int i = 0; i < m_Fint.size(); ++i)
         {
@@ -1362,7 +1363,7 @@ void FESolidSolver2::ExternalForces(FEGlobalVector& RHS)
     if (fem.GetCurrentStep()->m_nanalysis == FESolidAnalysis::DYNAMIC)
     {
         // allocate F
-        vector<double> F;
+        std::vector<double> F;
 
         // calculate the inertial forces for all elastic domains
         for (int nd = 0; nd < mesh.Domains(); ++nd)

@@ -53,7 +53,7 @@ public:
     //! Set the number of DOFS
     void SetDOFS(int n);
 
-    int dofs() const
+    int dofSize() const
     {
         return (int)m_dofs.size();
     }

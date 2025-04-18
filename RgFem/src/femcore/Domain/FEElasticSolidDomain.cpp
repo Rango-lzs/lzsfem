@@ -141,7 +141,7 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 		// get the element
 		FESolidElement& el = m_Elem[i];
 
-		if (el.isActive()) {
+		if (1/*el.isActive()*/) {  //Element需要有isActive的标识吗？
 			// element force std::vector
 			std::vector<double> fe;
 			std::vector<int> lm;
@@ -157,14 +157,14 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 			UnpackLM(el, lm);
 
 			// assemble element 'fe'-std::vector into global R std::vector
-			R.Assemble(el.m_node, lm, fe);
+			R.Assemble(el.getElementNodes(), lm, fe);
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------
-//! calculates the internal equivalent nodal forces for solid elements
-
+//calculates the internal equivalent nodal forces for solid elements
+//B*sigma
 void FEElasticSolidDomain::ElementInternalForce(FESolidElement& el, std::vector<double>& fe)
 {
 	// jacobian matrix, inverse jacobian matrix and determinants
@@ -187,7 +187,7 @@ void FEElasticSolidDomain::ElementInternalForce(FESolidElement& el, std::vector<
 		detJt *= gw[n];
 
 		// get the stress std::vector for this integration point
-        const Matrix3ds& s = pt.m_s;
+        const Matrix3ds& s = pt.m_s;  //Cauchy stress
 
 		const double* Gr = el.Gr(n);
 		const double* Gs = el.Gs(n);
