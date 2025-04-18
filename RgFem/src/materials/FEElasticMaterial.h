@@ -1,6 +1,7 @@
 #pragma once
-#include "FESolidMaterial.h"
+#include "materials/FESolidMaterial.h"
 #include "FEElasticMaterialPoint.h"
+#include "femcore/Domain/FEDomainParameter.h"
 
 //-----------------------------------------------------------------------------
 //! Base class for (hyper-)elastic materials
@@ -25,7 +26,7 @@ public:
 
 public:
 	//! evaluates approximation to Cauchy stress using forward difference
-	mat3ds SecantStress(FEMaterialPoint& pt, bool PK2 = false) override;
+	Matrix3ds SecantStress(FEMaterialPoint& pt, bool PK2 = false) override;
 
 public:
     virtual double StrongBondSED(FEMaterialPoint& pt) { return StrainEnergyDensity(pt); }

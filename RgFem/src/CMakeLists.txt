@@ -38,6 +38,7 @@ add_subdirectory(app)
 source_group("app" FILES ${APP_SOURCES})
 message(status "resource files is ${APP_SOURCES}")
 
+
 # add basicio sources
 set(BASICIO_SOURCES "")
 add_subdirectory(basicio)

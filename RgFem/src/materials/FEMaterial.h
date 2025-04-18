@@ -16,6 +16,7 @@ class FEMat3dValuator;
 //-----------------------------------------------------------------------------
 class FEM_EXPORT FEMaterialBase : public FEModelComponent
 {
+    DECLARE_META_CLASS(FEMaterialBase, FEModelComponent);
 public:
     FEMaterialBase(FEModel* fem);
 
@@ -35,7 +36,7 @@ public:
 
 class FEM_EXPORT FEMaterial : public FEMaterialBase
 {
-    META_CLASS_DECLARE(FEMaterial, FEMaterialBase);
+    DECLARE_META_CLASS(FEMaterial, FEMaterialBase);
 
 public:
 

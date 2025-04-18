@@ -2,6 +2,7 @@
 
 #include "femcore/FEObjectBase.h"
 #include "FETimeInfo.h"
+#include "femcore/RTTI/RTTIMacroDefine.h"
 
 //-----------------------------------------------------------------------------
 //! forward declaration of the FEModel class.
@@ -18,6 +19,7 @@ class FEMesh;
 //! For instance, boundary conditions, loads, contact definitions, etc.
 class FEM_EXPORT FEModelComponent : public FEObjectBase
 {
+    DECLARE_META_CLASS(FEModelComponent,FEObjectBase);
 public:
     //! constructor
     FEModelComponent(FEModel* fem);

@@ -60,15 +60,7 @@ public:
 
 	// get the const value (return value undefined if param is not const)
 	double& constValue();
-	double constValue() const;
 
-	void Serialize(DumpStream& ar) override;
-
-	bool Init();
-
-private:
-	FEScalarValuator*	m_val;
-};
 
 //=======================================================================================
 
