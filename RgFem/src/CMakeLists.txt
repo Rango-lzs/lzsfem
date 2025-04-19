@@ -212,6 +212,7 @@ set(FEMCORE_HEADERS
     femcore/FESolidLinearSystem.h
     femcore/tools.h
     femcore/FEResidualVector.h
+    femcore/units.h
 )
 
 
@@ -404,7 +405,6 @@ set(DATA_STRUCTURE_HEADERS
     datastructure/tens4dms.hpp
     datastructure/tens4ds.hpp
     datastructure/tensor_base.h
-    datastructure/units.h
     datastructure/vector_operator.h
 )
 

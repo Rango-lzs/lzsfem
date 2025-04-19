@@ -1,6 +1,7 @@
 #pragma once
 #include "materials/FEElasticMaterial.h"
 
+//此材料用于小应变，大转动场景
 class FEIsotropicElastic : public FEElasticMaterial
 {
 public:
