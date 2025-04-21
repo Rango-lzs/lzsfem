@@ -166,7 +166,7 @@ void FEElementLibrary::SetElementTraits(FEElement& el, int nid)
 }
 
 //! return element shape class
-FEElementShape* FEElementLibrary::GetElementShapeClass(FE_Element_Shape eshape)
+FEElementShape* FEElementLibrary::GetElementShapeClass(ElementShape eshape)
 {
 	return GetInstance()->m_Shape[eshape];
 }
@@ -176,7 +176,7 @@ FEElementTraits* FEElementLibrary::GetElementTraits(int ntype)
 	return GetInstance()->m_Traits[ntype]; 
 }
 
-FE_Element_Shape FEElementLibrary::GetElementShape(int ntype)
+ElementShape FEElementLibrary::GetElementShape(int ntype)
 {
 	FEElementLibrary* p = GetInstance();
 	if ((ntype < 0)||(ntype >= p->m_Traits.size())) return FE_ELEM_INVALID_SHAPE;
@@ -202,7 +202,7 @@ bool FEElementLibrary::IsValid(const FE_Element_Spec& c)
 }
 
 //! get the element spec from the type
-FE_Element_Spec FEElementLibrary::GetElementSpecFromType(FE_Element_Type elemType)
+FE_Element_Spec FEElementLibrary::GetElementSpecFromType(ElementType elemType)
 {
 	FE_Element_Spec espec;
 	espec.etype = elemType;

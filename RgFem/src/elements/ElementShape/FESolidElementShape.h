@@ -7,7 +7,7 @@
 class FESolidElementShape : public FEElementShape
 {
 public:
-	FESolidElementShape(FE_Element_Shape shape, int nodes) : FEElementShape(shape, nodes) {}
+	FESolidElementShape(ElementShape shape, int nodes) : FEElementShape(shape, nodes) {}
 
 	//! values of shape functions
 	virtual void shape_fnc(double* H, double r, double s, double t) = 0;

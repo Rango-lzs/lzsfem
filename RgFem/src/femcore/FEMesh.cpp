@@ -617,7 +617,7 @@ FEElement* FEMesh::FindElementFromID(int nid)
 
 //-----------------------------------------------------------------------------
 //! See if all elements are of a particular shape
-bool FEMesh::IsType(FE_Element_Shape eshape)
+bool FEMesh::IsType(ElementShape eshape)
 {
 	FEElementList elemList(*this);
 	for (FEElementList::iterator it = elemList.begin(); it != elemList.end(); ++it)

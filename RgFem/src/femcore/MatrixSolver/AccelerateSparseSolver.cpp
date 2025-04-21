@@ -164,7 +164,7 @@ void AccelerateSparseSolver::MyReportStatus(const char* message) {
 }
 
 //-----------------------------------------------------------------------------
-SparseMatrix* AccelerateSparseSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* AccelerateSparseSolver::CreateSparseMatrix(MatrixType ntype)
 {
     // allocate the correct matrix format depending on matrix symmetry type
     switch (ntype)
@@ -526,7 +526,7 @@ bool AccelerateSparseSolver::PreProcess() { return false; }
 bool AccelerateSparseSolver::Factor() { return false; }
 bool AccelerateSparseSolver::BackSolve(double* x, double* y) { return false; }
 void AccelerateSparseSolver::Destroy() {}
-SparseMatrix* AccelerateSparseSolver::CreateSparseMatrix(Matrix_Type ntype) { return nullptr; }
+SparseMatrix* AccelerateSparseSolver::CreateSparseMatrix(MatrixType ntype) { return nullptr; }
 bool AccelerateSparseSolver::SetSparseMatrix(SparseMatrix* pA) { return false; }
 void AccelerateSparseSolver::PrintConditionNumber(bool b) {}
 double AccelerateSparseSolver::condition_number() { return 0; }

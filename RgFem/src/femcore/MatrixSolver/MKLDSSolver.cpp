@@ -63,7 +63,7 @@ MKLDSSolver::~MKLDSSolver()
 }
 
 //-----------------------------------------------------------------------------
-SparseMatrix* MKLDSSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* MKLDSSolver::CreateSparseMatrix(MatrixType ntype)
 {
 	// allocate the correct matrix format depending on matrix symmetry type
 	switch (ntype)
@@ -162,7 +162,7 @@ void MKLDSSolver::Destroy()
 class MKLDSSolver::Imp {};
 MKLDSSolver::MKLDSSolver(FEModel* fem) : LinearSolver(fem), m(nullptr) {}
 MKLDSSolver::~MKLDSSolver() {}
-SparseMatrix* MKLDSSolver::CreateSparseMatrix(Matrix_Type ntype) {	return nullptr; }
+SparseMatrix* MKLDSSolver::CreateSparseMatrix(MatrixType ntype) {	return nullptr; }
 bool MKLDSSolver::SetSparseMatrix(SparseMatrix* pA) { return false; }
 bool MKLDSSolver::PreProcess() { return false; }
 bool MKLDSSolver::Factor() { return false; }

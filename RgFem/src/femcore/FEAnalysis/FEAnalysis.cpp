@@ -13,6 +13,8 @@
 #include "femcore/FEException.h"
 #include "femcore/units.h"
 #include "femcore/FEMesh.h"
+#include "femcore/FEParam.h"
+#include "femcore/FEParamValidator.h"
 
 //---------------------------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FEAnalysis, FEObjectBase)
@@ -48,9 +50,9 @@ END_PARAM_GROUP();
 //FEProperty* solver = ADD_PROPERTY(m_psolver, "solver");
 
 // the default type of the solver should match the active module's name
-FECoreKernel& fecore = FECoreKernel::GetInstance();
-const char* szmod = fecore.GetActiveModule()->GetName();
-solver->SetDefaultType(szmod);
+//FECoreKernel& fecore = FECoreKernel::GetInstance();
+//const char* szmod = fecore.GetActiveModule()->GetName();
+//solver->SetDefaultType(szmod);
 
 END_PARAM_DEFINE();
 

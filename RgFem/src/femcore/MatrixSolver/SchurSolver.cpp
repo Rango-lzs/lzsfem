@@ -299,7 +299,7 @@ void SchurSolver::DoJacobiPreconditioning(bool b)
 
 //-----------------------------------------------------------------------------
 //! Create a sparse matrix
-SparseMatrix* SchurSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* SchurSolver::CreateSparseMatrix(MatrixType ntype)
 {
 	if (m_part.size() != 2) return 0;
 	m_pK = new BlockMatrix();

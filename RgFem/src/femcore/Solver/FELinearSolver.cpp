@@ -82,7 +82,7 @@ bool FELinearSolver::Init()
 
 	// allocate storage for the sparse matrix that will hold the stiffness matrix data
 	// we let the solver allocate the correct type of matrix format
-	Matrix_Type mtype = MatrixType();
+	MatrixType mtype = MatrixType();
 	SparseMatrix* pS = m_pls->CreateSparseMatrix(mtype);
 	if ((pS == 0) && (m_msymm == REAL_SYMMETRIC))
 	{

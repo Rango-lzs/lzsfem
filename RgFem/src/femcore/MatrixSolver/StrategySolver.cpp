@@ -116,7 +116,7 @@ void StrategySolver::Destroy()
 }
 
 //! Create a sparse matrix
-SparseMatrix* StrategySolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* StrategySolver::CreateSparseMatrix(MatrixType ntype)
 {
 	// let solver1 create the sparse system
 	if (m_solver1 == nullptr) return nullptr;

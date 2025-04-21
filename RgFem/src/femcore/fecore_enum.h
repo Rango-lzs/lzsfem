@@ -153,7 +153,7 @@ enum FEDataMapType {
 //! Different matrix types. This is used when requesting a sparse matrix format
 //! from a linear solver. 
 //! \sa LinearSolver::CreateSparseMatrix.
-enum Matrix_Type {
+enum MatrixType {
 	REAL_UNSYMMETRIC,			// non-symmetric 
 	REAL_SYMMETRIC,				// symmetric (not necessarily positive definite)
 	REAL_SYMM_STRUCTURE			// structurally symmetric

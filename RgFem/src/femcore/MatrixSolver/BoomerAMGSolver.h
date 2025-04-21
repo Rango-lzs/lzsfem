@@ -112,7 +112,7 @@ public:
 	bool GetJacobiPC();
 
 public:
-	SparseMatrix* CreateSparseMatrix(Matrix_Type ntype) override;
+	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 	bool SetSparseMatrix(SparseMatrix* pA) override;
 
 	bool PreProcess() override;

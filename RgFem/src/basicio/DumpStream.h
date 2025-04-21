@@ -1,15 +1,15 @@
 #pragma once
 
-#include "datastructure/Vector3d.h"
+#include "datastructure/Matrix.h"
 #include "datastructure/Matrix3d.h"
 #include "datastructure/quatd.h"
 #include "datastructure/tens3d.h"
+#include "datastructure/Vector3d.h"
 #include "femcore/fem_export.h"
-#include "datastructure/Matrix.h"
 
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 //-----------------------------------------------------------------------------
 class FEModel;
@@ -19,474 +19,818 @@ class Matrix;
 //-----------------------------------------------------------------------------
 enum TypeID
 {
-	TYPE_UNKNOWN,
-	TYPE_INT,
-	TYPE_UINT,
-	TYPE_FLOAT,
-	TYPE_DOUBLE,
-	TYPE_VEC2D,
-	TYPE_Vector3d,
-	TYPE_MAT2D,
-	TYPE_MAT3D,
-	TYPE_MAT3DD,
-	TYPE_MAT3DS,
-	TYPE_MAT3DA,
-	TYPE_QUATD,
-	TYPE_TENS3DS,
-	TYPE_TENS3DRS,
-	TYPE_MATRIX
+    TYPE_UNKNOWN,
+    TYPE_INT,
+    TYPE_UINT,
+    TYPE_FLOAT,
+    TYPE_DOUBLE,
+    TYPE_VEC2D,
+    TYPE_Vector3d,
+    TYPE_MAT2D,
+    TYPE_MAT3D,
+    TYPE_MAT3DD,
+    TYPE_MAT3DS,
+    TYPE_MAT3DA,
+    TYPE_QUATD,
+    TYPE_TENS3DS,
+    TYPE_TENS3DRS,
+    TYPE_MATRIX
 };
 
 #ifndef uchar
 #define uchar unsigned char
 #endif
 
-//用于序列化的流，用于文件保存，重启动等
-// 自动步长尝试的时候，需要回退数据
-// 
+// 用于序列化的流，用于文件保存，重启动等
+//  自动步长尝试的时候，需要回退数据
+//
 //-----------------------------------------------------------------------------
 //! A dump stream is used to serialize data to and from a data stream.
-//! This is used in FEBio for running and cold restarts. 
+//! This is used in FEBio for running and cold restarts.
 //! This is just an abstract base class. Classes must be derived from this
 //! to implement the actual storage mechanism.
 class FEM_EXPORT DumpStream
 {
 public:
-	//数据块
-	class DataBlock
-	{
-	public:
-		DataBlock() { m_type = TypeID::TYPE_UNKNOWN; m_pd = nullptr; }
-        ~DataBlock() {
-            if (m_pd) {
-                switch (m_type) {
-                    case TypeID::TYPE_INT: delete (int*) m_pd; break;
-                    case TypeID::TYPE_UINT: delete (unsigned int*) m_pd; break;
-                    case TypeID::TYPE_FLOAT: delete (float*) m_pd; break;
-                    case TypeID::TYPE_DOUBLE: delete (double*) m_pd; break;
-                    case TypeID::TYPE_VEC2D: delete (Vector2d*) m_pd; break;
-                    case TypeID::TYPE_Vector3d: delete (Vector3d*) m_pd; break;
-                    case TypeID::TYPE_MAT2D: delete (Matrix2d*) m_pd; break;
-                    case TypeID::TYPE_MAT3D: delete (Matrix3d*) m_pd; break;
-                    case TypeID::TYPE_MAT3DD: delete (Matrix3dd*) m_pd; break;
-                    case TypeID::TYPE_MAT3DS: delete (Matrix3ds*) m_pd; break;
-                    case TypeID::TYPE_MAT3DA: delete (Matrix3da*) m_pd; break;
-                    case TypeID::TYPE_QUATD: delete (quatd*) m_pd; break;
-                    case TypeID::TYPE_TENS3DS: delete (tens3ds*) m_pd; break;
-                    case TypeID::TYPE_TENS3DRS: delete (tens3drs*) m_pd; break;
-                    case TypeID::TYPE_MATRIX: delete (Matrix*) m_pd; break;
-                    default: break;
+    // 数据块
+    class DataBlock
+    {
+    public:
+        DataBlock()
+        {
+            m_type = TypeID::TYPE_UNKNOWN;
+            m_pd = nullptr;
+        }
+        ~DataBlock()
+        {
+            if (m_pd)
+            {
+                switch (m_type)
+                {
+                    case TypeID::TYPE_INT:
+                        delete (int*)m_pd;
+                        break;
+                    case TypeID::TYPE_UINT:
+                        delete (unsigned int*)m_pd;
+                        break;
+                    case TypeID::TYPE_FLOAT:
+                        delete (float*)m_pd;
+                        break;
+                    case TypeID::TYPE_DOUBLE:
+                        delete (double*)m_pd;
+                        break;
+                    case TypeID::TYPE_VEC2D:
+                        delete (Vector2d*)m_pd;
+                        break;
+                    case TypeID::TYPE_Vector3d:
+                        delete (Vector3d*)m_pd;
+                        break;
+                    case TypeID::TYPE_MAT2D:
+                        delete (Matrix2d*)m_pd;
+                        break;
+                    case TypeID::TYPE_MAT3D:
+                        delete (Matrix3d*)m_pd;
+                        break;
+                    case TypeID::TYPE_MAT3DD:
+                        delete (Matrix3dd*)m_pd;
+                        break;
+                    case TypeID::TYPE_MAT3DS:
+                        delete (Matrix3ds*)m_pd;
+                        break;
+                    case TypeID::TYPE_MAT3DA:
+                        delete (Matrix3da*)m_pd;
+                        break;
+                    case TypeID::TYPE_QUATD:
+                        delete (quatd*)m_pd;
+                        break;
+                    case TypeID::TYPE_TENS3DS:
+                        delete (tens3ds*)m_pd;
+                        break;
+                    case TypeID::TYPE_TENS3DRS:
+                        delete (tens3drs*)m_pd;
+                        break;
+                    case TypeID::TYPE_MATRIX:
+                        delete (Matrix*)m_pd;
+                        break;
+                    default:
+                        break;
                 }
             }
             m_pd = nullptr;
         }
 
-		int dataType() const { return m_type; }
+        int dataType() const
+        {
+            return m_type;
+        }
 
-		template <typename T> T value() { return *((T*)(m_pd)); }
+        template <typename T>
+        T value()
+        {
+            return *((T*)(m_pd));
+        }
 
-	private:
-		int		m_type;
-		void*	m_pd;
+    private:
+        int m_type;
+        void* m_pd;
 
-		friend class DumpStream;
-	};
-
-public:
-	// This class is thrown when an error occurs reading the dumpfile
-	class ReadError{};
-
-public:
-	//! constructor
-	DumpStream(FEModel& fem);
-
-	//! destructor
-	virtual ~DumpStream();
-
-	//! See if the stream is used for input or output
-	bool IsSaving() const;
-
-	//! See if the stream is used for input
-	bool IsLoading() const;
-
-	//! See if shallow flag is set
-	bool IsShallow() const;
-
-	// open the stream
-	virtual void Open(bool bsave, bool bshallow);
-
-	// get the FE model
-	FEModel& GetFEModel() { return m_fem; }
-
-	// set the write type info flag
-	void WriteTypeInfo(bool b);
-
-	// see if the stream has type info
-	bool HasTypeInfo() const;
-
-	// return total nr of bytes that was serialized
-	size_t bytesSerialized() const { return m_bytes_serialized; }
+        friend class DumpStream;
+    };
 
 public:
-	// read the next block
-	bool readBlock(DataBlock& d);
+    // This class is thrown when an error occurs reading the dumpfile
+    class ReadError
+    {
+    };
 
 public:
-	// These functions must be overloaded by derived classes
-	// and should return the number of bytes serialized
-	virtual size_t write(const void* pd, size_t size, size_t count) = 0;
-	virtual size_t read(void* pd, size_t size, size_t count) = 0;
+    //! constructor
+    DumpStream(FEModel& fem);
 
-	// override function to indicate the end of stream was reached (while reading)
-	virtual bool EndOfStream() const = 0;
+    //! destructor
+    virtual ~DumpStream();
 
-	// additional function that need to be overridden
-	virtual void clear() = 0;
+    //! See if the stream is used for input or output
+    bool IsSaving() const;
 
-	void check();
+    //! See if the stream is used for input
+    bool IsLoading() const;
 
-	void LockPointerTable();
-	void UnlockPointerTable();
+    //! See if shallow flag is set
+    bool IsShallow() const;
+
+    // open the stream
+    virtual void Open(bool bsave, bool bshallow);
+
+    // get the FE model
+    FEModel& GetFEModel()
+    {
+        return m_fem;
+    }
+
+    // set the write type info flag
+    void WriteTypeInfo(bool b);
+
+    // see if the stream has type info
+    bool HasTypeInfo() const;
+
+    // return total nr of bytes that was serialized
+    size_t bytesSerialized() const
+    {
+        return m_bytes_serialized;
+    }
 
 public:
-	// input-output operators (will call correct operator depending on input or output mode)
-	template <typename T> DumpStream& operator & (T& o);
+    // read the next block
+    bool readBlock(DataBlock& d);
 
-public: // output operators
-	DumpStream& operator << (const char* sz);
-	DumpStream& operator << (char* sz);
-	DumpStream& operator << (const double a[3][3]);
-	DumpStream& operator << (std::string& s);
-	DumpStream& operator << (const std::string& s);
-	DumpStream& operator << (bool b);
-	DumpStream& operator << (int n);
-	template <typename T> DumpStream& operator << (T& o);
-	template <typename T> DumpStream& operator << (std::vector<T>& o);
-	template <typename A, typename B> DumpStream& operator << (std::map<A, B>& o);
-	template <typename T, std::size_t N> DumpStream& operator << (T(&a)[N]);
-	template <typename T> DumpStream& operator << (T* &a);
-	template <typename T> DumpStream& operator << (std::vector<T*>& o);
+public:
+    // These functions must be overloaded by derived classes
+    // and should return the number of bytes serialized
+    virtual size_t write(const void* pd, size_t size, size_t count) = 0;
+    virtual size_t read(void* pd, size_t size, size_t count) = 0;
 
-	template <typename T> DumpStream& write_raw(const T& o);
+    // override function to indicate the end of stream was reached (while reading)
+    virtual bool EndOfStream() const = 0;
 
-public: // input operators
-	DumpStream& operator >> (char* sz);
-	DumpStream& operator >> (double a[3][3]);
-	DumpStream& operator >> (std::string& s);
-	DumpStream& operator >> (bool& b);
-	template <typename T> DumpStream& operator >> (T& o);
-	template <typename T> DumpStream& operator >> (std::vector<T>& o);
-	template <typename A, typename B> DumpStream& operator >> (std::map<A, B>& o);
-	template <typename T, std::size_t N> DumpStream& operator >> (T(&a)[N]);
-	template <typename T> DumpStream& operator >> (T* &a);
-	template <typename T> DumpStream& operator >> (std::vector<T*>& o);
+    // additional function that need to be overridden
+    virtual void clear() = 0;
 
-	template <typename T> DumpStream& read_raw(T& o);
+    void check();
+
+    void LockPointerTable();
+    void UnlockPointerTable();
+
+public:
+    // input-output operators (will call correct operator depending on input or output mode)
+    template <typename T>
+    DumpStream& operator&(T& o);
+
+public:  // output operators
+    DumpStream& operator<<(const char* sz);
+    DumpStream& operator<<(char* sz);
+    DumpStream& operator<<(const double a[3][3]);
+    DumpStream& operator<<(std::string& s);
+    DumpStream& operator<<(const std::string& s);
+    DumpStream& operator<<(bool b);
+    DumpStream& operator<<(int n);
+    template <typename T>
+    DumpStream& operator<<(T& o);
+    template <typename T>
+    DumpStream& operator<<(std::vector<T>& o);
+    template <typename A, typename B>
+    DumpStream& operator<<(std::map<A, B>& o);
+    template <typename T, std::size_t N>
+    DumpStream& operator<<(T (&a)[N]);
+    template <typename T>
+    DumpStream& operator<<(T*& a);
+    template <typename T>
+    DumpStream& operator<<(std::vector<T*>& o);
+
+    template <typename T>
+    DumpStream& write_raw(const T& o);
+
+public:  // input operators
+    DumpStream& operator>>(char* sz);
+    DumpStream& operator>>(double a[3][3]);
+    DumpStream& operator>>(std::string& s);
+    DumpStream& operator>>(bool& b);
+    template <typename T>
+    DumpStream& operator>>(T& o);
+    template <typename T>
+    DumpStream& operator>>(std::vector<T>& o);
+    template <typename A, typename B>
+    DumpStream& operator>>(std::map<A, B>& o);
+    template <typename T, std::size_t N>
+    DumpStream& operator>>(T (&a)[N]);
+    template <typename T>
+    DumpStream& operator>>(T*& a);
+    template <typename T>
+    DumpStream& operator>>(std::vector<T*>& o);
+
+    template <typename T>
+    DumpStream& read_raw(T& o);
 
 private:
-	int FindPointer(void* p);
-	void AddPointer(void* p);
+    int FindPointer(void* p);
+    void AddPointer(void* p);
 
-	DumpStream& write_matrix(Matrix& o);
-	DumpStream& read_matrix(Matrix& o);
+    DumpStream& write_matrix(Matrix& o);
+    DumpStream& read_matrix(Matrix& o);
 
-	void writeType(uchar type)
-	{
-		m_bytes_serialized += write(&type, sizeof(type), 1);
-	}
-	uchar readType()
-	{
-		uchar type;
-		m_bytes_serialized += read(&type, sizeof(type), 1);
-		return type;
-	}
-	bool readType(uchar type)
-	{
-		uchar typeRead = readType();
-		assert(type == typeRead);
-		return (type == typeRead);
-	}
+    void writeType(uchar type)
+    {
+        m_bytes_serialized += write(&type, sizeof(type), 1);
+    }
+    uchar readType()
+    {
+        uchar type;
+        m_bytes_serialized += read(&type, sizeof(type), 1);
+        return type;
+    }
+    bool readType(uchar type)
+    {
+        uchar typeRead = readType();
+        assert(type == typeRead);
+        return (type == typeRead);
+    }
 
 private:
-	bool		m_bsave;	//!< true if output stream, false for input stream
-	bool		m_bshallow;	//!< if true only shallow data needs to be serialized
-	bool		m_btypeInfo;	//!< write/read type info
-	FEModel&	m_fem;		//!< the FE Model that is being serialized
+    bool mbSave;               //!< true if output stream, false for input stream
+    bool m_bshallow;            //!< if true only shallow data needs to be serialized
+    bool mbTypeInfo;           //!< write/read type info
+    FEModel& m_fem;             //!< the FE Model that is being serialized
 
-	size_t	m_bytes_serialized;	//!< number or bytes serialized
+    size_t m_bytes_serialized;  //!< number or bytes serialized
 
-	bool					m_ptr_lock;
-	std::map<void*, int>	m_ptrOut;	// used for writing
-	std::vector<void*>		m_ptrIn;	// user for reading
+    bool m_ptr_lock;
+    std::map<void*, int> m_ptrOut;  // used for writing
+    std::vector<void*> m_ptrIn;     // user for reading
 };
 
-template <typename T> class typeInfo {};
-template <> class typeInfo<int>          { public: static uchar typeId() { return (uchar)TypeID::TYPE_INT;     }};
-template <> class typeInfo<unsigned int> { public: static uchar typeId() { return (uchar)TypeID::TYPE_UINT;    }};
-template <> class typeInfo<float>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_FLOAT;   }};
-template <> class typeInfo<double>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_DOUBLE;  }};
-template <> class typeInfo<Vector2d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_VEC2D;   }};
-template <> class typeInfo<Vector3d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_Vector3d;   }};
-template <> class typeInfo<Matrix2d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3D;   }};
-template <> class typeInfo<Matrix3d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3D;   }};
-template <> class typeInfo<Matrix3dd>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DD;  }};
-template <> class typeInfo<Matrix3ds>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DS;  }};
-template <> class typeInfo<Matrix3da>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DA;  }};
-template <> class typeInfo<quatd>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_QUATD;   }};
-template <> class typeInfo<tens3ds>      { public: static uchar typeId() { return (uchar)TypeID::TYPE_TENS3DS; }};
-template <> class typeInfo<tens3drs>     { public: static uchar typeId() { return (uchar)TypeID::TYPE_TENS3DRS;}};
-template <> class typeInfo<Matrix>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MATRIX;  }};
-
-template <typename T> DumpStream& DumpStream::write_raw(const T& o)
+template <typename T>
+class typeInfo
 {
-	if (m_btypeInfo) writeType(typeInfo<T>::typeId());
-	m_bytes_serialized += write(&o, sizeof(T), 1);
-	return *this;
+};
+template <>
+class typeInfo<int>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_INT;
+    }
+};
+template <>
+class typeInfo<unsigned int>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_UINT;
+    }
+};
+template <>
+class typeInfo<float>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_FLOAT;
+    }
+};
+template <>
+class typeInfo<double>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_DOUBLE;
+    }
+};
+template <>
+class typeInfo<Vector2d>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_VEC2D;
+    }
+};
+template <>
+class typeInfo<Vector3d>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_Vector3d;
+    }
+};
+template <>
+class typeInfo<Matrix2d>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_MAT3D;
+    }
+};
+template <>
+class typeInfo<Matrix3d>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_MAT3D;
+    }
+};
+template <>
+class typeInfo<Matrix3dd>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_MAT3DD;
+    }
+};
+template <>
+class typeInfo<Matrix3ds>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_MAT3DS;
+    }
+};
+template <>
+class typeInfo<Matrix3da>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_MAT3DA;
+    }
+};
+template <>
+class typeInfo<quatd>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_QUATD;
+    }
+};
+template <>
+class typeInfo<tens3ds>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_TENS3DS;
+    }
+};
+template <>
+class typeInfo<tens3drs>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_TENS3DRS;
+    }
+};
+template <>
+class typeInfo<Matrix>
+{
+public:
+    static uchar typeId()
+    {
+        return (uchar)TypeID::TYPE_MATRIX;
+    }
+};
+
+template <typename T>
+DumpStream& DumpStream::write_raw(const T& o)
+{
+    if (mbTypeInfo)
+        writeType(typeInfo<T>::typeId());
+    m_bytes_serialized += write(&o, sizeof(T), 1);
+    return *this;
 }
 
-template <typename T> DumpStream& DumpStream::read_raw(T& o)
+template <typename T>
+DumpStream& DumpStream::read_raw(T& o)
 {
-	if (m_btypeInfo) readType(typeInfo<T>::typeId());
-	m_bytes_serialized += read(&o, sizeof(T), 1);
-	return *this;
+    if (mbTypeInfo)
+        readType(typeInfo<T>::typeId());
+    m_bytes_serialized += read(&o, sizeof(T), 1);
+    return *this;
 }
 
-template <typename T> inline DumpStream& DumpStream::operator & (T& o)
+template <typename T>
+inline DumpStream& DumpStream::operator&(T& o)
 {
-	if (IsSaving()) (*this) << o; else (*this) >> o;
-	return *this;
+    if (IsSaving())
+        (*this) << o;
+    else
+        (*this) >> o;
+    return *this;
 }
 
-template <> inline DumpStream& DumpStream::operator << (int&          o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (unsigned int& o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (double&   o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (Vector2d&    o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (Vector3d&    o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (quatd&    o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (Matrix2d&    o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (Matrix3d&    o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (Matrix3ds&   o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (Matrix3dd&   o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (Matrix3da&   o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (tens3ds&  o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (tens3drs& o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (Matrix&   o) { return write_matrix(o); }
-
-template <> inline DumpStream& DumpStream::operator >> (int&          o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (unsigned int& o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (double&   o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (Vector2d&    o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (Vector3d&    o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (quatd&    o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (Matrix2d&    o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (Matrix3d&    o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (Matrix3ds&   o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (Matrix3dd&   o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (Matrix3da&   o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (tens3ds&  o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (tens3drs& o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (Matrix&   o) { return read_matrix(o); }
-
-template <typename T> inline DumpStream& DumpStream::operator << (T& o)
+template <>
+inline DumpStream& DumpStream::operator<<(int& o)
 {
-	AddPointer((void*)&o);
-	if (m_btypeInfo) writeType(TypeID::TYPE_UNKNOWN);
-	o.Serialize(*this);
-	check();
-	return *this;
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(unsigned int& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(double& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(Vector2d& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(Vector3d& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(quatd& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(Matrix2d& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(Matrix3d& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(Matrix3ds& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(Matrix3dd& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(Matrix3da& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(tens3ds& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(tens3drs& o)
+{
+    return write_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator<<(Matrix& o)
+{
+    return write_matrix(o);
 }
 
-template <typename T> inline DumpStream& DumpStream::operator >> (T& o)
+template <>
+inline DumpStream& DumpStream::operator>>(int& o)
 {
-	AddPointer((void*)&o);
-	if (m_btypeInfo) readType(TypeID::TYPE_UNKNOWN);
-	o.Serialize(*this);
-	check();
-	return *this;
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(unsigned int& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(double& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(Vector2d& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(Vector3d& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(quatd& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(Matrix2d& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(Matrix3d& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(Matrix3ds& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(Matrix3dd& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(Matrix3da& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(tens3ds& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(tens3drs& o)
+{
+    return read_raw(o);
+}
+template <>
+inline DumpStream& DumpStream::operator>>(Matrix& o)
+{
+    return read_matrix(o);
 }
 
-template <typename T> inline DumpStream& DumpStream::operator << (std::vector<T>& o)
+template <typename T>
+inline DumpStream& DumpStream::operator<<(T& o)
 {
-	if (m_btypeInfo) writeType(TypeID::TYPE_UNKNOWN);
-	int N = (int) o.size();
-	m_bytes_serialized += write(&N, sizeof(int), 1);
-	for (int i=0; i<N; ++i) (*this) << o[i];
-	return *this;
+    AddPointer((void*)&o);
+    if (mbTypeInfo)
+        writeType(TypeID::TYPE_UNKNOWN);
+    o.Serialize(*this);
+    check();
+    return *this;
 }
 
-template <typename T> inline DumpStream& DumpStream::operator >> (std::vector<T>& o)
+template <typename T>
+inline DumpStream& DumpStream::operator>>(T& o)
 {
-	if (m_btypeInfo) readType(TypeID::TYPE_UNKNOWN);
-	DumpStream& This = *this;
-	int N = 0;
-	m_bytes_serialized += read(&N, sizeof(int), 1);
-	if (N > 0)
-	{
-		o.resize(N);
-		for (int i = 0; i<N; ++i) (*this) >> o[i];
-	}
-	return This;
+    AddPointer((void*)&o);
+    if (mbTypeInfo)
+        readType(TypeID::TYPE_UNKNOWN);
+    o.Serialize(*this);
+    check();
+    return *this;
 }
 
-template <> inline DumpStream& DumpStream::operator << (std::vector<bool>& o)
+template <typename T>
+inline DumpStream& DumpStream::operator<<(std::vector<T>& o)
 {
-	if (m_btypeInfo) writeType(TypeID::TYPE_UNKNOWN);
-	DumpStream& This = *this;
-	int N = (int) o.size();
-	m_bytes_serialized += write(&N, sizeof(int), 1);
-	for (int i=0; i<N; ++i) 
-	{
-		bool b = o[i];
-		This << b;
-	}
-	return This;
+    if (mbTypeInfo)
+        writeType(TypeID::TYPE_UNKNOWN);
+    int N = (int)o.size();
+    m_bytes_serialized += write(&N, sizeof(int), 1);
+    for (int i = 0; i < N; ++i)
+        (*this) << o[i];
+    return *this;
 }
 
-template <> inline DumpStream& DumpStream::operator >> (std::vector<bool>& o)
+template <typename T>
+inline DumpStream& DumpStream::operator>>(std::vector<T>& o)
 {
-	if (m_btypeInfo) readType(TypeID::TYPE_UNKNOWN);
-	DumpStream& This = *this;
-	int N;
-	m_bytes_serialized += read(&N, sizeof(int), 1);
-	if (N > 0)
-	{
-		o.resize(N);
-		for (int i=0; i<N; ++i) 
-		{
-			bool b;
-			This >> b;
-			o[i] = b;
-		}
-	}
-	return This;
+    if (mbTypeInfo)
+        readType(TypeID::TYPE_UNKNOWN);
+    DumpStream& This = *this;
+    int N = 0;
+    m_bytes_serialized += read(&N, sizeof(int), 1);
+    if (N > 0)
+    {
+        o.resize(N);
+        for (int i = 0; i < N; ++i)
+            (*this) >> o[i];
+    }
+    return This;
 }
 
-template <typename A, typename B> DumpStream& DumpStream::operator << (std::map<A, B>& o)
+template <>
+inline DumpStream& DumpStream::operator<<(std::vector<bool>& o)
 {
-	if (m_btypeInfo) writeType(TypeID::TYPE_UNKNOWN);
-	DumpStream& ar = *this;
-	int N = (int)o.size();
-	ar << N;
+    if (mbTypeInfo)
+        writeType(TypeID::TYPE_UNKNOWN);
+    DumpStream& This = *this;
+    int N = (int)o.size();
+    m_bytes_serialized += write(&N, sizeof(int), 1);
+    for (int i = 0; i < N; ++i)
+    {
+        bool b = o[i];
+        This << b;
+    }
+    return This;
+}
+
+template <>
+inline DumpStream& DumpStream::operator>>(std::vector<bool>& o)
+{
+    if (mbTypeInfo)
+        readType(TypeID::TYPE_UNKNOWN);
+    DumpStream& This = *this;
+    int N;
+    m_bytes_serialized += read(&N, sizeof(int), 1);
+    if (N > 0)
+    {
+        o.resize(N);
+        for (int i = 0; i < N; ++i)
+        {
+            bool b;
+            This >> b;
+            o[i] = b;
+        }
+    }
+    return This;
+}
+
+template <typename A, typename B>
+DumpStream& DumpStream::operator<<(std::map<A, B>& o)
+{
+    if (mbTypeInfo)
+        writeType(TypeID::TYPE_UNKNOWN);
+    DumpStream& ar = *this;
+    int N = (int)o.size();
+    ar << N;
     for (typename std::map<A, B>::iterator it = o.begin(); it != o.end(); ++it)
-	{
-		const A& a = it->first;
-		B& b = it->second;
-		ar << a << b;
-	}
-	return ar;
+    {
+        const A& a = it->first;
+        B& b = it->second;
+        ar << a << b;
+    }
+    return ar;
 }
 
-template <typename A, typename B> DumpStream& DumpStream::operator >> (std::map<A, B>& o)
+template <typename A, typename B>
+DumpStream& DumpStream::operator>>(std::map<A, B>& o)
 {
-	if (m_btypeInfo) readType(TypeID::TYPE_UNKNOWN);
-	DumpStream& ar = *this;
-	int N = 0;
-	ar >> N;
-	o.clear();
-	for (int i=0; i<N; ++i)
-	{
-		A a;
-		B b;
-		ar >> a >> b;
-		o[a] = b;
-	}
-	return ar;
+    if (mbTypeInfo)
+        readType(TypeID::TYPE_UNKNOWN);
+    DumpStream& ar = *this;
+    int N = 0;
+    ar >> N;
+    o.clear();
+    for (int i = 0; i < N; ++i)
+    {
+        A a;
+        B b;
+        ar >> a >> b;
+        o[a] = b;
+    }
+    return ar;
 }
 
-template <typename T, std::size_t N> DumpStream& DumpStream::operator << (T(&a)[N])
+template <typename T, std::size_t N>
+DumpStream& DumpStream::operator<<(T (&a)[N])
 {
-	if (m_btypeInfo) writeType(TypeID::TYPE_UNKNOWN);
-	for (int i = 0; i < N; ++i) (*this) << a[i];
-	return *this;
+    if (mbTypeInfo)
+        writeType(TypeID::TYPE_UNKNOWN);
+    for (int i = 0; i < N; ++i)
+        (*this) << a[i];
+    return *this;
 }
 
-template <typename T, std::size_t N> DumpStream& DumpStream::operator >> (T(&a)[N])
+template <typename T, std::size_t N>
+DumpStream& DumpStream::operator>>(T (&a)[N])
 {
-	if (m_btypeInfo) readType(TypeID::TYPE_UNKNOWN);
-	for (int i = 0; i < N; ++i) (*this) >> a[i];
-	return *this;
+    if (mbTypeInfo)
+        readType(TypeID::TYPE_UNKNOWN);
+    for (int i = 0; i < N; ++i)
+        (*this) >> a[i];
+    return *this;
 }
 
-template <typename T> DumpStream& DumpStream::operator << (T* &a)
+template <typename T>
+DumpStream& DumpStream::operator<<(T*& a)
 {
-	DumpStream& ar = *this;
+    DumpStream& ar = *this;
 
-	// see if we already stored this pointer 
-	int pid = FindPointer((void*)a);
-	ar << pid;
-	if (pid != -1) return ar;
+    // see if we already stored this pointer
+    int pid = FindPointer((void*)a);
+    ar << pid;
+    if (pid != -1)
+        return ar;
 
-	// store the pointer in the table
-	AddPointer((void*)a);
+    // store the pointer in the table
+    AddPointer((void*)a);
 
-	// If we are storing a deep copy we need to store class info 
-	// so that we can reinstantiate the class
-	if (ar.IsShallow() == false)
-	{
-		// store the class info
-		T::SaveClass(*this, a);
-	}
+    // If we are storing a deep copy we need to store class info
+    // so that we can reinstantiate the class
+    if (ar.IsShallow() == false)
+    {
+        // store the class info
+        T::SaveClass(*this, a);
+    }
 
-	// serialize the object (assuming it has a Serialize member)
-	if (m_btypeInfo) writeType(TypeID::TYPE_UNKNOWN);
-	a->Serialize(*this);
+    // serialize the object (assuming it has a Serialize member)
+    if (mbTypeInfo)
+        writeType(TypeID::TYPE_UNKNOWN);
+    a->Serialize(*this);
 
-	return *this;
+    return *this;
 }
 
-template <typename T> DumpStream& DumpStream::operator << (std::vector<T*>& o)
+template <typename T>
+DumpStream& DumpStream::operator<<(std::vector<T*>& o)
 {
-	if (m_btypeInfo) writeType(TypeID::TYPE_UNKNOWN);
-	size_t N = o.size();
-	m_bytes_serialized += write(&N, sizeof(size_t), 1);
-	for (size_t i = 0; i < N; ++i)
-	{
-		(*this) << o[i];
-	}
-	return *this;
+    if (mbTypeInfo)
+        writeType(TypeID::TYPE_UNKNOWN);
+    size_t N = o.size();
+    m_bytes_serialized += write(&N, sizeof(size_t), 1);
+    for (size_t i = 0; i < N; ++i)
+    {
+        (*this) << o[i];
+    }
+    return *this;
 }
 
-template <typename T> DumpStream& DumpStream::operator >> (T* &a)
+template <typename T>
+DumpStream& DumpStream::operator>>(T*& a)
 {
-	DumpStream& ar = *this;
+    DumpStream& ar = *this;
 
-	// get the pointer id
-	int pid;
-	ar >> pid;
-	if (pid != -1)
-	{
-		a = (T*)(m_ptrIn[pid]);
-		return ar;
-	}
+    // get the pointer id
+    int pid;
+    ar >> pid;
+    if (pid != -1)
+    {
+        a = (T*)(m_ptrIn[pid]);
+        return ar;
+    }
 
-	// read class identifier and instatiate class
-	if (ar.IsShallow() == false)
-	{
-		a = dynamic_cast<T*>(T::LoadClass(ar, a));
-	}
+    // read class identifier and instatiate class
+    if (ar.IsShallow() == false)
+    {
+        a = dynamic_cast<T*>(T::LoadClass(ar, a));
+    }
 
-	// store the pointer
-	AddPointer((void*)a);
+    // store the pointer
+    AddPointer((void*)a);
 
-	// serialize the object
-	if (m_btypeInfo) readType(TypeID::TYPE_UNKNOWN);
-	a->Serialize(*this);
+    // serialize the object
+    if (mbTypeInfo)
+        readType(TypeID::TYPE_UNKNOWN);
+    a->Serialize(*this);
 
-	return *this;
+    return *this;
 }
 
-template <typename T> DumpStream& DumpStream::operator >> (std::vector<T*>& o)
+template <typename T>
+DumpStream& DumpStream::operator>>(std::vector<T*>& o)
 {
-	if (m_btypeInfo) readType(TypeID::TYPE_UNKNOWN);
-	size_t N = 0;
-	m_bytes_serialized += read(&N, sizeof(size_t), 1);
-	if (N > 0)
-	{
-		o.resize(N);
-		for (size_t i = 0; i < N; ++i)
-		{
-			(*this) >> o[i];
-		}
-	}
-	return *this;
+    if (mbTypeInfo)
+        readType(TypeID::TYPE_UNKNOWN);
+    size_t N = 0;
+    m_bytes_serialized += read(&N, sizeof(size_t), 1);
+    if (N > 0)
+    {
+        o.resize(N);
+        for (size_t i = 0; i < N; ++i)
+        {
+            (*this) >> o[i];
+        }
+    }
+    return *this;
 }

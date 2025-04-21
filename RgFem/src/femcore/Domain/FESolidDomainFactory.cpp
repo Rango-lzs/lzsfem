@@ -50,8 +50,8 @@ FEDomain* FESolidDomainFactory::CreateDomain(const FE_Element_Spec& spec, FEMesh
 {
 	FEModel* pfem = pmat->GetFEModel();
 	FE_Element_Class eclass = spec.eclass;
-	FE_Element_Shape eshape = spec.eshape;
-	FE_Element_Type etype = spec.etype;
+	ElementShape eshape = spec.eshape;
+	ElementType etype = spec.etype;
 
 	// this will store the domain we are going to allocate
 	FEDomain* pd = nullptr;

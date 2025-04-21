@@ -30,7 +30,7 @@ public:
 	void Destroy() override;
 
 	//! Create a sparse matrix
-	SparseMatrix* CreateSparseMatrix(Matrix_Type ntype) override;
+	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
 	//! Set the matrix
 	void SetMatrix(FECore::DenseMatrix* pA);

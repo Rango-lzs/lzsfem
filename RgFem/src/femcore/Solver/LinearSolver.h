@@ -38,7 +38,7 @@ public:
 public:
 
 	//! create a sparse matrix that can be used with this solver (must be overridden)
-	virtual SparseMatrix* CreateSparseMatrix(Matrix_Type ntype) = 0;
+	virtual SparseMatrix* CreateSparseMatrix(MatrixType ntype) = 0;
 
 	//! Set the sparse matrix
 	virtual bool SetSparseMatrix(SparseMatrix* pA);

@@ -40,7 +40,7 @@ FEShellElement::FEShellElement()
 FEShellElement::FEShellElement(const FEShellElement& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -71,7 +71,7 @@ FEShellElement::FEShellElement(const FEShellElement& el)
 FEShellElement& FEShellElement::operator = (const FEShellElement& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;

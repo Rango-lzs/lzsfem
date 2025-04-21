@@ -430,7 +430,7 @@ void BoomerAMGSolver::SetFailOnMaxIterations(bool b)
 	imp->m_failMaxIters = b;
 }
 
-SparseMatrix* BoomerAMGSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* BoomerAMGSolver::CreateSparseMatrix(MatrixType ntype)
 {
 	// allocate the correct matrix format depending on matrix symmetry type
 	switch (ntype)
@@ -526,7 +526,7 @@ void BoomerAMGSolver::SetPMaxElmts(int pmax) {}
 void BoomerAMGSolver::SetNumSweeps(int nswp) {}
 void BoomerAMGSolver::SetAggInterpType(int aggit) {}
 void BoomerAMGSolver::SetAggNumLevels(int anlv) {}
-SparseMatrix* BoomerAMGSolver::CreateSparseMatrix(Matrix_Type ntype) { return nullptr; }
+SparseMatrix* BoomerAMGSolver::CreateSparseMatrix(MatrixType ntype) { return nullptr; }
 bool BoomerAMGSolver::SetSparseMatrix(SparseMatrix* pA) { return false; }
 bool BoomerAMGSolver::PreProcess() { return false; }
 bool BoomerAMGSolver::Factor() { return false; }

@@ -29,7 +29,7 @@ SOFTWARE.*/
 #pragma once
 #include "FEStepComponent.h"
 #include "FEGlobalVector.h"
-#include <FECore/FEDofList.h>
+#include "femcore/FEDofList.h"
 
 //-----------------------------------------------------------------------------
 class FELinearSystem;
@@ -40,8 +40,7 @@ class FELinearSystem;
 //! includes most boundary loads, body loads, contact, etc.
 class FEM_EXPORT FEModelLoad : public FEStepComponent
 {
-	FECORE_SUPER_CLASS(FELOAD_ID)
-	FECORE_BASE_CLASS(FEModelLoad)
+    DECLARE_META_CLASS(FEModelLoad, FEStepComponent);
 
 public:
 	//! constructor

@@ -7,10 +7,10 @@
 class FEElementShape
 {
 public:
-    FEElementShape(FE_Element_Shape eshape, int nodes);
+    FEElementShape(ElementShape eshape, int nodes);
     virtual ~FEElementShape();
 
-    FE_Element_Shape shape() const
+    ElementShape shape() const
     {
         return m_shape;
     }
@@ -20,6 +20,6 @@ public:
     }
 
 private:
-    FE_Element_Shape m_shape;
+    ElementShape m_shape;
     int m_nodes;
 };

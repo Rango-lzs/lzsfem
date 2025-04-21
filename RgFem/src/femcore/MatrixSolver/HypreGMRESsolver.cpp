@@ -276,9 +276,9 @@ void HypreGMRESsolver::SetConvergencTolerance(double tol)
 	imp->m_tol = tol;
 }
 
-SparseMatrix* HypreGMRESsolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* HypreGMRESsolver::CreateSparseMatrix(MatrixType ntype)
 {
-	if (ntype == Matrix_Type::REAL_UNSYMMETRIC)
+	if (ntype == MatrixType::REAL_UNSYMMETRIC)
 		return (imp->A = new CRSSparseMatrix(0));
 	else
 		return 0;
@@ -380,7 +380,7 @@ void HypreGMRESsolver::SetConvergencTolerance(double tol) {}
 bool HypreGMRESsolver::PreProcess() { return false; }
 bool HypreGMRESsolver::Factor() { return false; }
 bool HypreGMRESsolver::BackSolve(double* x, double* b) { return false; }
-SparseMatrix* HypreGMRESsolver::CreateSparseMatrix(Matrix_Type ntype) { return 0; }
+SparseMatrix* HypreGMRESsolver::CreateSparseMatrix(MatrixType ntype) { return 0; }
 bool HypreGMRESsolver::SetSparseMatrix(SparseMatrix* A) { return false; }
 
 #endif // HYPRE

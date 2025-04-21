@@ -47,8 +47,7 @@ class FELinearSystem;
 //!
 class FEM_EXPORT FENLConstraint : public FEStepComponent
 {
-	FECORE_SUPER_CLASS(FENLCONSTRAINT_ID)
-	FECORE_BASE_CLASS(FENLConstraint);
+    DECLARE_META_CLASS(FENLConstraint, FEStepComponent);
 
 public:
 	FENLConstraint(FEModel* pfem);

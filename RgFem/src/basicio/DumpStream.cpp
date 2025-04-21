@@ -1,56 +1,28 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-#include "stdafx.h"
-#include "DumpStream.h"
-#include "matrix.h"
+#include "basicio/DumpStream.h"
+#include "datastructure/matrix.h"
 
 //-----------------------------------------------------------------------------
 DumpStream::DumpStream(FEModel& fem) : m_fem(fem)
 {
-	m_bsave = false;
+	mbSave = false;
 	m_bshallow = false;
 	m_bytes_serialized = 0;
 	m_ptr_lock = false;
 
 #ifdef _DEBUG
-	m_btypeInfo = false;
+	mbTypeInfo = false;
 #else
-	m_btypeInfo = false;
+	mbTypeInfo = false;
 #endif
 }
 
 //-----------------------------------------------------------------------------
 //! See if the stream is used for input or output
-bool DumpStream::IsSaving() const { return m_bsave; }
+bool DumpStream::IsSaving() const { return mbSave; }
 
 //-----------------------------------------------------------------------------
 //! See if the stream is used for input
-bool DumpStream::IsLoading() const { return !m_bsave; }
+bool DumpStream::IsLoading() const { return !mbSave; }
 
 //-----------------------------------------------------------------------------
 //! See if shallow flag is set
@@ -68,20 +40,20 @@ DumpStream::~DumpStream()
 // set the write type info flag
 void DumpStream::WriteTypeInfo(bool b)
 {
-	m_btypeInfo = b;
+	mbTypeInfo = b;
 }
 
 //-----------------------------------------------------------------------------
 // see if the stream has type info
 bool DumpStream::HasTypeInfo() const
 {
-	return m_btypeInfo;
+	return mbTypeInfo;
 }
 
 //-----------------------------------------------------------------------------
 void DumpStream::Open(bool bsave, bool bshallow)
 {
-	m_bsave = bsave;
+	mbSave = bsave;
 	m_bshallow = bshallow;
 	m_bytes_serialized = 0;
 	m_ptr_lock = false;
@@ -173,7 +145,7 @@ DumpStream& DumpStream::operator << (bool b)
 //-----------------------------------------------------------------------------
 DumpStream& DumpStream::operator << (int n)
 {
-	if (m_btypeInfo) writeType(TypeID::TYPE_INT);
+	if (mbTypeInfo) writeType(TypeID::TYPE_INT);
 	m_bytes_serialized += write(&n, sizeof(int), 1);
 	return *this;
 }
@@ -254,11 +226,11 @@ void DumpStream::AddPointer(void* p)
 //-----------------------------------------------------------------------------
 DumpStream& DumpStream::write_matrix(matrix& o)
 {
-	if (m_btypeInfo) writeType(TypeID::TYPE_MATRIX);
+	if (mbTypeInfo) writeType(TypeID::TYPE_MATRIX);
 
 	// don't write type info for all components
-	bool oldTypeFlag = m_btypeInfo;
-	m_btypeInfo = false;
+	bool oldTypeFlag = mbTypeInfo;
+	mbTypeInfo = false;
 
 	DumpStream& ar = *this;
 	int nr = o.rows();
@@ -275,7 +247,7 @@ DumpStream& DumpStream::write_matrix(matrix& o)
 		ar << data;
 	}
 
-	m_btypeInfo = oldTypeFlag;
+	mbTypeInfo = oldTypeFlag;
 
 	return *this;
 }
@@ -283,11 +255,11 @@ DumpStream& DumpStream::write_matrix(matrix& o)
 //-----------------------------------------------------------------------------
 DumpStream& DumpStream::read_matrix(matrix& o)
 {
-	if (m_btypeInfo) readType(TypeID::TYPE_MATRIX);
+	if (mbTypeInfo) readType(TypeID::TYPE_MATRIX);
 
 	// don't read type info for all components
-	bool oldTypeFlag = m_btypeInfo;
-	m_btypeInfo = false;
+	bool oldTypeFlag = mbTypeInfo;
+	mbTypeInfo = false;
 
 	DumpStream& ar = *this;
 	int nr = 0, nc = 0;
@@ -303,7 +275,7 @@ DumpStream& DumpStream::read_matrix(matrix& o)
 			for (int j = 0; j < nc; ++j) o(i, j) = data[n++];
 	}
 
-	m_btypeInfo = oldTypeFlag;
+	mbTypeInfo = oldTypeFlag;
 
 	return *this;
 }
@@ -313,7 +285,7 @@ DumpStream& DumpStream::read_matrix(matrix& o)
 bool DumpStream::readBlock(DataBlock& d)
 {
 	// make sure we have type info
-	if (m_btypeInfo == false) return false;
+	if (mbTypeInfo == false) return false;
 
 	// see if we have reached the end of the stream
 	if (EndOfStream()) return false;
@@ -322,7 +294,7 @@ bool DumpStream::readBlock(DataBlock& d)
 	d.m_type = readType();
 
 	// turn off type flag since we already read it
-	m_btypeInfo = false;
+	mbTypeInfo = false;
 
 	// read/allocate data
 	switch (d.m_type)
@@ -344,11 +316,11 @@ bool DumpStream::readBlock(DataBlock& d)
 	case TypeID::TYPE_MATRIX  : { matrix       v; read_raw(v); d.m_pd = new matrix      (v); } break;
 	default:
 		assert(false);
-		m_btypeInfo = true;
+		mbTypeInfo = true;
 		return false;
 	}
 
 	// turn the type info flag back on
-	m_btypeInfo = true;
+	mbTypeInfo = true;
 	return true;
 }

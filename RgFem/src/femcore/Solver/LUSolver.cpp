@@ -9,7 +9,7 @@ LUSolver::LUSolver(FEModel* fem) : LinearSolver(fem), m_pA(nullptr)
 
 //-----------------------------------------------------------------------------
 //! Create a sparse matrix
-SparseMatrix* LUSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* LUSolver::CreateSparseMatrix(MatrixType ntype)
 { 
 	return (m_pA = new FECore::DenseMatrix()); 
 }

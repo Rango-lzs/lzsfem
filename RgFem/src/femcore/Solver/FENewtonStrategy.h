@@ -26,7 +26,7 @@ public:
 
 public:
 	//! initialize the linear system
-	virtual SparseMatrix* CreateSparseMatrix(Matrix_Type mtype);
+	virtual SparseMatrix* CreateSparseMatrix(MatrixType mtype);
 
 	//! Presolve update
 	virtual void PreSolveUpdate() {}

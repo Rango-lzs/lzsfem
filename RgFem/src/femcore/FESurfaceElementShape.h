@@ -31,7 +31,7 @@ SOFTWARE.*/
 class FESurfaceElementShape : public FEElementShape
 {
 public:
-	FESurfaceElementShape(FE_Element_Shape shape, int nodes) : FEElementShape(shape, nodes) {}
+	FESurfaceElementShape(ElementShape shape, int nodes) : FEElementShape(shape, nodes) {}
 
 	//! values of shape functions
 	virtual void shape_fnc(double* H, double r, double s) = 0;

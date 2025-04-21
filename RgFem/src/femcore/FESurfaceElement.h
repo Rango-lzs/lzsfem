@@ -15,15 +15,15 @@ public:
 
 	virtual void SetTraits(FEElementTraits* pt) override;
 
-	double* GaussWeights() { return &((FESurfaceElementTraits*)(m_pT))->gw[0]; }			// weights of integration points
-	const double* GaussWeights() const { return &((FESurfaceElementTraits*)(m_pT))->gw[0]; }			// weights of integration points
-	double gr(int n) const { return ((FESurfaceElementTraits*)(m_pT))->gr[n]; }	// integration point coordinate r
-	double gs(int n) const { return ((FESurfaceElementTraits*)(m_pT))->gs[n]; }	// integration point coordinate  s
-    double cr() const { return ((FESurfaceElementTraits*)(m_pT))->cr; }    // centroid point coordinate r
-    double cs() const { return ((FESurfaceElementTraits*)(m_pT))->cs; }    // centroid point coordinate s
+	double* GaussWeights() { return &((FESurfaceElementTraits*)(m_pTraits))->gw[0]; }			// weights of integration points
+	const double* GaussWeights() const { return &((FESurfaceElementTraits*)(m_pTraits))->gw[0]; }			// weights of integration points
+	double gr(int n) const { return ((FESurfaceElementTraits*)(m_pTraits))->gr[n]; }	// integration point coordinate r
+	double gs(int n) const { return ((FESurfaceElementTraits*)(m_pTraits))->gs[n]; }	// integration point coordinate  s
+    double cr() const { return ((FESurfaceElementTraits*)(m_pTraits))->cr; }    // centroid point coordinate r
+    double cs() const { return ((FESurfaceElementTraits*)(m_pTraits))->cs; }    // centroid point coordinate s
 
-	double* Gr(int n) const { return ((FESurfaceElementTraits*)(m_pT))->Gr[n]; }	// shape function derivative to r
-	double* Gs(int n) const { return ((FESurfaceElementTraits*)(m_pT))->Gs[n]; }	// shape function derivative to s
+	double* Gr(int n) const { return ((FESurfaceElementTraits*)(m_pTraits))->Gr[n]; }	// shape function derivative to r
+	double* Gs(int n) const { return ((FESurfaceElementTraits*)(m_pTraits))->Gs[n]; }	// shape function derivative to s
 
 	double eval(double* d, int n)
 	{
@@ -169,27 +169,27 @@ public:
 
 	void shape_fnc(double* H, double r, double s)
 	{
-		((FESurfaceElementTraits*)m_pT)->shape_fnc(H, r, s);
+		((FESurfaceElementTraits*)m_pTraits)->shape_fnc(H, r, s);
 	}
 
 	void shape_deriv(double* Gr, double* Gs, double r, double s)
 	{
-		((FESurfaceElementTraits*)m_pT)->shape_deriv(Gr, Gs, r, s);
+		((FESurfaceElementTraits*)m_pTraits)->shape_deriv(Gr, Gs, r, s);
 	}
 
 	void shape_deriv(int order, double* Gr, double* Gs, double r, double s)
 	{
-		((FESurfaceElementTraits*)m_pT)->shape_deriv(order, Gr, Gs, r, s);
+		((FESurfaceElementTraits*)m_pTraits)->shape_deriv(order, Gr, Gs, r, s);
 	}
 
 	void shape_deriv2(double* Grr, double* Grs, double* Gss, double r, double s)
 	{
-		((FESurfaceElementTraits*)m_pT)->shape_deriv2(Grr, Grs, Gss, r, s);
+		((FESurfaceElementTraits*)m_pTraits)->shape_deriv2(Grr, Grs, Gss, r, s);
 	}
 
 	void shape_fnc(int order, double* H, double r, double s)
 	{
-		((FESurfaceElementTraits*)m_pT)->shape_fnc(order, H, r, s);
+		((FESurfaceElementTraits*)m_pTraits)->shape_fnc(order, H, r, s);
 	}
 
     //! return number of edges

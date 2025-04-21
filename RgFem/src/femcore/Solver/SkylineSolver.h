@@ -54,7 +54,7 @@ public:
 	void Destroy() override;
 
 	//! Create a sparse matrix
-	SparseMatrix* CreateSparseMatrix(Matrix_Type ntype) override;
+	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
 private:
 	SkylineMatrix*	m_pA;

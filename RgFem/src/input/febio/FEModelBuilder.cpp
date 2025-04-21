@@ -472,10 +472,10 @@ FE_Element_Spec FEModelBuilder::ElementSpec(const char* sztype)
     FEMesh& mesh = m_fem.GetMesh();
     
 	// determine the element shape
-	FE_Element_Shape eshape = FE_ELEM_INVALID_SHAPE;
+	ElementShape eshape = FE_ELEM_INVALID_SHAPE;
 
 	// for shells, don't overwrite m_pim->m_ntri3/6 or m_nquad4/8, since they are needed for surface definitions
-	FE_Element_Type stype = FE_ELEM_INVALID_TYPE;
+	ElementType stype = FE_ELEM_INVALID_TYPE;
 	if      (strcmp(sztype, "hex8"   ) == 0) eshape = ET_HEX8;
 	else if (strcmp(sztype, "hex20"  ) == 0) eshape = ET_HEX20;
 	else if (strcmp(sztype, "hex27"  ) == 0) eshape = ET_HEX27;
@@ -552,7 +552,7 @@ FE_Element_Spec FEModelBuilder::ElementSpec(const char* sztype)
 	if (GetModuleName() == "fluid") NDIM = 2;
 
 	// determine the element type
-	FE_Element_Type etype = FE_ELEM_INVALID_TYPE;
+	ElementType etype = FE_ELEM_INVALID_TYPE;
 	switch (eshape)
 	{
 	case ET_HEX8   : etype = m_nhex8; break;

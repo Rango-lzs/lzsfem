@@ -149,10 +149,10 @@ void BIPNSolver::SetSchurPreconditioner(int n)
 }
 
 //! Return a sparse matrix compatible with this solver
-SparseMatrix* BIPNSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* BIPNSolver::CreateSparseMatrix(MatrixType ntype)
 {
 	// make sure we can support this matrix
-	if (ntype != Matrix_Type::REAL_UNSYMMETRIC) return 0;
+	if (ntype != MatrixType::REAL_UNSYMMETRIC) return 0;
 
 	// make sure we have two partitions
 	if (m_part.size() != 2) return 0;
@@ -612,7 +612,7 @@ BIPNSolver::BIPNSolver(FEModel* fem) : LinearSolver(fem), m_A(0) {}
 bool BIPNSolver::PreProcess() { return false; }
 bool BIPNSolver::Factor() { return false; }
 bool BIPNSolver::BackSolve(double* x, double* b) { return false; }
-SparseMatrix* BIPNSolver::CreateSparseMatrix(Matrix_Type ntype) { return 0; }
+SparseMatrix* BIPNSolver::CreateSparseMatrix(MatrixType ntype) { return 0; }
 void BIPNSolver::SetPrintLevel(int n) {}
 void BIPNSolver::SetMaxIterations(int n) {}
 void BIPNSolver::SetTolerance(double eps) {}

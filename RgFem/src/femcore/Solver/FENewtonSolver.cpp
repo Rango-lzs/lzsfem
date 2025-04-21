@@ -358,7 +358,7 @@ bool FENewtonSolver::AllocateLinearSystem()
 
     feLogInfo("Selecting linear solver %s", m_plinsolve->GetTypeStr());
 
-    Matrix_Type mtype = MatrixType();
+    MatrixType mtype = MatrixType();
     SparseMatrix* pS = m_qnstrategy->CreateSparseMatrix(mtype);
     if ((pS == 0) && (m_msymm == REAL_SYMMETRIC))
     {

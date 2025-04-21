@@ -8,16 +8,16 @@
 
 #include "FESolver.h"
 
-#include "DumpStream.h"
-#include "FELinearConstraintManager.h"
+#include "basicio/DumpStream.h"
+#include "femcore/FELinearConstraintManager.h"
 #include "femcore/Domain/FEDomain.h"
 #include "femcore/FEMesh.h"
 #include "femcore/FEModel.h"
 #include "femcore/FENode.h"
-#include "FENLConstraint.h"
-#include "FENodalLoad.h"
+#include "femcore/FENLConstraint.h"
+#include  "femcore/FENodalLoad.h"
 #include "FENodeReorder.h"
-#include "FESurfacePairConstraint.h"
+#include "femcore/FESurfacePairConstraint.h"
 #include "LinearSolver.h"
 
 BEGIN_PARAM_DEFINE(FESolver, FEObjectBase)
@@ -99,9 +99,9 @@ int FESolver::MatrixSymmetryFlag() const
 
 //-----------------------------------------------------------------------------
 //! get matrix type
-Matrix_Type FESolver::MatrixType() const
+MatrixType FESolver::MatrixType() const
 {
-    return (Matrix_Type)m_msymm;
+    return (MatrixType)m_msymm;
 }
 
 //-----------------------------------------------------------------------------

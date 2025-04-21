@@ -46,7 +46,7 @@ TestSolver::~TestSolver()
 }
 
 //-----------------------------------------------------------------------------
-SparseMatrix* TestSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* TestSolver::CreateSparseMatrix(MatrixType ntype)
 {
 	// allocate the correct matrix format depending on matrix symmetry type
 	switch (ntype)

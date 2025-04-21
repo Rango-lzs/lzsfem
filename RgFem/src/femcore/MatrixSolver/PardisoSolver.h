@@ -46,7 +46,7 @@ public:
 	bool BackSolve(double* x, double* y) override;
 	void Destroy() override;
 
-	SparseMatrix* CreateSparseMatrix(Matrix_Type ntype) override;
+	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 	bool SetSparseMatrix(SparseMatrix* pA) override;
 
 	void PrintConditionNumber(bool b);

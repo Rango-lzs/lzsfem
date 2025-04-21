@@ -114,7 +114,7 @@ public:
     FEElement* FindElementFromID(int nid);
 
     //! See if all elements are of a particular shape
-    bool IsType(FE_Element_Shape eshape);
+    bool IsType(ElementShape eshape);
 
     // --- NODESETS ---
     //! adds a node set to the mesh

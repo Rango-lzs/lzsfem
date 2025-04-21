@@ -64,7 +64,7 @@ public:
 	void Destroy() override;
 
 	//! Create a sparse matrix
-	SparseMatrix* CreateSparseMatrix(Matrix_Type ntype) override;
+	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
 	//! set the sparse matrix
 	bool SetSparseMatrix(SparseMatrix* A) override;

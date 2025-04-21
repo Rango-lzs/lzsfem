@@ -4,7 +4,6 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(${TARGET_NAME} SHARED "")
 target_compile_definitions(RgFem PRIVATE RgFem_Module)
 
-
 target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
 
 #Add CLI11 Library, a head only comand parse library
@@ -213,6 +212,8 @@ set(FEMCORE_HEADERS
     femcore/FEResidualVector.h
     femcore/units.h
     femcore/FELinearConstraint.h
+    femcore/FENodalLoad.h
+    femcore/FEDataArray.h
 )
 
 
@@ -370,6 +371,8 @@ set(FEMCORE_SOURCES
     femcore/tools.cpp
     femcore/FEResidualVector.cpp
     femcore/FELinearConstraint.cpp
+    femcore/FENodalLoad.cpp
+    femcore/FEDataArray.cpp
 )
 
 set(PROJECT_SOURCES

@@ -10,7 +10,7 @@
 
 #include "femcore/fem_export.h"
 
-#include "datastructure/matrix.h"
+#include "datastructure/Matrix.h"
 #include "datastructure/Vector3d.h"
 #include "datastructure/Matrix3d.h"
 #include "elements/RgElemTypeDefine.h"
@@ -92,7 +92,7 @@ class FEM_EXPORT FESolidElementTraits : public FEElementTraits
 {
 public:
 	//! constructor
-	FESolidElementTraits(int ni, int ne, FE_Element_Shape es, FE_Element_Type et);
+	FESolidElementTraits(int ni, int ne, ElementShape es, ElementType et);
 
 	//! initialize element traits data
 	void init() override;
@@ -120,13 +120,13 @@ public:
 	std::vector<FESolidElementShape*>	m_shapeP; // shape classes for different order (some orders can by null)
 
 	// local derivatives of shape functions at gauss points
-	matrix m_Gr, m_Gs, m_Gt;
-	std::vector<matrix>	m_Gr_p;
-	std::vector<matrix>	m_Gs_p;
-	std::vector<matrix>	m_Gt_p;
+	Matrix m_Gr, m_Gs, m_Gt;
+	std::vector<Matrix>	m_Gr_p;
+	std::vector<Matrix>	m_Gs_p;
+	std::vector<Matrix>	m_Gt_p;
 
 	// local second derivatives of shape functions at gauss points
-	matrix Grr, Gsr, Gtr, Grs, Gss, Gts, Grt, Gst, Gtt;
+	Matrix Grr, Gsr, Gtr, Grs, Gss, Gts, Grt, Gst, Gtt;
 };
 
 //=============================================================================
@@ -149,7 +149,7 @@ public:
 	void init();
 
 public:
-	FEHex8_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_HEX8, et) {}
+	FEHex8_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_HEX8, et) {}
 };
 
 //=============================================================================
@@ -166,7 +166,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 protected:
-	matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
+	Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
 };
 
 //=============================================================================
@@ -208,7 +208,7 @@ public:
 	void init();
 
 public:
-	FETet4_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_TET4, et) {}
+	FETet4_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_TET4, et) {}
 };
 
 //=============================================================================
@@ -237,7 +237,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 protected:
-	matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
+	Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
 };
 
 //=============================================================================
@@ -251,7 +251,7 @@ public:
 	void init();
 
 public:
-	FETet5_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_TET5, et) {}
+	FETet5_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_TET5, et) {}
 };
 
 //=============================================================================
@@ -284,7 +284,7 @@ public:
 	void init();
 
 public:
-	FEPenta6_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_PENTA6, et){}
+	FEPenta6_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_PENTA6, et){}
 };
 
 //=============================================================================
@@ -300,7 +300,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 protected:
-	matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
+	Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
 };
 
 //=============================================================================
@@ -317,7 +317,7 @@ public:
     enum { NELN = 15 };
     
 public:
-    FEPenta15_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_PENTA15, et){}
+    FEPenta15_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_PENTA15, et){}
 };
 
 //=============================================================================
@@ -336,8 +336,8 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
     
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
-    matrix m_MT;
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_MT;
 };
 
 //=============================================================================
@@ -356,7 +356,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -376,7 +376,7 @@ public:
 	void init();
 
 public:
-	FETet10_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_TET10, et){}
+	FETet10_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_TET10, et){}
 };
 
 //=============================================================================
@@ -392,7 +392,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix Ai;
+	Matrix Ai;
 };
 
 //=============================================================================
@@ -408,7 +408,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix Ai;
+	Matrix Ai;
 };
 
 //=============================================================================
@@ -424,8 +424,8 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix N;
-	matrix Ai;
+	Matrix N;
+	Matrix Ai;
 };
 
 //=============================================================================
@@ -469,7 +469,7 @@ public:
 	enum { NELN = 15 };
 
 public:
-	FETet15_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_TET15, et){}
+	FETet15_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_TET15, et){}
 };
 
 //=============================================================================
@@ -485,8 +485,8 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix N;
-	matrix Ai;
+	Matrix N;
+	Matrix Ai;
 };
 
 //=============================================================================
@@ -502,8 +502,8 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix N;
-	matrix Ai;
+	Matrix N;
+	Matrix Ai;
 };
 
 //=============================================================================
@@ -519,8 +519,8 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix N;
-	matrix Ai;
+	Matrix N;
+	Matrix Ai;
 };
 
 //=============================================================================
@@ -536,8 +536,8 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix N;
-	matrix Ai;
+	Matrix N;
+	Matrix Ai;
 };
 
 //=============================================================================
@@ -561,7 +561,7 @@ public:
 	enum { NELN = 20 };
 
 public:
-	FETet20_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_TET20, et){}
+	FETet20_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_TET20, et){}
 };
 
 //=============================================================================
@@ -577,8 +577,8 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix N;
-	matrix Ai;
+	Matrix N;
+	Matrix Ai;
 };
 
 //=============================================================================
@@ -596,7 +596,7 @@ public:
 	enum { NELN = 20 };
 
 public:
-	FEHex20_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_HEX20, et){}
+	FEHex20_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_HEX20, et){}
 
 	//! initialize element traits data
 	void init();
@@ -620,8 +620,8 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
     
-    matrix Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
-    matrix MT;
+    Matrix Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix MT;
 };
 
 //=============================================================================
@@ -640,7 +640,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -658,13 +658,13 @@ public:
 	enum { NELN = 27 };
 
 public:
-	FEHex27_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_HEX27, et){}
+	FEHex27_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_HEX27, et){}
     
 	//! initialize element traits data
 	void init();
 
 protected:
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -694,7 +694,7 @@ public:
 	enum { NELN = 5 };
 
 public:
-	FEPyra5_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_PYRA5, et){}
+	FEPyra5_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_PYRA5, et){}
 };
 
 //=============================================================================
@@ -710,7 +710,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 protected:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -727,7 +727,7 @@ public:
     enum { NELN = 13 };
     
 public:
-    FEPyra13_(int ni, FE_Element_Type et) : FESolidElementTraits(ni, NELN, ET_PYRA13, et){}
+    FEPyra13_(int ni, ElementType et) : FESolidElementTraits(ni, NELN, ET_PYRA13, et){}
 };
 
 //=============================================================================
@@ -743,7 +743,7 @@ public:
     void project_to_nodes(double* ai, double* ao) const override;
     
 protected:
-    matrix    m_Ai;
+    Matrix    m_Ai;
 };
 
 //=============================================================================
@@ -760,7 +760,7 @@ protected:
 class FEM_EXPORT FESurfaceElementTraits : public FEElementTraits
 {
 public:
-	FESurfaceElementTraits(int ni, int ne, FE_Element_Shape es, FE_Element_Type et);
+	FESurfaceElementTraits(int ni, int ne, ElementShape es, ElementType et);
 
 	// initialization
 	void init();
@@ -791,11 +791,11 @@ public:
 	std::vector<FESurfaceElementShape*>	m_shapeP; // shape classes for different order (some orders can by null)
 
 	// local derivatives of shape functions at gauss points
-	matrix Gr, Gs;
+	Matrix Gr, Gs;
 
 	// local derivatives of shape functions at gauss points, for different interpolation order
-	std::vector<matrix>	Gr_p;
-	std::vector<matrix>	Gs_p;
+	std::vector<Matrix>	Gr_p;
+	std::vector<Matrix>	Gs_p;
     
     // parametric coordinates of element center
     double cr;
@@ -820,7 +820,7 @@ public:
 
 public:
 	//! constructor
-	FEQuad4_(int ni, FE_Element_Type et) : FESurfaceElementTraits(ni, NELN, ET_QUAD4, et){}
+	FEQuad4_(int ni, ElementType et) : FESurfaceElementTraits(ni, NELN, ET_QUAD4, et){}
 };
 
 //=============================================================================
@@ -837,7 +837,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 protected:
-	matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
+	Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
 };
 
 //=============================================================================
@@ -870,7 +870,7 @@ public:
 
 public:
 	//! constructor
-	FETri3_(int ni, FE_Element_Type et) : FESurfaceElementTraits(ni, NELN, ET_TRI3, et){}
+	FETri3_(int ni, ElementType et) : FESurfaceElementTraits(ni, NELN, ET_TRI3, et){}
 
 	// initialization 
 	void init() override;
@@ -906,7 +906,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 protected:
-	matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
+	Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
 };
 
 //=============================================================================
@@ -924,7 +924,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 protected:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -956,7 +956,7 @@ public:
 	enum { NELN = 6 };
 
 public:
-	FETri6_(int ni, FE_Element_Type et) : FESurfaceElementTraits(ni, NELN, ET_TRI6, et){}
+	FETri6_(int ni, ElementType et) : FESurfaceElementTraits(ni, NELN, ET_TRI6, et){}
 
 	// initialization 
 	void init() override;
@@ -1010,7 +1010,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -1060,7 +1060,7 @@ public:
 	enum { NELN = 6 };
 
 public:
-	FETri6m_(int ni, FE_Element_Type et) : FESurfaceElementTraits(ni, NELN, ET_TRI6, et){}
+	FETri6m_(int ni, ElementType et) : FESurfaceElementTraits(ni, NELN, ET_TRI6, et){}
 
 	// shape function at (r,s)
 	void shape(double* H, double r, double s);
@@ -1090,7 +1090,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 */
 
@@ -1108,7 +1108,7 @@ public:
 	enum { NELN = 7 };
 
 public:
-	FETri7_(int ni, FE_Element_Type et) : FESurfaceElementTraits(ni, NELN, ET_TRI7, et){}
+	FETri7_(int ni, ElementType et) : FESurfaceElementTraits(ni, NELN, ET_TRI7, et){}
 
 	// initialization
 	void init() override;
@@ -1130,7 +1130,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	Ai;
+	Matrix	Ai;
 };
 
 //=============================================================================
@@ -1149,7 +1149,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	Ai;
+	Matrix	Ai;
 };
 
 
@@ -1169,7 +1169,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -1188,7 +1188,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	Ai;
+	Matrix	Ai;
 };
 
 //=============================================================================
@@ -1205,7 +1205,7 @@ public:
 	enum { NELN = 10 };
 
 public:
-	FETri10_(int ni, FE_Element_Type et) : FESurfaceElementTraits(ni, NELN, ET_TRI10, et){}
+	FETri10_(int ni, ElementType et) : FESurfaceElementTraits(ni, NELN, ET_TRI10, et){}
 
 	// initialization
 	void init() override;
@@ -1227,7 +1227,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 
@@ -1247,7 +1247,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -1265,7 +1265,7 @@ public:
 	enum { NELN = 8 };
 
 public:
-	FEQuad8_(int ni, FE_Element_Type et) : FESurfaceElementTraits(ni, NELN, ET_QUAD8, et) {}
+	FEQuad8_(int ni, ElementType et) : FESurfaceElementTraits(ni, NELN, ET_QUAD8, et) {}
 
 	// initialization
 	void init() override;
@@ -1286,7 +1286,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -1304,7 +1304,7 @@ public:
     void project_to_nodes(double* ai, double* ao) const override;
     
 private:
-    matrix	m_Ai;
+    Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -1322,7 +1322,7 @@ public:
 	enum { NELN = 9 };
 
 public:
-	FEQuad9_(int ni, FE_Element_Type et) : FESurfaceElementTraits(ni, NELN, ET_QUAD9, et) {}
+	FEQuad9_(int ni, ElementType et) : FESurfaceElementTraits(ni, NELN, ET_QUAD9, et) {}
 
 	// initialization
 	void init() override;
@@ -1343,7 +1343,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -1361,7 +1361,7 @@ public:
     void project_to_nodes(double* ai, double* ao) const override;
     
 private:
-    matrix	m_Ai;
+    Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -1378,7 +1378,7 @@ private:
 class FEShellElementTraits : public FEElementTraits
 {
 public:
-	FEShellElementTraits(int ni, int ne, FE_Element_Shape es, FE_Element_Type et);
+	FEShellElementTraits(int ni, int ne, ElementShape es, ElementType et);
 
     void init();
     
@@ -1396,7 +1396,7 @@ public:
 	std::vector<double> gw;
 
 	// local derivatives of shape functions at gauss points
-	matrix Hr, Hs;
+	Matrix Hr, Hs;
     
 };
 
@@ -1409,7 +1409,7 @@ public:
     enum { NELN = 4 };
     
 public:
-    FEShellQuad4_(int ni, FE_Element_Type et) : FEShellElementTraits(ni, NELN, ET_QUAD4, et) {}
+    FEShellQuad4_(int ni, ElementType et) : FEShellElementTraits(ni, NELN, ET_QUAD4, et) {}
     
 public:
     //! values of shape functions
@@ -1437,7 +1437,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -1457,7 +1457,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -1469,7 +1469,7 @@ public:
     enum { NELN = 3 };
     
 public:
-    FEShellTri3_(int ni, FE_Element_Type et) : FEShellElementTraits(ni, NELN, ET_TRI3, et) {}
+    FEShellTri3_(int ni, ElementType et) : FEShellElementTraits(ni, NELN, ET_TRI3, et) {}
     
 public:
     //! values of shape functions
@@ -1497,7 +1497,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -1517,7 +1517,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -1529,7 +1529,7 @@ public:
     enum { NELN = 8 };
     
 public:
-    FEShellQuad8_(int ni, FE_Element_Type et) : FEShellElementTraits(ni, NELN, ET_QUAD8, et) {}
+    FEShellQuad8_(int ni, ElementType et) : FEShellElementTraits(ni, NELN, ET_QUAD8, et) {}
     
 public:
     //! values of shape functions
@@ -1557,7 +1557,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -1577,7 +1577,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -1589,7 +1589,7 @@ public:
     enum { NELN = 6 };
     
 public:
-    FEShellTri6_(int ni, FE_Element_Type et) : FEShellElementTraits(ni, NELN, ET_TRI6, et) {}
+    FEShellTri6_(int ni, ElementType et) : FEShellElementTraits(ni, NELN, ET_TRI6, et) {}
     
 public:
     //! values of shape functions
@@ -1617,7 +1617,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -1637,7 +1637,7 @@ protected:
     // use these integration points to project to nodes
     static int ni[NELN];
 
-    matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
+    Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
 
 //=============================================================================
@@ -1688,10 +1688,10 @@ public:
 //=============================================================================
 // This class defines the traits for 2D elements and serves as a
 // base class for the specific 2D element formulations.
-class     public FEElementTraits
+class FE2DElementTraits: public FEElementTraits
 {
 public:
-	FE2DElementTraits(int ni, int ne, FE_Element_Shape es, FE_Element_Type et);
+	FE2DElementTraits(int ni, int ne, ElementShape es, ElementType et);
 
 	// initialization
 	void init();
@@ -1712,10 +1712,10 @@ public:
 	std::vector<double> gw;
 
 	// local derivatives of shape functions at gauss points
-	matrix Gr, Gs;
+	Matrix Gr, Gs;
     
     // local second derivatives of shape functions at gauss points
-    matrix Grr, Gsr, Grs, Gss;
+    Matrix Grr, Gsr, Grs, Gss;
 };
 
 //=============================================================================
@@ -1733,7 +1733,7 @@ public:
 
 public:
 	//! constructor
-	FE2DTri3_(int ni, FE_Element_Type et) : FE2DElementTraits(ni, NELN, ET_TRI3, et){}
+	FE2DTri3_(int ni, ElementType et) : FE2DElementTraits(ni, NELN, ET_TRI3, et){}
 
 	//! shape function at (r,s)
 	void shape(double* H, double r, double s);
@@ -1774,7 +1774,7 @@ public:
 	enum { NELN = 6 };
 
 public:
-	FE2DTri6_(int ni, FE_Element_Type et) : FE2DElementTraits(ni, NELN, ET_TRI6, et){}
+	FE2DTri6_(int ni, ElementType et) : FE2DElementTraits(ni, NELN, ET_TRI6, et){}
 
 	// shape function at (r,s)
 	void shape(double* H, double r, double s);
@@ -1818,7 +1818,7 @@ public:
 
 public:
 	//! constructor
-	FE2DQuad4_(int ni, FE_Element_Type et) : FE2DElementTraits(ni, NELN, ET_QUAD4, et){}
+	FE2DQuad4_(int ni, ElementType et) : FE2DElementTraits(ni, NELN, ET_QUAD4, et){}
 
 	//! shape functions at (r,s)
 	void shape(double* H, double r, double s);
@@ -1844,7 +1844,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 protected:
-	matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
+	Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data 
 };
 
 //=============================================================================
@@ -1862,7 +1862,7 @@ public:
 	enum { NELN = 8 };
 
 public:
-	FE2DQuad8_(int ni, FE_Element_Type et) : FE2DElementTraits(ni, NELN, ET_QUAD8, et) {}
+	FE2DQuad8_(int ni, ElementType et) : FE2DElementTraits(ni, NELN, ET_QUAD8, et) {}
 
 	// shape function at (r,s)
 	void shape(double* H, double r, double s);
@@ -1889,7 +1889,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -1907,7 +1907,7 @@ public:
 	enum { NELN = 9 };
 
 public:
-	FE2DQuad9_(int ni, FE_Element_Type et) : FE2DElementTraits(ni, NELN, ET_QUAD9, et) {}
+	FE2DQuad9_(int ni, ElementType et) : FE2DElementTraits(ni, NELN, ET_QUAD9, et) {}
 
 	// shape function at (r,s)
 	void shape(double* H, double r, double s);
@@ -1934,7 +1934,7 @@ public:
 	void project_to_nodes(double* ai, double* ao) const override;
 
 private:
-	matrix	m_Ai;
+	Matrix	m_Ai;
 };
 
 //=============================================================================
@@ -1947,7 +1947,7 @@ private:
 class FELineElementTraits : public FEElementTraits
 {
 public:
-	FELineElementTraits(int ni, int ne, FE_Element_Shape es, FE_Element_Type et);
+	FELineElementTraits(int ni, int ne, ElementShape es, ElementType et);
 
 	// initialization
 	void init();
@@ -1966,10 +1966,10 @@ public:
 	std::vector<double> gw;	//!< integration point weights
 
 	// local derivatives of shape functions at gauss points
-	matrix Gr;
+	Matrix Gr;
     
     // local second derivatives of shape functions at gauss points
-    matrix Grr;
+    Matrix Grr;
 };
 
 //=============================================================================
@@ -1987,7 +1987,7 @@ public:
 
 public:
 	//! constructor
-	FELine2_(int ni, FE_Element_Type et) : FELineElementTraits(ni, NELN, ET_LINE2, et){}
+	FELine2_(int ni, ElementType et) : FELineElementTraits(ni, NELN, ET_LINE2, et){}
 
 	//! shape function at (r)
 	void shape(double* H, double r);

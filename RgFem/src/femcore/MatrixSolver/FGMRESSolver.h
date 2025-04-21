@@ -49,7 +49,7 @@ public:
 	void Destroy() override;
 
 	//! Return a sparse matrix compatible with this solver
-	SparseMatrix* CreateSparseMatrix(Matrix_Type ntype) override;
+	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
 	//! Set the sparse matrix
 	bool SetSparseMatrix(SparseMatrix* pA) override;

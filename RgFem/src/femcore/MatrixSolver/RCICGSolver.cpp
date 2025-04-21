@@ -60,7 +60,7 @@ RCICGSolver::RCICGSolver(FEModel* fem) : IterativeLinearSolver(fem), m_pA(0), m_
 }
 
 //-----------------------------------------------------------------------------
-SparseMatrix* RCICGSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* RCICGSolver::CreateSparseMatrix(MatrixType ntype)
 {
 #ifdef MKL_ISS
 	if (ntype != REAL_SYMMETRIC) return 0;

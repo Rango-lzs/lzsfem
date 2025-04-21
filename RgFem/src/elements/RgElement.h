@@ -12,7 +12,7 @@ using NodeId = int;
 using ElemId = int;
 using MatId = int;
 
-class RgMaterialPoint;
+class FEMaterialPoint;
 
 /**
  *@~English
@@ -103,16 +103,16 @@ public:
     //! Get the material point data
     FEMaterialPoint* GetMaterialPoint(int n)
     {
-        return m_State[n];
+        return m_state[n];
     }
 
     //! set the material point data
-    void SetMaterialPointData(FEMaterialPoint* pmp, int n)
-    {
-        pmp->m_elem = this;
-        pmp->m_index = n;
-        m_State[n] = pmp;
-    }
+    void SetMaterialPointData(FEMaterialPoint* pmp, int n);
+        /*  {
+              pmp->m_elem = this;
+              pmp->m_index = n;
+              m_state[n] = pmp;
+          }*/
 
     //! serialize
     //! NOTE: state data is not serialized by the element. This has to be done by the domains.
@@ -130,7 +130,7 @@ public:  // Filed evalulate
     {
         m_pTraits->project_to_nodes(ai, ao);
     }
-    void Extrapolation(Vector3d<3>* ai, Vector3d* ao) const
+    void Extrapolation(Vector3d* ai, Vector3d* ao) const
     {
         m_pTraits->project_to_nodes(ai, ao);
     }

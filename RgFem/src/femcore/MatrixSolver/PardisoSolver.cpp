@@ -123,7 +123,7 @@ void PardisoSolver::UseIterativeFactorization(bool b)
 }
 
 //-----------------------------------------------------------------------------
-SparseMatrix* PardisoSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* PardisoSolver::CreateSparseMatrix(MatrixType ntype)
 {
 	// allocate the correct matrix format depending on matrix symmetry type
 	switch (ntype)
@@ -325,7 +325,7 @@ bool PardisoSolver::PreProcess() { return false; }
 bool PardisoSolver::Factor() { return false; }
 bool PardisoSolver::BackSolve(double* x, double* y) { return false; }
 void PardisoSolver::Destroy() {}
-SparseMatrix* PardisoSolver::CreateSparseMatrix(Matrix_Type ntype) { return nullptr; }
+SparseMatrix* PardisoSolver::CreateSparseMatrix(MatrixType ntype) { return nullptr; }
 bool PardisoSolver::SetSparseMatrix(SparseMatrix* pA) { return false; }
 void PardisoSolver::PrintConditionNumber(bool b) {}
 double PardisoSolver::condition_number() { return 0; }

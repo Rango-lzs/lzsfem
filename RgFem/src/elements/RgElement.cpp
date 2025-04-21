@@ -61,7 +61,7 @@ void FEElement::ClearData()
 	{
 		FEMaterialPoint* mp = GetMaterialPoint(i);
 		delete mp;
-		m_State[i] = nullptr;
+		m_state[i] = nullptr;
 	}
 }
 
@@ -123,13 +123,13 @@ double FEElement::Evaluate(double* fn, int order, int n)
 
 double* FEElement::H(int order, int n)
 {
-	if (order == -1) return m_pT->m_H[n];
-	else return m_pT->m_Hp[order][n];
+	if (order == -1) return m_pTraits->m_H[n];
+	else return m_pTraits->m_Hp[order][n];
 }
 
 int FEElement::ShapeFunctions(int order)
 {
-	return (order == -1 ? Nodes() : m_pT->ShapeFunctions(order));
+	return (order == -1 ? Nodes() : m_pTraits->ShapeFunctions(order));
 }
 
 //-----------------------------------------------------------------------------
@@ -173,7 +173,7 @@ int FEElement::FindNode(int n) const
 }
 
 //-----------------------------------------------------------------------------
-FEElement::FEElement() : m_pT(0) 
+FEElement::FEElement() : m_pTraits(0) 
 { 
 	static int n = 1;
 	m_nID = n++;
@@ -199,10 +199,10 @@ void FEElement::SetMatID(int id) { m_mat = id; }
 //-----------------------------------------------------------------------------
 void FEElement::SetTraits(FEElementTraits* ptraits)
 {
-	m_pT = ptraits;
+	m_pTraits = ptraits;
 	m_node.resize(Nodes());
 	m_lnode.resize(Nodes());
-	m_State.Create(GaussPoints());
+	m_state.Create(GaussPoints());
 }
 
 //! serialize
@@ -394,7 +394,7 @@ FETrussElement::FETrussElement()
 FETrussElement::FETrussElement(const FETrussElement& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -415,7 +415,7 @@ FETrussElement::FETrussElement(const FETrussElement& el)
 FETrussElement& FETrussElement::operator = (const FETrussElement& el) 
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -449,7 +449,7 @@ void FETrussElement::Serialize(DumpStream& ar)
 FEDiscreteElement::FEDiscreteElement(const FEDiscreteElement& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -464,7 +464,7 @@ FEDiscreteElement::FEDiscreteElement(const FEDiscreteElement& el)
 FEDiscreteElement& FEDiscreteElement::operator =(const FEDiscreteElement& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -482,7 +482,7 @@ FEDiscreteElement& FEDiscreteElement::operator =(const FEDiscreteElement& el)
 FEElement2D::FEElement2D(const FEElement2D& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -497,7 +497,7 @@ FEElement2D::FEElement2D(const FEElement2D& el)
 FEElement2D& FEElement2D::operator = (const FEElement2D& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -520,7 +520,7 @@ FELineElement::FELineElement()
 FELineElement::FELineElement(const FELineElement& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy data
 	m_lid = el.m_lid;
@@ -538,7 +538,7 @@ FELineElement::FELineElement(const FELineElement& el)
 FELineElement& FELineElement::operator = (const FELineElement& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy data
 	m_lid = el.m_lid;
@@ -558,7 +558,7 @@ FELineElement& FELineElement::operator = (const FELineElement& el)
 void FELineElement::SetTraits(FEElementTraits* pt)
 {
 	// we don't allocate state data for surface elements
-	m_pT = pt;
+	m_pTraits = pt;
 	m_node.resize(Nodes());
 	m_lnode.resize(Nodes());
 }

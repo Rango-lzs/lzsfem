@@ -19,29 +19,29 @@ class FESurface;
 class FEElement;
 
 //-----------------------------------------------------------------------------
-//! This class represents an element matrix, i.e. a matrix of values and the row and
-//! column indices of the corresponding matrix elements in the global matrix. 
+//! This class represents an element Matrix, i.e. a Matrix of values and the row and
+//! column indices of the corresponding Matrix elements in the global Matrix. 
 //! 单元的局部自由度索引对应的全局索引
-class FEM_EXPORT FEElementMatrix : public matrix
+class FEM_EXPORT FEElementMatrix : public Matrix
 {
 public:
 	// default constructor
 	FEElementMatrix(){}
-	FEElementMatrix(int nr, int nc) : matrix(nr, nc) {}
+	FEElementMatrix(int nr, int nc) : Matrix(nr, nc) {}
 	FEElementMatrix(const FEElement& el);
 
 	// constructor for symmetric matrices
-	FEElementMatrix(const FEElement& el, const vector<int>& lmi);
+	FEElementMatrix(const FEElement& el, const std::vector<int>& lmi);
 
 	// constructor
-	FEElementMatrix(const FEElement& el, vector<int>& lmi, vector<int>& lmj);
+	FEElementMatrix(const FEElement& el, std::vector<int>& lmi, std::vector<int>& lmj);
 
 	// copy constructor
 	FEElementMatrix(const FEElementMatrix& ke);
 	FEElementMatrix(const FEElementMatrix& ke, double scale);
 
 	// assignment operator
-	void operator = (const matrix& ke);
+	void operator = (const Matrix& ke);
 
 	// row indices
 	std::vector<int>& RowIndices() { return m_lmi; }
@@ -70,15 +70,15 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-//! This class implements a global system matrix.
+//! This class implements a global system Matrix.
 
-//! The global system matrix is usually created by the discretization of the FE 
+//! The global system Matrix is usually created by the discretization of the FE 
 //! equations into a linear system of equations. The structure of it depends greatly
-//! on the element connectivity and usually results in a sparse matrix structure. 
-//! Several sparse matrix structures are supported (Compact, Skyline, etc.) and to 
-//! simplify the creation of the specific matrix structure, the FEGlobalMatrix offers
-//! functionality to create the global matrix structure without the need to know 
-//! what particular sparse matrix format is used by the linear solver.
+//! on the element connectivity and usually results in a sparse Matrix structure. 
+//! Several sparse Matrix structures are supported (Compact, Skyline, etc.) and to 
+//! simplify the creation of the specific Matrix structure, the FEGlobalMatrix offers
+//! functionality to create the global Matrix structure without the need to know 
+//! what particular sparse Matrix format is used by the linear solver.
 
 //! \todo I think the SparseMatrixProfile can handle all of the build functions.
 
@@ -94,26 +94,26 @@ public:
 	//! destructor
 	virtual ~FEGlobalMatrix();
 
-	//! construct the stiffness matrix from a FEM object
+	//! construct the stiffness Matrix from a FEM object
 	bool Create(FEModel* pfem, int neq, bool breset);
 
-	//! construct the stiffness matrix from a mesh
+	//! construct the stiffness Matrix from a mesh
 	bool Create(FEMesh& mesh, int neq);
 
-	//! construct the stiffness matrix from a mesh
+	//! construct the stiffness Matrix from a mesh
 	bool Create(FEMesh& mesh, int nstart, int nend);
 
-	//! construct a stiffness matrix from a surface
+	//! construct a stiffness Matrix from a surface
 	//! The boundary array is a list of equation numbers.
 	bool Create(const FESurface& surf, const std::vector<int>& equationIDs);
 
-	//! clears the sparse matrix that stores the stiffness matrix
+	//! clears the sparse Matrix that stores the stiffness Matrix
 	void Clear();
 
 	//! Assembly routine
 	virtual void Assemble(const FEElementMatrix& ke);
 
-	//! return the nonzeroes in the sparse matrix
+	//! return the nonzeroes in the sparse Matrix
 	int NonZeroes() { return m_pA->NonZeroes(); }
 
 	//! return the number of rows
@@ -125,13 +125,13 @@ public:
 	//! converts a FEGlobalMatrix to a SparseMatrix
 	operator SparseMatrix& () { return *m_pA;}
 
-	//! return a pointer to the sparse matrix
+	//! return a pointer to the sparse Matrix
 	SparseMatrix* GetSparseMatrixPtr() { return m_pA; }
 
-	//! zero the sparse matrix
+	//! zero the sparse Matrix
 	void Zero() { m_pA->Zero(); }
 
-	//! get the sparse matrix profile
+	//! get the sparse Matrix profile
 	SparseMatrixProfile* GetSparseMatrixProfile() { return m_pMP; }
 
 public:
@@ -141,14 +141,14 @@ public:
 	void build_flush();
 
 protected:
-	SparseMatrix*	m_pA;	//!< the actual global stiffness matrix
+	SparseMatrix*	m_pA;	//!< the actual global stiffness Matrix
 	bool			m_delA;	//!< delete A in destructor
 
 	// The following data structures are used to incrementally
-	// build the profile of the sparse matrix
+	// build the profile of the sparse Matrix
 
-	SparseMatrixProfile*	m_pMP;		//!< profile of sparse matrix
-	SparseMatrixProfile		m_MPs;		//!< the "static" part of the matrix profile
-	vector< vector<int> >	m_LM;		//!< used for building the stiffness matrix
+	SparseMatrixProfile*	m_pMP;		//!< profile of sparse Matrix
+	SparseMatrixProfile		m_MPs;		//!< the "static" part of the Matrix profile
+	std::vector< std::vector<int> >	m_LM;		//!< used for building the stiffness Matrix
 	int	m_nlm;				//!< nr of elements in m_LM array
 };

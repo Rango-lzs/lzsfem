@@ -48,7 +48,7 @@ BiCGStabSolver::BiCGStabSolver(FEModel* fem) : IterativeLinearSolver(fem), m_pA(
 }
 
 //-----------------------------------------------------------------------------
-SparseMatrix* BiCGStabSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* BiCGStabSolver::CreateSparseMatrix(MatrixType ntype)
 {
 	// let the preconditioner decide
 	m_pA = nullptr;

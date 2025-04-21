@@ -41,7 +41,7 @@ FESurfaceElement::FESurfaceElement()
 FESurfaceElement::FESurfaceElement(const FESurfaceElement& el) : FEElement(el)
 {
 	// set the traits of the element
-	if (el.m_pT) SetTraits(el.m_pT);
+	if (el.m_pTraits) SetTraits(el.m_pTraits);
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -62,8 +62,8 @@ FESurfaceElement::FESurfaceElement(const FESurfaceElement& el) : FEElement(el)
 FESurfaceElement& FESurfaceElement::operator = (const FESurfaceElement& el)
 {
 	// make sure the element type is the same
-	if (m_pT == 0) SetTraits(el.m_pT);
-	else assert(m_pT == el.m_pT);
+	if (m_pTraits == 0) SetTraits(el.m_pTraits);
+	else assert(m_pTraits == el.m_pTraits);
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -84,10 +84,10 @@ FESurfaceElement& FESurfaceElement::operator = (const FESurfaceElement& el)
 
 void FESurfaceElement::SetTraits(FEElementTraits* pt)
 {
-	m_pT = pt;
+	m_pTraits = pt;
 	m_node.resize(Nodes());
 	m_lnode.resize(Nodes());
-	m_State.Create(GaussPoints());
+	m_state.Create(GaussPoints());
 }
 
 int FESurfaceElement::facet_edges() const
@@ -139,8 +139,8 @@ void FESurfaceElement::facet_edge(int j, int* en) const
 	}
 }
 
-double* FESurfaceElement::Gr(int order, int n) const { return (order >= 0 ? ((FESurfaceElementTraits*)(m_pT))->Gr_p[order][n] : ((FESurfaceElementTraits*)(m_pT))->Gr[n]); }	// shape function derivative to r
-double* FESurfaceElement::Gs(int order, int n) const { return (order >= 0 ? ((FESurfaceElementTraits*)(m_pT))->Gs_p[order][n] : ((FESurfaceElementTraits*)(m_pT))->Gs[n]); }	// shape function derivative to s
+double* FESurfaceElement::Gr(int order, int n) const { return (order >= 0 ? ((FESurfaceElementTraits*)(m_pTraits))->Gr_p[order][n] : ((FESurfaceElementTraits*)(m_pTraits))->Gr[n]); }	// shape function derivative to r
+double* FESurfaceElement::Gs(int order, int n) const { return (order >= 0 ? ((FESurfaceElementTraits*)(m_pTraits))->Gs_p[order][n] : ((FESurfaceElementTraits*)(m_pTraits))->Gs[n]); }	// shape function derivative to s
 
 void FESurfaceElement::Serialize(DumpStream& ar)
 {

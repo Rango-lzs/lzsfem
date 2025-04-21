@@ -7,7 +7,7 @@
 FESolidElement::FESolidElement(const FESolidElement& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -23,7 +23,7 @@ FESolidElement::FESolidElement(const FESolidElement& el)
 FESolidElement& FESolidElement::operator = (const FESolidElement& el)
 {
 	// set the traits of the element
-	if (el.m_pT) { SetTraits(el.m_pT); m_State = el.m_State; }
+	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
 	m_mat = el.m_mat;
@@ -66,9 +66,9 @@ double FESolidElement::evaluate(double* v, double r, double s, double t) const
 	return p;
 }
 
-double* FESolidElement::Gr(int order, int n) const { return (order >= 0 ? ((FESolidElementTraits*)(m_pT))->m_Gr_p[order][n] : ((FESolidElementTraits*)(m_pT))->m_Gr[n]); }	// shape function derivative to r
-double* FESolidElement::Gs(int order, int n) const { return (order >= 0 ? ((FESolidElementTraits*)(m_pT))->m_Gs_p[order][n] : ((FESolidElementTraits*)(m_pT))->m_Gs[n]); }	// shape function derivative to s
-double* FESolidElement::Gt(int order, int n) const { return (order >= 0 ? ((FESolidElementTraits*)(m_pT))->m_Gt_p[order][n] : ((FESolidElementTraits*)(m_pT))->m_Gt[n]); }	// shape function derivative to t
+double* FESolidElement::Gr(int order, int n) const { return (order >= 0 ? ((FESolidElementTraits*)(m_pTraits))->m_Gr_p[order][n] : ((FESolidElementTraits*)(m_pTraits))->m_Gr[n]); }	// shape function derivative to r
+double* FESolidElement::Gs(int order, int n) const { return (order >= 0 ? ((FESolidElementTraits*)(m_pTraits))->m_Gs_p[order][n] : ((FESolidElementTraits*)(m_pTraits))->m_Gs[n]); }	// shape function derivative to s
+double* FESolidElement::Gt(int order, int n) const { return (order >= 0 ? ((FESolidElementTraits*)(m_pTraits))->m_Gt_p[order][n] : ((FESolidElementTraits*)(m_pTraits))->m_Gt[n]); }	// shape function derivative to t
 
 void FESolidElement::Serialize(DumpStream& ar)
 {

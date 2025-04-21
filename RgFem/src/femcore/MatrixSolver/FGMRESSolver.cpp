@@ -188,7 +188,7 @@ void FGMRESSolver::DoJacobiPreconditioning(bool b)
 }
 
 //-----------------------------------------------------------------------------
-SparseMatrix* FGMRESSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* FGMRESSolver::CreateSparseMatrix(MatrixType ntype)
 {
 #ifdef MKL_ISS
 	// Cleanup if necessary

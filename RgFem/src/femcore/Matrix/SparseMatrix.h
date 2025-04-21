@@ -1,7 +1,7 @@
 #pragma once
 #include "femcore/Matrix/MatrixProfile.h"
 #include "datastructure/MatrixOperator.h"
-#include "matrix.h"
+#include "datastructure/matrix.h"
 #include <vector>
 
 //-----------------------------------------------------------------------------

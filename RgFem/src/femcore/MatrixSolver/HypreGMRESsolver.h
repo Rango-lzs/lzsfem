@@ -57,7 +57,7 @@ public:
 	bool BackSolve(double* x, double* b) override;
 
 	//! Return a sparse matrix compatible with this solver
-	SparseMatrix* CreateSparseMatrix(Matrix_Type ntype) override;
+	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
 	//! set the sparse matrix
 	bool SetSparseMatrix(SparseMatrix* A) override;

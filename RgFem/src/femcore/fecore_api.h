@@ -1,9 +1,3 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-
 #pragma once
 
 #ifdef WIN32

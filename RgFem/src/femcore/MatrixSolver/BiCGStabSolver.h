@@ -39,7 +39,7 @@ public:
 public:
 	bool HasPreconditioner() const override;
 
-	SparseMatrix* CreateSparseMatrix(Matrix_Type ntype) override;
+	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
 	bool SetSparseMatrix(SparseMatrix* A) override;
 

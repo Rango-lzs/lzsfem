@@ -116,7 +116,7 @@ void BlockIterativeSolver::SetZeroInitialGuess(bool b)
 
 //-----------------------------------------------------------------------------
 //! Create a sparse matrix
-SparseMatrix* BlockIterativeSolver::CreateSparseMatrix(Matrix_Type ntype)
+SparseMatrix* BlockIterativeSolver::CreateSparseMatrix(MatrixType ntype)
 {
 	m_pA = new BlockMatrix();
 	m_pA->Partition(m_part, ntype);

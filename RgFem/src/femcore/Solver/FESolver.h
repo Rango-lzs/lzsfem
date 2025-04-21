@@ -5,6 +5,7 @@
 #include "femcore/FEObjectBase.h"
 #include "femcore/FETimeInfo.h"
 #include "femcore/Timer.h"
+#include "femcore/fecore_enum.h"
 
 //-----------------------------------------------------------------------------
 // Scheme for assigning equation numbers
@@ -126,7 +127,7 @@ public:
     int MatrixSymmetryFlag() const;
 
     //! get matrix type
-    Matrix_Type MatrixType() const;
+    MatrixType MatrixType() const;
 
     //! build the matrix profile
     virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);
