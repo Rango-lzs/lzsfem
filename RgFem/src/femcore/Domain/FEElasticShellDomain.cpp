@@ -209,7 +209,7 @@ void FEElasticShellDomain::ElementInternalForce(FEShellElement& el, vector<doubl
 			ContraBaseVectors(el, n, gcnt, m_alphaf);
 
 		// get the stress vector for this integration point
-		mat3ds& s = pt.m_s;
+		Matrix3ds& s = pt.m_s;
 
 		double eta = el.gt(n);
 
@@ -386,7 +386,7 @@ void FEElasticShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShellEle
     double detJ;
     double *M;
     double* gw = el.GaussWeights();
-    mat3ds K;
+    Matrix3ds K;
     
     double Mu[FEElement::MAX_NODES], Md[FEElement::MAX_NODES];
     
@@ -414,10 +414,10 @@ void FEElasticShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShellEle
         {
             for (j=0, j6 = 0; j<neln; ++j, j6 += 6)
             {
-                mat3d Kuu = K*(Mu[i]*Mu[j]);
-                mat3d Kud = K*(Mu[i]*Md[j]);
-                mat3d Kdu = K*(Md[i]*Mu[j]);
-                mat3d Kdd = K*(Md[i]*Md[j]);
+                Matrix3d Kuu = K*(Mu[i]*Mu[j]);
+                Matrix3d Kud = K*(Mu[i]*Md[j]);
+                Matrix3d Kdu = K*(Md[i]*Mu[j]);
+                Matrix3d Kdd = K*(Md[i]*Md[j]);
                 
                 ke[i6  ][j6  ] += Kuu(0,0); ke[i6  ][j6+1] += Kuu(0,1); ke[i6  ][j6+2] += Kuu(0,2);
                 ke[i6+1][j6  ] += Kuu(1,0); ke[i6+1][j6+1] += Kuu(1,1); ke[i6+1][j6+2] += Kuu(1,2);
@@ -562,7 +562,7 @@ void FEElasticShellDomain::ElementStiffness(int iel, matrix& ke)
         detJt = detJ(el, n, m_alphaf)*gw[n]*m_alphaf;
         
         // get the stress and elasticity for this integration point
-        mat3ds s = pt.m_s;
+        Matrix3ds s = pt.m_s;
 //        tens4ds C = m_pMat->Tangent(mp);
         tens4dmm C = (m_secant_tangent ? m_pMat->SecantTangent(mp) : m_pMat->SolidTangent(mp));
 
@@ -589,10 +589,10 @@ void FEElasticShellDomain::ElementStiffness(int iel, matrix& ke)
         {
             for (j=0, j6 = 0; j<neln; ++j, j6 += 6)
             {
-                mat3d Kuu = vdotTdotv(gradMu[i], C, gradMu[j])*detJt;
-                mat3d Kud = vdotTdotv(gradMu[i], C, gradMd[j])*detJt;
-                mat3d Kdu = vdotTdotv(gradMd[i], C, gradMu[j])*detJt;
-                mat3d Kdd = vdotTdotv(gradMd[i], C, gradMd[j])*detJt;
+                Matrix3d Kuu = vdotTdotv(gradMu[i], C, gradMu[j])*detJt;
+                Matrix3d Kud = vdotTdotv(gradMu[i], C, gradMd[j])*detJt;
+                Matrix3d Kdu = vdotTdotv(gradMd[i], C, gradMu[j])*detJt;
+                Matrix3d Kdd = vdotTdotv(gradMd[i], C, gradMd[j])*detJt;
                 
                 ke[i6  ][j6  ] += Kuu(0,0); ke[i6  ][j6+1] += Kuu(0,1); ke[i6  ][j6+2] += Kuu(0,2);
                 ke[i6+1][j6  ] += Kuu(1,0); ke[i6+1][j6+1] += Kuu(1,1); ke[i6+1][j6+2] += Kuu(1,2);
@@ -843,7 +843,7 @@ void FEElasticShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
         mp.m_rt = evaluate(el, r, s, n);
         
         // get the deformation gradient and determinant at intermediate time
-        mat3d Ft, Fp;
+        Matrix3d Ft, Fp;
         double Jt = defgrad(el, Ft, n);
         double Jp = defgradp(el, Fp, n);
 		if (m_alphaf == 1.0)
@@ -856,7 +856,7 @@ void FEElasticShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 			pt.m_F = Ft * m_alphaf + Fp * (1 - m_alphaf);
 			pt.m_J = pt.m_F.det();
 		}
-        mat3d Fi = pt.m_F.inverse();
+        Matrix3d Fi = pt.m_F.inverse();
         pt.m_L = (Ft - Fp)*Fi/dt;
         if (m_update_dynamic)
         {
@@ -875,7 +875,7 @@ void FEElasticShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
         if (m_alphaf == 0.5)
         {
             // evaluate strain energy at current time
-			mat3d Ftmp = pt.m_F;
+			Matrix3d Ftmp = pt.m_F;
 			double Jtmp = pt.m_J;
 			pt.m_F = Ft;
             pt.m_J = Jt;
@@ -884,7 +884,7 @@ void FEElasticShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 			pt.m_F = Ftmp;
 			pt.m_J = Jtmp;
 
-            mat3ds D = pt.m_L.sym();
+            Matrix3ds D = pt.m_L.sym();
             double D2 = D.dotdot(D);
             if (D2 > 0)
                 pt.m_s += D*(((pt.m_Wt-pt.m_Wp)/(dt*pt.m_J) - pt.m_s.dotdot(D))/D2);

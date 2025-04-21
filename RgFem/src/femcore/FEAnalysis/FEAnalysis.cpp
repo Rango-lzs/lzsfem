@@ -1,18 +1,18 @@
 #include "FEAnalysis.h"
-
 #include "basicio/DumpMemStream.h"
 #include "femcore/DOFS.h"
 #include "femcore/FEBoundaryCondition.h"
 #include "femcore/FELinearConstraintManager.h"
 #include "femcore/FEModel.h"
 #include "femcore/FEModule.h"
-#include "femcore/FEShellDomain.h"
 #include "femcore/Matrix/MatrixProfile.h"
 #include "femcore/Solver/FESolver.h"
 #include "femcore/TimeStep/FETimeStepController.h"
 #include "logger/log.h"
 #include "femcore/Callback.h"
 #include "femcore/FEException.h"
+#include "femcore/units.h"
+#include "femcore/FEMesh.h"
 
 //---------------------------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FEAnalysis, FEObjectBase)
@@ -42,10 +42,10 @@ BEGIN_PARAM_GROUP("Advanced settings");
 ADD_PARAMETER(m_badaptorReSolve, "adaptor_re_solve")->setLongName("re-solve after adaptation");
 END_PARAM_GROUP();
 
-ADD_PROPERTY(m_timeController, "time_stepper", FEProperty::Preferred)
-    ->SetDefaultType("default")
-    .SetLongName("Auto time stepper");
-FEProperty* solver = ADD_PROPERTY(m_psolver, "solver");
+//ADD_PROPERTY(m_timeController, "time_stepper", FEProperty::Preferred)
+//    ->SetDefaultType("default")
+//    .SetLongName("Auto time stepper");
+//FEProperty* solver = ADD_PROPERTY(m_psolver, "solver");
 
 // the default type of the solver should match the active module's name
 FECoreKernel& fecore = FECoreKernel::GetInstance();

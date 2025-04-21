@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Vector3d.h"
-#include "mat3d.h"
-#include "quatd.h"
-#include "tens3d.h"
+#include "datastructure/Vector3d.h"
+#include "datastructure/Matrix3d.h"
+#include "datastructure/quatd.h"
+#include "datastructure/tens3d.h"
 #include "femcore/fem_export.h"
-#include "matrix.h"
+#include "datastructure/Matrix.h"
 
 #include <vector>
 #include <string>
@@ -13,7 +13,7 @@
 
 //-----------------------------------------------------------------------------
 class FEModel;
-class matrix;
+class Matrix;
 
 
 //-----------------------------------------------------------------------------
@@ -64,17 +64,17 @@ public:
                     case TypeID::TYPE_UINT: delete (unsigned int*) m_pd; break;
                     case TypeID::TYPE_FLOAT: delete (float*) m_pd; break;
                     case TypeID::TYPE_DOUBLE: delete (double*) m_pd; break;
-                    case TypeID::TYPE_VEC2D: delete (vec2d*) m_pd; break;
+                    case TypeID::TYPE_VEC2D: delete (Vector2d*) m_pd; break;
                     case TypeID::TYPE_Vector3d: delete (Vector3d*) m_pd; break;
-                    case TypeID::TYPE_MAT2D: delete (mat2d*) m_pd; break;
-                    case TypeID::TYPE_MAT3D: delete (mat3d*) m_pd; break;
-                    case TypeID::TYPE_MAT3DD: delete (mat3dd*) m_pd; break;
-                    case TypeID::TYPE_MAT3DS: delete (mat3ds*) m_pd; break;
-                    case TypeID::TYPE_MAT3DA: delete (mat3da*) m_pd; break;
+                    case TypeID::TYPE_MAT2D: delete (Matrix2d*) m_pd; break;
+                    case TypeID::TYPE_MAT3D: delete (Matrix3d*) m_pd; break;
+                    case TypeID::TYPE_MAT3DD: delete (Matrix3dd*) m_pd; break;
+                    case TypeID::TYPE_MAT3DS: delete (Matrix3ds*) m_pd; break;
+                    case TypeID::TYPE_MAT3DA: delete (Matrix3da*) m_pd; break;
                     case TypeID::TYPE_QUATD: delete (quatd*) m_pd; break;
                     case TypeID::TYPE_TENS3DS: delete (tens3ds*) m_pd; break;
                     case TypeID::TYPE_TENS3DRS: delete (tens3drs*) m_pd; break;
-                    case TypeID::TYPE_MATRIX: delete (matrix*) m_pd; break;
+                    case TypeID::TYPE_MATRIX: delete (Matrix*) m_pd; break;
                     default: break;
                 }
             }
@@ -187,8 +187,8 @@ private:
 	int FindPointer(void* p);
 	void AddPointer(void* p);
 
-	DumpStream& write_matrix(matrix& o);
-	DumpStream& read_matrix(matrix& o);
+	DumpStream& write_matrix(Matrix& o);
+	DumpStream& read_matrix(Matrix& o);
 
 	void writeType(uchar type)
 	{
@@ -225,17 +225,17 @@ template <> class typeInfo<int>          { public: static uchar typeId() { retur
 template <> class typeInfo<unsigned int> { public: static uchar typeId() { return (uchar)TypeID::TYPE_UINT;    }};
 template <> class typeInfo<float>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_FLOAT;   }};
 template <> class typeInfo<double>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_DOUBLE;  }};
-template <> class typeInfo<vec2d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_VEC2D;   }};
+template <> class typeInfo<Vector2d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_VEC2D;   }};
 template <> class typeInfo<Vector3d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_Vector3d;   }};
-template <> class typeInfo<mat2d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3D;   }};
-template <> class typeInfo<mat3d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3D;   }};
-template <> class typeInfo<mat3dd>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DD;  }};
-template <> class typeInfo<mat3ds>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DS;  }};
-template <> class typeInfo<mat3da>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DA;  }};
+template <> class typeInfo<Matrix2d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3D;   }};
+template <> class typeInfo<Matrix3d>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3D;   }};
+template <> class typeInfo<Matrix3dd>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DD;  }};
+template <> class typeInfo<Matrix3ds>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DS;  }};
+template <> class typeInfo<Matrix3da>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MAT3DA;  }};
 template <> class typeInfo<quatd>        { public: static uchar typeId() { return (uchar)TypeID::TYPE_QUATD;   }};
 template <> class typeInfo<tens3ds>      { public: static uchar typeId() { return (uchar)TypeID::TYPE_TENS3DS; }};
 template <> class typeInfo<tens3drs>     { public: static uchar typeId() { return (uchar)TypeID::TYPE_TENS3DRS;}};
-template <> class typeInfo<matrix>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MATRIX;  }};
+template <> class typeInfo<Matrix>       { public: static uchar typeId() { return (uchar)TypeID::TYPE_MATRIX;  }};
 
 template <typename T> DumpStream& DumpStream::write_raw(const T& o)
 {
@@ -260,32 +260,32 @@ template <typename T> inline DumpStream& DumpStream::operator & (T& o)
 template <> inline DumpStream& DumpStream::operator << (int&          o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (unsigned int& o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (double&   o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (vec2d&    o) { return write_raw(o); }
+template <> inline DumpStream& DumpStream::operator << (Vector2d&    o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (Vector3d&    o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (quatd&    o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (mat2d&    o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (mat3d&    o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (mat3ds&   o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (mat3dd&   o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (mat3da&   o) { return write_raw(o); }
+template <> inline DumpStream& DumpStream::operator << (Matrix2d&    o) { return write_raw(o); }
+template <> inline DumpStream& DumpStream::operator << (Matrix3d&    o) { return write_raw(o); }
+template <> inline DumpStream& DumpStream::operator << (Matrix3ds&   o) { return write_raw(o); }
+template <> inline DumpStream& DumpStream::operator << (Matrix3dd&   o) { return write_raw(o); }
+template <> inline DumpStream& DumpStream::operator << (Matrix3da&   o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (tens3ds&  o) { return write_raw(o); }
 template <> inline DumpStream& DumpStream::operator << (tens3drs& o) { return write_raw(o); }
-template <> inline DumpStream& DumpStream::operator << (matrix&   o) { return write_matrix(o); }
+template <> inline DumpStream& DumpStream::operator << (Matrix&   o) { return write_matrix(o); }
 
 template <> inline DumpStream& DumpStream::operator >> (int&          o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (unsigned int& o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (double&   o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (vec2d&    o) { return read_raw(o); }
+template <> inline DumpStream& DumpStream::operator >> (Vector2d&    o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (Vector3d&    o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (quatd&    o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (mat2d&    o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (mat3d&    o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (mat3ds&   o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (mat3dd&   o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (mat3da&   o) { return read_raw(o); }
+template <> inline DumpStream& DumpStream::operator >> (Matrix2d&    o) { return read_raw(o); }
+template <> inline DumpStream& DumpStream::operator >> (Matrix3d&    o) { return read_raw(o); }
+template <> inline DumpStream& DumpStream::operator >> (Matrix3ds&   o) { return read_raw(o); }
+template <> inline DumpStream& DumpStream::operator >> (Matrix3dd&   o) { return read_raw(o); }
+template <> inline DumpStream& DumpStream::operator >> (Matrix3da&   o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (tens3ds&  o) { return read_raw(o); }
 template <> inline DumpStream& DumpStream::operator >> (tens3drs& o) { return read_raw(o); }
-template <> inline DumpStream& DumpStream::operator >> (matrix&   o) { return read_matrix(o); }
+template <> inline DumpStream& DumpStream::operator >> (Matrix&   o) { return read_matrix(o); }
 
 template <typename T> inline DumpStream& DumpStream::operator << (T& o)
 {

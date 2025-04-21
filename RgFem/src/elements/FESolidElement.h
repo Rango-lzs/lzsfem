@@ -51,7 +51,7 @@ public:
 	//! values of shape function second derivatives
 	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t) const { ((FESolidElementTraits*)(m_pTraits))->shape_deriv2(Hrr, Hss, Htt, Hrs, Hst, Hrt, r, s, t); }
 
-	vec3d evaluate(vec3d* v, double r, double s, double t) const;
+	Vector3d evaluate(Vector3d* v, double r, double s, double t) const;
 	double evaluate(double* v, double r, double s, double t) const;
 
 	double* Gr(int order, int n) const;
@@ -62,5 +62,5 @@ public:
 
 public:
 	std::vector<bool>    m_bitfc;    //!< flag for interface nodes
-	std::vector<mat3d>	m_J0i;		//!< inverse of reference Jacobian
+	std::vector<Matrix3d>	m_J0i;		//!< inverse of reference Jacobian
 };

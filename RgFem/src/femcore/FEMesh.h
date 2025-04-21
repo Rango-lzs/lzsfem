@@ -258,10 +258,10 @@ public:
     FEFacetSet* DomainBoundary(std::vector<FEDomain*> domains, bool boutside = true, bool binside = false);
 
     //! get the nodal coordinates in reference configuration
-    void GetInitialNodalCoordinates(const FEElement& el, vec3d* node);
+    void GetInitialNodalCoordinates(const FEElement& el, Vector3d* node);
 
     //! get the nodal coordinates in current configuration
-    void GetNodalCoordinates(const FEElement& el, vec3d* node);
+    void GetNodalCoordinates(const FEElement& el, Vector3d* node);
 
     // Get the FE model
     FEModel* GetFEModel() const

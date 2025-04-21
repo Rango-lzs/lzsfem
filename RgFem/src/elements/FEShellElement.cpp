@@ -105,23 +105,23 @@ void FEShellElement::SetTraits(FEElementTraits* ptraits)
 	FEElement::SetTraits(ptraits);
 	m_h0.assign(Nodes(), 0.0);
 	m_ht.assign(Nodes(), 0.0);
-	m_d0.assign(Nodes(), vec3d(0, 0, 0));
-	m_g0[0].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_g0[1].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_g0[2].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_gt[0].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_gt[1].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_gt[2].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_gp[0].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_gp[1].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_gp[2].assign(GaussPoints(), vec3d(0, 0, 0));
+	m_d0.assign(Nodes(), Vector3d(0, 0, 0));
+	m_g0[0].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_g0[1].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_g0[2].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_gt[0].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_gt[1].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_gt[2].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_gp[0].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_gp[1].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_gp[2].assign(GaussPoints(), Vector3d(0, 0, 0));
 
-	m_G0[0].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_G0[1].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_G0[2].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_Gt[0].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_Gt[1].assign(GaussPoints(), vec3d(0, 0, 0));
-	m_Gt[2].assign(GaussPoints(), vec3d(0, 0, 0));
+	m_G0[0].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_G0[1].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_G0[2].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_Gt[0].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_Gt[1].assign(GaussPoints(), Vector3d(0, 0, 0));
+	m_Gt[2].assign(GaussPoints(), Vector3d(0, 0, 0));
 }
 
 void FEShellElement::Serialize(DumpStream &ar)

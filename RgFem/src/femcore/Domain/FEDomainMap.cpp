@@ -182,38 +182,38 @@ void FEDomainMap::setValue(int n, const Vector3d& v)
 }
 
 //-----------------------------------------------------------------------------
-void FEDomainMap::setValue(int n, const mat3d& v)
+void FEDomainMap::setValue(int n, const Matrix3d& v)
 {
 	if ((m_fmt == FMT_MULT) || (m_fmt == FMT_MATPOINTS))
 	{
 		int index = n*m_maxElemNodes;
-		for (int i = 0; i < m_maxElemNodes; ++i) set<mat3d>(index + i, v);
+		for (int i = 0; i < m_maxElemNodes; ++i) set<Matrix3d>(index + i, v);
 	}
 	else if (m_fmt == FMT_ITEM)
 	{
-		set<mat3d>(n, v);
+		set<Matrix3d>(n, v);
 	}
 	else if (m_fmt == FMT_NODE)
 	{
-		set<mat3d>(n, v);
+		set<Matrix3d>(n, v);
 	}
 }
 
 //-----------------------------------------------------------------------------
-void FEDomainMap::setValue(int n, const mat3ds& v)
+void FEDomainMap::setValue(int n, const Matrix3ds& v)
 {
 	if ((m_fmt == FMT_MULT) || (m_fmt == FMT_MATPOINTS))
 	{
 		int index = n * m_maxElemNodes;
-		for (int i = 0; i < m_maxElemNodes; ++i) set<mat3ds>(index + i, v);
+		for (int i = 0; i < m_maxElemNodes; ++i) set<Matrix3ds>(index + i, v);
 	}
 	else if (m_fmt == FMT_ITEM)
 	{
-		set<mat3ds>(n, v);
+		set<Matrix3ds>(n, v);
 	}
 	else if (m_fmt == FMT_NODE)
 	{
-		set<mat3ds>(n, v);
+		set<Matrix3ds>(n, v);
 	}
 }
 
@@ -236,15 +236,15 @@ void FEDomainMap::fillValue(const Vector3d& v)
 }
 
 //-----------------------------------------------------------------------------
-void FEDomainMap::fillValue(const mat3d& v)
+void FEDomainMap::fillValue(const Matrix3d& v)
 {
-	set<mat3d>(v);
+	set<Matrix3d>(v);
 }
 
 //-----------------------------------------------------------------------------
-void FEDomainMap::fillValue(const mat3ds& v)
+void FEDomainMap::fillValue(const Matrix3ds& v)
 {
-	set<mat3ds>(v);
+	set<Matrix3ds>(v);
 }
 
 //-----------------------------------------------------------------------------
@@ -332,7 +332,7 @@ Vector3d FEDomainMap::valueVector3d(const FEMaterialPoint& pt)
 
 //-----------------------------------------------------------------------------
 //! get the value at a material point
-mat3d FEDomainMap::valueMat3d(const FEMaterialPoint& pt)
+Matrix3d FEDomainMap::valueMat3d(const FEMaterialPoint& pt)
 {
 	assert(DataType() == FEDataType::FE_MAT3D);
 	// get the element this material point is in
@@ -344,14 +344,14 @@ mat3d FEDomainMap::valueMat3d(const FEMaterialPoint& pt)
 	int lid = m_elset->GetLocalIndex(*pe);
 	assert((lid >= 0));
 
-	mat3d Q;
+	Matrix3d Q;
 	if (m_fmt == FMT_ITEM)
 	{
-		Q = get<mat3d>(lid);
+		Q = get<Matrix3d>(lid);
 	}
 	else if (m_fmt == FMT_MATPOINTS)
 	{
-		Q = value<mat3d>(lid, pt.m_index);
+		Q = value<Matrix3d>(lid, pt.m_index);
 	}
 	else { assert(false); }
 
@@ -360,7 +360,7 @@ mat3d FEDomainMap::valueMat3d(const FEMaterialPoint& pt)
 
 //-----------------------------------------------------------------------------
 //! get the value at a material point
-mat3ds FEDomainMap::valueMat3ds(const FEMaterialPoint& pt)
+Matrix3ds FEDomainMap::valueMat3ds(const FEMaterialPoint& pt)
 {
 	assert(DataType() == FEDataType::FE_MAT3DS);
 	// get the element this material point is in
@@ -372,16 +372,16 @@ mat3ds FEDomainMap::valueMat3ds(const FEMaterialPoint& pt)
 	int lid = m_elset->GetLocalIndex(*pe);
 	assert((lid >= 0));
 
-	mat3ds Q;
+	Matrix3ds Q;
 	if (m_fmt == FMT_ITEM)
 	{
-		Q = get<mat3ds>(lid);
+		Q = get<Matrix3ds>(lid);
 	}
 	else if (m_fmt == FMT_NODE)
 	{
 		// calculate shape function values
 		double* w = pe->H(pt.m_index);
-		mat3ds Qi[FEElement::MAX_NODES];
+		Matrix3ds Qi[FEElement::MAX_NODES];
 		int ne = pe->Nodes();
 		for (int i = 0; i < ne; ++i)
 		{
@@ -390,7 +390,7 @@ mat3ds FEDomainMap::valueMat3ds(const FEMaterialPoint& pt)
 			int lid = m_NLT[nid] - m_imin; 
 			assert((lid >= 0) && (lid < DataCount()));
 
-			Qi[i] = get<mat3ds>(lid);
+			Qi[i] = get<Matrix3ds>(lid);
 		}
 
 		// weighted average
@@ -398,7 +398,7 @@ mat3ds FEDomainMap::valueMat3ds(const FEMaterialPoint& pt)
 	}
 	else if (m_fmt == FMT_MATPOINTS)
 	{
-		return value<mat3ds>(lid, pt.m_index);
+		return value<Matrix3ds>(lid, pt.m_index);
 	}
 
 	return Q;
@@ -488,8 +488,8 @@ bool FEDomainMap::Merge(FEDomainMap& map)
 			// set the new values of the map
 			for (int i = 0; i < set2->Elements(); ++i)
 			{
-				mat3d v = map.get<mat3d>(i);
-				set<mat3d>(oldElems + i, v);
+				Matrix3d v = map.get<Matrix3d>(i);
+				set<Matrix3d>(oldElems + i, v);
 			}
 		}
 		break;

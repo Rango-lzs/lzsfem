@@ -79,7 +79,7 @@ void XMLElement::value(const vec3f& r)
 	m_val = ss.str();
 }
 
-void XMLElement::value(const vec3d& r)
+void XMLElement::value(const Vector3d& r)
 { 
 	stringstream ss;
 	ss << r.x << "," << r.y << "," << r.z;
@@ -93,7 +93,7 @@ void XMLElement::value(const vec2i& r)
 	m_val = ss.str();
 }
 
-void XMLElement::value(const mat3d& a)
+void XMLElement::value(const Matrix3d& a)
 {
 	stringstream ss;
 	ss << a(0,0) << "," << a(0,1) << "," << a(0,2) << ",";

@@ -68,7 +68,7 @@ void FEShellDomain::InitShells()
 
 //-----------------------------------------------------------------------------
 //! get the current nodal coordinates
-void FEShellDomain::GetCurrentNodalCoordinates(const FEShellElement& el, vec3d* rt, const bool back)
+void FEShellDomain::GetCurrentNodalCoordinates(const FEShellElement& el, Vector3d* rt, const bool back)
 {
     int neln = el.Nodes();
     if (!back)
@@ -79,7 +79,7 @@ void FEShellDomain::GetCurrentNodalCoordinates(const FEShellElement& el, vec3d* 
 
 //-----------------------------------------------------------------------------
 //! get the current nodal coordinates
-void FEShellDomain::GetCurrentNodalCoordinates(const FEShellElement& el, vec3d* rt, double alpha, const bool back)
+void FEShellDomain::GetCurrentNodalCoordinates(const FEShellElement& el, Vector3d* rt, double alpha, const bool back)
 {
     int neln = el.Nodes();
     if (!back) {
@@ -98,7 +98,7 @@ void FEShellDomain::GetCurrentNodalCoordinates(const FEShellElement& el, vec3d* 
 
 //-----------------------------------------------------------------------------
 //! get the reference nodal coordinates
-void FEShellDomain::GetReferenceNodalCoordinates(const FEShellElement& el, vec3d* r0, const bool back)
+void FEShellDomain::GetReferenceNodalCoordinates(const FEShellElement& el, Vector3d* r0, const bool back)
 {
     int neln = el.Nodes();
     if (!back)
@@ -109,7 +109,7 @@ void FEShellDomain::GetReferenceNodalCoordinates(const FEShellElement& el, vec3d
 
 //-----------------------------------------------------------------------------
 //! get the previous nodal coordinates
-void FEShellDomain::GetPreviousNodalCoordinates(const FEShellElement& el, vec3d* rp, const bool back)
+void FEShellDomain::GetPreviousNodalCoordinates(const FEShellElement& el, Vector3d* rp, const bool back)
 {
     int neln = el.Nodes();
     if (!back)
@@ -156,7 +156,7 @@ double FEShellDomainOld::Volume(FEShellElement& se)
 	int neln = el.Nodes();
 
 	// initial nodal coordinates and directors
-	vec3d r0[FEElement::MAX_NODES], D0[FEElement::MAX_NODES];
+	Vector3d r0[FEElement::MAX_NODES], D0[FEElement::MAX_NODES];
 	for (int i = 0; i<neln; ++i)
 	{
 		r0[i] = Node(el.m_lnode[i]).m_r0;
@@ -166,7 +166,7 @@ double FEShellDomainOld::Volume(FEShellElement& se)
 	int nint = el.GaussPoints();
 	double *w = el.GaussWeights();
 	double V = 0;
-	vec3d g[3];
+	Vector3d g[3];
 	for (int n = 0; n<nint; ++n)
 	{
 		// jacobian matrix
@@ -177,7 +177,7 @@ double FEShellDomainOld::Volume(FEShellElement& se)
 		double* M = el.H(n);
 
 		// evaluate covariant basis vectors
-		g[0] = g[1] = g[2] = vec3d(0, 0, 0);
+		g[0] = g[1] = g[2] = Vector3d(0, 0, 0);
 		for (int i = 0; i<neln; ++i)
 		{
 			g[0] += (r0[i] + D0[i] * eta / 2)*Mr[i];
@@ -185,7 +185,7 @@ double FEShellDomainOld::Volume(FEShellElement& se)
 			g[2] += D0[i] * (M[i] / 2);
 		}
 
-		mat3d J = mat3d(g[0].x, g[1].x, g[2].x,
+		Matrix3d J = Matrix3d(g[0].x, g[1].x, g[2].x,
 			g[0].y, g[1].y, g[2].y,
 			g[0].z, g[1].z, g[2].z);
 
@@ -212,7 +212,7 @@ void FEShellDomainOld::InitShells()
 		int ne = el.Nodes();
 		for (int j = 0; j<ne; ++j)
 		{
-			vec3d d0 = mesh.Node(el.m_node[j]).m_d0;
+			Vector3d d0 = mesh.Node(el.m_node[j]).m_d0;
 			d0.unit();
 			el.m_D0[j] = d0 * el.m_h0[j];
 		}
@@ -269,7 +269,7 @@ double FEShellDomainNew::Volume(FEShellElement& se)
 	int neln = el.Nodes();
 
 	// initial nodal coordinates and directors
-	vec3d r0[FEElement::MAX_NODES], D0[FEElement::MAX_NODES];
+	Vector3d r0[FEElement::MAX_NODES], D0[FEElement::MAX_NODES];
 	for (int i = 0; i<neln; ++i)
 	{
 		r0[i] = Node(el.m_lnode[i]).m_r0;
@@ -279,7 +279,7 @@ double FEShellDomainNew::Volume(FEShellElement& se)
 	int nint = el.GaussPoints();
 	double *w = el.GaussWeights();
 	double V = 0;
-	vec3d g[3];
+	Vector3d g[3];
 	for (int n = 0; n<nint; ++n)
 	{
 		// jacobian matrix
@@ -290,7 +290,7 @@ double FEShellDomainNew::Volume(FEShellElement& se)
 		double* M = el.H(n);
 
 		// evaluate covariant basis vectors
-		g[0] = g[1] = g[2] = vec3d(0, 0, 0);
+		g[0] = g[1] = g[2] = Vector3d(0, 0, 0);
 		for (int i = 0; i<neln; ++i)
 		{
 			g[0] += (r0[i] + D0[i] * eta / 2)*Mr[i];
@@ -298,7 +298,7 @@ double FEShellDomainNew::Volume(FEShellElement& se)
 			g[2] += D0[i] * (M[i] / 2);
 		}
 
-		mat3d J = mat3d(g[0].x, g[1].x, g[2].x,
+		Matrix3d J = Matrix3d(g[0].x, g[1].x, g[2].x,
 			g[0].y, g[1].y, g[2].y,
 			g[0].z, g[1].z, g[2].z);
 

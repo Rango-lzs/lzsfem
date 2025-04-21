@@ -334,9 +334,9 @@ bool DumpStream::readBlock(DataBlock& d)
 	case TypeID::TYPE_VEC2D   : { vec2d        v; read_raw(v); d.m_pd = new vec2d       (v); } break;
 	case TypeID::TYPE_Vector3d   : { Vector3d        v; read_raw(v); d.m_pd = new Vector3d       (v); } break;
 	case TypeID::TYPE_MAT2D   : { mat2d        v; read_raw(v); d.m_pd = new mat2d       (v); } break;
-	case TypeID::TYPE_MAT3D   : { mat3d        v; read_raw(v); d.m_pd = new mat3d       (v); } break;
+	case TypeID::TYPE_MAT3D   : { Matrix3d        v; read_raw(v); d.m_pd = new Matrix3d       (v); } break;
 	case TypeID::TYPE_MAT3DD  : { mat3dd       v; read_raw(v); d.m_pd = new mat3dd      (v); } break;
-	case TypeID::TYPE_MAT3DS  : { mat3ds       v; read_raw(v); d.m_pd = new mat3ds      (v); } break;
+	case TypeID::TYPE_MAT3DS  : { Matrix3ds       v; read_raw(v); d.m_pd = new Matrix3ds      (v); } break;
 	case TypeID::TYPE_MAT3DA  : { mat3da       v; read_raw(v); d.m_pd = new mat3da      (v); } break;
 	case TypeID::TYPE_QUATD   : { quatd        v; read_raw(v); d.m_pd = new quatd       (v); } break;
 	case TypeID::TYPE_TENS3DS : { tens3ds      v; read_raw(v); d.m_pd = new tens3ds     (v); } break;

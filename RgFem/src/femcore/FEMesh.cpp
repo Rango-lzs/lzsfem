@@ -288,7 +288,7 @@ void FEMesh::UpdateBox()
 			m_box.add(Node(i).m_rt);
 		}
 	}
-	else m_box = FEBoundingBox(vec3d(0,0,0));
+	else m_box = FEBoundingBox(Vector3d(0,0,0));
 }
 
 //-----------------------------------------------------------------------------
@@ -379,8 +379,8 @@ void FEMesh::Reset()
 		FENode& node = Node(i);
 
 		node.m_rp = node.m_rt = node.m_r0;
-		node.m_vp = vec3d(0,0,0);
-		node.m_ap = node.m_at = vec3d(0,0,0);
+		node.m_vp = Vector3d(0,0,0);
+		node.m_ap = node.m_at = Vector3d(0,0,0);
         node.m_dp = node.m_dt = node.m_d0;
 
 		// reset ID arrays
@@ -630,7 +630,7 @@ bool FEMesh::IsType(FE_Element_Shape eshape)
 
 //-----------------------------------------------------------------------------
 // Find the element in which point y lies
-FESolidElement* FEMesh::FindSolidElement(vec3d y, double r[3])
+FESolidElement* FEMesh::FindSolidElement(Vector3d y, double r[3])
 {
 	int ND = (int) m_Domain.size();
 	for (int i=0; i<ND; ++i)
@@ -914,7 +914,7 @@ FEFacetSet* FEMesh::DomainBoundary(std::vector<FEDomain*> domains, bool boutside
 
 //-----------------------------------------------------------------------------
 //! Retrieve the nodal coordinates of an element in the reference configuration.
-void FEMesh::GetInitialNodalCoordinates(const FEElement& el, vec3d* node)
+void FEMesh::GetInitialNodalCoordinates(const FEElement& el, Vector3d* node)
 {
 	const int neln = el.Nodes();
 	for (int i=0; i<neln; ++i) node[i] = Node(el.m_node[i]).m_r0;
@@ -922,7 +922,7 @@ void FEMesh::GetInitialNodalCoordinates(const FEElement& el, vec3d* node)
 
 //-----------------------------------------------------------------------------
 //! Retrieve the nodal coordinates of an element in the current configuration.
-void FEMesh::GetNodalCoordinates(const FEElement& el, vec3d* node)
+void FEMesh::GetNodalCoordinates(const FEElement& el, Vector3d* node)
 {
 	const int neln = el.Nodes();
 	for (int i=0; i<neln; ++i) node[i] = Node(el.m_node[i]).m_rt;

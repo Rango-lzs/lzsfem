@@ -24,7 +24,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 #pragma once
-#include "mat3d.h"
+#include "Matrix3d.h"
 #include <functional>
 #include "FEM_EXPORT.h"
 
@@ -42,8 +42,8 @@ template <class T> T weightedAverage(T* d, double* w, int n, std::function<T(con
 	return s;
 }
 
-FEM_EXPORT mat3ds weightedAverageStructureTensor(mat3ds* d, double* w, int n);
+FEM_EXPORT Matrix3ds weightedAverageStructureTensor(Matrix3ds* d, double* w, int n);
 
 // evaluate Log_p (X)
-FEM_EXPORT mat3ds Log(const mat3ds& p, const mat3ds& X);
-FEM_EXPORT mat3ds Exp(const mat3ds& p, const mat3ds& X);
+FEM_EXPORT Matrix3ds Log(const Matrix3ds& p, const Matrix3ds& X);
+FEM_EXPORT Matrix3ds Exp(const Matrix3ds& p, const Matrix3ds& X);

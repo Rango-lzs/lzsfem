@@ -576,9 +576,9 @@ inline tens4d tens4d::operator - () const
 //-----------------------------------------------------------------------------
 // double contraction of general 4th-order tensor with a general 2nd-order tensor
 // Aij = Dijkl Mkl
-inline mat3d tens4d::dot(const mat3d &m) const
+inline Matrix3d tens4d::dot(const Matrix3d &m) const
 {
-    mat3d a;
+    Matrix3d a;
     
     a(0,0) = d[0]*m(0,0) + d[27]*m(0,1) + d[72]*m(0,2) + d[54]*m(1,0) + d[ 9]*m(1,1) + d[36]*m(1,2) + d[45]*m(2,0) + d[63]*m(2,1) + d[18]*m(2,2);
     a(0,1) = d[1]*m(0,0) + d[28]*m(0,1) + d[73]*m(0,2) + d[55]*m(1,0) + d[10]*m(1,1) + d[37]*m(1,2) + d[46]*m(2,0) + d[64]*m(2,1) + d[19]*m(2,2);
@@ -594,7 +594,7 @@ inline mat3d tens4d::dot(const mat3d &m) const
 }
 
 // single dot product with 2nd order tensor
-inline tens4d tens4d::sdot(const mat3d& m) const
+inline tens4d tens4d::sdot(const Matrix3d& m) const
 {
     tens4d s;
     s.d[ 0] = d[0]*m(0,0) + d[27]*m(1,0) + d[72]*m(2,0);
@@ -901,7 +901,7 @@ inline tens4d tens4d::right_transpose() const
 
 //-----------------------------------------------------------------------------
 // (a dyad1 b)_ijkl = a_ij b_kl
-inline tens4d dyad1(const mat3d& a, const mat3d& b)
+inline tens4d dyad1(const Matrix3d& a, const Matrix3d& b)
 {
     tens4d c;
     
@@ -1000,7 +1000,7 @@ inline tens4d dyad1(const mat3d& a, const mat3d& b)
 
 //-----------------------------------------------------------------------------
 // (a dyad2 b)_ijkl = a_ik b_jl
-inline tens4d dyad2(const mat3d& a, const mat3d& b)
+inline tens4d dyad2(const Matrix3d& a, const Matrix3d& b)
 {
     tens4d c;
     
@@ -1099,7 +1099,7 @@ inline tens4d dyad2(const mat3d& a, const mat3d& b)
 
 //-----------------------------------------------------------------------------
 // (a dyad3 b)_ijkl = a_il b_jk
-inline tens4d dyad3(const mat3d& a, const mat3d& b)
+inline tens4d dyad3(const Matrix3d& a, const Matrix3d& b)
 {
     tens4d c;
     
@@ -1398,9 +1398,9 @@ inline tens4d ddot(const tens4d& a, const tens4ds& b)
 
 //-----------------------------------------------------------------------------
 // vdotTdotv_jk = a_i T_ijkl b_l
-inline mat3d vdotTdotv(const vec3d& a, const tens4d& T, const vec3d& b)
+inline Matrix3d vdotTdotv(const Vector3d& a, const tens4d& T, const Vector3d& b)
 {
-    return mat3d(a.x*b.x*T.d[0] + a.z*b.x*T.d[5] + a.y*b.x*T.d[6] + a.x*b.y*T.d[27] + a.z*b.y*T.d[32] + a.y*b.y*T.d[33] + a.x*b.z*T.d[72] + a.z*b.z*T.d[77] + a.y*b.z*T.d[78],
+    return Matrix3d(a.x*b.x*T.d[0] + a.z*b.x*T.d[5] + a.y*b.x*T.d[6] + a.x*b.y*T.d[27] + a.z*b.y*T.d[32] + a.y*b.y*T.d[33] + a.x*b.z*T.d[72] + a.z*b.z*T.d[77] + a.y*b.z*T.d[78],
     a.y*b.x*T.d[1] + a.x*b.x*T.d[3] + a.z*b.x*T.d[7] + a.y*b.y*T.d[28] + a.x*b.y*T.d[30] + a.z*b.y*T.d[34] + a.y*b.z*T.d[73] + a.x*b.z*T.d[75] + a.z*b.z*T.d[79],
     a.z*b.x*T.d[2] + a.y*b.x*T.d[4] + a.x*b.x*T.d[8] + a.z*b.y*T.d[29] + a.y*b.y*T.d[31] + a.x*b.y*T.d[35] + a.z*b.z*T.d[74] + a.y*b.z*T.d[76] + a.x*b.z*T.d[80],
     a.x*b.y*T.d[9] + a.z*b.y*T.d[14] + a.y*b.y*T.d[15] + a.x*b.z*T.d[36] + a.z*b.z*T.d[41] + a.y*b.z*T.d[42] + a.x*b.x*T.d[54] + a.z*b.x*T.d[59] + a.y*b.x*T.d[60],

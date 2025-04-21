@@ -62,14 +62,14 @@ void FEBioInitialSection::Parse(XMLTag& tag)
 			fem.GetMesh().AddNodeSet(nset);
 			pic->SetNodeSet(nset);
 
-			std::vector<vec3d> values;
+			std::vector<Vector3d> values;
 			++tag;
 			do
 			{
 				if (tag == "node")
 				{
 					int nid = ReadNodeID(tag);
-					vec3d v;
+					Vector3d v;
 					value(tag, v);
 					nset->Add(nid);
 					values.push_back(v);
@@ -248,7 +248,7 @@ void FEBioInitialSection25::Parse(XMLTag& tag)
 				if (tag == "initial_velocity")
 				{
 					// get the initial velocity
-					vec3d v;
+					Vector3d v;
 					value(tag, v);
 
 					// create the initial condition
@@ -262,7 +262,7 @@ void FEBioInitialSection25::Parse(XMLTag& tag)
 				else if (tag == "initial_angular_velocity")
 				{
 					// get the initial angular velocity
-					vec3d w;
+					Vector3d w;
 					value(tag, w);
 
 					// create the initial condition

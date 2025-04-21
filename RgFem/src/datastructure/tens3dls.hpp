@@ -90,7 +90,7 @@ inline tens3dls tens3dls::operator * (const double& f) const
 }
 
 // multiply by a 2o tensor on the right (G_KJi * F_iI)
-inline tens3dls tens3dls::operator * (const mat3d& F) const
+inline tens3dls tens3dls::operator * (const Matrix3d& F) const
 {
 	tens3dls G;
 
@@ -122,12 +122,12 @@ inline tens3dls tens3dls::operator * (const mat3d& F) const
 }
 
 // calculate the trace Tijk -> Tijj
-inline vec3d tens3dls::trace()
+inline Vector3d tens3dls::trace()
 {
     double a = d[0] + d[4] + d[8];
     double b = d[3] + d[10] + d[14];
     double c = d[6] + d[13] + d[17];
-    vec3d v = vec3d(a,b,c);
+    Vector3d v = Vector3d(a,b,c);
     
     return v;
 }
@@ -175,7 +175,7 @@ inline tens3d tens3dls::generalize()
 // calculates the dyadic product T_ijk = 1/2*(L_ij*r_k + L_ji*r_k)
 // [G] = [G111 G112 G113 G121 G122 G123 G131 G132 G133 G221 G222 G223 G231 G232 G233 G331 G332 G333]
 //     =    G0   G1   G2   G3   G4   G5   G6   G7   G8   G9  G10  G11  G12  G13  G14  G15  G16  G17
-inline tens3dls dyad3ls(const mat3ds& L, const vec3d& r)
+inline tens3dls dyad3ls(const Matrix3ds& L, const Vector3d& r)
 {
     tens3dls a;
     a.d[ 0] = L(0, 0)*r.x;

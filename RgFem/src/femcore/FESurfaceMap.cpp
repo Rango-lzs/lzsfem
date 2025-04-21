@@ -118,24 +118,24 @@ void FESurfaceMap::setValue(int n, const vec2d& v)
 }
 
 //-----------------------------------------------------------------------------
-void FESurfaceMap::setValue(int n, const vec3d& v)
+void FESurfaceMap::setValue(int n, const Vector3d& v)
 {
 	int index = n*m_maxFaceNodes;
-	for (int i = 0; i<m_maxFaceNodes; ++i) set<vec3d>(index + i, v);
+	for (int i = 0; i<m_maxFaceNodes; ++i) set<Vector3d>(index + i, v);
 }
 
 //-----------------------------------------------------------------------------
-void FESurfaceMap::setValue(int n, const mat3d& v)
+void FESurfaceMap::setValue(int n, const Matrix3d& v)
 {
 	int index = n*m_maxFaceNodes;
-	for (int i = 0; i<m_maxFaceNodes; ++i) set<mat3d>(index + i, v);
+	for (int i = 0; i<m_maxFaceNodes; ++i) set<Matrix3d>(index + i, v);
 }
 
 //-----------------------------------------------------------------------------
-void FESurfaceMap::setValue(int n, const mat3ds& v)
+void FESurfaceMap::setValue(int n, const Matrix3ds& v)
 {
 	int index = n * m_maxFaceNodes;
-	for (int i = 0; i < m_maxFaceNodes; ++i) set<mat3ds>(index + i, v);
+	for (int i = 0; i < m_maxFaceNodes; ++i) set<Matrix3ds>(index + i, v);
 }
 
 //-----------------------------------------------------------------------------
@@ -151,21 +151,21 @@ void FESurfaceMap::fillValue(const vec2d& v)
 }
 
 //-----------------------------------------------------------------------------
-void FESurfaceMap::fillValue(const vec3d& v)
+void FESurfaceMap::fillValue(const Vector3d& v)
 {
-	set<vec3d>(v);
+	set<Vector3d>(v);
 }
 
 //-----------------------------------------------------------------------------
-void FESurfaceMap::fillValue(const mat3d& v)
+void FESurfaceMap::fillValue(const Matrix3d& v)
 {
-	set<mat3d>(v);
+	set<Matrix3d>(v);
 }
 
 //-----------------------------------------------------------------------------
-void FESurfaceMap::fillValue(const mat3ds& v)
+void FESurfaceMap::fillValue(const Matrix3ds& v)
 {
-	set<mat3ds>(v);
+	set<Matrix3ds>(v);
 }
 
 //-----------------------------------------------------------------------------
@@ -272,7 +272,7 @@ double FESurfaceMap::value(const FEMaterialPoint& pt)
 }
 
 //-----------------------------------------------------------------------------
-vec3d FESurfaceMap::valueVec3d(const FEMaterialPoint& pt)
+Vector3d FESurfaceMap::valueVec3d(const FEMaterialPoint& pt)
 {
 	// get the element this material point is in
 	FESurfaceElement* pe = dynamic_cast<FESurfaceElement*>(pt.m_elem);
@@ -288,11 +288,11 @@ vec3d FESurfaceMap::valueVec3d(const FEMaterialPoint& pt)
 	// get shape functions
 	double* H = pe->H(pt.m_index);
 
-	vec3d v(0,0,0);
+	Vector3d v(0,0,0);
 	int ne = pe->Nodes();
 	for (int i = 0; i < ne; ++i)
 	{
-		vec3d vi = value<vec3d>(lid, i);
+		Vector3d vi = value<Vector3d>(lid, i);
 		v += vi*H[i];
 	}
 
@@ -300,7 +300,7 @@ vec3d FESurfaceMap::valueVec3d(const FEMaterialPoint& pt)
 }
 
 //-----------------------------------------------------------------------------
-mat3d FESurfaceMap::valueMat3d(const FEMaterialPoint& pt)
+Matrix3d FESurfaceMap::valueMat3d(const FEMaterialPoint& pt)
 {
 	// get the element this material point is in
 	FESurfaceElement* pe = dynamic_cast<FESurfaceElement*>(pt.m_elem);
@@ -316,11 +316,11 @@ mat3d FESurfaceMap::valueMat3d(const FEMaterialPoint& pt)
 	// get shape functions
 	double* H = pe->H(pt.m_index);
 
-	mat3d v; v.zero();
+	Matrix3d v; v.zero();
 	int ne = pe->Nodes();
 	for (int i = 0; i < ne; ++i)
 	{
-		mat3d vi = value<mat3d>(lid, i);
+		Matrix3d vi = value<Matrix3d>(lid, i);
 		v += vi*H[i];
 	}
 
@@ -329,7 +329,7 @@ mat3d FESurfaceMap::valueMat3d(const FEMaterialPoint& pt)
 
 
 //-----------------------------------------------------------------------------
-mat3ds FESurfaceMap::valueMat3ds(const FEMaterialPoint& pt)
+Matrix3ds FESurfaceMap::valueMat3ds(const FEMaterialPoint& pt)
 {
 	// get the element this material point is in
 	FESurfaceElement* pe = dynamic_cast<FESurfaceElement*>(pt.m_elem);
@@ -345,11 +345,11 @@ mat3ds FESurfaceMap::valueMat3ds(const FEMaterialPoint& pt)
 	// get shape functions
 	double* H = pe->H(pt.m_index);
 
-	mat3ds v; v.zero();
+	Matrix3ds v; v.zero();
 	int ne = pe->Nodes();
 	for (int i = 0; i < ne; ++i)
 	{
-		mat3ds vi = value<mat3ds>(lid, i);
+		Matrix3ds vi = value<Matrix3ds>(lid, i);
 		v += vi * H[i];
 	}
 

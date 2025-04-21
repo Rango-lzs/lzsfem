@@ -66,19 +66,19 @@ void FENodeDataMap::setValue(int n, const vec2d& v)
 	set<vec2d>(n, v);
 }
 
-void FENodeDataMap::setValue(int n, const vec3d& v)
+void FENodeDataMap::setValue(int n, const Vector3d& v)
 {
-	set<vec3d>(n, v);
+	set<Vector3d>(n, v);
 }
 
-void FENodeDataMap::setValue(int n, const mat3d& v)
+void FENodeDataMap::setValue(int n, const Matrix3d& v)
 {
-	set<mat3d>(n, v);
+	set<Matrix3d>(n, v);
 }
 
-void FENodeDataMap::setValue(int n, const mat3ds& v)
+void FENodeDataMap::setValue(int n, const Matrix3ds& v)
 {
-	set<mat3ds>(n, v);
+	set<Matrix3ds>(n, v);
 }
 
 void FENodeDataMap::fillValue(double v)
@@ -91,19 +91,19 @@ void FENodeDataMap::fillValue(const vec2d& v)
 	set<vec2d>(v);
 }
 
-void FENodeDataMap::fillValue(const vec3d& v)
+void FENodeDataMap::fillValue(const Vector3d& v)
 {
-	set<vec3d>(v);
+	set<Vector3d>(v);
 }
 
-void FENodeDataMap::fillValue(const mat3d& v)
+void FENodeDataMap::fillValue(const Matrix3d& v)
 {
-	set<mat3d>(v);
+	set<Matrix3d>(v);
 }
 
-void FENodeDataMap::fillValue(const mat3ds& v)
+void FENodeDataMap::fillValue(const Matrix3ds& v)
 {
-	set<mat3ds>(v);
+	set<Matrix3ds>(v);
 }
 
 double FENodeDataMap::value(const FEMaterialPoint& mp)
@@ -112,22 +112,22 @@ double FENodeDataMap::value(const FEMaterialPoint& mp)
 	return get<double>(mp.m_index);
 }
 
-vec3d FENodeDataMap::valueVec3d(const FEMaterialPoint& mp)
+Vector3d FENodeDataMap::valueVec3d(const FEMaterialPoint& mp)
 {
 	assert(mp.m_elem == nullptr);
-	return get<vec3d>(mp.m_index);
+	return get<Vector3d>(mp.m_index);
 }
 
-mat3d FENodeDataMap::valueMat3d(const FEMaterialPoint& mp)
+Matrix3d FENodeDataMap::valueMat3d(const FEMaterialPoint& mp)
 {
 	assert(mp.m_elem == nullptr);
-	return get<mat3d>(mp.m_index);
+	return get<Matrix3d>(mp.m_index);
 }
 
-mat3ds FENodeDataMap::valueMat3ds(const FEMaterialPoint& mp)
+Matrix3ds FENodeDataMap::valueMat3ds(const FEMaterialPoint& mp)
 {
 	assert(mp.m_elem == nullptr);
-	return get<mat3ds>(mp.m_index);
+	return get<Matrix3ds>(mp.m_index);
 }
 
 // return the item list associated with this map

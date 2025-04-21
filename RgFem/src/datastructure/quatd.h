@@ -1,6 +1,6 @@
 #pragma once
-#include "vec3d.h"
-#include "datastructure/mat3d.h"
+#include "datastructure/Vector3d.h"
+#include "datastructure/Matrix3d.h"
 #include "femcore/fem_export.h"
 
 //-----------------------------------------------------------------------------
@@ -12,7 +12,7 @@ public:
 	// constructors
 	quatd() { x = y = z = 0.0;  w = 1.0; }
 
-	quatd( const double angle, vec3d v)
+	quatd( const double angle, Vector3d v)
 	{
 		w = (double) cos(angle * 0.5);
 
@@ -25,7 +25,7 @@ public:
 		z = v.z*sina;
 	}
 
-	quatd(vec3d v)
+	quatd(Vector3d v)
 	{
         double angle = v.unit();
         
@@ -38,9 +38,9 @@ public:
 		z = v.z*sina;
 	}
     
-	quatd (const vec3d& v1, const vec3d& v2)
+	quatd (const Vector3d& v1, const Vector3d& v2)
 	{
-		vec3d n = v1^v2;
+		Vector3d n = v1^v2;
 		n.unit();
 
 		double d = v1*v2;
@@ -64,7 +64,7 @@ public:
 		z = qz;
 	}
 
-	quatd(const mat3d& a);
+	quatd(const Matrix3d& a);
 
 	bool operator != (const quatd& q) const { return ((x!=q.x) || (y!=q.y) || (z!=q.z) || (w!=q.w)); }
 
@@ -186,16 +186,16 @@ public:
 		return w*q.w + x*q.x + y*q.y + z*q.z;
 	}
 
-	vec3d GetVector() const
+	Vector3d GetVector() const
 	{
-		vec3d r(x,y,z);
+		Vector3d r(x,y,z);
 		r.unit();
 		return r;
 	}
 
-	vec3d GetRotationVector() const
+	Vector3d GetRotationVector() const
 	{
-		vec3d r(x,y,z);
+		Vector3d r(x,y,z);
 		r.unit();
 		double a = GetAngle();
 		return r*a;
@@ -203,14 +203,14 @@ public:
 
 	double GetAngle() const
 	{
-        vec3d r(x,y,z);
+        Vector3d r(x,y,z);
         double sha = r.unit();
         double cha = w;
 		return (double)(atan2(sha,cha)*2.0);
 	}
 
 	// use only when *this is unit vector
-	void RotateVector(vec3d& v) const
+	void RotateVector(Vector3d& v) const
 	{
 		if ((w == 0) || ((x==0) && (y==0) && (z==0))) return;
 
@@ -227,9 +227,9 @@ public:
 	}
 
 	// use only when *this is unit vector
-	vec3d operator * (const vec3d& r) const
+	Vector3d operator * (const Vector3d& r) const
 	{
-		vec3d n = r;
+		Vector3d n = r;
 
 		// v*q^-1
 		double qw = n.x*x + n.y*y + n.z*z;
@@ -258,9 +258,9 @@ public:
 	}
 
 	//! Convert a quaternion to a rotation matrix
-	mat3d RotationMatrix() const
+	Matrix3d RotationMatrix() const
 	{
-		return mat3d(
+		return Matrix3d(
 			w*w + x*x - y*y - z*z,
 			2.0*(x*y - w*z),
 			2.0*(x*z + w*y),
@@ -300,13 +300,13 @@ inline quatd operator * (const double a, const quatd& q)
 // l[0] = psi   (x-rotation)
 // l[1] = theta (y-rotation)
 // l[2] = phi   (z-rotation)
-FEM_EXPORT mat3d euler2rot(double l[3]);
+FEM_EXPORT Matrix3d euler2rot(double l[3]);
 
 // convert a rotation matrix to euler angles
 // l[0] = psi   (x-rotation)
 // l[1] = theta (y-rotation)
 // l[2] = phi   (z-rotation)
-FEM_EXPORT void rot2euler(const mat3d& m, double l[3]);
+FEM_EXPORT void rot2euler(const Matrix3d& m, double l[3]);
 
 // extract euler angles from a quaternion
 // l[0] = psi   (x-rotation)

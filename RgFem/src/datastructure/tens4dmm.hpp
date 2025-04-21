@@ -373,9 +373,9 @@ inline tens4dmm tens4dmm::operator - () const
 
 //-----------------------------------------------------------------------------
 // vdotTdotv_jk = a_i T_ijkl b_l
-inline mat3d vdotTdotv(const vec3d& a, const tens4dmm& T, const vec3d& b)
+inline Matrix3d vdotTdotv(const Vector3d& a, const tens4dmm& T, const Vector3d& b)
 {
-    return mat3d(a.x*b.x*T.d[0] + a.y*b.x*T.d[3] + a.z*b.x*T.d[5] + a.x*b.y*T.d[18] + a.y*b.y*T.d[21] +
+    return Matrix3d(a.x*b.x*T.d[0] + a.y*b.x*T.d[3] + a.z*b.x*T.d[5] + a.x*b.y*T.d[18] + a.y*b.y*T.d[21] +
                  a.z*b.y*T.d[23] + a.x*b.z*T.d[30] + a.y*b.z*T.d[33] + a.z*b.z*T.d[35],
                  a.x*b.y*T.d[6] + a.y*b.y*T.d[9] + a.z*b.y*T.d[11] + a.x*b.x*T.d[18] + a.y*b.x*T.d[21] + a.z*b.x*T.d[23] +
                  a.x*b.z*T.d[24] + a.y*b.z*T.d[27] + a.z*b.z*T.d[29],
@@ -398,9 +398,9 @@ inline mat3d vdotTdotv(const vec3d& a, const tens4dmm& T, const vec3d& b)
 //-----------------------------------------------------------------------------
 // double contraction of general 4th-order tensor with a general 2nd-order tensor
 // Aij = Dijkl Mkl
-inline mat3ds tens4dmm::dot(const mat3ds &m) const
+inline Matrix3ds tens4dmm::dot(const Matrix3ds &m) const
 {
-    mat3ds a;
+    Matrix3ds a;
     
     a.xx() = d[0]*m.xx() + d[18]*m.xy() + d[30]*m.xz() + d[6]*m.yy() + d[24]*m.yz() + d[12]*m.zz();
     a.yy() = d[1]*m.xx() + d[19]*m.xy() + d[31]*m.xz() + d[7]*m.yy() + d[25]*m.yz() + d[13]*m.zz();
@@ -499,7 +499,7 @@ inline tens4dmm tens4dmm::transpose() const
 
 //-----------------------------------------------------------------------------
 // (a dyad1 b)_ijkl = a_ij b_kl
-inline tens4dmm dyad1mm(const mat3ds& a, const mat3ds& b)
+inline tens4dmm dyad1mm(const Matrix3ds& a, const Matrix3ds& b)
 {
     tens4dmm c;
     
@@ -521,7 +521,7 @@ inline tens4dmm dyad1mm(const mat3ds& a, const mat3ds& b)
 
 //-----------------------------------------------------------------------------
 // (a dyad2 b)_ijkl = a_ik b_jl
-inline tens4dmm dyad2mm(const mat3ds& a, const mat3ds& b)
+inline tens4dmm dyad2mm(const Matrix3ds& a, const Matrix3ds& b)
 {
     tens4dmm c;
     
@@ -543,7 +543,7 @@ inline tens4dmm dyad2mm(const mat3ds& a, const mat3ds& b)
 
 //-----------------------------------------------------------------------------
 // (a dyad3 b)_ijkl = a_il b_jk
-inline tens4dmm dyad3mm(const mat3ds& a, const mat3ds& b)
+inline tens4dmm dyad3mm(const Matrix3ds& a, const Matrix3ds& b)
 {
     tens4dmm c;
 
@@ -565,7 +565,7 @@ inline tens4dmm dyad3mm(const mat3ds& a, const mat3ds& b)
 
 //-----------------------------------------------------------------------------
 // (a dyad4 b)_ijkl = 0.5(a_ik b_jl + a_il b_jk)
-inline tens4dmm dyad4mm(const mat3ds& a, const mat3ds& b)
+inline tens4dmm dyad4mm(const Matrix3ds& a, const Matrix3ds& b)
 {
     return (dyad2mm(a,b) + dyad3mm(a,b))/2;
 }
@@ -696,7 +696,7 @@ inline tens4dmm tens4dmm::inverse() const
 //-----------------------------------------------------------------------------
 // evaluate push/pull operation
 // c_ijpq = F_ik F_jl C_klmn F_pm F_qn
-inline tens4dmm tens4dmm::pp(const mat3d& F)
+inline tens4dmm tens4dmm::pp(const Matrix3d& F)
 {
     tens4dmm c;
 

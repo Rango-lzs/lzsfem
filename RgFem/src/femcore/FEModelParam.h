@@ -150,7 +150,7 @@ public:
 	FEParamMat3ds(const FEParamMat3ds& p);
 
 	// set the value
-	void operator = (const mat3ds& v);
+	void operator = (const Matrix3ds& v);
 	void operator = (const FEParamMat3ds& v);
 
 	// set the valuator
@@ -160,13 +160,13 @@ public:
 	FEMat3dsValuator* valuator();
 
 	// evaluate the parameter at a material point
-	mat3ds operator () (const FEMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
+	Matrix3ds operator () (const FEMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
 
 	// is this a const
 	bool isConst() const { return m_val->isConst(); }
 
 	// (return value undefined if not constant)
-	mat3ds& constValue() { assert(isConst()); return *m_val->constValue(); };
+	Matrix3ds& constValue() { assert(isConst()); return *m_val->constValue(); };
 
 	void Serialize(DumpStream& ar) override;
 

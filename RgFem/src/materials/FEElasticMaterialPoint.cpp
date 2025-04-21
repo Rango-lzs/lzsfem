@@ -79,12 +79,12 @@ void FEElasticMaterialPoint::Serialize(DumpStream& ar)
 //-----------------------------------------------------------------------------
 //! Calculates the right Cauchy-Green tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::RightCauchyGreen() const
+Matrix3ds FEElasticMaterialPoint::RightCauchyGreen() const
 {
 	// get the right Cauchy-Green tensor
 	// C = Ft*F
-	const mat3d& F = m_F;
-	mat3ds C;
+	const Matrix3d& F = m_F;
+	Matrix3ds C;
 	C.xx() = F[0][0]*F[0][0]+F[1][0]*F[1][0]+F[2][0]*F[2][0]; // = C[0][0]
 	C.yy() = F[0][1]*F[0][1]+F[1][1]*F[1][1]+F[2][1]*F[2][1]; // = C[1][1]
 	C.zz() = F[0][2]*F[0][2]+F[1][2]*F[1][2]+F[2][2]*F[2][2]; // = C[2][2]
@@ -98,12 +98,12 @@ mat3ds FEElasticMaterialPoint::RightCauchyGreen() const
 //-----------------------------------------------------------------------------
 //! Calculates the left Cauchy-Green tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::LeftCauchyGreen() const
+Matrix3ds FEElasticMaterialPoint::LeftCauchyGreen() const
 {
 	// get the left Cauchy-Green tensor
 	// b = F*Ft
-	const mat3d& F = m_F;
-	mat3ds b;
+	const Matrix3d& F = m_F;
+	Matrix3ds b;
 	b.xx() = F[0][0]*F[0][0]+F[0][1]*F[0][1]+F[0][2]*F[0][2]; // = b[0][0]
 	b.yy() = F[1][0]*F[1][0]+F[1][1]*F[1][1]+F[1][2]*F[1][2]; // = b[1][1]
 	b.zz() = F[2][0]*F[2][0]+F[2][1]*F[2][1]+F[2][2]*F[2][2]; // = b[2][2]
@@ -117,14 +117,14 @@ mat3ds FEElasticMaterialPoint::LeftCauchyGreen() const
 //-----------------------------------------------------------------------------
 //! Calculates the right Cauchy-Green tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::DevRightCauchyGreen() const
+Matrix3ds FEElasticMaterialPoint::DevRightCauchyGreen() const
 {
 	double Jm23 = pow(m_J, -2.0/3.0);
 
 	// get the deviatoric right Cauchy-Green tensor
 	// C = Ft*F
-	const mat3d& F = m_F;
-	mat3ds C;
+	const Matrix3d& F = m_F;
+	Matrix3ds C;
 	C.xx() = Jm23*(F[0][0]*F[0][0]+F[1][0]*F[1][0]+F[2][0]*F[2][0]); // = C[0][0]
 	C.yy() = Jm23*(F[0][1]*F[0][1]+F[1][1]*F[1][1]+F[2][1]*F[2][1]); // = C[1][1]
 	C.zz() = Jm23*(F[0][2]*F[0][2]+F[1][2]*F[1][2]+F[2][2]*F[2][2]); // = C[2][2]
@@ -138,14 +138,14 @@ mat3ds FEElasticMaterialPoint::DevRightCauchyGreen() const
 //-----------------------------------------------------------------------------
 //! Calculates the left Cauchy-Green tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::DevLeftCauchyGreen() const
+Matrix3ds FEElasticMaterialPoint::DevLeftCauchyGreen() const
 {
 	double Jm23 = pow(m_J, -2.0/3.0);
 
 	// get the left Cauchy-Green tensor
 	// b = F*Ft
-	const mat3d& F = m_F;
-	mat3ds b;
+	const Matrix3d& F = m_F;
+	Matrix3ds b;
 	b.xx() = Jm23*(F[0][0]*F[0][0]+F[0][1]*F[0][1]+F[0][2]*F[0][2]); // = b[0][0]
 	b.yy() = Jm23*(F[1][0]*F[1][0]+F[1][1]*F[1][1]+F[1][2]*F[1][2]); // = b[1][1]
 	b.zz() = Jm23*(F[2][0]*F[2][0]+F[2][1]*F[2][1]+F[2][2]*F[2][2]); // = b[2][2]
@@ -159,14 +159,14 @@ mat3ds FEElasticMaterialPoint::DevLeftCauchyGreen() const
 //-----------------------------------------------------------------------------
 //! Calculates the right stretch tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::RightStretch() const
+Matrix3ds FEElasticMaterialPoint::RightStretch() const
 {
     // get the right stretch tensor
-    mat3ds C = RightCauchyGreen();
+    Matrix3ds C = RightCauchyGreen();
     double l2[3];
     Vector3d v[3];
     C.eigen2(l2, v);
-    mat3ds U = dyad(v[0])*sqrt(l2[0]) + dyad(v[1])*sqrt(l2[1]) + dyad(v[2])*sqrt(l2[2]);
+    Matrix3ds U = dyad(v[0])*sqrt(l2[0]) + dyad(v[1])*sqrt(l2[1]) + dyad(v[2])*sqrt(l2[2]);
     
     return U;
 }
@@ -174,14 +174,14 @@ mat3ds FEElasticMaterialPoint::RightStretch() const
 //-----------------------------------------------------------------------------
 //! Calculates the left stretch tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::LeftStretch() const
+Matrix3ds FEElasticMaterialPoint::LeftStretch() const
 {
     // get the left stretch tensor
-    mat3ds B = LeftCauchyGreen();
+    Matrix3ds B = LeftCauchyGreen();
     double l2[3];
     Vector3d v[3];
     B.eigen2(l2, v);
-    mat3ds V = dyad(v[0])*sqrt(l2[0]) + dyad(v[1])*sqrt(l2[1]) + dyad(v[2])*sqrt(l2[2]);
+    Matrix3ds V = dyad(v[0])*sqrt(l2[0]) + dyad(v[1])*sqrt(l2[1]) + dyad(v[2])*sqrt(l2[2]);
     
     return V;
 }
@@ -189,14 +189,14 @@ mat3ds FEElasticMaterialPoint::LeftStretch() const
 //-----------------------------------------------------------------------------
 //! Calculates the right stretch tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::RightStretchInverse() const
+Matrix3ds FEElasticMaterialPoint::RightStretchInverse() const
 {
     // get the right stretch tensor
-    mat3ds C = RightCauchyGreen();
+    Matrix3ds C = RightCauchyGreen();
     double l2[3];
     Vector3d v[3];
     C.eigen2(l2, v);
-    mat3ds U = dyad(v[0])/sqrt(l2[0]) + dyad(v[1])/sqrt(l2[1]) + dyad(v[2])/sqrt(l2[2]);
+    Matrix3ds U = dyad(v[0])/sqrt(l2[0]) + dyad(v[1])/sqrt(l2[1]) + dyad(v[2])/sqrt(l2[2]);
     
     return U;
 }
@@ -204,14 +204,14 @@ mat3ds FEElasticMaterialPoint::RightStretchInverse() const
 //-----------------------------------------------------------------------------
 //! Calculates the left stretch tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::LeftStretchInverse() const
+Matrix3ds FEElasticMaterialPoint::LeftStretchInverse() const
 {
     // get the left stretch tensor
-    mat3ds B = LeftCauchyGreen();
+    Matrix3ds B = LeftCauchyGreen();
     double l2[3];
     Vector3d v[3];
     B.eigen2(l2, v);
-    mat3ds V = dyad(v[0])/sqrt(l2[0]) + dyad(v[1])/sqrt(l2[1]) + dyad(v[2])/sqrt(l2[2]);
+    Matrix3ds V = dyad(v[0])/sqrt(l2[0]) + dyad(v[1])/sqrt(l2[1]) + dyad(v[2])/sqrt(l2[2]);
     
     return V;
 }
@@ -219,14 +219,14 @@ mat3ds FEElasticMaterialPoint::LeftStretchInverse() const
 //-----------------------------------------------------------------------------
 //! Calculates the right stretch tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::RightHencky() const
+Matrix3ds FEElasticMaterialPoint::RightHencky() const
 {
     // get the right stretch tensor
-    mat3ds C = RightCauchyGreen();
+    Matrix3ds C = RightCauchyGreen();
     double l2[3];
     Vector3d v[3];
     C.eigen2(l2, v);
-    mat3ds H = dyad(v[0])*log(l2[0])/2 + dyad(v[1])*log(l2[1])/2 + dyad(v[2])*log(l2[2])/2;
+    Matrix3ds H = dyad(v[0])*log(l2[0])/2 + dyad(v[1])*log(l2[1])/2 + dyad(v[2])*log(l2[2])/2;
     
     return H;
 }
@@ -234,14 +234,14 @@ mat3ds FEElasticMaterialPoint::RightHencky() const
 //-----------------------------------------------------------------------------
 //! Calculates the left stretch tensor at the current material point
 
-mat3ds FEElasticMaterialPoint::LeftHencky() const
+Matrix3ds FEElasticMaterialPoint::LeftHencky() const
 {
     // get the left stretch tensor
-    mat3ds B = LeftCauchyGreen();
+    Matrix3ds B = LeftCauchyGreen();
     double l2[3];
     Vector3d v[3];
     B.eigen2(l2, v);
-    mat3ds h = dyad(v[0])*log(l2[0])/2 + dyad(v[1])*log(l2[1])/2 + dyad(v[2])*log(l2[2])/2;
+    Matrix3ds h = dyad(v[0])*log(l2[0])/2 + dyad(v[1])*log(l2[1])/2 + dyad(v[2])*log(l2[2])/2;
     
     return h;
 }
@@ -249,7 +249,7 @@ mat3ds FEElasticMaterialPoint::LeftHencky() const
 //-----------------------------------------------------------------------------
 //! Calculates the rotation tensor at the current material point
 
-mat3d FEElasticMaterialPoint::Rotation() const
+Matrix3d FEElasticMaterialPoint::Rotation() const
 {
     return m_F*RightStretchInverse();
 }
@@ -257,12 +257,12 @@ mat3d FEElasticMaterialPoint::Rotation() const
 //-----------------------------------------------------------------------------
 //! Calculates the Lagrangian strain at the current material point
 
-mat3ds FEElasticMaterialPoint::Strain() const
+Matrix3ds FEElasticMaterialPoint::Strain() const
 {
 	// get the right Cauchy-Green tensor
 	// C = Ft*F
-	const mat3d& F = m_F;
-	mat3ds C;
+	const Matrix3d& F = m_F;
+	Matrix3ds C;
 	C.xx() = F[0][0]*F[0][0]+F[1][0]*F[1][0]+F[2][0]*F[2][0]; // = C[0][0]
 	C.yy() = F[0][1]*F[0][1]+F[1][1]*F[1][1]+F[2][1]*F[2][1]; // = C[1][1]
 	C.zz() = F[0][2]*F[0][2]+F[1][2]*F[1][2]+F[2][2]*F[2][2]; // = C[2][2]
@@ -272,31 +272,31 @@ mat3ds FEElasticMaterialPoint::Strain() const
 
 	// calculate the Lagrangian strain
 	// E = 1/2*(C - 1)
-	mat3ds E = (C - mat3dd(1))*0.5;
+	Matrix3ds E = (C - mat3dd(1))*0.5;
 
 	return E;
 }
 
 //-----------------------------------------------------------------------------
 //! Calculates the small-strain tensor from the deformation gradient
-mat3ds FEElasticMaterialPoint::SmallStrain() const
+Matrix3ds FEElasticMaterialPoint::SmallStrain() const
 {
 	// caculate small strain tensor
-	const mat3d& F = m_F;
-	return mat3ds(F[0][0] - 1.0, F[1][1] - 1.0, F[2][2] - 1.0, 0.5*(F[0][1] + F[1][0]), 0.5*(F[0][2] + F[2][0]), 0.5*(F[1][2] + F[2][1]));
+	const Matrix3d& F = m_F;
+	return Matrix3ds(F[0][0] - 1.0, F[1][1] - 1.0, F[2][2] - 1.0, 0.5*(F[0][1] + F[1][0]), 0.5*(F[0][2] + F[2][0]), 0.5*(F[1][2] + F[2][1]));
 }
 
 //-----------------------------------------------------------------------------
 //! Calculates the 2nd PK stress from the Cauchy stress stored in the point
 
-mat3ds FEElasticMaterialPoint::pull_back(const mat3ds& A) const
+Matrix3ds FEElasticMaterialPoint::pull_back(const Matrix3ds& A) const
 {
-	const mat3d& F = m_F;
+	const Matrix3d& F = m_F;
 	double J = m_J;
-	mat3d Fi = F.inverse();
-	mat3d P = Fi*A;
+	Matrix3d Fi = F.inverse();
+	Matrix3d P = Fi*A;
 
-	return mat3ds(J*(P[0][0]*Fi[0][0]+P[0][1]*Fi[0][1]+P[0][2]*Fi[0][2]),
+	return Matrix3ds(J*(P[0][0]*Fi[0][0]+P[0][1]*Fi[0][1]+P[0][2]*Fi[0][2]),
 				  J*(P[1][0]*Fi[1][0]+P[1][1]*Fi[1][1]+P[1][2]*Fi[1][2]),
 				  J*(P[2][0]*Fi[2][0]+P[2][1]*Fi[2][1]+P[2][2]*Fi[2][2]),
 				  J*(P[0][0]*Fi[1][0]+P[0][1]*Fi[1][1]+P[0][2]*Fi[1][2]),
@@ -305,13 +305,13 @@ mat3ds FEElasticMaterialPoint::pull_back(const mat3ds& A) const
 }
 
 //-----------------------------------------------------------------------------
-mat3ds FEElasticMaterialPoint::push_forward(const mat3ds& A) const
+Matrix3ds FEElasticMaterialPoint::push_forward(const Matrix3ds& A) const
 {
-	const mat3d& F = m_F;
-	mat3d P = F*A;
+	const Matrix3d& F = m_F;
+	Matrix3d P = F*A;
 	double Ji = 1 / m_J;
 
-	return mat3ds(Ji*(P[0][0]*F[0][0]+P[0][1]*F[0][1]+P[0][2]*F[0][2]),
+	return Matrix3ds(Ji*(P[0][0]*F[0][0]+P[0][1]*F[0][1]+P[0][2]*F[0][2]),
 				  Ji*(P[1][0]*F[1][0]+P[1][1]*F[1][1]+P[1][2]*F[1][2]),
 				  Ji*(P[2][0]*F[2][0]+P[2][1]*F[2][1]+P[2][2]*F[2][2]),
 				  Ji*(P[0][0]*F[1][0]+P[0][1]*F[1][1]+P[0][2]*F[1][2]),
@@ -323,8 +323,8 @@ mat3ds FEElasticMaterialPoint::push_forward(const mat3ds& A) const
 // This function converts the spatial tangent to the material tangent
 tens4ds FEElasticMaterialPoint::pull_back(const tens4ds& c) const
 {
-	const mat3d& F = m_F;
-	mat3d Fi = F.inverse();
+	const Matrix3d& F = m_F;
+	Matrix3d Fi = F.inverse();
 	double J = F.det();
 
 	double C[6][6] = {0};
@@ -369,7 +369,7 @@ tens4ds FEElasticMaterialPoint::pull_back(const tens4ds& c) const
 // This function converts the material tangent to the spatial tangent
 tens4ds FEElasticMaterialPoint::push_forward(const tens4ds& C) const
 {
-	const mat3d& F = m_F;
+	const Matrix3d& F = m_F;
 	double Ji = 1/F.det();
 	double c[6][6] = {0};
 

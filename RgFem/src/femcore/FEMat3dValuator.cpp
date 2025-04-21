@@ -80,17 +80,17 @@ bool FEMat3dLocalElementMap::Init()
 }
 
 //-----------------------------------------------------------------------------
-mat3d FEMat3dLocalElementMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dLocalElementMap::operator () (const FEMaterialPoint& mp)
 {
 	FEMesh& mesh = GetFEModel()->GetMesh();
 
 	FEElement& el = *mp.m_elem;
 
-	vec3d r0[FEElement::MAX_NODES];
+	Vector3d r0[FEElement::MAX_NODES];
 	for (int i=0; i<el.Nodes(); ++i) r0[i] = mesh.Node(el.m_node[i]).m_r0;
 
-	vec3d a, b, c, d;
-	mat3d Q;
+	Vector3d a, b, c, d;
+	Matrix3d Q;
 
 	a = r0[m_n[1] - 1] - r0[m_n[0] - 1];
 	a.unit();
@@ -101,8 +101,8 @@ mat3d FEMat3dLocalElementMap::operator () (const FEMaterialPoint& mp)
 	}
 	else
 	{
-		d = vec3d(0,1,0);
-		if (fabs(d*a) > 0.999) d = vec3d(1,0,0);
+		d = Vector3d(0,1,0);
+		if (fabs(d*a) > 0.999) d = Vector3d(1,0,0);
 	}
 
 	c = a^d;
@@ -147,8 +147,8 @@ END_FECORE_CLASS();
 //-----------------------------------------------------------------------------
 FEMat3dSphericalMap::FEMat3dSphericalMap(FEModel* pfem): FEMat3dValuator(pfem)
 {
-	m_c = vec3d(0,0,0);
-	m_r = vec3d(1,0,0);
+	m_c = Vector3d(0,0,0);
+	m_r = Vector3d(1,0,0);
 }
 
 //-----------------------------------------------------------------------------
@@ -158,37 +158,37 @@ bool FEMat3dSphericalMap::Init()
 }
 
 //-----------------------------------------------------------------------------
-mat3d FEMat3dSphericalMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dSphericalMap::operator () (const FEMaterialPoint& mp)
 {
-	vec3d a = mp.m_r0;
+	Vector3d a = mp.m_r0;
 	a -= m_c;
 	a.unit();
 
 	// setup the rotation vector
-	vec3d x_unit(1,0,0);
+	Vector3d x_unit(1,0,0);
 	quatd q(x_unit, a);
 
-	vec3d v = m_r;
+	Vector3d v = m_r;
 	v.unit();
 	q.RotateVector(v);
 	a = v;
 
-	vec3d d(0,1,0);
+	Vector3d d(0,1,0);
 	d.unit();
 	if (fabs(a*d) > .99) 
 	{
-		d = vec3d(0,0,1);
+		d = Vector3d(0,0,1);
 		d.unit();
 	}
 
-	vec3d c = a^d;
-	vec3d b = c^a;
+	Vector3d c = a^d;
+	Vector3d b = c^a;
 
 	a.unit();
 	b.unit();
 	c.unit();
 
-	mat3d Q;
+	Matrix3d Q;
 	Q[0][0] = a.x; Q[0][1] = b.x; Q[0][2] = c.x;
 	Q[1][0] = a.y; Q[1][1] = b.y; Q[1][2] = c.y;
 	Q[2][0] = a.z; Q[2][1] = b.z; Q[2][2] = c.z;
@@ -218,9 +218,9 @@ END_FECORE_CLASS();
 //-----------------------------------------------------------------------------
 FEMat3dCylindricalMap::FEMat3dCylindricalMap(FEModel* pfem) : FEMat3dValuator(pfem)
 {
-	m_c = vec3d(0,0,0);
-	m_a = vec3d(0,0,1);
-	m_r = vec3d(1,0,0);
+	m_c = Vector3d(0,0,0);
+	m_a = Vector3d(0,0,1);
+	m_r = Vector3d(1,0,0);
 }
 
 //-----------------------------------------------------------------------------
@@ -232,38 +232,38 @@ bool FEMat3dCylindricalMap::Init()
 }
 
 //-----------------------------------------------------------------------------
-mat3d FEMat3dCylindricalMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dCylindricalMap::operator () (const FEMaterialPoint& mp)
 {
 	// get the position of the material point
-	vec3d p = mp.m_r0;
+	Vector3d p = mp.m_r0;
 
 	// find the vector to the axis
-	vec3d b = (p - m_c) - m_a*(m_a*(p - m_c)); b.unit();
+	Vector3d b = (p - m_c) - m_a*(m_a*(p - m_c)); b.unit();
 
 	// setup the rotation vector
-	vec3d x_unit(vec3d(1,0,0));
+	Vector3d x_unit(Vector3d(1,0,0));
 	quatd q(x_unit, b);
 
 	// rotate the reference vector
-	vec3d r(m_r); r.unit();
+	Vector3d r(m_r); r.unit();
 	q.RotateVector(r);
 
 	// setup a local coordinate system with r as the x-axis
-	vec3d d(0,1,0);
+	Vector3d d(0,1,0);
 	q.RotateVector(d);
 	if (fabs(d*r) > 0.99)
 	{
-		d = vec3d(0,0,1);
+		d = Vector3d(0,0,1);
 		q.RotateVector(d);
 	}
 
 	// find basis vectors
-	vec3d e1 = r;
-	vec3d e3 = (e1 ^ d); e3.unit();
-	vec3d e2 = e3 ^ e1;
+	Vector3d e1 = r;
+	Vector3d e3 = (e1 ^ d); e3.unit();
+	Vector3d e2 = e3 ^ e1;
 
 	// setup rotation matrix
-	mat3d Q;
+	Matrix3d Q;
 	Q[0][0] = e1.x; Q[0][1] = e2.x; Q[0][2] = e3.x;
 	Q[1][0] = e1.y; Q[1][1] = e2.y; Q[1][2] = e3.y;
 	Q[2][0] = e1.z; Q[2][1] = e2.z; Q[2][2] = e3.z;
@@ -297,9 +297,9 @@ END_FECORE_CLASS();
 //-----------------------------------------------------------------------------
 FEMat3dPolarMap::FEMat3dPolarMap(FEModel* pfem) : FEMat3dValuator(pfem)
 {
-	m_c = vec3d(0,0,0);
-	m_a = vec3d(0,0,1);
-	m_d0 = m_d1 = vec3d(1,0,0);
+	m_c = Vector3d(0,0,0);
+	m_a = Vector3d(0,0,1);
+	m_d0 = m_d1 = Vector3d(1,0,0);
 	m_R0 = 0; 
 	m_R1 = 1;
 }
@@ -314,13 +314,13 @@ bool FEMat3dPolarMap::Init()
 }
 
 //-----------------------------------------------------------------------------
-mat3d FEMat3dPolarMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dPolarMap::operator () (const FEMaterialPoint& mp)
 {
 	// get the nodal position of material point
-	vec3d p = mp.m_r0;
+	Vector3d p = mp.m_r0;
 
 	// find the vector to the axis and its length
-	vec3d b = (p - m_c) - m_a*(m_a*(p - m_c)); 
+	Vector3d b = (p - m_c) - m_a*(m_a*(p - m_c)); 
 	double R = b.unit();
 
 	// get the relative radius
@@ -330,35 +330,35 @@ mat3d FEMat3dPolarMap::operator () (const FEMaterialPoint& mp)
 	double w = (R - R0)/(R1 - R0);
 
 	// get the fiber vectors
-	vec3d v0 = m_d0;
-	vec3d v1 = m_d1;
-	quatd Q0(0,vec3d(0,0,1)), Q1(v0,v1);
+	Vector3d v0 = m_d0;
+	Vector3d v1 = m_d1;
+	quatd Q0(0,Vector3d(0,0,1)), Q1(v0,v1);
 	quatd Qw = quatd::slerp(Q0, Q1, w);
-	vec3d v = v0; Qw.RotateVector(v);
+	Vector3d v = v0; Qw.RotateVector(v);
 
 	// setup the rotation vector
-	vec3d x_unit(vec3d(1,0,0));
+	Vector3d x_unit(Vector3d(1,0,0));
 	quatd q(x_unit, b);
 
 	// rotate the reference vector
 	q.RotateVector(v);
 
 	// setup a local coordinate system with r as the x-axis
-	vec3d d(vec3d(0,1,0));
+	Vector3d d(Vector3d(0,1,0));
 	q.RotateVector(d);
 	if (fabs(d*v) > 0.99)
 	{
-		d = vec3d(0,0,1);
+		d = Vector3d(0,0,1);
 		q.RotateVector(d);
 	}
 
 	// find basis vectors
-	vec3d e1 = v;
-	vec3d e3 = (e1 ^ d); e3.unit();
-	vec3d e2 = e3 ^ e1;
+	Vector3d e1 = v;
+	Vector3d e3 = (e1 ^ d); e3.unit();
+	Vector3d e2 = e3 ^ e1;
 
 	// setup rotation matrix
-	mat3d Q;
+	Matrix3d Q;
 	Q[0][0] = e1.x; Q[0][1] = e2.x; Q[0][2] = e3.x;
 	Q[1][0] = e1.y; Q[1][1] = e2.y; Q[1][2] = e3.y;
 	Q[2][0] = e1.z; Q[2][1] = e2.z; Q[2][2] = e3.z;
@@ -391,8 +391,8 @@ END_FECORE_CLASS();
 //-----------------------------------------------------------------------------
 FEMat3dVectorMap::FEMat3dVectorMap(FEModel* pfem) : FEMat3dValuator(pfem)
 {
-	m_a = vec3d(1,0,0);
-	m_d = vec3d(0,1,0);
+	m_a = Vector3d(1,0,0);
+	m_d = Vector3d(0,1,0);
 	m_Q.unit();
 }
 
@@ -412,15 +412,15 @@ bool FEMat3dVectorMap::Init()
 		// if they are, find a different value for d
 		// Note: If this is used for a mat_axis parameter, then this
 		// would modify the user specified value. 
-		m_d = vec3d(1,0,0);
-		if (fabs(m_a*m_d) > 0.999) m_d = vec3d(0,1,0);
+		m_d = Vector3d(1,0,0);
+		if (fabs(m_a*m_d) > 0.999) m_d = Vector3d(0,1,0);
 	}
 
-	vec3d a = m_a;
-	vec3d d = m_d;
+	Vector3d a = m_a;
+	Vector3d d = m_d;
 
-	vec3d c = a^d;
-	vec3d b = c^a;
+	Vector3d c = a^d;
+	Vector3d b = c^a;
 
 	a.unit();
 	b.unit();
@@ -434,14 +434,14 @@ bool FEMat3dVectorMap::Init()
 }
 
 //-----------------------------------------------------------------------------
-void FEMat3dVectorMap::SetVectors(vec3d a, vec3d d)
+void FEMat3dVectorMap::SetVectors(Vector3d a, Vector3d d)
 { 
 	m_a = a; 
 	m_d = d; 
 }
 
 //-----------------------------------------------------------------------------
-mat3d FEMat3dVectorMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dVectorMap::operator () (const FEMaterialPoint& mp)
 {
 	return m_Q;
 }
@@ -487,7 +487,7 @@ FEDataMap* FEMappedValueMat3d::dataMap()
 	return m_val;
 }
 
-mat3d FEMappedValueMat3d::operator()(const FEMaterialPoint& pt)
+Matrix3d FEMappedValueMat3d::operator()(const FEMaterialPoint& pt)
 {
 	return m_val->valueMat3d(pt);
 }

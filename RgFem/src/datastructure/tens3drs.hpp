@@ -30,7 +30,7 @@ SOFTWARE.*/
 // NOTE: This file is automatically included from tens3drs.h
 // Users should not include this file manually!
 
-#include "mat3d.h"
+#include "Matrix3d.h"
 
 // access operator
 inline double tens3drs::operator () (int i, int j, int k) const
@@ -53,9 +53,9 @@ inline tens3drs::tens3drs(double a)
 }
 
 // contract the right two legs by the dyad formed by a vector  xi = Gijk*Xj*Xk
-inline vec3d tens3drs::contractdyad1(const vec3d& v) const
+inline Vector3d tens3drs::contractdyad1(const Vector3d& v) const
 {
-    vec3d x;
+    Vector3d x;
 	x.x = d[ 0]*v.x*v.x + 2*d[ 1]*v.x*v.y + 2*d[ 2]*v.x*v.z + d[ 3]*v.y*v.y + 2*d[ 4]*v.y*v.z + d[ 5]*v.z*v.z;
 	x.y = d[ 6]*v.x*v.x + 2*d[ 7]*v.x*v.y + 2*d[ 8]*v.x*v.z + d[ 9]*v.y*v.y + 2*d[10]*v.y*v.z + d[11]*v.z*v.z;
 	x.z = d[12]*v.x*v.x + 2*d[13]*v.x*v.y + 2*d[14]*v.x*v.z + d[15]*v.y*v.y + 2*d[16]*v.y*v.z + d[17]*v.z*v.z;
@@ -64,9 +64,9 @@ inline vec3d tens3drs::contractdyad1(const vec3d& v) const
 }
 
 // contract the right two legs by a symmetric 2o tensor  xi = Gijk*Sjk
-inline vec3d tens3drs::contract2s(const mat3ds& s) const
+inline Vector3d tens3drs::contract2s(const Matrix3ds& s) const
 {
-    vec3d x;
+    Vector3d x;
 	x.x = d[ 0]*s.xx() + 2*d[ 1]*s.xy() + 2*d[ 2]*s.xz() + d[ 3]*s.yy() + 2*d[ 4]*s.yz() + d[ 5]*s.zz();
 	x.y = d[ 6]*s.xx() + 2*d[ 7]*s.xy() + 2*d[ 8]*s.xz() + d[ 9]*s.yy() + 2*d[10]*s.yz() + d[11]*s.zz();
 	x.z = d[12]*s.xx() + 2*d[13]*s.xy() + 2*d[14]*s.xz() + d[15]*s.yy() + 2*d[16]*s.yz() + d[17]*s.zz();
@@ -84,9 +84,9 @@ inline double tens3drs::tripledot(const tens3drs& H) const
 }
 
 // contract the right two legs by the dyad formed by a vector  xi = Gijk*Vj*Wk
-inline vec3d tens3drs::contractdyad2(const vec3d& v, const vec3d& w)
+inline Vector3d tens3drs::contractdyad2(const Vector3d& v, const Vector3d& w)
 {
-    vec3d x;
+    Vector3d x;
 	x.x = d[ 0]*v.x*w.x + d[ 1]*(v.x*w.y + v.y*w.x) + d[ 2]*(v.x*w.z + v.z*w.x) + d[ 3]*v.y*w.y + d[ 4]*(v.y*w.z + v.z*w.y) + d[ 5]*v.z*w.z;
 	x.y = d[ 6]*v.x*w.x + d[ 7]*(v.x*w.y + v.y*w.x) + d[ 8]*(v.x*w.z + v.z*w.x) + d[ 9]*v.y*w.y + d[10]*(v.y*w.z + v.z*w.y) + d[11]*v.z*w.z;
 	x.z = d[12]*v.x*w.x + d[13]*(v.x*w.y + v.y*w.x) + d[14]*(v.x*w.z + v.z*w.x) + d[15]*v.y*w.y + d[16]*(v.y*w.z + v.z*w.y) + d[17]*v.z*w.z;
@@ -95,7 +95,7 @@ inline vec3d tens3drs::contractdyad2(const vec3d& v, const vec3d& w)
 }
 
 // calculates the dyadic product T_ijk = l_i*r_j*r_k
-inline tens3drs dyad3rs(const vec3d& l, const vec3d& r)
+inline tens3drs dyad3rs(const Vector3d& l, const Vector3d& r)
 {
 	tens3drs a;
 	a.d[ 0] = l.x*r.x*r.x; 
@@ -120,7 +120,7 @@ inline tens3drs dyad3rs(const vec3d& l, const vec3d& r)
 }
 
 // calculates the dyadic product T_ijk = 1/2*(L_ij*r_k + L_ik*r_j)
-inline tens3drs dyad3rs(const mat3d& L, const vec3d& r)
+inline tens3drs dyad3rs(const Matrix3d& L, const Vector3d& r)
 {
 	tens3drs a;
 	a.d[0] =  L(0, 0)*r.x;
@@ -175,7 +175,7 @@ inline tens3dls tens3drs::transpose()
 }
 
 // contract each leg by a 2o tensor (intended to calculate the inverse deformation hessian according to Finv_Ii * G_iJK * Finv_Jj * Fin_Kk)
-inline void tens3drs::contractleg2(const mat3d& F, int leg)
+inline void tens3drs::contractleg2(const Matrix3d& F, int leg)
 {
 	tens3drs G = *this;
 	
@@ -245,7 +245,7 @@ inline void tens3drs::contractleg2(const mat3d& F, int leg)
 }
 
 // multiply by a 2o tensor on the left (F_Ii * G_iJK)
-inline tens3drs operator * (const mat3d& F, const tens3drs& t)
+inline tens3drs operator * (const Matrix3d& F, const tens3drs& t)
 {
 	tens3drs G;
 

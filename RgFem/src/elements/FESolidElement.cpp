@@ -46,12 +46,12 @@ void FESolidElement::SetTraits(FEElementTraits* pt)
 	m_J0i.resize(ni);
 }
 
-vec3d FESolidElement::evaluate(vec3d* v, double r, double s, double t) const
+Vector3d FESolidElement::evaluate(Vector3d* v, double r, double s, double t) const
 {
 	double H[FEElement::MAX_NODES];
 	shape_fnc(H, r, s, t);
 	int neln = Nodes();
-	vec3d p(0, 0, 0);
+	Vector3d p(0, 0, 0);
 	for (int i = 0; i<neln; ++i) p += v[i] * H[i];
 	return p;
 }

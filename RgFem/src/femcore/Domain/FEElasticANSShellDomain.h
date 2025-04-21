@@ -92,7 +92,7 @@ public: // overrides from FEElasticDomain
     void BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf) override;
     
     // evaluate strain E and matrix hu and hw
-	void EvaluateEh(FEShellElementNew& el, const int n, const Vector3d* Gcnt, mat3ds& E, vector<matrix>& hu, vector<matrix>& hw, vector<Vector3d>& Nu, vector<Vector3d>& Nw);
+	void EvaluateEh(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& E, vector<matrix>& hu, vector<matrix>& hw, vector<Vector3d>& Nu, vector<Vector3d>& Nw);
     
 public:
     
@@ -125,8 +125,8 @@ public:
     
     // --- A N S  M E T H O D ---
     
-    // Evaluate contravariant components of mat3ds tensor
-    void mat3dsCntMat61(const mat3ds s, const Vector3d* Gcnt, matrix& S);
+    // Evaluate contravariant components of Matrix3ds tensor
+    void mat3dsCntMat61(const Matrix3ds s, const Vector3d* Gcnt, matrix& S);
     
     // Evaluate contravariant components of tens4ds tensor
     void tens4dsCntMat66(const tens4ds c, const Vector3d* Gcnt, matrix& C);
@@ -135,7 +135,7 @@ public:
     // Evaluate the strain using the ANS method
 	void CollocationStrainsANS(FEShellElementNew& el, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW, matrix& NS, matrix& NN);
     
-	void EvaluateANS(FEShellElementNew& el, const int n, const Vector3d* Gcnt, mat3ds& Ec, vector<matrix>& hu, vector<matrix>& hw, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW);
+	void EvaluateANS(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& Ec, vector<matrix>& hu, vector<matrix>& hw, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW);
     
 protected:
     FESolidMaterial*    m_pMat;

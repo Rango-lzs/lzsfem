@@ -1,6 +1,6 @@
 #pragma once
-#include "FELinearConstraint.h"
-#include "table.h"
+#include "femcore/FELinearConstraint.h"
+#include "datastructure/table.h"
 
 class FEGlobalMatrix;
 class matrix;
@@ -48,10 +48,10 @@ public:
 	bool Activate();
 
 	// assemble element residual into global residual
-	void AssembleResidual(vector<double>& R, vector<int>& en, vector<int>& elm, vector<double>& fe);
+	void AssembleResidual(std::vector<double>& R, std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe);
 
 	// assemble element matrix into (reduced) global matrix
-	void AssembleStiffness(FEGlobalMatrix& K, vector<double>& R, vector<double>& ui, const vector<int>& en, const vector<int>& lmi, const vector<int>& lmj, const matrix& ke);
+	void AssembleStiffness(FEGlobalMatrix& K, std::vector<double>& R, std::vector<double>& ui, const std::vector<int>& en, const std::vector<int>& lmi, const std::vector<int>& lmj, const matrix& ke);
 
 	// called before the first reformation for each time step
 	void PrepStep();
@@ -64,7 +64,7 @@ protected:
 
 private:
 	FEModel* m_fem;
-	vector<FELinearConstraint*>	m_LinC;		//!< linear constraints data
-	table<int>					m_LCT;		//!< linear constraint table
-	vector<double>				m_up;		//!< the inhomogenous component of the linear constraint
+	std::vector<FELinearConstraint*>	m_LinC;		//!< linear constraints data
+	Table2d<int>					m_LCT;		//!< linear constraint table
+	std::vector<double>				m_up;		//!< the inhomogenous component of the linear constraint
 };

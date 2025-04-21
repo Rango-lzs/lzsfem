@@ -1603,7 +1603,7 @@ Matrix3d FESolidDomain::gradientp(FESolidElement& el, Vector3d* fn, int n)
 
 //-----------------------------------------------------------------------------
 //! calculate spatial gradient of function at integration points
-tens3dls FESolidDomain::gradient(FESolidElement& el, mat3ds* fn, int n)
+tens3dls FESolidDomain::gradient(FESolidElement& el, Matrix3ds* fn, int n)
 {
     double Ji[3][3];
     invjact(el, Ji, n);
@@ -1628,7 +1628,7 @@ tens3dls FESolidDomain::gradient(FESolidElement& el, mat3ds* fn, int n)
 //-----------------------------------------------------------------------------
 //! calculate spatial gradient of function at integration points
 //! at previous time
-tens3dls FESolidDomain::gradientp(FESolidElement& el, mat3ds* fn, int n)
+tens3dls FESolidDomain::gradientp(FESolidElement& el, Matrix3ds* fn, int n)
 {
     double Ji[3][3];
     invjactp(el, Ji, n);
@@ -1735,7 +1735,7 @@ Matrix3d FESolidDomain::Gradient(FESolidElement& el, Vector3d* fn, int n)
 
 //-----------------------------------------------------------------------------
 //! calculate material gradient of function at integration points
-tens3dls FESolidDomain::Gradient(FESolidElement& el, mat3ds* fn, int n)
+tens3dls FESolidDomain::Gradient(FESolidElement& el, Matrix3ds* fn, int n)
 {
     Vector3d Gcnt[3];
     ContraBaseVectors0(el, n, Gcnt);

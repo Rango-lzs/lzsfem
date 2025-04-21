@@ -102,10 +102,10 @@ vec2d FEElement::Evaluate(vec2d* vn, int n)
 	return v;
 }
 
-vec3d FEElement::Evaluate(vec3d* vn, int n)
+Vector3d FEElement::Evaluate(Vector3d* vn, int n)
 {
 	double* Hn = H(n);
-	vec3d v;
+	Vector3d v;
 	const int N = Nodes();
 	for (int i=0; i<N; ++i) v += vn[i]*Hn[i];
 	return v;

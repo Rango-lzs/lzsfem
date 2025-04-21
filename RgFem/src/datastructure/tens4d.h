@@ -1,6 +1,6 @@
 #pragma once
 #include "tensor_base.h"
-#include "mat3d.h"
+#include "Matrix3d.h"
 #include "tens3d.h"
 
 //-----------------------------------------------------------------------------
@@ -58,14 +58,14 @@ public:
 	tens4ds operator - () const;
 	
 	// double dot product with 2nd order tensor
-	mat3ds dot(const mat3ds& m) const;
-    mat3ds dot(const mat3dd& m) const { return dot(mat3ds(m)); }
-    mat3ds dot(const mat3d& m) const;
-    tens3dls dot(const vec3d& m) const;
-    mat3ds dot2(const mat3d& m) const;
+	Matrix3ds dot(const Matrix3ds& m) const;
+    Matrix3ds dot(const mat3dd& m) const { return dot(Matrix3ds(m)); }
+    Matrix3ds dot(const Matrix3d& m) const;
+    tens3dls dot(const Vector3d& m) const;
+    Matrix3ds dot2(const Matrix3d& m) const;
 
 	// contractions
-	mat3ds contract() const;
+	Matrix3ds contract() const;
 
 	// trace
 	double tr() const;
@@ -80,7 +80,7 @@ public:
 	tens4ds inverse() const;
     
     // evaluate push/pull operation
-    tens4ds pp(const mat3d& F);
+    tens4ds pp(const Matrix3d& F);
 
 public:
 	double d[NNZ];	// stored in column major order
@@ -91,19 +91,19 @@ bool IsPositiveDefinite(const tens4ds& t);
 
 // outer (dyadic) products for symmetric matrices
 tens4ds dyad1s(const mat3dd& a);
-tens4ds dyad1s(const mat3ds& a);
+tens4ds dyad1s(const Matrix3ds& a);
 tens4ds dyad1s(const mat3dd& a, const mat3dd& b); 
-tens4ds dyad1s(const mat3ds& a, const mat3dd& b);
-tens4ds dyad1s(const mat3ds& a, const mat3ds& b);
-inline tens4ds dyad1s(const mat3dd& a, const mat3ds& b) { return dyad1s(b, a); }
+tens4ds dyad1s(const Matrix3ds& a, const mat3dd& b);
+tens4ds dyad1s(const Matrix3ds& a, const Matrix3ds& b);
+inline tens4ds dyad1s(const mat3dd& a, const Matrix3ds& b) { return dyad1s(b, a); }
 tens4ds dyad4s(const mat3dd& a);
-tens4ds dyad4s(const mat3ds& a);
-tens4ds dyad4s(const mat3ds& a, const mat3ds& b);
-tens4ds dyad4s(const mat3ds& a, const mat3dd& b);
-tens4ds dyad4s(const vec3d& a, const mat3d& K, const vec3d& b);
-tens4ds dyad5s(const mat3ds& a, const mat3ds& b);
+tens4ds dyad4s(const Matrix3ds& a);
+tens4ds dyad4s(const Matrix3ds& a, const Matrix3ds& b);
+tens4ds dyad4s(const Matrix3ds& a, const mat3dd& b);
+tens4ds dyad4s(const Vector3d& a, const Matrix3d& K, const Vector3d& b);
+tens4ds dyad5s(const Matrix3ds& a, const Matrix3ds& b);
 tens4ds ddots(const tens4ds& a, const tens4ds& b);
-mat3d vdotTdotv(const vec3d& a, const tens4ds& T, const vec3d& b);
+Matrix3d vdotTdotv(const Vector3d& a, const tens4ds& T, const Vector3d& b);
 
 inline tens4ds operator * (const double g, const tens4ds& a) { return a*g; }
 
@@ -180,8 +180,8 @@ public:
 };
 
 // outer (dyadic) products for symmetric and non-symmetric matrices
-tens4dms dyad1ms(const mat3d& a);
-tens4dms dyad1ms(const mat3ds& a, const mat3ds& b);
+tens4dms dyad1ms(const Matrix3d& a);
+tens4dms dyad1ms(const Matrix3ds& a, const Matrix3ds& b);
 
 // The following file contains the actual definition of the class functions
 #include "tens4dms.hpp"
@@ -243,8 +243,8 @@ public:
     tens4dmm operator - () const;
     
     // double dot product with 2nd order tensor
-    mat3ds dot(const mat3ds& m) const;
-    mat3ds dot(const mat3dd& m) const { return dot(mat3ds(m)); }
+    Matrix3ds dot(const Matrix3ds& m) const;
+    Matrix3ds dot(const mat3dd& m) const { return dot(Matrix3ds(m)); }
 
     // trace
     double tr() const;
@@ -265,24 +265,24 @@ public:
     tens4dmm inverse() const;
     
     // evaluate push/pull operation
-    tens4dmm pp(const mat3d& F);
+    tens4dmm pp(const Matrix3d& F);
 
 };
 
 // dyadic products of second-order tensors
-tens4dmm dyad1mm(const mat3ds& a, const mat3ds& b);
+tens4dmm dyad1mm(const Matrix3ds& a, const Matrix3ds& b);
 
-inline tens4dmm dyad1mm(const mat3dd& as, const mat3ds& b) { mat3ds a(as); return dyad1mm(a,b); }
-inline tens4dmm dyad1mm(const mat3ds& a, const mat3dd& bs) { mat3ds b(bs); return dyad1mm(a,b); }
-inline tens4dmm dyad1mm(const mat3dd& as, const mat3dd& bs) { mat3ds a(as); mat3ds b(bs); return dyad1mm(a,b); }
+inline tens4dmm dyad1mm(const mat3dd& as, const Matrix3ds& b) { Matrix3ds a(as); return dyad1mm(a,b); }
+inline tens4dmm dyad1mm(const Matrix3ds& a, const mat3dd& bs) { Matrix3ds b(bs); return dyad1mm(a,b); }
+inline tens4dmm dyad1mm(const mat3dd& as, const mat3dd& bs) { Matrix3ds a(as); Matrix3ds b(bs); return dyad1mm(a,b); }
 
 // other common operations
 tens4dmm ddot(const tens4dmm& a, const tens4dmm& b);
 tens4dmm ddot(const tens4dmm& a, const tens4ds& b);
-inline mat3ds ddot(const tens4dmm& a, const mat3ds& m) { return a.dot(m); }
-inline mat3ds ddot(const tens4dmm& a, const mat3dd& m) { return a.dot(m); }
+inline Matrix3ds ddot(const tens4dmm& a, const Matrix3ds& m) { return a.dot(m); }
+inline Matrix3ds ddot(const tens4dmm& a, const mat3dd& m) { return a.dot(m); }
 inline tens4dmm operator * (const double g, const tens4dmm& a) { return a*g; }
-mat3d vdotTdotv(const vec3d& a, const tens4dmm& T, const vec3d& b);
+Matrix3d vdotTdotv(const Vector3d& a, const tens4dmm& T, const Vector3d& b);
 
 // The following file contains the actual definition of the class functions
 #include "tens4dmm.hpp"
@@ -348,14 +348,14 @@ public:
     tens4d operator - () const;
     
     // double dot product with 2nd order tensor
-    mat3d dot(const mat3d& m) const;
-    mat3d dot(const mat3ds& m) const { return dot(mat3d(m)); }
-    mat3d dot(const mat3dd& m) const { return dot(mat3d(m)); }
+    Matrix3d dot(const Matrix3d& m) const;
+    Matrix3d dot(const Matrix3ds& m) const { return dot(Matrix3d(m)); }
+    Matrix3d dot(const mat3dd& m) const { return dot(Matrix3d(m)); }
 
     // single dot product with 2nd order tensor
-    tens4d sdot(const mat3d& m) const;
-    tens4d sdot(const mat3ds& m) const { return sdot(mat3d(m)); };
-    tens4d sdot(const mat3dd& m) const { return sdot(mat3d(m)); };
+    tens4d sdot(const Matrix3d& m) const;
+    tens4d sdot(const Matrix3ds& m) const { return sdot(Matrix3d(m)); };
+    tens4d sdot(const mat3dd& m) const { return sdot(Matrix3d(m)); };
 
     // trace
     double tr() const;
@@ -382,57 +382,57 @@ public:
     tens4d inverse() const;
     
     // evaluate push/pull operation
-//    tens4d pp(const mat3d& F);
+//    tens4d pp(const Matrix3d& F);
 
 };
 
 // dyadic products of second-order tensors
-tens4d dyad1(const mat3d& a, const mat3d& b);
-tens4d dyad2(const mat3d& a, const mat3d& b);
-tens4d dyad3(const mat3d& a, const mat3d& b);
-inline tens4d dyad4(const mat3d& a, const mat3d& b) { return (dyad2(a,b) + dyad3(a,b))/2; }
+tens4d dyad1(const Matrix3d& a, const Matrix3d& b);
+tens4d dyad2(const Matrix3d& a, const Matrix3d& b);
+tens4d dyad3(const Matrix3d& a, const Matrix3d& b);
+inline tens4d dyad4(const Matrix3d& a, const Matrix3d& b) { return (dyad2(a,b) + dyad3(a,b))/2; }
 
-inline tens4d dyad1(const mat3ds& as, const mat3d& b) { mat3d a(as); return dyad1(a,b); }
-inline tens4d dyad1(const mat3d& a, const mat3ds& bs) { mat3d b(bs); return dyad1(a,b); }
-inline tens4d dyad1(const mat3ds& as, const mat3ds& bs) { mat3d a(as); mat3d b(bs); return dyad1(a,b); }
-inline tens4d dyad2(const mat3ds& as, const mat3d& b) { mat3d a(as); return dyad2(a,b); }
-inline tens4d dyad2(const mat3d& a, const mat3ds& bs) { mat3d b(bs); return dyad2(a,b); }
-inline tens4d dyad2(const mat3ds& as, const mat3ds& bs) { mat3d a(as); mat3d b(bs); return dyad2(a,b); }
-inline tens4d dyad3(const mat3ds& as, const mat3d& b) { mat3d a(as); return dyad3(a,b); }
-inline tens4d dyad3(const mat3d& a, const mat3ds& bs) { mat3d b(bs); return dyad3(a,b); }
-inline tens4d dyad3(const mat3ds& as, const mat3ds& bs) { mat3d a(as); mat3d b(bs); return dyad3(a,b); }
-inline tens4d dyad4(const mat3ds& as, const mat3d& b) { mat3d a(as); return dyad4(a,b); }
-inline tens4d dyad4(const mat3d& a, const mat3ds& bs) { mat3d b(bs); return dyad4(a,b); }
-inline tens4d dyad4(const mat3ds& as, const mat3ds& bs) { mat3d a(as); mat3d b(bs); return dyad4(a,b); }
+inline tens4d dyad1(const Matrix3ds& as, const Matrix3d& b) { Matrix3d a(as); return dyad1(a,b); }
+inline tens4d dyad1(const Matrix3d& a, const Matrix3ds& bs) { Matrix3d b(bs); return dyad1(a,b); }
+inline tens4d dyad1(const Matrix3ds& as, const Matrix3ds& bs) { Matrix3d a(as); Matrix3d b(bs); return dyad1(a,b); }
+inline tens4d dyad2(const Matrix3ds& as, const Matrix3d& b) { Matrix3d a(as); return dyad2(a,b); }
+inline tens4d dyad2(const Matrix3d& a, const Matrix3ds& bs) { Matrix3d b(bs); return dyad2(a,b); }
+inline tens4d dyad2(const Matrix3ds& as, const Matrix3ds& bs) { Matrix3d a(as); Matrix3d b(bs); return dyad2(a,b); }
+inline tens4d dyad3(const Matrix3ds& as, const Matrix3d& b) { Matrix3d a(as); return dyad3(a,b); }
+inline tens4d dyad3(const Matrix3d& a, const Matrix3ds& bs) { Matrix3d b(bs); return dyad3(a,b); }
+inline tens4d dyad3(const Matrix3ds& as, const Matrix3ds& bs) { Matrix3d a(as); Matrix3d b(bs); return dyad3(a,b); }
+inline tens4d dyad4(const Matrix3ds& as, const Matrix3d& b) { Matrix3d a(as); return dyad4(a,b); }
+inline tens4d dyad4(const Matrix3d& a, const Matrix3ds& bs) { Matrix3d b(bs); return dyad4(a,b); }
+inline tens4d dyad4(const Matrix3ds& as, const Matrix3ds& bs) { Matrix3d a(as); Matrix3d b(bs); return dyad4(a,b); }
 
-inline tens4d dyad1(const mat3dd& as, const mat3d& b) { mat3d a(as); return dyad1(a,b); }
-inline tens4d dyad1(const mat3d& a, const mat3dd& bs) { mat3d b(bs); return dyad1(a,b); }
-inline tens4d dyad1(const mat3dd& as, const mat3dd& bs) { mat3d a(as); mat3d b(bs); return dyad1(a,b); }
-inline tens4d dyad2(const mat3dd& as, const mat3d& b) { mat3d a(as); return dyad2(a,b); }
-inline tens4d dyad2(const mat3d& a, const mat3dd& bs) { mat3d b(bs); return dyad2(a,b); }
-inline tens4d dyad2(const mat3dd& as, const mat3dd& bs) { mat3d a(as); mat3d b(bs); return dyad2(a,b); }
-inline tens4d dyad3(const mat3dd& as, const mat3d& b) { mat3d a(as); return dyad3(a,b); }
-inline tens4d dyad3(const mat3d& a, const mat3dd& bs) { mat3d b(bs); return dyad3(a,b); }
-inline tens4d dyad3(const mat3dd& as, const mat3dd& bs) { mat3d a(as); mat3d b(bs); return dyad3(a,b); }
-inline tens4d dyad4(const mat3dd& as, const mat3d& b) { mat3d a(as); return dyad4(a,b); }
-inline tens4d dyad4(const mat3d& a, const mat3dd& bs) { mat3d b(bs); return dyad4(a,b); }
-inline tens4d dyad4(const mat3dd& as, const mat3dd& bs) { mat3d a(as); mat3d b(bs); return dyad4(a,b); }
+inline tens4d dyad1(const mat3dd& as, const Matrix3d& b) { Matrix3d a(as); return dyad1(a,b); }
+inline tens4d dyad1(const Matrix3d& a, const mat3dd& bs) { Matrix3d b(bs); return dyad1(a,b); }
+inline tens4d dyad1(const mat3dd& as, const mat3dd& bs) { Matrix3d a(as); Matrix3d b(bs); return dyad1(a,b); }
+inline tens4d dyad2(const mat3dd& as, const Matrix3d& b) { Matrix3d a(as); return dyad2(a,b); }
+inline tens4d dyad2(const Matrix3d& a, const mat3dd& bs) { Matrix3d b(bs); return dyad2(a,b); }
+inline tens4d dyad2(const mat3dd& as, const mat3dd& bs) { Matrix3d a(as); Matrix3d b(bs); return dyad2(a,b); }
+inline tens4d dyad3(const mat3dd& as, const Matrix3d& b) { Matrix3d a(as); return dyad3(a,b); }
+inline tens4d dyad3(const Matrix3d& a, const mat3dd& bs) { Matrix3d b(bs); return dyad3(a,b); }
+inline tens4d dyad3(const mat3dd& as, const mat3dd& bs) { Matrix3d a(as); Matrix3d b(bs); return dyad3(a,b); }
+inline tens4d dyad4(const mat3dd& as, const Matrix3d& b) { Matrix3d a(as); return dyad4(a,b); }
+inline tens4d dyad4(const Matrix3d& a, const mat3dd& bs) { Matrix3d b(bs); return dyad4(a,b); }
+inline tens4d dyad4(const mat3dd& as, const mat3dd& bs) { Matrix3d a(as); Matrix3d b(bs); return dyad4(a,b); }
 
-inline tens4d dyad1(const mat3dd& ad, const mat3ds& bs) { mat3d a(ad); mat3d b(bs); return dyad1(a,b); }
-inline tens4d dyad1(const mat3ds& as, const mat3dd& bd) { mat3d a(as); mat3d b(bd); return dyad1(a,b); }
-inline tens4d dyad2(const mat3dd& ad, const mat3ds& bs) { mat3d a(ad); mat3d b(bs); return dyad2(a,b); }
-inline tens4d dyad2(const mat3ds& as, const mat3dd& bd) { mat3d a(as); mat3d b(bd); return dyad2(a,b); }
-inline tens4d dyad3(const mat3dd& ad, const mat3ds& bs) { mat3d a(ad); mat3d b(bs); return dyad3(a,b); }
-inline tens4d dyad3(const mat3ds& as, const mat3dd& bd) { mat3d a(as); mat3d b(bd); return dyad3(a,b); }
-inline tens4d dyad4(const mat3dd& ad, const mat3ds& bs) { mat3d a(ad); mat3d b(bs); return dyad4(a,b); }
-inline tens4d dyad4(const mat3ds& as, const mat3dd& bd) { mat3d a(as); mat3d b(bd); return dyad4(a,b); }
+inline tens4d dyad1(const mat3dd& ad, const Matrix3ds& bs) { Matrix3d a(ad); Matrix3d b(bs); return dyad1(a,b); }
+inline tens4d dyad1(const Matrix3ds& as, const mat3dd& bd) { Matrix3d a(as); Matrix3d b(bd); return dyad1(a,b); }
+inline tens4d dyad2(const mat3dd& ad, const Matrix3ds& bs) { Matrix3d a(ad); Matrix3d b(bs); return dyad2(a,b); }
+inline tens4d dyad2(const Matrix3ds& as, const mat3dd& bd) { Matrix3d a(as); Matrix3d b(bd); return dyad2(a,b); }
+inline tens4d dyad3(const mat3dd& ad, const Matrix3ds& bs) { Matrix3d a(ad); Matrix3d b(bs); return dyad3(a,b); }
+inline tens4d dyad3(const Matrix3ds& as, const mat3dd& bd) { Matrix3d a(as); Matrix3d b(bd); return dyad3(a,b); }
+inline tens4d dyad4(const mat3dd& ad, const Matrix3ds& bs) { Matrix3d a(ad); Matrix3d b(bs); return dyad4(a,b); }
+inline tens4d dyad4(const Matrix3ds& as, const mat3dd& bd) { Matrix3d a(as); Matrix3d b(bd); return dyad4(a,b); }
 // other common operations
-mat3d vdotTdotv(const vec3d& a, const tens4d& T, const vec3d& b);
+Matrix3d vdotTdotv(const Vector3d& a, const tens4d& T, const Vector3d& b);
 tens4d ddot(const tens4d& a, const tens4d& b);
 tens4d ddot(const tens4d& a, const tens4ds& b);
-inline mat3d ddot(const tens4d& a, const mat3d& m) { return a.dot(m); }
-inline mat3d ddot(const tens4d& a, const mat3ds& m) { return a.dot(m); }
-inline mat3d ddot(const tens4d& a, const mat3dd& m) { return a.dot(m); }
+inline Matrix3d ddot(const tens4d& a, const Matrix3d& m) { return a.dot(m); }
+inline Matrix3d ddot(const tens4d& a, const Matrix3ds& m) { return a.dot(m); }
+inline Matrix3d ddot(const tens4d& a, const mat3dd& m) { return a.dot(m); }
 inline tens4d operator * (const double g, const tens4d& a) { return a*g; }
 
 class tens4fs

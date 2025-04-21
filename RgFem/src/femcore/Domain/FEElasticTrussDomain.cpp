@@ -363,7 +363,7 @@ void FEElasticTrussDomain::Update(const FETimeInfo& tp)
 		el.m_lam = l / L;
 
 		// setup deformation gradient (assuming incompressibility)
-		mat3d F(lam, 0.0, 0.0, 0.0, linv2, 0.0, 0.0, 0.0, linv2);
+		Matrix3d F(lam, 0.0, 0.0, 0.0, linv2, 0.0, 0.0, 0.0, linv2);
 
 		// calculate stress
 		FEMaterialPoint& mp = *el.GetMaterialPoint(0);
@@ -373,7 +373,7 @@ void FEElasticTrussDomain::Update(const FETimeInfo& tp)
 
 		if (um)
 		{
-			mat3ds devs = um->DevStress(mp);
+			Matrix3ds devs = um->DevStress(mp);
 			double p = -devs.yy();
 			ep.m_s = devs + mat3dd(p);
 		}

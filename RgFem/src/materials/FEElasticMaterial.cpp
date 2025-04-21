@@ -53,15 +53,15 @@ FEMaterialPointData* FEElasticMaterial::CreateMaterialPointData()
 
 //-----------------------------------------------------------------------------
 //! calculate spatial tangent stiffness at material point, using secant method
-mat3ds FEElasticMaterial::SecantStress(FEMaterialPoint& mp, bool PK2)
+Matrix3ds FEElasticMaterial::SecantStress(FEMaterialPoint& mp, bool PK2)
 {
 	// extract the deformation gradient
 	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
-	mat3d F = pt.m_F;
+	Matrix3d F = pt.m_F;
 	double J = pt.m_J;
-	mat3ds E = pt.Strain();
+	Matrix3ds E = pt.Strain();
 	mat3dd I(1);
-	mat3d FiT = F.transinv();
+	Matrix3d FiT = F.transinv();
 
 	// calculate the 2nd P-K stress at the current deformation gradient
 	double W = StrainEnergyDensity(mp);
@@ -70,12 +70,12 @@ mat3ds FEElasticMaterial::SecantStress(FEMaterialPoint& mp, bool PK2)
 	double eps = 1e-9;
 	Vector3d e[3];
 	e[0] = Vector3d(1, 0, 0); e[1] = Vector3d(0, 1, 0); e[2] = Vector3d(0, 0, 1);
-	mat3ds S(0.0);
+	Matrix3ds S(0.0);
 	for (int k = 0; k < 3; ++k) {
 		for (int l = k; l < 3; ++l) {
 			// evaluate incremental stress
-			mat3d dF = FiT * ((e[k] & e[l]))*(eps*0.5);
-			mat3d F1 = F + dF;
+			Matrix3d dF = FiT * ((e[k] & e[l]))*(eps*0.5);
+			Matrix3d F1 = F + dF;
 			pt.m_F = F1;
 			pt.m_J = pt.m_F.det();
 
@@ -93,7 +93,7 @@ mat3ds FEElasticMaterial::SecantStress(FEMaterialPoint& mp, bool PK2)
     if (PK2) return S;
     else {
         // push from material to spatial frame
-        mat3ds s = pt.push_forward(S);
+        Matrix3ds s = pt.push_forward(S);
         
         // return secant stress
         return s;

@@ -178,10 +178,10 @@ void FEElasticShellDomainOld::ContraBaseVectors0(FEShellElementOld& el, int n, V
 	Vector3d gcov[3];
 	CoBaseVectors0(el, n, gcov);
 
-	mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
+	Matrix3d J = Matrix3d(gcov[0].x, gcov[1].x, gcov[2].x,
 		gcov[0].y, gcov[1].y, gcov[2].y,
 		gcov[0].z, gcov[1].z, gcov[2].z);
-	mat3d Ji = J.inverse();
+	Matrix3d Ji = J.inverse();
 
 	gcnt[0] = Vector3d(Ji(0, 0), Ji(0, 1), Ji(0, 2));
 	gcnt[1] = Vector3d(Ji(1, 0), Ji(1, 1), Ji(1, 2));
@@ -195,7 +195,7 @@ double FEElasticShellDomainOld::invjac0(FEShellElementOld& el, double Ji[3][3], 
 	Vector3d gcov[3];
 	CoBaseVectors0(el, n, gcov);
 
-	mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
+	Matrix3d J = Matrix3d(gcov[0].x, gcov[1].x, gcov[2].x,
 		gcov[0].y, gcov[1].y, gcov[2].y,
 		gcov[0].z, gcov[1].z, gcov[2].z);
 
@@ -229,7 +229,7 @@ double FEElasticShellDomainOld::detJ0(FEShellElementOld &el, int n)
 	Vector3d gcov[3];
 	CoBaseVectors0(el, n, gcov);
 
-	mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
+	Matrix3d J = Matrix3d(gcov[0].x, gcov[1].x, gcov[2].x,
 		gcov[0].y, gcov[1].y, gcov[2].y,
 		gcov[0].z, gcov[1].z, gcov[2].z);
 	return J.det();
@@ -276,10 +276,10 @@ void FEElasticShellDomainOld::ContraBaseVectors(FEShellElementOld& el, int n, Ve
     Vector3d gcov[3];
     CoBaseVectors(el, n, gcov);
     
-    mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
+    Matrix3d J = Matrix3d(gcov[0].x, gcov[1].x, gcov[2].x,
                     gcov[0].y, gcov[1].y, gcov[2].y,
                     gcov[0].z, gcov[1].z, gcov[2].z);
-    mat3d Ji = J.inverse();
+    Matrix3d Ji = J.inverse();
     
     gcnt[0] = Vector3d(Ji(0,0),Ji(0,1),Ji(0,2));
     gcnt[1] = Vector3d(Ji(1,0),Ji(1,1),Ji(1,2));
@@ -294,14 +294,14 @@ double FEElasticShellDomainOld::detJ(FEShellElementOld& el, int n)
     Vector3d gcov[3];
     CoBaseVectors(el, n, gcov);
     
-    mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
+    Matrix3d J = Matrix3d(gcov[0].x, gcov[1].x, gcov[2].x,
                     gcov[0].y, gcov[1].y, gcov[2].y,
                     gcov[0].z, gcov[1].z, gcov[2].z);
     return J.det();
 }
 
 //-----------------------------------------------------------------------------
-double FEElasticShellDomainOld::defgrad(FEShellElementOld& el, mat3d& F, int n)
+double FEElasticShellDomainOld::defgrad(FEShellElementOld& el, Matrix3d& F, int n)
 {
     Vector3d gcov[3], Gcnt[3];
     CoBaseVectors(el, n, gcov);
@@ -323,7 +323,7 @@ double FEElasticShellDomainOld::invjact(FEShellElementOld& el, double Ji[3][3], 
     Vector3d gcov[3];
     CoBaseVectors(el, n, gcov);
     
-    mat3d J = mat3d(gcov[0].x, gcov[1].x, gcov[2].x,
+    Matrix3d J = Matrix3d(gcov[0].x, gcov[1].x, gcov[2].x,
                     gcov[0].y, gcov[1].y, gcov[2].y,
                     gcov[0].z, gcov[1].z, gcov[2].z);
     
@@ -413,7 +413,7 @@ void FEElasticShellDomainOld::ElementInternalForce(FEShellElementOld& el, vector
 		detJt *= gw[n];
 
 		// get the stress vector for this integration point
-		mat3ds& s = pt.m_s;
+		Matrix3ds& s = pt.m_s;
 
 		eta = el.gt(n);
 
@@ -588,7 +588,7 @@ void FEElasticShellDomainOld::ElementStiffness(int iel, matrix& ke)
         detJt *= gw[n];
         
         // get the stress and elasticity for this integration point
-        mat3ds s = pt.m_s;
+        Matrix3ds s = pt.m_s;
         tens4ds C = m_pMat->Tangent(mp);
         
         eta = el.gt(n);
@@ -613,10 +613,10 @@ void FEElasticShellDomainOld::ElementStiffness(int iel, matrix& ke)
 		{
 			for (j=0, j6 = 0; j<neln; ++j, j6 += 6)
 			{
-                mat3d Kuu = vdotTdotv(gradM[i], C, gradM[j]);
-                mat3d Kud = vdotTdotv(gradM[i], C, gradP[j]);
-                mat3d Kdu = vdotTdotv(gradP[i], C, gradM[j]);
-                mat3d Kdd = vdotTdotv(gradP[i], C, gradP[j]);
+                Matrix3d Kuu = vdotTdotv(gradM[i], C, gradM[j]);
+                Matrix3d Kud = vdotTdotv(gradM[i], C, gradP[j]);
+                Matrix3d Kdu = vdotTdotv(gradP[i], C, gradM[j]);
+                Matrix3d Kdd = vdotTdotv(gradP[i], C, gradP[j]);
                 
 				ke[i6  ][j6  ] += Kuu(0,0)*detJt; ke[i6  ][j6+1] += Kuu(0,1)*detJt; ke[i6  ][j6+2] += Kuu(0,2)*detJt;
                 ke[i6+1][j6  ] += Kuu(1,0)*detJt; ke[i6+1][j6+1] += Kuu(1,1)*detJt; ke[i6+1][j6+2] += Kuu(1,2)*detJt;

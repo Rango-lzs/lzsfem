@@ -144,7 +144,7 @@ bool FEParamVec3::Init()
 }
 
 // set the value
-void FEParamVec3::operator = (const vec3d& v)
+void FEParamVec3::operator = (const Vector3d& v)
 {
 	FEConstValueVec3* val = fecore_new<FEConstValueVec3>("vector", nullptr);
 	val->value() = v;
@@ -197,7 +197,7 @@ FEParamMat3d::FEParamMat3d(const FEParamMat3d& p)
 }
 
 // set the value
-void FEParamMat3d::operator = (const mat3d& v)
+void FEParamMat3d::operator = (const Matrix3d& v)
 {
 	FEConstValueMat3d* val = fecore_new<FEConstValueMat3d>("const", nullptr);
 	val->value() = v;
@@ -255,7 +255,7 @@ FEParamMat3ds::FEParamMat3ds(const FEParamMat3ds& p)
 }
 
 // set the value
-void FEParamMat3ds::operator = (const mat3ds& v)
+void FEParamMat3ds::operator = (const Matrix3ds& v)
 {
 	FEConstValueMat3ds* val = fecore_new<FEConstValueMat3ds>("const", nullptr);
 	val->value() = v;

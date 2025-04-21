@@ -239,7 +239,7 @@ mat2d FEDomain2D::gradient(FEElement2D& el, vec2d* fn, int n)
 //-----------------------------------------------------------------------------
 //! calculate spatial gradient of function at integration points
 //! A 2D element is assumed to have no variation through the thickness.
-mat3d FEDomain2D::gradient(FEElement2D& el, Vector3d* fn, int n)
+Matrix3d FEDomain2D::gradient(FEElement2D& el, Vector3d* fn, int n)
 {
     double Ji[2][2];
     invjact(el, Ji, n);
@@ -250,7 +250,7 @@ mat3d FEDomain2D::gradient(FEElement2D& el, Vector3d* fn, int n)
     double* Gr = el.Hr(n);
     double* Gs = el.Hs(n);
     
-    mat3d gradf;
+    Matrix3d gradf;
     gradf.zero();
     int N = el.Nodes();
     for (int i=0; i<N; ++i)
@@ -356,7 +356,7 @@ void FEDomain2D::ContraBaseVectors(FEElement2D& el, int j, vec2d gcnt[2])
     
     mat2d J = mat2d(gcov[0].x(), gcov[1].x(),
                     gcov[0].y(), gcov[1].y());
-    mat3d Ji = J.inverse();
+    Matrix3d Ji = J.inverse();
     
     gcnt[0] = vec2d(Ji(0,0),Ji(0,1));
     gcnt[1] = vec2d(Ji(1,0),Ji(1,1));

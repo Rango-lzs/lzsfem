@@ -51,7 +51,7 @@ void FEResidualVector::Assemble(vector<int>& en, vector<int>& elm, vector<double
     
     int i, I, n;
     
-    vec3d a, d;
+    Vector3d a, d;
     
     {
         // assemble the element residual into the global residual
@@ -100,7 +100,7 @@ void FEResidualVector::Assemble(vector<int>& en, vector<int>& elm, vector<double
 					{
 
 						{
-							vec3d F(fe[i], fe[i + 1], fe[i + 2]);
+							Vector3d F(fe[i], fe[i + 1], fe[i + 2]);
 
 							// this is an interface dof
 							// get the rigid body this node is connected to
@@ -109,17 +109,17 @@ void FEResidualVector::Assemble(vector<int>& en, vector<int>& elm, vector<double
 
 							// add to total torque of this body
 							a = node.m_rt - RB.m_rt;
-							vec3d m = a ^ F;
-							vec3d f = F;
+							Vector3d m = a ^ F;
+							Vector3d f = F;
 
 							// TODO: This code is only relevant when called from the shell domain residual and applies
 							//	     the reaction of the back-face nodes.
 							if (bdom)
 							{
 								if (node.HasFlags(FENode::SHELL) && node.HasFlags(FENode::RIGID_CLAMP)) {
-									vec3d d = node.m_dt;
-									vec3d b = a - d;
-									vec3d Fd(fe[i + 3], fe[i + 4], fe[i + 5]);
+									Vector3d d = node.m_dt;
+									Vector3d b = a - d;
+									Vector3d Fd(fe[i + 3], fe[i + 4], fe[i + 5]);
 									f += Fd;
 									m += b ^ Fd;
 								}

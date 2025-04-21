@@ -98,7 +98,7 @@ public: // overrides from FEElasticDomain
     void BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf) override;
     
     // evaluate strain E and matrix hu and hw
-	void EvaluateEh(FEShellElementNew& el, const int n, const Vector3d* Gcnt, mat3ds& E, vector<matrix>& hu, vector<matrix>& hw, vector<Vector3d>& Nu, vector<Vector3d>& Nw);
+	void EvaluateEh(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& E, vector<matrix>& hu, vector<matrix>& hw, vector<Vector3d>& Nu, vector<Vector3d>& Nw);
     
 public:
     
@@ -134,20 +134,20 @@ public:
     // Generate the G matrix for the EAS method
 	void GenerateGMatrix(FEShellElementNew& el, const int n, const double Jeta, matrix& G);
     
-    // Evaluate contravariant components of mat3ds tensor
-    void mat3dsCntMat61(const mat3ds s, const Vector3d* Gcnt, matrix& S);
+    // Evaluate contravariant components of Matrix3ds tensor
+    void mat3dsCntMat61(const Matrix3ds s, const Vector3d* Gcnt, matrix& S);
     
     // Evaluate contravariant components of tens4ds tensor
     void tens4dsCntMat66(const tens4ds c, const Vector3d* Gcnt, matrix& C);
     void tens4dmmCntMat66(const tens4dmm c, const Vector3d* Gcnt, matrix& C);
 
     // Evaluate the matrices and vectors relevant to the EAS method
-	void EvaluateEAS(FEShellElementNew& el, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW, vector<mat3ds>& S, vector<tens4dmm>& c);
+	void EvaluateEAS(FEShellElementNew& el, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW, vector<Matrix3ds>& S, vector<tens4dmm>& c);
     
     // Evaluate the strain using the ANS method
 	void CollocationStrainsANS(FEShellElementNew& el, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW, matrix& NS, matrix& NN);
     
-	void EvaluateANS(FEShellElementNew& el, const int n, const Vector3d* Gcnt, mat3ds& Ec, vector<matrix>& hu, vector<matrix>& hw, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW);
+	void EvaluateANS(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& Ec, vector<matrix>& hu, vector<matrix>& hw, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW);
     
     // Update alpha in EAS method
     void UpdateEAS(vector<double>& ui) override;

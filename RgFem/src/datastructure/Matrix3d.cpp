@@ -27,13 +27,13 @@ SOFTWARE.*/
 
 
 #include "stdafx.h"
-#include "mat3d.h"
+#include "Matrix3d.h"
 #include "eig3.h"
 #include "sys.h"
 
 #define ROTATE(a, i, j, k, l) g=a[i][j]; h=a[k][l];a[i][j]=g-s*(h+g*tau); a[k][l] = h + s*(g - h*tau);
 
-void mat3ds::eigen(double l[3], vec3d r[3]) const
+void Matrix3ds::eigen(double l[3], Vector3d r[3]) const
 {
 	const int NMAX = 50;
 	double sm, tresh, g, h, t, c, tau, s, th;
@@ -144,14 +144,14 @@ void mat3ds::eigen(double l[3], vec3d r[3]) const
 //-----------------------------------------------------------------------------
 // Calculate the eigenvalues of A using an analytical expression for the 
 // eigen values.
-void mat3ds::exact_eigen(double l[3]) const
+void Matrix3ds::exact_eigen(double l[3]) const
 {
 	const double S3 = sqrt(3.0);
 	const double S2 = sqrt(2.0);
 
-	mat3ds S = dev();
+	Matrix3ds S = dev();
 	double nS = S.norm();
-	mat3ds T = (S.sqr()).dev();
+	Matrix3ds T = (S.sqr()).dev();
 	double nT = T.norm();
 
 	double D = nS * nT;
@@ -175,28 +175,28 @@ void mat3ds::exact_eigen(double l[3]) const
 //-----------------------------------------------------------------------------
 // Calculate the eigenvalues and eigenvectors of A using the method of
 // Connelly Barnes ( http://barnesc.blogspot.com/2007/02/eigenvectors-of-3x3-symmetric-matrix.html )
-void mat3ds::eigen2(double l[3], vec3d r[3]) const
+void Matrix3ds::eigen2(double l[3], Vector3d r[3]) const
 {
     double A[3][3] = {xx(), xy(), xz(), xy(), yy(), yz(), xz(), yz(), zz()};
     double V[3][3];
     if (ISNAN(tr())) return;
     eigen_decomposition(A, V, l);
     if (r) {
-        r[0] = vec3d(V[0][0],V[1][0],V[2][0]);
-        r[1] = vec3d(V[0][1],V[1][1],V[2][1]);
-        r[2] = vec3d(V[0][2],V[1][2],V[2][2]);
+        r[0] = Vector3d(V[0][0],V[1][0],V[2][0]);
+        r[1] = Vector3d(V[0][1],V[1][1],V[2][1]);
+        r[2] = Vector3d(V[0][2],V[1][2],V[2][2]);
     }
 }
 
 //-----------------------------------------------------------------------------
 // calculates the unique right polar decomposition F = R*U
-void mat3d::right_polar(mat3d& R, mat3ds& U) const
+void Matrix3d::right_polar(Matrix3d& R, Matrix3ds& U) const
 {
-	const mat3d& F = *this;
-	mat3ds C = (F.transpose()*F).sym();
+	const Matrix3d& F = *this;
+	Matrix3ds C = (F.transpose()*F).sym();
 
 	double l[3];
-	vec3d v[3];
+	Vector3d v[3];
 	C.eigen2(l, v);
 
 	U = dyad(v[0])*sqrt(l[0]) + dyad(v[1])*sqrt(l[1]) + dyad(v[2])*sqrt(l[2]);
@@ -205,13 +205,13 @@ void mat3d::right_polar(mat3d& R, mat3ds& U) const
 
 //-----------------------------------------------------------------------------
 // calculates the unique left polar decomposition F = V*R
-void mat3d::left_polar(mat3ds& V, mat3d& R) const
+void Matrix3d::left_polar(Matrix3ds& V, Matrix3d& R) const
 {
-	const mat3d& F = *this;
-	mat3ds b = (F*F.transpose()).sym();
+	const Matrix3d& F = *this;
+	Matrix3ds b = (F*F.transpose()).sym();
 
 	double l[3];
-	vec3d v[3];
+	Vector3d v[3];
 	b.eigen2(l, v);
 
 	V = dyad(v[0])*sqrt(l[0]) + dyad(v[1])*sqrt(l[1]) + dyad(v[2])*sqrt(l[2]);
@@ -220,7 +220,7 @@ void mat3d::left_polar(mat3ds& V, mat3d& R) const
 
 //-----------------------------------------------------------------------------
 // the "max shear" value
-double mat3ds::max_shear() const
+double Matrix3ds::max_shear() const
 {
 	double e[3];
 	exact_eigen(e);

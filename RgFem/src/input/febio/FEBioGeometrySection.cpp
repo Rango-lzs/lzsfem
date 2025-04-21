@@ -268,16 +268,16 @@ void FEBioGeometrySection1x::ParseElementSection(XMLTag& tag)
 }
 
 //-----------------------------------------------------------------------------
-void set_element_fiber(FEElement& el, const vec3d& v, int ncomp)
+void set_element_fiber(FEElement& el, const Vector3d& v, int ncomp)
 {
 	// normalize fiber
-	vec3d a = v;
+	Vector3d a = v;
 	a.unit();
 
 	// set up a orthonormal coordinate system
-	vec3d b(0, 1, 0);
-	if (fabs(fabs(a*b) - 1) < 1e-7) b = vec3d(0, 0, 1);
-	vec3d c = a^b;
+	Vector3d b(0, 1, 0);
+	if (fabs(fabs(a*b) - 1) < 1e-7) b = Vector3d(0, 0, 1);
+	Vector3d c = a^b;
 	b = c^a;
 
 	// make sure they are unit vectors
@@ -289,7 +289,7 @@ void set_element_fiber(FEElement& el, const vec3d& v, int ncomp)
 		FEMaterialPoint* mp = (ncomp == -1) ? el.GetMaterialPoint(i) : el.GetMaterialPoint(i)->GetPointData(ncomp);
 /*
 		FEElasticMaterialPoint& pt = *mp->ExtractData<FEElasticMaterialPoint>();
-		mat3d& m = pt.m_Q;
+		Matrix3d& m = pt.m_Q;
 		m.zero();
 		m[0][0] = a.x; m[0][1] = b.x; m[0][2] = c.x;
 		m[1][0] = a.y; m[1][1] = b.y; m[1][2] = c.y;
@@ -299,13 +299,13 @@ void set_element_fiber(FEElement& el, const vec3d& v, int ncomp)
 }
 
 //-----------------------------------------------------------------------------
-void set_element_mat_axis(FEElement& el, const vec3d& v1, const vec3d& v2, int ncomp)
+void set_element_mat_axis(FEElement& el, const Vector3d& v1, const Vector3d& v2, int ncomp)
 {
-	vec3d a = v1;
-	vec3d d = v2;
+	Vector3d a = v1;
+	Vector3d d = v2;
 
-	vec3d c = a^d;
-	vec3d b = c^a;
+	Vector3d c = a^d;
+	Vector3d b = c^a;
 
 	// normalize
 	a.unit();
@@ -318,14 +318,14 @@ void set_element_mat_axis(FEElement& el, const vec3d& v1, const vec3d& v2, int n
         FEMaterialPoint* mp = (ncomp == -1) ? el.GetMaterialPoint(i) : el.GetMaterialPoint(i)->GetPointData(ncomp);
 
 //		FEElasticMaterialPoint& pt = *mp->ExtractData<FEElasticMaterialPoint>();
-//		pt.m_Q = mat3d(a, b, c);
+//		pt.m_Q = Matrix3d(a, b, c);
 	}
 }
 
 //-----------------------------------------------------------------------------
 void FEBioGeometrySection1x::ParseElementData(FEElement& el, XMLTag& tag)
 {
-	vec3d a, d;
+	Vector3d a, d;
 	if (tag == "fiber")
 	{
 		// read the fiber direction
@@ -672,7 +672,7 @@ void FEBioGeometrySection2::ParseElementSection(XMLTag& tag)
 //-----------------------------------------------------------------------------
 void FEBioGeometrySection2::ParseElementData(FEElement& el, XMLTag& tag)
 {
-	vec3d a, d;
+	Vector3d a, d;
 	if (tag == "fiber")
 	{
 		// read the fiber direction
@@ -1111,7 +1111,7 @@ void FEBioGeometrySection25::ParseInstanceSection(XMLTag& tag)
 			{
 				double r[3];
 				tag.value(r, 3);
-				transform.SetPosition(vec3d(r[0], r[1], r[2]));
+				transform.SetPosition(Vector3d(r[0], r[1], r[2]));
 			}
 			else if (tag == "rotate")
 			{
@@ -1129,7 +1129,7 @@ void FEBioGeometrySection25::ParseInstanceSection(XMLTag& tag)
 				{
 					double v[3];
 					tag.value(v, 3);
-					transform.SetRotation(vec3d(v[0], v[1], v[2]));
+					transform.SetRotation(Vector3d(v[0], v[1], v[2]));
 				}
 				else if (strcmp(sztype, "Euler") == 0)
 				{

@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #include "stdafx.h"
 #include "FEGlobalVector.h"
-#include "vec3d.h"
+#include "Vector3d.h"
 #include "FEModel.h"
 
 //-----------------------------------------------------------------------------

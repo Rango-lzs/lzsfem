@@ -74,9 +74,9 @@ public:
 
 public: // from FEDataMap
 	double value(const FEMaterialPoint& pt) override;
-	vec3d valueVec3d(const FEMaterialPoint& mp) override;
-	mat3d valueMat3d(const FEMaterialPoint& mp) override;
-	mat3ds valueMat3ds(const FEMaterialPoint& mp) override;
+	Vector3d valueVec3d(const FEMaterialPoint& mp) override;
+	Matrix3d valueMat3d(const FEMaterialPoint& mp) override;
+	Matrix3ds valueMat3ds(const FEMaterialPoint& mp) override;
 
 public:
 	template <typename T> T value(int nface, int node)
@@ -91,15 +91,15 @@ public:
 
 	void setValue(int n, double v) override;
 	void setValue(int n, const vec2d& v) override;
-	void setValue(int n, const vec3d& v) override;
-	void setValue(int n, const mat3d& v) override;
-	void setValue(int n, const mat3ds& v) override;
+	void setValue(int n, const Vector3d& v) override;
+	void setValue(int n, const Matrix3d& v) override;
+	void setValue(int n, const Matrix3ds& v) override;
 
 	void fillValue(double v) override;
 	void fillValue(const vec2d& v) override;
-	void fillValue(const vec3d& v) override;
-	void fillValue(const mat3d& v) override;
-	void fillValue(const mat3ds& v) override;
+	void fillValue(const Vector3d& v) override;
+	void fillValue(const Matrix3d& v) override;
+	void fillValue(const Matrix3ds& v) override;
 
 private:
 	const FEFacetSet*	m_surf;		// the surface for which this data set is defined

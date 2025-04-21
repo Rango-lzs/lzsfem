@@ -63,21 +63,21 @@ public:
 		return a;
 	}
 
-	vec3d eval(vec3d* d, double r, double s)
+	Vector3d eval(Vector3d* d, double r, double s)
 	{
 		int n = Nodes();
 		double H[FEElement::MAX_NODES];
 		shape_fnc(H, r, s);
-		vec3d a(0,0,0);
+		Vector3d a(0,0,0);
 		for (int i=0; i<n; ++i) a += d[i]*H[i];
 		return a;
 	}
 
-	vec3d eval(vec3d* d, int n)
+	Vector3d eval(Vector3d* d, int n)
 	{
 		int ne = Nodes();
 		double* N = H(n);
-		vec3d a(0,0,0);
+		Vector3d a(0,0,0);
 		for (int i=0; i<ne; ++i) a += d[i]*N[i];
 		return a;
 	}
@@ -109,20 +109,20 @@ public:
 		return s;
 	}
 
-	vec3d eval_deriv1(vec3d* d, int j)
+	Vector3d eval_deriv1(Vector3d* d, int j)
 	{
 		double* Hr = Gr(j);
 		int n = Nodes();
-		vec3d v(0,0,0);
+		Vector3d v(0,0,0);
 		for (int i = 0; i<n; ++i) v += d[i]*Hr[i];
 		return v;
 	}
 
-	vec3d eval_deriv2(vec3d* d, int j)
+	Vector3d eval_deriv2(Vector3d* d, int j)
 	{
 		double* Hs = Gs(j);
 		int n = Nodes();
-		vec3d v(0,0,0);
+		Vector3d v(0,0,0);
 		for (int i = 0; i<n; ++i) v += d[i]*Hs[i];
 		return v;
 	}

@@ -51,7 +51,7 @@ public:
 
 public:
 	//! Calculate the truss normal
-	vec3d TrussNormal(FETrussElement& el);
+	Vector3d TrussNormal(FETrussElement& el);
 
 protected:
 	vector<FETrussElement>	m_Elem;

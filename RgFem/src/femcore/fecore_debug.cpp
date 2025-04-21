@@ -152,9 +152,9 @@ template <> void fecore_print_T<matrix>(matrix* pd)
 	}
 }
 
-template <> void fecore_print_T<mat3d>(mat3d* pd)
+template <> void fecore_print_T<Matrix3d>(Matrix3d* pd)
 {
-	mat3d& m = *pd;
+	Matrix3d& m = *pd;
 	for (int i=0; i<3; ++i)
 	{
 		for (int j=0; j<3; ++j) cout << m(i,j) << " ";
@@ -162,9 +162,9 @@ template <> void fecore_print_T<mat3d>(mat3d* pd)
 	}
 }
 
-template <> void fecore_print_T<mat3ds>(mat3ds* pd)
+template <> void fecore_print_T<Matrix3ds>(Matrix3ds* pd)
 {
-	mat3ds& m = *pd;
+	Matrix3ds& m = *pd;
 	for (int i=0; i<3; ++i)
 	{
 		for (int j=0; j<3; ++j) cout << m(i,j) << " ";

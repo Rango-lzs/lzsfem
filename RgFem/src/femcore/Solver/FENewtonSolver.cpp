@@ -1104,7 +1104,7 @@ void FENewtonSolver::Update2(const vector<double>& ui)
         FENode& node = mesh.Node(i);
         if (node.m_rid == -1)
         {
-            vec3d dv(0, 0, 0);
+            Vector3d dv(0, 0, 0);
             for (int j = 0; j < node.m_dofs.size(); ++j)
             {
                 int nj = -node.m_dofs[j] - 2;

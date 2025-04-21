@@ -26,78 +26,78 @@ SOFTWARE.*/
 #include "stdafx.h"
 #include "mathalg.h"
 
-mat3ds Log(const mat3ds& p, const mat3ds& X)
+Matrix3ds Log(const Matrix3ds& p, const Matrix3ds& X)
 {
 	double l[3], s[3];
-	vec3d u[3], v[3];
+	Vector3d u[3], v[3];
 
 	// evaluate eigen-decomposition of p
 	p.eigen(l, u);
-	mat3d U(u[0], u[1], u[2]);
+	Matrix3d U(u[0], u[1], u[2]);
 	mat3dd L(l[0], l[1], l[2]);
 	mat3dd rootL(sqrt(l[0]), sqrt(l[1]), sqrt(l[2]));
 
-	mat3d G = U * rootL;
-	mat3d Gi = G.inverse();
+	Matrix3d G = U * rootL;
+	Matrix3d Gi = G.inverse();
 
-	mat3ds Y = (Gi * X*Gi.transpose()).sym();
+	Matrix3ds Y = (Gi * X*Gi.transpose()).sym();
 
 	Y.eigen(s, v);
-	mat3d V = mat3d(v[0], v[1], v[2]);
+	Matrix3d V = Matrix3d(v[0], v[1], v[2]);
 
-	mat3d GV = G * V;
+	Matrix3d GV = G * V;
 
 	mat3dd logS(log(s[0]), log(s[1]), log(s[2]));
 
-	mat3d LogX = (GV)*logS*(GV.transpose());
+	Matrix3d LogX = (GV)*logS*(GV.transpose());
 
 	return LogX.sym();
 }
 
-mat3ds Exp(const mat3ds& p, const mat3ds& X)
+Matrix3ds Exp(const Matrix3ds& p, const Matrix3ds& X)
 {
 	double l[3], s[3];
-	vec3d u[3], v[3];
+	Vector3d u[3], v[3];
 
 	// evaluate eigen-decomposition of p
 	p.eigen(l, u);
-	mat3d U(u[0], u[1], u[2]);
+	Matrix3d U(u[0], u[1], u[2]);
 	mat3dd L(l[0], l[1], l[2]);
 	mat3dd rootL(sqrt(l[0]), sqrt(l[1]), sqrt(l[2]));
 
-	mat3d G = U * rootL;
-	mat3d Gi = G.inverse();
+	Matrix3d G = U * rootL;
+	Matrix3d Gi = G.inverse();
 
-	mat3ds Y = (Gi * X*Gi.transpose()).sym();
+	Matrix3ds Y = (Gi * X*Gi.transpose()).sym();
 
 	Y.eigen(s, v);
-	mat3d V = mat3d(v[0], v[1], v[2]);
+	Matrix3d V = Matrix3d(v[0], v[1], v[2]);
 
-	mat3d GV = G * V;
+	Matrix3d GV = G * V;
 
 	mat3dd expS(exp(s[0]), exp(s[1]), exp(s[2]));
 
-	mat3d ExpX = (GV)*expS*(GV.transpose());
+	Matrix3d ExpX = (GV)*expS*(GV.transpose());
 
 	return ExpX.sym();
 }
 
-mat3ds weightedAverageStructureTensor(mat3ds* d, double* w, int n)
+Matrix3ds weightedAverageStructureTensor(Matrix3ds* d, double* w, int n)
 {
 	const double eps = 1.0e-9;
 
-	mat3ds mu(1.0, 1.0, 1.0, 0.0, 0.0, 0.0);
+	Matrix3ds mu(1.0, 1.0, 1.0, 0.0, 0.0, 0.0);
 	double tau = 1.0;
 
 	double normXi = 0.0, normXip = 0.0;
-	mat3ds Xi, Xip;
+	Matrix3ds Xi, Xip;
 	int nc = 0;
 	do
 	{
 		Xip = Xi;
 		normXip = normXi;
 
-		Xi = weightedAverage<mat3ds>(d, w, n, [&](const mat3ds& a) {
+		Xi = weightedAverage<Matrix3ds>(d, w, n, [&](const Matrix3ds& a) {
 			return Log(mu, a); 
 		});
 

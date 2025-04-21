@@ -32,8 +32,8 @@ SOFTWARE.*/
 
 class vec2d;
 class Vector3d;
-class mat3d;
-class mat3ds;
+class Matrix3d;
+class Matrix3ds;
 
 template <typename T> struct fecoreType {};
 
@@ -55,13 +55,13 @@ template <> struct fecoreType<Vector3d>
 	static int size() { return 3; }
 };
 
-template <> struct fecoreType<mat3d>
+template <> struct fecoreType<Matrix3d>
 {
 	static FEDataType type() { return FE_MAT3D; }
 	static int size() { return 9; }
 };
 
-template <> struct fecoreType<mat3ds>
+template <> struct fecoreType<Matrix3ds>
 {
 	static FEDataType type() { return FE_MAT3DS; }
 	static int size() { return 6; }

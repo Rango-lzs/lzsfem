@@ -21,8 +21,8 @@ FEElementTraits::FEElementTraits(int ni, int ne, FE_Element_Class c, FE_Element_
 }
 
 //-----------------------------------------------------------------------------
-//! project mat3ds integration point data to nodes
-void FEElementTraits::project_to_nodes(mat3ds* si, mat3ds* so) const
+//! project Matrix3ds integration point data to nodes
+void FEElementTraits::project_to_nodes(Matrix3ds* si, Matrix3ds* so) const
 {
 	double ai[FEElement::MAX_INTPOINTS];
 	double ao[FEElement::MAX_NODES];
@@ -36,8 +36,8 @@ void FEElementTraits::project_to_nodes(mat3ds* si, mat3ds* so) const
 }
 
 //-----------------------------------------------------------------------------
-//! project mat3d integration point data to nodes
-void FEElementTraits::project_to_nodes(mat3d* si, mat3d* so) const
+//! project Matrix3d integration point data to nodes
+void FEElementTraits::project_to_nodes(Matrix3d* si, Matrix3d* so) const
 {
 	double ai[FEElement::MAX_INTPOINTS];
 	double ao[FEElement::MAX_NODES];

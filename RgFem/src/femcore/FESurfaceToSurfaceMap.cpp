@@ -91,12 +91,12 @@ bool FESurfaceToSurfaceMap::Init()
 	return FEMeshDataGenerator::Init();
 }
 
-void FESurfaceToSurfaceMap::value(const vec3d& x, double& data)
+void FESurfaceToSurfaceMap::value(const Vector3d& x, double& data)
 {
-	vec3d r(x);
+	Vector3d r(x);
 
 	// project x onto surface 1
-	vec3d q1(0,0,0), q2(0,0,0);
+	Vector3d q1(0,0,0), q2(0,0,0);
 	vec2d r1, r2;
 	FESurfaceElement* pe1 = m_ccp1->Project(r, q1, r1);
 	if (pe1 == nullptr)

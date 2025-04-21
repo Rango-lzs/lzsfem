@@ -43,7 +43,7 @@ public:
 
 	bool Init() override;
 
-	void value(const vec3d& x, double& data) override;
+	void value(const Vector3d& x, double& data) override;
 
 	FEDomainMap* Generate() override;
 

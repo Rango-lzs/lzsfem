@@ -42,9 +42,9 @@ inline double tens3ds::operator()(int i, int j, int k) const
 }
 
 // contract the right two legs by the dyad formed by a vector  xi = Tijk*Xi*Xk
-inline vec3d tens3ds::contractdyad1(const vec3d& v)
+inline Vector3d tens3ds::contractdyad1(const Vector3d& v)
 {
-    vec3d x;
+    Vector3d x;
 	x.x = d[0]*v.x*v.x + 2*d[1]*v.x*v.y + 2*d[2]*v.x*v.z + d[3]*v.y*v.y + 2*d[4]*v.y*v.z + d[5]*v.z*v.z;
 	x.y = d[1]*v.x*v.x + 2*d[3]*v.x*v.y + 2*d[4]*v.x*v.z + d[6]*v.y*v.y + 2*d[7]*v.y*v.z + d[8]*v.z*v.z;
 	x.z = d[2]*v.x*v.x + 2*d[4]*v.x*v.y + 2*d[5]*v.x*v.z + d[7]*v.y*v.y + 2*d[8]*v.y*v.z + d[9]*v.z*v.z;
@@ -60,7 +60,7 @@ inline double tens3ds::tripledot(const tens3ds& H)
 }
 
 // calculates the symmetric tensor A_ijk = (l_i*m_j*r_k + perm(i,j,k))/6
-inline tens3ds dyad3s(const vec3d& l, const vec3d& m, const vec3d& r)
+inline tens3ds dyad3s(const Vector3d& l, const Vector3d& m, const Vector3d& r)
 {
 	tens3ds a;
 	a.d[0] = (l.x*m.x*r.x); 

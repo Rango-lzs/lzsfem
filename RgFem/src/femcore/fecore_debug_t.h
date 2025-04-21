@@ -33,7 +33,7 @@ SOFTWARE.*/
 #include <typeinfo>
 #include <stdlib.h>
 #include "matrix.h"
-#include "mat3d.h"
+#include "Matrix3d.h"
 #include "Vector3d.h"
 #include "tens4d.h"
 #include "FEM_EXPORT.h"
@@ -44,8 +44,8 @@ SOFTWARE.*/
 
 template <typename T> void fecore_print_T(T* pd) { std::cout << (*pd); }
 template <> void fecore_print_T<matrix>(matrix* pd);
-template <> void fecore_print_T<mat3d>(mat3d* pd);
-template <> void fecore_print_T<mat3ds>(mat3ds* pd);
+template <> void fecore_print_T<Matrix3d>(Matrix3d* pd);
+template <> void fecore_print_T<Matrix3ds>(Matrix3ds* pd);
 template <> void fecore_print_T<mat3da>(mat3da* pd);
 template <> void fecore_print_T<mat3dd>(mat3dd* pd);
 template <> void fecore_print_T<Vector3d>(Vector3d* pd);

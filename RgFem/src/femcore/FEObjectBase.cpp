@@ -1,6 +1,5 @@
 
 #include "FEObjectBase.h"
-#include "FECoreKernel.h"
 #include "FEModelParam.h"
 #include "logger/log.h"
 #include <sstream>

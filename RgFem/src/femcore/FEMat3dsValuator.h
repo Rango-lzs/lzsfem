@@ -32,7 +32,7 @@ SOFTWARE.*/
 class FEDataMap;
 
 //---------------------------------------------------------------------------------------
-// Base class for evaluating vec3d parameters
+// Base class for evaluating Vector3d parameters
 class FECORE_API FEMat3dsValuator : public FEValuator
 {
 	FECORE_SUPER_CLASS(FEMAT3DSVALUATOR_ID)
@@ -41,13 +41,13 @@ class FECORE_API FEMat3dsValuator : public FEValuator
 public:
 	FEMat3dsValuator(FEModel* fem) : FEValuator(fem) {};
 
-	virtual mat3ds operator()(const FEMaterialPoint& pt) = 0;
+	virtual Matrix3ds operator()(const FEMaterialPoint& pt) = 0;
 
 	virtual FEMat3dsValuator* copy() = 0;
 
 	virtual bool isConst() { return false; }
 
-	virtual mat3ds* constValue() { return nullptr; }
+	virtual Matrix3ds* constValue() { return nullptr; }
 };
 
 //-----------------------------------------------------------------------------
@@ -59,18 +59,18 @@ public:
 
 	FEMat3dsValuator* copy() override;
 
-	mat3ds operator()(const FEMaterialPoint& pt) override { return m_val; }
+	Matrix3ds operator()(const FEMaterialPoint& pt) override { return m_val; }
 
 	// is this a const value
 	bool isConst() override { return true; }
 
 	// get the const value (returns 0 if param is not const)
-	mat3ds* constValue() override { return &m_val; }
+	Matrix3ds* constValue() override { return &m_val; }
 
-	mat3ds& value() { return m_val; }
+	Matrix3ds& value() { return m_val; }
 
 private:
-	mat3ds	m_val;
+	Matrix3ds	m_val;
 
 	DECLARE_FECORE_CLASS();
 };
@@ -83,7 +83,7 @@ public:
 
 	void setDataMap(FEDataMap* val);
 
-	mat3ds operator()(const FEMaterialPoint& pt) override;
+	Matrix3ds operator()(const FEMaterialPoint& pt) override;
 
 	FEMat3dsValuator* copy() override;
 

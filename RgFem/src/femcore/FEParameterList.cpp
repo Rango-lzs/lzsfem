@@ -43,23 +43,23 @@ void FEParameterList::operator = (FEParameterList& l)
 			case FE_PARAM_INT   : d.value<int   >() = s.value<int   >(); break;
 			case FE_PARAM_BOOL  : d.value<bool  >() = s.value<bool  >(); break;
 			case FE_PARAM_DOUBLE: d.value<double>() = s.value<double>(); break;
-			case FE_PARAM_VEC3D : d.value<vec3d >() = s.value<vec3d >(); break;
-			case FE_PARAM_MAT3D : d.value<mat3d >() = s.value<mat3d >(); break;
-			case FE_PARAM_MAT3DS: d.value<mat3ds>() = s.value<mat3ds>(); break;
+			case FE_PARAM_VEC3D : d.value<Vector3d >() = s.value<Vector3d >(); break;
+			case FE_PARAM_MAT3D : d.value<Matrix3d >() = s.value<Matrix3d >(); break;
+			case FE_PARAM_MAT3DS: d.value<Matrix3ds>() = s.value<Matrix3ds>(); break;
 			case FE_PARAM_TENS3DRS: d.value<tens3drs>() = s.value<tens3drs>(); break;
 			case FE_PARAM_STD_STRING: d.value<std::string>() = s.value<std::string>(); break;
 			case FE_PARAM_DOUBLE_MAPPED:
 			{
-				FEParamDouble& mat3d = d.value<FEParamDouble>();
+				FEParamDouble& Matrix3d = d.value<FEParamDouble>();
 				FEParamDouble& src = s.value<FEParamDouble>();
-				mat3d.setValuator(src.valuator()->copy());
+				Matrix3d.setValuator(src.valuator()->copy());
 			}
 			break;
 			case FE_PARAM_MAT3D_MAPPED:
 			{
-				FEParamMat3d& mat3d = d.value<FEParamMat3d>();
+				FEParamMat3d& Matrix3d = d.value<FEParamMat3d>();
 				FEParamMat3d& src = s.value<FEParamMat3d>();
-				mat3d.setValuator(src.valuator()->copy());
+				Matrix3d.setValuator(src.valuator()->copy());
 			}
 			break;
 			case FE_PARAM_STD_VECTOR_VEC2D:
@@ -338,9 +338,9 @@ FEParam* FEParamContainer::AddParameter(int&                      v, const char*
 FEParam* FEParamContainer::AddParameter(bool&                     v, const char* sz) { return AddParameter(&v, FE_PARAM_BOOL, 1, sz); }
 FEParam* FEParamContainer::AddParameter(double&                   v, const char* sz) { return AddParameter(&v, FE_PARAM_DOUBLE, 1, sz); }
 FEParam* FEParamContainer::AddParameter(vec2d&                    v, const char* sz) { return AddParameter(&v, FE_PARAM_VEC2D, 1, sz); }
-FEParam* FEParamContainer::AddParameter(vec3d&                    v, const char* sz) { return AddParameter(&v, FE_PARAM_VEC3D, 1, sz); }
-FEParam* FEParamContainer::AddParameter(mat3d&                    v, const char* sz) { return AddParameter(&v, FE_PARAM_MAT3D, 1, sz); }
-FEParam* FEParamContainer::AddParameter(mat3ds&                   v, const char* sz) { return AddParameter(&v, FE_PARAM_MAT3DS, 1, sz); }
+FEParam* FEParamContainer::AddParameter(Vector3d&                    v, const char* sz) { return AddParameter(&v, FE_PARAM_VEC3D, 1, sz); }
+FEParam* FEParamContainer::AddParameter(Matrix3d&                    v, const char* sz) { return AddParameter(&v, FE_PARAM_MAT3D, 1, sz); }
+FEParam* FEParamContainer::AddParameter(Matrix3ds&                   v, const char* sz) { return AddParameter(&v, FE_PARAM_MAT3DS, 1, sz); }
 FEParam* FEParamContainer::AddParameter(FEParamDouble&            v, const char* sz) { return AddParameter(&v, FE_PARAM_DOUBLE_MAPPED, 1, sz); }
 FEParam* FEParamContainer::AddParameter(FEParamVec3&              v, const char* sz) { return AddParameter(&v, FE_PARAM_VEC3D_MAPPED, 1, sz); }
 FEParam* FEParamContainer::AddParameter(FEParamMat3d&             v, const char* sz) { return AddParameter(&v, FE_PARAM_MAT3D_MAPPED, 1, sz); }

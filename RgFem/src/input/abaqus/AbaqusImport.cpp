@@ -2026,7 +2026,7 @@ GObject* AbaqusImport::build_part(AbaqusModel::PART* pg)
 						Vector3d e3 = a ^ b; e3.Normalize();
 						Vector3d e2 = e3 ^ e1;
 
-						mat3d Q;
+						Matrix3d Q;
 						Q[0][0] = e1.x; Q[0][1] = e2.x; Q[0][2] = e3.x;
 						Q[1][0] = e1.y; Q[1][1] = e2.y; Q[1][2] = e3.y;
 						Q[2][0] = e1.z; Q[2][1] = e2.z; Q[2][2] = e3.z;
@@ -2077,7 +2077,7 @@ GObject* AbaqusImport::build_part(AbaqusModel::PART* pg)
 						Vector3d e3 = a ^ b; e3.Normalize();
 						Vector3d e2 = e3 ^ e1;
 
-						mat3d Q;
+						Matrix3d Q;
 						Q[0][0] = e1.x; Q[0][1] = e2.x; Q[0][2] = e3.x;
 						Q[1][0] = e1.y; Q[1][1] = e2.y; Q[1][2] = e3.y;
 						Q[2][0] = e1.z; Q[2][1] = e2.z; Q[2][2] = e3.z;

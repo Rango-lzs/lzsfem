@@ -189,7 +189,7 @@ void FESurface::Update(const FETimeInfo& tp)
 		int nint = el.GaussPoints();
 		int neln = el.Nodes();
 
-		vec3d rt[FEElement::MAX_NODES];
+		Vector3d rt[FEElement::MAX_NODES];
 		NodalCoordinates(el, rt);
 
 		for (int n = 0; n < nint; ++n)
@@ -199,8 +199,8 @@ void FESurface::Update(const FETimeInfo& tp)
 			double* Gr = el.Gr(n);
 			double* Gs = el.Gs(n);
 
-			mp.dxr = vec3d(0, 0, 0);
-			mp.dxs = vec3d(0, 0, 0);
+			mp.dxr = Vector3d(0, 0, 0);
+			mp.dxs = Vector3d(0, 0, 0);
 			for (int i = 0; i < neln; ++i)
 			{
 				mp.dxr += rt[i] * Gr[i];
@@ -291,7 +291,7 @@ bool FESurface::Init()
 		feLogWarning("The surface \"%s\" has %d invalid facets. \nThe model may not run correctly.", surfName.c_str(), invalidFacets);
 	}
 
-	vec3d re[FEElement::MAX_NODES];
+	Vector3d re[FEElement::MAX_NODES];
 	// initialize material points of surface elements
 	for (int i = 0; i < Elements(); ++i)
 	{
@@ -308,7 +308,7 @@ bool FESurface::Init()
 
 			// initialize some material point data
 			double* H = el.H(n);
-			vec3d rn(0, 0, 0);
+			Vector3d rn(0, 0, 0);
 			for (int j = 0; j < neln; ++j)
 			{
 				rn += re[j]*H[j];
@@ -320,7 +320,7 @@ bool FESurface::Init()
 			double* Gr = el.Gr(n);
 			double* Gs = el.Gs(n);
 
-			vec3d dxr(0, 0, 0), dxs(0, 0, 0);
+			Vector3d dxr(0, 0, 0), dxs(0, 0, 0);
 			for (int i = 0; i < neln; ++i)
 			{
 				dxr += re[i] * Gr[i];
@@ -335,7 +335,7 @@ bool FESurface::Init()
 	}
 
     // allocate node normals and evaluate them in initial configuration
-    m_nn.assign(Nodes(), vec3d(0,0,0));
+    m_nn.assign(Nodes(), Vector3d(0,0,0));
     UpdateNodeNormals();
     
 	return true;
@@ -407,7 +407,7 @@ void FESurface::FindElements(FESurfaceElement& el)
 		for (int j = 0; j<nfaces; ++j) 
 		{
 			int nf[9];
-			vec3d g[3];
+			Vector3d g[3];
 			int nn = sel.GetFace(j, nf);
                 
 			int found = 0;
@@ -454,17 +454,17 @@ void FESurface::UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, v
 
 //-----------------------------------------------------------------------------
 // project onto a triangular face
-vec3d project2tri(vec3d* y, vec3d x, double& r, double& s)
+Vector3d project2tri(Vector3d* y, Vector3d x, double& r, double& s)
 {
 	// calculate base vectors 
-	vec3d e1 = y[1] - y[0];
-	vec3d e2 = y[2] - y[0];
+	Vector3d e1 = y[1] - y[0];
+	Vector3d e2 = y[2] - y[0];
 
 	// calculate plane normal
-	vec3d n = e1^e2; n.unit();
+	Vector3d n = e1^e2; n.unit();
 
 	// project x onto the plane
-	vec3d q = x - n*((x-y[0])*n);
+	Vector3d q = x - n*((x-y[0])*n);
 
 	// set up metric tensor
 	double G[2][2];
@@ -480,11 +480,11 @@ vec3d project2tri(vec3d* y, vec3d x, double& r, double& s)
 	Gi[0][1] = Gi[1][0] = -G[0][1]/D;
 
 	// calculate dual base vectors
-	vec3d E1 = e1*Gi[0][0] + e2*Gi[0][1];
-	vec3d E2 = e1*Gi[1][0] + e2*Gi[1][1];
+	Vector3d E1 = e1*Gi[0][0] + e2*Gi[0][1];
+	Vector3d E2 = e1*Gi[1][0] + e2*Gi[1][1];
 
 	// now we can calculate r and s
-	vec3d t = q - y[0];
+	Vector3d t = q - y[0];
 	r = t*E1;
 	s = t*E2;
 
@@ -493,7 +493,7 @@ vec3d project2tri(vec3d* y, vec3d x, double& r, double& s)
 
 //-----------------------------------------------------------------------------
 // project onto a quadrilateral surface.
-bool project2quad(vec3d* y, vec3d x, double& r, double& s, vec3d& q)
+bool project2quad(Vector3d* y, Vector3d x, double& r, double& s, Vector3d& q)
 {
 	double R[2], u[2], D;
 	double gr[4] = {-1, +1, +1, -1};
@@ -587,7 +587,7 @@ bool project2quad(vec3d* y, vec3d x, double& r, double& s, vec3d& q)
 
 //-----------------------------------------------------------------------------
 // project to general surface element.
-bool project2surf(FESurfaceElement& el, vec3d* y, vec3d x, double& r, double& s, vec3d& q)
+bool project2surf(FESurfaceElement& el, Vector3d* y, Vector3d x, double& r, double& s, Vector3d& q)
 {
 	double Q[2], u[2], D;
 	const int NE = FEElement::MAX_NODES;
@@ -674,14 +674,14 @@ bool project2surf(FESurfaceElement& el, vec3d* y, vec3d x, double& r, double& s,
 	while (1);
 
 	// evaluate q
-	q = vec3d(0,0,0);
+	q = Vector3d(0,0,0);
 	for (int i=0; i<ne; ++i) q += y[i]*H[i];
 
 	return bconv;
 }
 
 //-----------------------------------------------------------------------------
-vec3d FESurface::Position(FESurfaceElement& el, double r, double s)
+Vector3d FESurface::Position(FESurfaceElement& el, double r, double s)
 {
 	// get the mesh to which this surface belongs
 	FEMesh& mesh = *m_pMesh;
@@ -690,14 +690,14 @@ vec3d FESurface::Position(FESurfaceElement& el, double r, double s)
 	int ne = el.Nodes();
 
 	// get the elements nodal positions
-	vec3d y[FEElement::MAX_NODES];
+	Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (int i = 0; i<ne; ++i) y[i] = mesh.Node(el.m_node[i]).m_rt;
     else for (int i = 0; i<ne; ++i) y[i] = mesh.Node(el.m_node[i]).st();
 
 	double H[FEElement::MAX_NODES];
 	el.shape_fnc(H, r, s);
 
-	vec3d q(0,0,0);
+	Vector3d q(0,0,0);
 	for (int i=0; i<ne; ++i)
 	{
 		q += y[i]*H[i];
@@ -709,7 +709,7 @@ vec3d FESurface::Position(FESurfaceElement& el, double r, double s)
 //-----------------------------------------------------------------------------
 //! This function calculates the position of integration point n
 
-vec3d FESurface::Position(FESurfaceElement &el, int n)
+Vector3d FESurface::Position(FESurfaceElement &el, int n)
 {
     // get the mesh to which this surface belongs
     FEMesh& mesh = *m_pMesh;
@@ -718,13 +718,13 @@ vec3d FESurface::Position(FESurfaceElement &el, int n)
     int ne = el.Nodes();
     
     // get the elements nodal positions
-    vec3d y[FEElement::MAX_NODES];
+    Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (int i = 0; i<ne; ++i) y[i] = mesh.Node(el.m_node[i]).m_rt;
     else for (int i = 0; i<ne; ++i) y[i] = mesh.Node(el.m_node[i]).st();
     
     double* H = el.H(n);
     
-    vec3d q(0,0,0);
+    Vector3d q(0,0,0);
     for (int i=0; i<ne; ++i)
     {
         q += y[i]*H[i];
@@ -734,7 +734,7 @@ vec3d FESurface::Position(FESurfaceElement &el, int n)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::NodalCoordinates(FESurfaceElement& el, vec3d* re)
+void FESurface::NodalCoordinates(FESurfaceElement& el, Vector3d* re)
 {
 	int ne = el.Nodes();
 	if (!m_bshellb) for (int i = 0; i < ne; ++i) re[i] = Node(el.m_lnode[i]).m_rt;
@@ -748,17 +748,17 @@ double FESurface::FacePointing(FESurfaceElement& se, FEElement& el)
 {
     FEMesh& mesh = *GetMesh();
     // get point on surface element
-    vec3d sp = Position(se, 0,0);
+    Vector3d sp = Position(se, 0,0);
     
     // get surface normal at that point;
-    vec3d sn = SurfaceNormal(se, 0,0);
+    Vector3d sn = SurfaceNormal(se, 0,0);
     
     // check if element attached to this surface element is solid or shell
     FESolidElement* sel = dynamic_cast<FESolidElement*>(&el);
     FEShellElement* shl = dynamic_cast<FEShellElement*>(&el);
     
     // get centroid of element el
-    vec3d c(0,0,0);
+    Vector3d c(0,0,0);
     if (sel) {
         for (int i=0; i<sel->Nodes(); ++i) {
             FENode& node = mesh.Node(sel->m_node[i]);
@@ -791,7 +791,7 @@ double FESurface::FacePointing(FESurfaceElement& se, FEElement& el)
 //! The system is solved using the Newton-Raphson method.
 //! The surface element may be either a quad or a triangular element.
 
-vec3d FESurface::ProjectToSurface(FESurfaceElement& el, vec3d x, double& r, double& s)
+Vector3d FESurface::ProjectToSurface(FESurfaceElement& el, Vector3d x, double& r, double& s)
 {
 	// get the mesh to which this surface belongs
 	FEMesh& mesh = *m_pMesh;
@@ -800,12 +800,12 @@ vec3d FESurface::ProjectToSurface(FESurfaceElement& el, vec3d x, double& r, doub
 	int ne = el.Nodes();
 
 	// get the elements nodal positions
-	vec3d y[FEElement::MAX_NODES];
+	Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (int i=0; i<ne; ++i) y[i] = mesh.Node(el.m_node[i]).m_rt;
     else for (int i=0; i<ne; ++i) y[i] = mesh.Node(el.m_node[i]).st();
 
 	// calculate normal projection of x onto element
-	vec3d q;
+	Vector3d q;
 	switch (ne)
 	{
 	case 3: q = project2tri(y, x, r, s); break;
@@ -814,7 +814,7 @@ vec3d FESurface::ProjectToSurface(FESurfaceElement& el, vec3d x, double& r, doub
 		if (project2quad(y, x, r, s, q) == false)
 		{
 			// the direct projection failed, so we'll try it more incrementally
-			vec3d x0 = (y[0]+y[1]+y[2]+y[3])*0.25;
+			Vector3d x0 = (y[0]+y[1]+y[2]+y[3])*0.25;
 			r = s = 0;
 			bool b = project2quad(y, x0, r, s, q);
 			assert(b);
@@ -823,7 +823,7 @@ vec3d FESurface::ProjectToSurface(FESurfaceElement& el, vec3d x, double& r, doub
 			int l = 1, N = 0, NMAX = 20;
 			do
 			{
-				vec3d xi = x0*(1.0 - w) + x*w;
+				Vector3d xi = x0*(1.0 - w) + x*w;
 				b = project2quad(y, xi, r, s, q);
 				if (b)
 				{
@@ -869,7 +869,7 @@ double FESurface::FaceArea(FESurfaceElement& el)
 	int neln = el.Nodes();
 
 	// get the initial nodes
-	vec3d r0[FEElement::MAX_NODES];
+	Vector3d r0[FEElement::MAX_NODES];
 	if (!m_bshellb) for (int i=0; i<neln; ++i) r0[i] = mesh.Node(el.m_node[i]).m_r0;
     else for (int i=0; i<neln; ++i) r0[i] = mesh.Node(el.m_node[i]).s0();
 
@@ -877,7 +877,7 @@ double FESurface::FaceArea(FESurfaceElement& el)
 	double* w = el.GaussWeights();
 
 	double *Gr, *Gs;
-	vec3d dxr, dxs;
+	Vector3d dxr, dxs;
 
 	double detJ;
 
@@ -891,7 +891,7 @@ double FESurface::FaceArea(FESurfaceElement& el)
 		Gs = el.Gs(n);
 
 		// calculate jacobian
-		dxr = dxs = vec3d(0,0,0);
+		dxr = dxs = Vector3d(0,0,0);
 		for (k=0; k<neln; ++k)
 		{
 			dxr.x += Gr[k]*r0[k].x;
@@ -923,7 +923,7 @@ double FESurface::CurrentFaceArea(FESurfaceElement& el)
 	int neln = el.Nodes();
 
 	// get the initial nodes
-	vec3d rt[FEElement::MAX_NODES];
+	Vector3d rt[FEElement::MAX_NODES];
 	if (!m_bshellb) for (int i = 0; i < neln; ++i) rt[i] = mesh.Node(el.m_node[i]).m_rt;
 	else for (int i = 0; i < neln; ++i) rt[i] = mesh.Node(el.m_node[i]).st();
 
@@ -931,7 +931,7 @@ double FESurface::CurrentFaceArea(FESurfaceElement& el)
 	double* w = el.GaussWeights();
 
 	double* Gr, * Gs;
-	vec3d dxr, dxs;
+	Vector3d dxr, dxs;
 
 	double detJ;
 
@@ -945,7 +945,7 @@ double FESurface::CurrentFaceArea(FESurfaceElement& el)
 		Gs = el.Gs(n);
 
 		// calculate jacobian
-		dxr = dxs = vec3d(0, 0, 0);
+		dxr = dxs = Vector3d(0, 0, 0);
 		for (k = 0; k < neln; ++k)
 		{
 			dxr.x += Gr[k] * rt[k].x;
@@ -979,8 +979,8 @@ double FESurface::MaxElementSize()
 		for (int i=0; i<n; ++i)
 			for (int j=i+1; j<n; ++j)
 			{
-                vec3d& a = mesh.Node(e.m_node[i]).m_rt;
-                vec3d& b = mesh.Node(e.m_node[j]).m_rt;
+                Vector3d& a = mesh.Node(e.m_node[i]).m_rt;
+                Vector3d& b = mesh.Node(e.m_node[j]).m_rt;
 				double L2 = (b - a)*(b - a);
 				if (L2 > h2) h2 = L2;
 			}
@@ -998,7 +998,7 @@ mat2d FESurface::Metric0(FESurfaceElement& el, double r, double s)
 	int neln = el.Nodes();
 	
 	// element nodes
-	vec3d r0[FEElement::MAX_NODES];
+	Vector3d r0[FEElement::MAX_NODES];
 	if (!m_bshellb) for (int i=0; i<neln; ++i) r0[i] = m_pMesh->Node(el.m_node[i]).m_r0;
     else for (int i=0; i<neln; ++i) r0[i] = m_pMesh->Node(el.m_node[i]).s0();
 	
@@ -1009,8 +1009,8 @@ mat2d FESurface::Metric0(FESurfaceElement& el, double r, double s)
 	el.shape_deriv(Hr, Hs, r, s);
 	
 	// get the tangent vectors
-	vec3d t1(0,0,0);
-	vec3d t2(0,0,0);
+	Vector3d t1(0,0,0);
+	Vector3d t2(0,0,0);
 	for (int k=0; k<neln; ++k)
 	{
 		t1 += r0[k]*Hr[k];
@@ -1031,7 +1031,7 @@ mat2d FESurface::Metric(FESurfaceElement& el, double r, double s)
 	int neln = el.Nodes();
 	
 	// element nodes
-	vec3d rt[FEElement::MAX_NODES];
+	Vector3d rt[FEElement::MAX_NODES];
     if (!m_bshellb) for (int i=0; i<neln; ++i) rt[i] = m_pMesh->Node(el.m_node[i]).m_rt;
     else for (int i=0; i<neln; ++i) rt[i] = m_pMesh->Node(el.m_node[i]).st();
 	
@@ -1042,8 +1042,8 @@ mat2d FESurface::Metric(FESurfaceElement& el, double r, double s)
 	el.shape_deriv(Hr, Hs, r, s);
 	
 	// get the tangent vectors
-	vec3d t1(0,0,0);
-	vec3d t2(0,0,0);
+	Vector3d t1(0,0,0);
+	Vector3d t2(0,0,0);
 	for (int k=0; k<neln; ++k)
 	{
 		t1 += rt[k]*Hr[k];
@@ -1064,7 +1064,7 @@ mat2d FESurface::Metric(const FESurfaceElement& el, int n) const
     int neln = el.Nodes();
     
     // element nodes
-    vec3d rt[FEElement::MAX_NODES];
+    Vector3d rt[FEElement::MAX_NODES];
     if (!m_bshellb) for (int i=0; i<neln; ++i) rt[i] = m_pMesh->Node(el.m_node[i]).m_rt;
     else for (int i=0; i<neln; ++i) rt[i] = m_pMesh->Node(el.m_node[i]).st();
     
@@ -1073,8 +1073,8 @@ mat2d FESurface::Metric(const FESurfaceElement& el, int n) const
     double* Hs = el.Gs(n);
     
     // get the tangent vectors
-    vec3d t1(0,0,0);
-    vec3d t2(0,0,0);
+    Vector3d t1(0,0,0);
+    Vector3d t2(0,0,0);
     for (int k=0; k<neln; ++k)
     {
         t1 += rt[k]*Hr[k];
@@ -1095,7 +1095,7 @@ mat2d FESurface::MetricP(FESurfaceElement& el, int n)
     int neln = el.Nodes();
     
     // element nodes
-    vec3d rp[FEElement::MAX_NODES];
+    Vector3d rp[FEElement::MAX_NODES];
     for (int i=0; i<neln; ++i) rp[i] = m_pMesh->Node(el.m_node[i]).m_rp;
     
     // get the shape function derivatives at this integration point
@@ -1103,8 +1103,8 @@ mat2d FESurface::MetricP(FESurfaceElement& el, int n)
     double* Hs = el.Gs(n);
     
     // get the tangent vectors
-    vec3d t1(0,0,0);
-    vec3d t2(0,0,0);
+    Vector3d t1(0,0,0);
+    Vector3d t2(0,0,0);
     for (int k=0; k<neln; ++k)
     {
         t1 += rp[k]*Hr[k];
@@ -1118,14 +1118,14 @@ mat2d FESurface::MetricP(FESurfaceElement& el, int n)
 //-----------------------------------------------------------------------------
 //! Given an element an the natural coordinates of a point in this element, this
 //! function returns the global position vector.
-vec3d FESurface::Local2Global(FESurfaceElement &el, double r, double s)
+Vector3d FESurface::Local2Global(FESurfaceElement &el, double r, double s)
 {
 	// get the mesh
 	FEMesh& mesh = *m_pMesh;
 
 	// get the coordinates of the element nodes
 	int ne = el.Nodes();
-	vec3d y[FEElement::MAX_NODES];
+	Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (int l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).m_rt;
     else for (int l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).st();
 
@@ -1137,7 +1137,7 @@ vec3d FESurface::Local2Global(FESurfaceElement &el, double r, double s)
 //! This function calculates the global location of an integration point
 //!
 
-vec3d FESurface::Local2Global(FESurfaceElement &el, int n)
+Vector3d FESurface::Local2Global(FESurfaceElement &el, int n)
 {
 	FEMesh& m = *m_pMesh;
 
@@ -1145,7 +1145,7 @@ vec3d FESurface::Local2Global(FESurfaceElement &el, int n)
 	double* H = el.H(n);
 
 	// calculate the location
-	vec3d r(0);
+	Vector3d r(0);
 	int ne = el.Nodes();
     if (!m_bshellb) for (int i=0; i<ne; ++i) r += m.Node(el.m_node[i]).m_rt*H[i];
     else for (int i=0; i<ne; ++i) r += m.Node(el.m_node[i]).st()*H[i];
@@ -1156,14 +1156,14 @@ vec3d FESurface::Local2Global(FESurfaceElement &el, int n)
 //-----------------------------------------------------------------------------
 //! Given an element an the natural coordinates of a point in this element, this
 //! function returns the global position vector at the previous time.
-vec3d FESurface::Local2GlobalP(FESurfaceElement &el, double r, double s)
+Vector3d FESurface::Local2GlobalP(FESurfaceElement &el, double r, double s)
 {
     // get the mesh
     FEMesh& mesh = *m_pMesh;
     
     // get the coordinates of the element nodes
     int ne = el.Nodes();
-    vec3d y[FEElement::MAX_NODES];
+    Vector3d y[FEElement::MAX_NODES];
     for (int l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).m_rp;
     
     // calculate the element position
@@ -1174,7 +1174,7 @@ vec3d FESurface::Local2GlobalP(FESurfaceElement &el, double r, double s)
 //! This function calculates the global location of an integration point
 //!
 
-vec3d FESurface::Local2GlobalP(FESurfaceElement &el, int n)
+Vector3d FESurface::Local2GlobalP(FESurfaceElement &el, int n)
 {
     FEMesh& m = *m_pMesh;
     
@@ -1182,7 +1182,7 @@ vec3d FESurface::Local2GlobalP(FESurfaceElement &el, int n)
     double* H = el.H(n);
     
     // calculate the location
-    vec3d r;
+    Vector3d r;
     int ne = el.Nodes();
     for (int i=0; i<ne; ++i) r += m.Node(el.m_node[i]).m_rp*H[i];
     
@@ -1193,7 +1193,7 @@ vec3d FESurface::Local2GlobalP(FESurfaceElement &el, int n)
 //! This function calculates the normal of a surface element at integration
 //! point n
 
-vec3d FESurface::SurfaceNormal(const FESurfaceElement &el, int n) const
+Vector3d FESurface::SurfaceNormal(const FESurfaceElement &el, int n) const
 {
 	FEMesh& m = *m_pMesh;
 
@@ -1203,12 +1203,12 @@ vec3d FESurface::SurfaceNormal(const FESurfaceElement &el, int n) const
 
 	// get the coordinates of the element nodes
 	int ne = el.Nodes();
-	vec3d y[FEElement::MAX_NODES];
+	Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (int i=0; i<ne; ++i) y[i] = m.Node(el.m_node[i]).m_rt;
     else for (int i=0; i<ne; ++i) y[i] = m.Node(el.m_node[i]).st();
 
 	// calculate the tangents
-	vec3d xr, xs;
+	Vector3d xr, xs;
 	for (int i=0; i<ne; ++i)
 	{
 		xr += y[i]*Hr[i];
@@ -1216,7 +1216,7 @@ vec3d FESurface::SurfaceNormal(const FESurfaceElement &el, int n) const
 	}
 
 	// calculate the normal
-	vec3d np = xr ^ xs;
+	Vector3d np = xr ^ xs;
 	np.unit();
     if (m_bshellb) np = -np;
 
@@ -1227,14 +1227,14 @@ vec3d FESurface::SurfaceNormal(const FESurfaceElement &el, int n) const
 //! This function calculates the normal of a surface element at the natural
 //! coordinates (r,s)
 
-vec3d FESurface::SurfaceNormal(FESurfaceElement &el, double r, double s) const
+Vector3d FESurface::SurfaceNormal(FESurfaceElement &el, double r, double s) const
 {
 	int l;
 	FEMesh& mesh = *m_pMesh;
 	
 	// get the coordinates of the element nodes
 	int ne = el.Nodes();
-	vec3d y[FEElement::MAX_NODES];
+	Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).m_rt;
     else for (l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).st();
 	
@@ -1243,7 +1243,7 @@ vec3d FESurface::SurfaceNormal(FESurfaceElement &el, double r, double s) const
 	el.shape_deriv(Hr, Hs, r, s);
 	
 	// calculate the element tangents
-	vec3d xr(0,0,0), xs;
+	Vector3d xr(0,0,0), xs;
 	for (l=0; l<ne; ++l)
 	{
 		xr += y[l]*Hr[l];
@@ -1251,7 +1251,7 @@ vec3d FESurface::SurfaceNormal(FESurfaceElement &el, double r, double s) const
 	}
 	
 	// calculate the normal
-	vec3d np = xr ^ xs;
+	Vector3d np = xr ^ xs;
 	np.unit();
     
     if (m_bshellb) np = -np;
@@ -1268,7 +1268,7 @@ vec3d FESurface::SurfaceNormal(FESurfaceElement &el, double r, double s) const
 void FESurface::UpdateNodeNormals()
 {
     const int MN = FEElement::MAX_NODES;
-    vec3d y[MN];
+    Vector3d y[MN];
     
     // zero nodal normals
     zero(m_nn);
@@ -1287,7 +1287,7 @@ void FESurface::UpdateNodeNormals()
         {
             int jp1 = (j+1)%ne;
             int jm1 = (j+ne-1)%ne;
-            vec3d n = (y[jp1] - y[j]) ^ (y[jm1] - y[j]);
+            Vector3d n = (y[jp1] - y[j]) ^ (y[jm1] - y[j]);
             m_nn[el.m_lnode[j]] += n;
         }
     }
@@ -1333,7 +1333,7 @@ bool FESurface::IsInsideElement(FESurfaceElement& el, double r, double s, double
 //! This function calculates the covariant base vectors of a surface element
 //! at an integration point
 
-void FESurface::CoBaseVectors(FESurfaceElement& el, double r, double s, vec3d t[2])
+void FESurface::CoBaseVectors(FESurfaceElement& el, double r, double s, Vector3d t[2])
 {
 	FEMesh& m = *m_pMesh;
 
@@ -1344,7 +1344,7 @@ void FESurface::CoBaseVectors(FESurfaceElement& el, double r, double s, vec3d t[
 	double Hr[FEElement::MAX_NODES], Hs[FEElement::MAX_NODES];
 	el.shape_deriv(Hr, Hs, r, s);
 
-	t[0] = t[1] = vec3d(0,0,0);
+	t[0] = t[1] = Vector3d(0,0,0);
     if (!m_bshellb) {
         for (int i=0; i<n; ++i)
         {
@@ -1366,7 +1366,7 @@ void FESurface::CoBaseVectors(FESurfaceElement& el, double r, double s, vec3d t[
 //! This function calculates the covariant base vectors of a surface element
 //! at an integration point
 
-void FESurface::CoBaseVectors(const FESurfaceElement& el, int j, vec3d t[2]) const
+void FESurface::CoBaseVectors(const FESurfaceElement& el, int j, Vector3d t[2]) const
 {
 	FEMesh& m = *m_pMesh;
 
@@ -1377,7 +1377,7 @@ void FESurface::CoBaseVectors(const FESurfaceElement& el, int j, vec3d t[2]) con
 	double* Hr = el.Gr(j);
 	double* Hs = el.Gs(j);
 
-	t[0] = t[1] = vec3d(0,0,0);
+	t[0] = t[1] = Vector3d(0,0,0);
     if (!m_bshellb) {
         for (int i=0; i<n; ++i)
         {
@@ -1398,7 +1398,7 @@ void FESurface::CoBaseVectors(const FESurfaceElement& el, int j, vec3d t[2]) con
 //! This function calculates the covariant base vectors of a surface element
 //! at an integration point at previous time step
 
-void FESurface::CoBaseVectorsP(FESurfaceElement& el, int j, vec3d t[2])
+void FESurface::CoBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2])
 {
     FEMesh& m = *m_pMesh;
     
@@ -1409,7 +1409,7 @@ void FESurface::CoBaseVectorsP(FESurfaceElement& el, int j, vec3d t[2])
     double* Hr = el.Gr(j);
     double* Hs = el.Gs(j);
     
-    t[0] = t[1] = vec3d(0,0,0);
+    t[0] = t[1] = Vector3d(0,0,0);
     for (int i=0; i<n; ++i)
     {
         t[0] += m.Node(el.m_node[i]).m_rp*Hr[i];
@@ -1421,17 +1421,17 @@ void FESurface::CoBaseVectorsP(FESurfaceElement& el, int j, vec3d t[2])
 //! This function calculates the covariant base vectors of a surface element
 //! at the natural coordinates (r,s)
 
-void FESurface::CoBaseVectors0(FESurfaceElement &el, double r, double s, vec3d t[2])
+void FESurface::CoBaseVectors0(FESurfaceElement &el, double r, double s, Vector3d t[2])
 {
 	int i;
 	const int MN = FEElement::MAX_NODES;
-	vec3d y[MN];
+	Vector3d y[MN];
 	double H0[MN], H1[MN];
 	int n = el.Nodes();
 	if (!m_bshellb) for (i=0; i<n; ++i) y[i] = m_pMesh->Node(el.m_node[i]).m_r0;
     else for (i=0; i<n; ++i) y[i] = m_pMesh->Node(el.m_node[i]).s0();
 	el.shape_deriv(H0, H1, r, s);
-	t[0] = t[1] = vec3d(0,0,0);
+	t[0] = t[1] = Vector3d(0,0,0);
 	for (i=0; i<n; ++i) 
 	{
 		t[0] += y[i]*H0[i];
@@ -1440,9 +1440,9 @@ void FESurface::CoBaseVectors0(FESurfaceElement &el, double r, double s, vec3d t
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::ContraBaseVectors(const FESurfaceElement& el, int j, vec3d t[2]) const
+void FESurface::ContraBaseVectors(const FESurfaceElement& el, int j, Vector3d t[2]) const
 {
-    vec3d e[2];
+    Vector3d e[2];
     CoBaseVectors(el, j, e);
     mat2d M = Metric(el, j);
     mat2d Mi = M.inverse();
@@ -1452,9 +1452,9 @@ void FESurface::ContraBaseVectors(const FESurfaceElement& el, int j, vec3d t[2])
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::ContraBaseVectorsP(FESurfaceElement& el, int j, vec3d t[2])
+void FESurface::ContraBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2])
 {
-    vec3d e[2];
+    Vector3d e[2];
     CoBaseVectorsP(el, j, e);
     mat2d M = MetricP(el, j);
     mat2d Mi = M.inverse();
@@ -1464,9 +1464,9 @@ void FESurface::ContraBaseVectorsP(FESurfaceElement& el, int j, vec3d t[2])
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::ContraBaseVectors(FESurfaceElement& el, double r, double s, vec3d t[2])
+void FESurface::ContraBaseVectors(FESurfaceElement& el, double r, double s, Vector3d t[2])
 {
-	vec3d e[2];
+	Vector3d e[2];
 	CoBaseVectors(el, r, s, e);
 	mat2d M = Metric(el, r, s);
 	mat2d Mi = M.inverse();
@@ -1477,9 +1477,9 @@ void FESurface::ContraBaseVectors(FESurfaceElement& el, double r, double s, vec3
 
 //-----------------------------------------------------------------------------
 
-void FESurface::ContraBaseVectors0(FESurfaceElement& el, double r, double s, vec3d t[2])
+void FESurface::ContraBaseVectors0(FESurfaceElement& el, double r, double s, Vector3d t[2])
 {
-	vec3d e[2];
+	Vector3d e[2];
 	CoBaseVectors0(el, r, s, e);
 	mat2d M = Metric0(el, r, s);
 	mat2d Mi = M.inverse();
@@ -1492,13 +1492,13 @@ void FESurface::ContraBaseVectors0(FESurfaceElement& el, double r, double s, vec
 double FESurface::jac0(FESurfaceElement &el, int n)
 {
 	const int nseln = el.Nodes();
-	vec3d r0[FEElement::MAX_NODES];
+	Vector3d r0[FEElement::MAX_NODES];
 	if (!m_bshellb) for (int i=0; i<nseln; ++i) r0[i] = GetMesh()->Node(el.m_node[i]).m_r0;
     else for (int i=0; i<nseln; ++i) r0[i] = GetMesh()->Node(el.m_node[i]).s0();
 
 	double* Gr = el.Gr(n);
 	double* Gs = el.Gs(n);
-	vec3d dxr(0,0,0), dxs(0,0,0);
+	Vector3d dxr(0,0,0), dxs(0,0,0);
 	for (int k=0; k<nseln; ++k)
 	{
 		dxr.x += Gr[k]*r0[k].x;
@@ -1513,16 +1513,16 @@ double FESurface::jac0(FESurfaceElement &el, int n)
 }
 
 //-----------------------------------------------------------------------------
-double FESurface::jac0(const FESurfaceElement &el, int n, vec3d& nu)
+double FESurface::jac0(const FESurfaceElement &el, int n, Vector3d& nu)
 {
 	const int nseln = el.Nodes();
-	vec3d r0[FEElement::MAX_NODES];
+	Vector3d r0[FEElement::MAX_NODES];
 	if (!m_bshellb) for (int i=0; i<nseln; ++i) r0[i] = GetMesh()->Node(el.m_node[i]).m_r0;
     else for (int i=0; i<nseln; ++i) r0[i] = GetMesh()->Node(el.m_node[i]).s0();
 
 	double* Gr = el.Gr(n);
 	double* Gs = el.Gs(n);
-	vec3d dxr(0,0,0), dxs(0,0,0);
+	Vector3d dxr(0,0,0), dxs(0,0,0);
 	for (int k=0; k<nseln; ++k)
 	{
 		dxr.x += Gr[k]*r0[k].x;
@@ -1541,9 +1541,9 @@ double FESurface::jac0(const FESurfaceElement &el, int n, vec3d& nu)
 // This function calculates the intersection of a ray with a triangle
 // and returns true if the ray intersects the triangle.
 //
-bool IntersectTri(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double eps)
+bool IntersectTri(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
-	vec3d e[2], E[2];
+	Vector3d e[2], E[2];
 	mat2d G;
 
 	// create base vectors on triangle
@@ -1551,7 +1551,7 @@ bool IntersectTri(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double ep
 	e[1] = y[2]-y[0];
 
 	// create triangle normal
-	vec3d m = e[0]^e[1]; m.unit();
+	Vector3d m = e[0]^e[1]; m.unit();
 
 	double d = n*m;
 //	if (d != 0)
@@ -1562,7 +1562,7 @@ bool IntersectTri(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double ep
 		g = m*(y[0] - r)/d;
 
 		// intersection point with plane of triangle
-		vec3d q = r + n*g;
+		Vector3d q = r + n*g;
 
 		// next, we decompose q into its components
 		// in the triangle basis
@@ -1593,10 +1593,10 @@ bool IntersectTri(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double ep
 //! This function calculates the intersection of a ray with a quad
 //! and returns true if the ray intersected.
 //!
-bool IntersectQuad(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double eps)
+bool IntersectQuad(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
 	// first we're going to see if the ray intersects the two subtriangles
-	vec3d x1[3], x2[3];
+	Vector3d x1[3], x2[3];
 	x1[0] = y[0]; x2[0] = y[2];
 	x1[1] = y[1]; x2[1] = y[3];
 	x1[2] = y[3]; x2[2] = y[1];
@@ -1623,9 +1623,9 @@ bool IntersectQuad(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 	// we calculate a more accurate projection
 	if (b)
 	{
-		mat3d A;
-		vec3d dx;
-		vec3d F, F1, F2, F3;
+		Matrix3d A;
+		Vector3d dx;
+		Vector3d F, F1, F2, F3;
 		double H[4], H1[4], H2[4];
 
 		double l1 = rp;
@@ -1662,7 +1662,7 @@ bool IntersectQuad(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 			A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
 
 			// calculate solution increment
-            mat3d Ai = A.inverse();
+            Matrix3d Ai = A.inverse();
 			dx = -(Ai*F);
 
 			// update solution
@@ -1679,7 +1679,7 @@ bool IntersectQuad(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 		rs[0] = l1;
 		rs[1] = l2;
 		g     = l3;
-        vec3d nu2 = F1 ^ F2;
+        Vector3d nu2 = F1 ^ F2;
         nu2.unit();
         double cosq = n*nu2;
         if (cosq > 0) return false;
@@ -1697,11 +1697,11 @@ bool IntersectQuad(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 //! This function calculates the intersection of a ray with a quad
 //! and returns true if the ray intersected.
 //!
-bool IntersectQuad8(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double eps)
+bool IntersectQuad8(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
-	mat3d A;
-	vec3d dx;
-	vec3d F, F1, F2, F3;
+	Matrix3d A;
+	Vector3d dx;
+	Vector3d F, F1, F2, F3;
 	double H[8], H1[8], H2[8];
 
 	double l1 = 0;
@@ -1758,7 +1758,7 @@ bool IntersectQuad8(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double 
 		A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
 
 		// calculate solution increment
-        mat3d Ai = A.inverse();
+        Matrix3d Ai = A.inverse();
 		dx = -(Ai*F);
 
 		// update solution
@@ -1775,7 +1775,7 @@ bool IntersectQuad8(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double 
 	rs[0] = l1;
 	rs[1] = l2;
 	g     = l3;
-    vec3d nu2 = F1 ^ F2;
+    Vector3d nu2 = F1 ^ F2;
     nu2.unit();
     double cosq = n*nu2;
     if (cosq > 0) return false;
@@ -1791,11 +1791,11 @@ bool IntersectQuad8(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double 
 //! This function calculates the intersection of a ray with a quad
 //! and returns true if the ray intersected.
 //!
-bool IntersectQuad9(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double eps)
+bool IntersectQuad9(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
-	mat3d A;
-	vec3d dx;
-	vec3d F, F1, F2, F3;
+	Matrix3d A;
+	Vector3d dx;
+	Vector3d F, F1, F2, F3;
 	double H[9], H1[9], H2[9];
 
 	double l1 = 0;
@@ -1857,7 +1857,7 @@ bool IntersectQuad9(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double 
 		A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
 
 		// calculate solution increment
-        mat3d Ai = A.inverse();
+        Matrix3d Ai = A.inverse();
 		dx = -(Ai*F);
 
 		// update solution
@@ -1874,7 +1874,7 @@ bool IntersectQuad9(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double 
 	rs[0] = l1;
 	rs[1] = l2;
 	g     = l3;
-    vec3d nu2 = F1 ^ F2;
+    Vector3d nu2 = F1 ^ F2;
     nu2.unit();
     double cosq = n*nu2;
     if (cosq > 0) return false;
@@ -1890,10 +1890,10 @@ bool IntersectQuad9(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double 
 //! This function calculates the intersection of a ray with a 6-node triangle
 //! and returns true if the ray intersected.
 //!
-bool IntersectTri6(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double eps)
+bool IntersectTri6(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
 	// first we're going to see if the ray intersects the four subtriangles
-	vec3d x1[3], x2[3], x3[3], x4[3];
+	Vector3d x1[3], x2[3], x3[3], x4[3];
 	x1[0] = y[0]; x2[0] = y[3]; x3[0] = y[5]; x4[0] = y[4];
 	x1[1] = y[3]; x2[1] = y[1]; x3[1] = y[4]; x4[1] = y[5];
 	x1[2] = y[5]; x2[2] = y[4]; x3[2] = y[2]; x4[2] = y[3];
@@ -1934,9 +1934,9 @@ bool IntersectTri6(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 	// we calculate a more accurate projection
 	if (b)
 	{
-		mat3d A;
-		vec3d dx;
-		vec3d F, F1, F2, F3;
+		Matrix3d A;
+		Vector3d dx;
+		Vector3d F, F1, F2, F3;
 		double H[6], H1[6], H2[6];
 		
 		double l0;
@@ -1987,7 +1987,7 @@ bool IntersectTri6(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 			A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
 			
 			// calculate solution increment
-            mat3d Ai = A.inverse();
+            Matrix3d Ai = A.inverse();
 			dx = -(Ai*F);
 			
 			// update solution
@@ -2004,7 +2004,7 @@ bool IntersectTri6(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 		rs[0] = l1;
 		rs[1] = l2;
 		g     = l3;
-        vec3d nu2 = F1 ^ F2;
+        Vector3d nu2 = F1 ^ F2;
         nu2.unit();
         double cosq = n*nu2;
         if (cosq > 0) return false;
@@ -2020,10 +2020,10 @@ bool IntersectTri6(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 //! This function calculates the intersection of a ray with a 6-node triangle
 //! and returns true if the ray intersected.
 //!
-bool IntersectTri7(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double eps)
+bool IntersectTri7(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
 	// first we're going to see if the ray intersects the four subtriangles
-	vec3d x1[3], x2[3], x3[3], x4[3];
+	Vector3d x1[3], x2[3], x3[3], x4[3];
 	x1[0] = y[0]; x2[0] = y[3]; x3[0] = y[5]; x4[0] = y[4];
 	x1[1] = y[3]; x2[1] = y[1]; x3[1] = y[4]; x4[1] = y[5];
 	x1[2] = y[5]; x2[2] = y[4]; x3[2] = y[2]; x4[2] = y[3];
@@ -2064,9 +2064,9 @@ bool IntersectTri7(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 	// we calculate a more accurate projection
 	if (b)
 	{
-		mat3d A;
-		vec3d dx;
-		vec3d F, F1, F2, F3;
+		Matrix3d A;
+		Vector3d dx;
+		Vector3d F, F1, F2, F3;
 		double H[7], H1[7], H2[7];
 		
 		double l0;
@@ -2120,7 +2120,7 @@ bool IntersectTri7(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 			A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
 			
 			// calculate solution increment
-            mat3d Ai = A.inverse();
+            Matrix3d Ai = A.inverse();
 			dx = -(Ai*F);
 			
 			// update solution
@@ -2137,7 +2137,7 @@ bool IntersectTri7(vec3d* y, vec3d r, vec3d n, double rs[2], double& g, double e
 		rs[0] = l1;
 		rs[1] = l2;
 		g     = l3;
-        vec3d nu2 = F1 ^ F2;
+        Vector3d nu2 = F1 ^ F2;
         nu2.unit();
         double cosq = n*nu2;
         if (cosq > 0) return false;
@@ -2180,13 +2180,13 @@ void FESurface::Invert()
 //! It simply calls the correct intersection function based on the type
 //! of element.
 //!
-bool FESurface::Intersect(FESurfaceElement& el, vec3d r, vec3d n, double rs[2], double& g, double eps)
+bool FESurface::Intersect(FESurfaceElement& el, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
 	int N = el.Nodes();
 
 	// get the element nodes
 	FEMesh& mesh = *m_pMesh;
-	vec3d y[FEElement::MAX_NODES];
+	Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (int i=0; i<N; ++i) y[i] = mesh.Node(el.m_node[i]).m_rt;
     else for (int i=0; i<N; ++i) y[i] = mesh.Node(el.m_node[i]).st();
 
@@ -2267,7 +2267,7 @@ void FESurface::Serialize(DumpStream &ar)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::GetNodalCoordinates(FESurfaceElement& el, vec3d* rt)
+void FESurface::GetNodalCoordinates(FESurfaceElement& el, Vector3d* rt)
 {
 	FEMesh& mesh = *GetMesh();
 	int neln = el.Nodes();
@@ -2276,7 +2276,7 @@ void FESurface::GetNodalCoordinates(FESurfaceElement& el, vec3d* rt)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::GetReferenceNodalCoordinates(FESurfaceElement& el, vec3d* r0)
+void FESurface::GetReferenceNodalCoordinates(FESurfaceElement& el, Vector3d* r0)
 {
 	FEMesh& mesh = *GetMesh();
 	int neln = el.Nodes();
@@ -2286,7 +2286,7 @@ void FESurface::GetReferenceNodalCoordinates(FESurfaceElement& el, vec3d* r0)
 
 //-----------------------------------------------------------------------------
 // Get current coordinates at intermediate configuration
-void FESurface::GetNodalCoordinates(FESurfaceElement& el, double alpha, vec3d* rt)
+void FESurface::GetNodalCoordinates(FESurfaceElement& el, double alpha, Vector3d* rt)
 {
 	int neln = el.Nodes();
 	for (int j = 0; j<neln; ++j) {
@@ -2335,7 +2335,7 @@ void FESurface::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool bre
 	{
 		vector<double> fe;
 		vector<int> lm;
-		vec3d re[FEElement::MAX_NODES];
+		Vector3d re[FEElement::MAX_NODES];
 		std::vector<double> G(dofPerNode, 0.0);
 
 		// get the next element
@@ -2408,7 +2408,7 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 	int order_a = (dofPerNode_a == 1 ? dofList_a.InterpolationOrder(0) : -1);
 	int order_b = (dofPerNode_b == 1 ? dofList_b.InterpolationOrder(0) : -1);
 
-	vec3d rt[FEElement::MAX_NODES];
+	Vector3d rt[FEElement::MAX_NODES];
 
 	matrix kab(dofPerNode_a, dofPerNode_b);
 	FESurfaceDofShape dof_a, dof_b;
@@ -2450,8 +2450,8 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 			double* Gs = el.Gs(n);
 
 			// tangents at integration point
-			pt.dxr = vec3d(0, 0, 0);
-			pt.dxs = vec3d(0, 0, 0);
+			pt.dxr = Vector3d(0, 0, 0);
+			pt.dxs = Vector3d(0, 0, 0);
 			for (int i = 0; i<neln; ++i)
 			{
 				pt.dxr += rt[i] * Gr[i];

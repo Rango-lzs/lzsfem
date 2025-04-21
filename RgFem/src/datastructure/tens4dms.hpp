@@ -210,7 +210,7 @@ inline tens4ds tens4dms::supersymm() const
 
 //-----------------------------------------------------------------------------
 // (a dyad1s a)_ijkl = a_ij a_kl
-inline tens4dms dyad1ms(const mat3d& a)
+inline tens4dms dyad1ms(const Matrix3d& a)
 {
 	tens4dms c;
 	
@@ -273,7 +273,7 @@ inline tens4dms dyad1ms(const mat3d& a)
 
 //-----------------------------------------------------------------------------
 // (a dyad1s b)_ijkl = a_ij b_kl + b_ij a_kl
-inline tens4dms dyad1ms(const mat3d& a, const mat3d& b)
+inline tens4dms dyad1ms(const Matrix3d& a, const Matrix3d& b)
 {
 	tens4dms c;
 	

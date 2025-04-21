@@ -54,8 +54,8 @@ public:
 	//! get the value at a material point
 	double value(const FEMaterialPoint& pt) override;
 	Vector3d valueVector3d(const FEMaterialPoint& pt) override;
-	mat3d valueMat3d(const FEMaterialPoint& pt) override;
-	mat3ds valueMat3ds(const FEMaterialPoint& pt) override;
+	Matrix3d valueMat3d(const FEMaterialPoint& pt) override;
+	Matrix3ds valueMat3ds(const FEMaterialPoint& pt) override;
 
 	//! Get the element set
 	const FEElementSet* GetElementSet() const { return m_elset; }
@@ -86,14 +86,14 @@ public:
 	void setValue(int n, double v) override;
 	void setValue(int n, const vec2d& v) override;
 	void setValue(int n, const Vector3d& v) override;
-	void setValue(int n, const mat3d& v) override;
-	void setValue(int n, const mat3ds& v) override;
+	void setValue(int n, const Matrix3d& v) override;
+	void setValue(int n, const Matrix3ds& v) override;
 
 	void fillValue(double v) override;
 	void fillValue(const vec2d& v) override;
 	void fillValue(const Vector3d& v) override;
-	void fillValue(const mat3d& v) override;
-	void fillValue(const mat3ds& v) override;
+	void fillValue(const Matrix3d& v) override;
+	void fillValue(const Matrix3ds& v) override;
 
 private:
 	void Realloc(int newElemSize, int newMaxElemNodes);

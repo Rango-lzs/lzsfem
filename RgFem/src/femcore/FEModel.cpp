@@ -746,7 +746,7 @@ void FEModel::AttachLoadController(FEParam* param, int lc)
             lp.m_scl = param->value<double>();
             break;
         case FE_PARAM_VEC3D:
-            lp.m_vscl = param->value<vec3d>();
+            lp.m_vscl = param->value<Vector3d>();
             break;
     }
 

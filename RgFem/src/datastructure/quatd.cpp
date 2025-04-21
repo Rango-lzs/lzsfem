@@ -55,7 +55,7 @@ quatd quatd::slerp(quatd &q1, quatd &q2, const double t)
 }
 
 //-----------------------------------------------------------------------------
-quatd::quatd(const mat3d& m)
+quatd::quatd(const Matrix3d& m)
 {
 	quatd& q = *this;
 	double t;
@@ -136,14 +136,14 @@ void quatd::GetEuler(double& X, double& Y, double& Z) const
 // l[0] = psi   (x-rotation)
 // l[1] = theta (y-rotation)
 // l[2] = phi   (z-rotation)
-mat3d euler2rot(double l[3])
+Matrix3d euler2rot(double l[3])
 {
 	double c0 = cos(l[0]), s0 = sin(l[0]);
 	double c1 = cos(l[1]), s1 = sin(l[1]);
 	double c2 = cos(l[2]), s2 = sin(l[2]);
-	mat3d Rx(1.0, 0.0, 0.0, 0.0, c0, -s0, 0.0, s0, c0);
-	mat3d Ry(c1, 0.0, s1, 0.0, 1.0, 0.0, -s1, 0.0, c1);
-	mat3d Rz(c2, -s2, 0.0, s2, c2, 0.0, 0.0, 0.0, 1.0);
+	Matrix3d Rx(1.0, 0.0, 0.0, 0.0, c0, -s0, 0.0, s0, c0);
+	Matrix3d Ry(c1, 0.0, s1, 0.0, 1.0, 0.0, -s1, 0.0, c1);
+	Matrix3d Rz(c2, -s2, 0.0, s2, c2, 0.0, 0.0, 0.0, 1.0);
 	return Rz*Ry*Rx;
 }
 
@@ -152,7 +152,7 @@ mat3d euler2rot(double l[3])
 // l[0] = psi   (x-rotation)
 // l[1] = theta (y-rotation)
 // l[2] = phi   (z-rotation)
-void rot2euler(const mat3d& m, double l[3])
+void rot2euler(const Matrix3d& m, double l[3])
 {
 	const double e = 1e-12;
 	if (fabs(m(2,0) - 1.0) < e)
@@ -183,6 +183,6 @@ void rot2euler(const mat3d& m, double l[3])
 // convert a quaternion to Euler angles
 void quat2euler(const quatd& q, double l[3])
 {
-	mat3d Q = q.RotationMatrix();
+	Matrix3d Q = q.RotationMatrix();
 	rot2euler(Q, l);
 }

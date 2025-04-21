@@ -1,6 +1,5 @@
 #pragma once
 #include "femcore/fem_export.h"
-#include "FECoreKernel.h"
 #include <vector>
 #include <string>
 #include <chrono>

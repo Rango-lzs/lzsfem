@@ -192,7 +192,7 @@ void FELinearTrussDomain::ElementStiffness(int iel, matrix& ke)
 	FETrussElement& el = Element(iel);
 
 	// nodal coordinates
-	vec3d r0[2], rt[2];
+	Vector3d r0[2], rt[2];
 	for (int i=0; i<2; ++i)
 	{
 		r0[i] = m_pMesh->Node(el.m_node[i]).m_r0;
@@ -223,7 +223,7 @@ void FELinearTrussDomain::ElementStiffness(int iel, matrix& ke)
 	double T = tau*V/l;
 
 	// element normal
-	vec3d n = TrussNormal(el);
+	Vector3d n = TrussNormal(el);
 
 	// calculate the tangent matrix
 	ke.resize(6, 6);
@@ -246,7 +246,7 @@ void FELinearTrussDomain::ElementStiffness(int iel, matrix& ke)
 void FELinearTrussDomain::ElementMassMatrix(FETrussElement& el, matrix& me)
 {
 	// nodal coordinates
-	vec3d r0[2];
+	Vector3d r0[2];
 	for (int i = 0; i < 2; ++i)
 	{
 		r0[i] = m_pMesh->Node(el.m_node[i]).m_r0;
@@ -283,13 +283,13 @@ void FELinearTrussDomain::ElementInternalForces(FETrussElement& el, vector<doubl
 	FETrussMaterialPoint& pt = *(mp.ExtractData<FETrussMaterialPoint>());
 
 	// get the element's normal
-	vec3d n = TrussNormal(el);
+	Vector3d n = TrussNormal(el);
 
 	// get the element's Kirchhoff stress
 	double tau = pt.m_tau;
 
 	// nodal coordinates
-	vec3d r0[2], rt[2];
+	Vector3d r0[2], rt[2];
 	for (int i=0; i<2; ++i)
 	{
 		r0[i] = m_pMesh->Node(el.m_node[i]).m_r0;
@@ -320,7 +320,7 @@ void FELinearTrussDomain::ElementInternalForces(FETrussElement& el, vector<doubl
 void FELinearTrussDomain::Update(const FETimeInfo& tp)
 {
 	// loop over all elements
-	vec3d r0[2], rt[2];
+	Vector3d r0[2], rt[2];
 	for (int i=0; i<(int) m_Elem.size(); ++i)
 	{
 		// unpack the element

@@ -75,7 +75,7 @@ public:
     mat2d gradient(FEElement2D& el, vec2d* fn, int n);
     
     //! calculate in-plane gradient of vector function at integration points
-    mat3d gradient(FEElement2D& el, Vector3d* fn, int n);
+    Matrix3d gradient(FEElement2D& el, Vector3d* fn, int n);
     
     // jacobian with respect to reference frame
     double detJ0(FEElement2D& el, int n);

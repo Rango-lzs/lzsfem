@@ -119,7 +119,7 @@ bool FEElasticEASShellDomain::Init()
         el.m_alphai.resize(m_nEAS, 1); el.m_alphai.zero();
         el.m_Kua.resize(neln,matrix(3, m_nEAS));
         el.m_Kwa.resize(neln,matrix(3, m_nEAS));
-        el.m_E.resize(nint, mat3ds(0, 0, 0, 0, 0, 0));
+        el.m_E.resize(nint, Matrix3ds(0, 0, 0, 0, 0, 0));
     }
     
     return true;
@@ -224,7 +224,7 @@ void FEElasticEASShellDomain::ElementInternalForce(FEShellElementNew& el, vector
     Vector3d Gcnt[3];
     
     // allocate arrays
-    vector<mat3ds> S(nint);
+    vector<Matrix3ds> S(nint);
     vector<tens4dmm> C(nint);
     vector<double> EE;
     vector< vector<Vector3d>> HU;
@@ -270,14 +270,14 @@ void FEElasticEASShellDomain::ElementInternalForce(FEShellElementNew& el, vector
     {
         ContraBaseVectors0(el, n, Gcnt);
         
-        mat3ds E;
+        Matrix3ds E;
         EvaluateEh(el, n, Gcnt, E, hu, hw, Nu, Nw);
         EvaluateANS(el, n, Gcnt, E, hu, hw, EE, HU, HW);
         
         // evaluate 2nd P-K stress
         matrix SC(6,1);
         mat3dsCntMat61(S[n], Gcnt, SC);
-        //        mat3ds S = m_pMat->PK2Stress(E);
+        //        Matrix3ds S = m_pMat->PK2Stress(E);
         //        mat3dsCntMat61(S, Gcnt, SC);
         
         // calculate the jacobian and multiply by Gauss weight
@@ -453,7 +453,7 @@ void FEElasticEASShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShell
     double detJ;
     double *M;
     double* gw = el.GaussWeights();
-    mat3ds K;
+    Matrix3ds K;
     
     double Mu[FEElement::MAX_NODES], Md[FEElement::MAX_NODES];
     
@@ -481,10 +481,10 @@ void FEElasticEASShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShell
         {
             for (j=0, j6 = 0; j<neln; ++j, j6 += 6)
             {
-                mat3d Kuu = K*(Mu[i]*Mu[j]);
-                mat3d Kud = K*(Mu[i]*Md[j]);
-                mat3d Kdu = K*(Md[i]*Mu[j]);
-                mat3d Kdd = K*(Md[i]*Md[j]);
+                Matrix3d Kuu = K*(Mu[i]*Mu[j]);
+                Matrix3d Kud = K*(Mu[i]*Md[j]);
+                Matrix3d Kdu = K*(Md[i]*Mu[j]);
+                Matrix3d Kdd = K*(Md[i]*Md[j]);
                 
                 ke[i6  ][j6  ] += Kuu(0,0); ke[i6  ][j6+1] += Kuu(0,1); ke[i6  ][j6+2] += Kuu(0,2);
                 ke[i6+1][j6  ] += Kuu(1,0); ke[i6+1][j6+1] += Kuu(1,1); ke[i6+1][j6+2] += Kuu(1,2);
@@ -615,7 +615,7 @@ void FEElasticEASShellDomain::ElementStiffness(int iel, matrix& ke)
     Vector3d Gcnt[3];
     
     // allocate arrays
-    vector<mat3ds> S(nint);
+    vector<Matrix3ds> S(nint);
     vector<tens4dmm> C(nint);
     vector<double> EE;
     vector< vector<Vector3d>> HU;
@@ -672,7 +672,7 @@ void FEElasticEASShellDomain::ElementStiffness(int iel, matrix& ke)
     {
         ContraBaseVectors0(el, n, Gcnt);
         
-        mat3ds E;
+        Matrix3ds E;
         EvaluateEh(el, n, Gcnt, E, hu, hw, Nu, Nw);
         if (ANS) EvaluateANS(el, n, Gcnt, E, hu, hw, EE, HU, HW);
         
@@ -682,7 +682,7 @@ void FEElasticEASShellDomain::ElementStiffness(int iel, matrix& ke)
         // evaluate 2nd P-K stress
         matrix SC(6,1);
         mat3dsCntMat61(S[n], Gcnt, SC);
-        //        mat3ds S = m_pMat->PK2Stress(E);
+        //        Matrix3ds S = m_pMat->PK2Stress(E);
         //        mat3dsCntMat61(S, Gcnt, SC);
         
         // evaluate the material tangent
@@ -1115,7 +1115,7 @@ void FEElasticEASShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
         mp.m_rt = evaluate(el, r, s, n);
         
         // get the deformation gradient and determinant at intermediate time
-        mat3d Ft, Fp;
+        Matrix3d Ft, Fp;
         double Jt = defgrad(el, Ft, n);
         double Jp = defgradp(el, Fp, n);
         if (tp.alphaf == 1.0)
@@ -1128,7 +1128,7 @@ void FEElasticEASShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
             pt.m_F = Ft * tp.alphaf + Fp * (1 - tp.alphaf);
             pt.m_J = pt.m_F.det();
         }
-        mat3d Fi = pt.m_F.inverse();
+        Matrix3d Fi = pt.m_F.inverse();
         pt.m_L = (Ft - Fp)*Fi/dt;
         if (m_update_dynamic)
         {
@@ -1140,14 +1140,14 @@ void FEElasticEASShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
         m_pMat->UpdateSpecializedMaterialPoints(mp, tp);
         
         // calculate the stress at this material point
-        mat3ds S = m_secant_stress ? m_pMat->SecantStress(mp, true) : m_pMat->PK2Stress(mp, el.m_E[n]);
+        Matrix3ds S = m_secant_stress ? m_pMat->SecantStress(mp, true) : m_pMat->PK2Stress(mp, el.m_E[n]);
         pt.m_s = (pt.m_F*S*pt.m_F.transpose()).sym()/pt.m_J;
 
         // adjust stress for strain energy conservation
         if (tp.alphaf == 0.5)
         {
             // evaluate strain energy at current time
-            mat3d Ftmp = pt.m_F;
+            Matrix3d Ftmp = pt.m_F;
             double Jtmp = pt.m_J;
             pt.m_F = Ft;
             pt.m_J = Jt;
@@ -1156,7 +1156,7 @@ void FEElasticEASShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
             pt.m_F = Ftmp;
             pt.m_J = Jtmp;
             
-            mat3ds D = pt.m_L.sym();
+            Matrix3ds D = pt.m_L.sym();
             double D2 = D.dotdot(D);
             if (D2 > 0)
                 pt.m_s += D*(((pt.m_Wt-pt.m_Wp)/(dt*pt.m_J) - pt.m_s.dotdot(D))/D2);
@@ -1280,8 +1280,8 @@ void FEElasticEASShellDomain::GenerateGMatrix(FEShellElementNew& el, const int n
 }
 
 //-----------------------------------------------------------------------------
-//! Evaluate contravariant components of mat3ds tensor
-void FEElasticEASShellDomain::mat3dsCntMat61(const mat3ds s, const Vector3d* Gcnt, matrix& S)
+//! Evaluate contravariant components of Matrix3ds tensor
+void FEElasticEASShellDomain::mat3dsCntMat61(const Matrix3ds s, const Vector3d* Gcnt, matrix& S)
 {
     S.resize(6, 1);
     S(0,0) = Gcnt[0]*(s*Gcnt[0]);
@@ -1357,7 +1357,7 @@ void FEElasticEASShellDomain::tens4dmmCntMat66(const tens4dmm c, const Vector3d*
 //! Evaluate the matrices and vectors relevant to the EAS method
 void FEElasticEASShellDomain::EvaluateEAS(FEShellElementNew& el, vector<double>& EE,
                                        vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW,
-                                       vector<mat3ds>& S, vector<tens4dmm>& c)
+                                       vector<Matrix3ds>& S, vector<tens4dmm>& c)
 {
     int i, n;
     
@@ -1394,7 +1394,7 @@ void FEElasticEASShellDomain::EvaluateEAS(FEShellElementNew& el, vector<double>&
         FEMaterialPoint& mp = *el.GetMaterialPoint(n);
         
         ContraBaseVectors0(el, n, Gcnt);
-        mat3ds Ec;
+        Matrix3ds Ec;
         // Evaluate compatible strain tensor
         EvaluateEh(el, n, Gcnt, Ec, hu, hw, Nu, Nw);
         // Evaluate assumed natural strain (ANS) and substitute it into Ec
@@ -1413,7 +1413,7 @@ void FEElasticEASShellDomain::EvaluateEAS(FEShellElementNew& el, vector<double>&
         matrix ES(6,1);
         ES = G*el.m_alpha;
         // Evaluate the tensor form of ES
-        mat3ds Es = ((Gcnt[0] & Gcnt[0])*ES(0,0) + (Gcnt[1] & Gcnt[1])*ES(1,0) + (Gcnt[2] & Gcnt[2])*ES(2,0) +
+        Matrix3ds Es = ((Gcnt[0] & Gcnt[0])*ES(0,0) + (Gcnt[1] & Gcnt[1])*ES(1,0) + (Gcnt[2] & Gcnt[2])*ES(2,0) +
                      ((Gcnt[0] & Gcnt[1]) + (Gcnt[1] & Gcnt[0]))*(ES(3,0)/2) +
                      ((Gcnt[1] & Gcnt[2]) + (Gcnt[2] & Gcnt[1]))*(ES(4,0)/2) +
                      ((Gcnt[2] & Gcnt[0]) + (Gcnt[0] & Gcnt[2]))*(ES(5,0)/2)).sym();
@@ -1633,7 +1633,7 @@ void FEElasticEASShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
 //-----------------------------------------------------------------------------
 //! Evaluate assumed natural strain (ANS)
 void FEElasticEASShellDomain::EvaluateANS(FEShellElementNew& el, const int n, const Vector3d* Gcnt,
-                                       mat3ds& Ec, vector<matrix>& hu, vector<matrix>& hw,
+                                       Matrix3ds& Ec, vector<matrix>& hu, vector<matrix>& hw,
                                        vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW)
 {
     // ANS method for 4-node quadrilaterials
@@ -1696,7 +1696,7 @@ void FEElasticEASShellDomain::EvaluateANS(FEShellElementNew& el, const int n, co
 
 //-----------------------------------------------------------------------------
 //! Evaluate strain E and matrix hu and hw
-void FEElasticEASShellDomain::EvaluateEh(FEShellElementNew& el, const int n, const Vector3d* Gcnt, mat3ds& E,
+void FEElasticEASShellDomain::EvaluateEh(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& E,
                                       vector<matrix>& hu, vector<matrix>& hw, vector<Vector3d>& Nu, vector<Vector3d>& Nw)
 {
     FETimeInfo& tp = GetFEModel()->GetTime();

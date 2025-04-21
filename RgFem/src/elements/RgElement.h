@@ -130,15 +130,15 @@ public:  // Filed evalulate
     {
         m_pTraits->project_to_nodes(ai, ao);
     }
-    void Extrapolation(vec3d<3>* ai, vec3d* ao) const
+    void Extrapolation(Vector3d<3>* ai, Vector3d* ao) const
     {
         m_pTraits->project_to_nodes(ai, ao);
     }
-    void Extrapolation(mat3ds* ai, mat3ds* ao) const
+    void Extrapolation(Matrix3ds* ai, Matrix3ds* ao) const
     {
         m_pTraits->project_to_nodes(ai, ao);
     }
-    void Extrapolation(mat3d* ai, mat3d* ao) const
+    void Extrapolation(Matrix3d* ai, Matrix3d* ao) const
     {
         m_pTraits->project_to_nodes(ai, ao);
     }

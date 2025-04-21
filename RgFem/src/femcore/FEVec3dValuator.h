@@ -32,7 +32,7 @@ SOFTWARE.*/
 #include "MathObject.h"
 
 //---------------------------------------------------------------------------------------
-// Base class for evaluating vec3d parameters
+// Base class for evaluating Vector3d parameters
 class FECORE_API FEVec3dValuator : public FEValuator
 {
 	FECORE_SUPER_CLASS(FEVEC3DVALUATOR_ID)
@@ -43,7 +43,7 @@ public:
 
 public:
 	// evaluate value at a material point
-	virtual vec3d operator()(const FEMaterialPoint& pt) = 0;
+	virtual Vector3d operator()(const FEMaterialPoint& pt) = 0;
 
 	// create a copy of the valuator
 	virtual FEVec3dValuator* copy() = 0;
@@ -52,12 +52,12 @@ public:
 	virtual bool isConst() { return false; }
 
 	// return the const value
-	virtual vec3d* constValue() { return nullptr; }
+	virtual Vector3d* constValue() { return nullptr; }
 
 	// return a unit vector
-	vec3d unitVector(const FEMaterialPoint& pt)
+	Vector3d unitVector(const FEMaterialPoint& pt)
 	{
-		vec3d v = operator () (pt);
+		Vector3d v = operator () (pt);
 		return v.Normalized();
 	}
 };

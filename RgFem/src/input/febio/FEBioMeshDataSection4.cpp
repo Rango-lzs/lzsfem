@@ -167,7 +167,7 @@ void FEBioMeshDataSection4::ParseNodeData(XMLTag& tag, FENodeDataMap& map)
 			{
 			case FE_DOUBLE:	map.setValue(n, data[0]); break;
 			case FE_VEC2D:	map.setValue(n, vec2d(data[0], data[1])); break;
-			case FE_VEC3D:	map.setValue(n, vec3d(data[0], data[1], data[2])); break;
+			case FE_VEC3D:	map.setValue(n, Vector3d(data[0], data[1], data[2])); break;
 			default:
 				assert(false);
 			}
@@ -379,7 +379,7 @@ void FEBioMeshDataSection4::ParseSurfaceData(XMLTag& tag, FESurfaceMap& map)
 			{
 			case FE_DOUBLE:	map.setValue(n, data[0]); break;
 			case FE_VEC2D:	map.setValue(n, vec2d(data[0], data[1])); break;
-			case FE_VEC3D:	map.setValue(n, vec3d(data[0], data[1], data[2])); break;
+			case FE_VEC3D:	map.setValue(n, Vector3d(data[0], data[1], data[2])); break;
 			default:
 				assert(false);
 			}
@@ -393,7 +393,7 @@ void FEBioMeshDataSection4::ParseSurfaceData(XMLTag& tag, FESurfaceMap& map)
 				{
 				case FE_DOUBLE:	map.setValue(n, i, pd[0]); break;
 				case FE_VEC2D:	map.setValue(n, i, vec2d(pd[0], pd[1])); break;
-				case FE_VEC3D:	map.setValue(n, i, vec3d(pd[0], pd[1], pd[2])); break;
+				case FE_VEC3D:	map.setValue(n, i, Vector3d(pd[0], pd[1], pd[2])); break;
 				default:
 					assert(false);
 				}
@@ -488,7 +488,7 @@ void FEBioMeshDataSection4::ParseElementData(XMLTag& tag, FEDomainMap& map)
 	int m = map.MaxNodes();
 	double data[3 * FEElement::MAX_NODES]; // make sure this array is large enough to store any data map type (current 3 for FE_VEC3D)
 
-	// TODO: For vec3d values, I sometimes need to normalize the vectors (e.g. for fibers). How can I do this?
+	// TODO: For Vector3d values, I sometimes need to normalize the vectors (e.g. for fibers). How can I do this?
 
 	int ncount = 0;
 	++tag;
@@ -509,9 +509,9 @@ void FEBioMeshDataSection4::ParseElementData(XMLTag& tag, FEDomainMap& map)
 			{
 			case FE_DOUBLE:	map.setValue(n, v[0]); break;
 			case FE_VEC2D:	map.setValue(n, vec2d(v[0], v[1])); break;
-			case FE_VEC3D:	map.setValue(n, vec3d(v[0], v[1], v[2])); break;
-			case FE_MAT3D: map.setValue(n, mat3d(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8])); break;
-			case FE_MAT3DS: map.setValue(n, mat3ds(v[0], v[1], v[2], v[3], v[4], v[5])); break;
+			case FE_VEC3D:	map.setValue(n, Vector3d(v[0], v[1], v[2])); break;
+			case FE_MAT3D: map.setValue(n, Matrix3d(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8])); break;
+			case FE_MAT3DS: map.setValue(n, Matrix3ds(v[0], v[1], v[2], v[3], v[4], v[5])); break;
 			default:
 				assert(false);
 			}
@@ -525,7 +525,7 @@ void FEBioMeshDataSection4::ParseElementData(XMLTag& tag, FEDomainMap& map)
 				{
 				case FE_DOUBLE:	map.setValue(n, i, v[0]); break;
 				case FE_VEC2D:	map.setValue(n, i, vec2d(v[0], v[1])); break;
-				case FE_VEC3D:	map.setValue(n, i, vec3d(v[0], v[1], v[2])); break;
+				case FE_VEC3D:	map.setValue(n, i, Vector3d(v[0], v[1], v[2])); break;
 				default:
 					assert(false);
 				}
@@ -578,9 +578,9 @@ void FEBioMeshDataSection4::ParseMaterialFibers(XMLTag& tag, FEElementSet& set)
 			FEElement& el = set.Element(i);
 
 			if (di.nval != 3) throw XMLReader::InvalidTag(tag);
-			vec3d v(di.val[0], di.val[1], di.val[2]);
+			Vector3d v(di.val[0], di.val[1], di.val[2]);
 			v.unit();
-			map->set<vec3d>(i, v);
+			map->set<Vector3d>(i, v);
 		}
 	}
 }
@@ -651,12 +651,12 @@ void FEBioMeshDataSection4::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 					++tag;
 				} while (!tag.isend());
 
-				vec3d v1(a[0], a[1], a[2]);
-				vec3d v2(d[0], d[1], d[2]);
+				Vector3d v1(a[0], a[1], a[2]);
+				Vector3d v2(d[0], d[1], d[2]);
 
-				vec3d e1(v1);
-				vec3d e3 = v1 ^ v2;
-				vec3d e2 = e3 ^ e1;
+				Vector3d e1(v1);
+				Vector3d e3 = v1 ^ v2;
+				Vector3d e2 = e3 ^ e1;
 
 				// normalize
 				e1.unit();
@@ -664,7 +664,7 @@ void FEBioMeshDataSection4::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 				e3.unit();
 
 				// set the value
-				mat3d A(e1, e2, e3);
+				Matrix3d A(e1, e2, e3);
 
 				// convert to quaternion
 				quatd Q(A);
@@ -705,7 +705,7 @@ void FEBioMeshDataSection4::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 		// data will be generated
 		FEModel* fem = GetFEModel();
 		FEElemDataGenerator* gen = 0;
-		if (strcmp(szgen, "const") == 0) gen = new FEConstDataGenerator<mat3d, FEElemDataGenerator>(fem);
+		if (strcmp(szgen, "const") == 0) gen = new FEConstDataGenerator<Matrix3d, FEElemDataGenerator>(fem);
 		else
 		{
 			gen = fecore_new<FEElemDataGenerator>(szgen, fem);
@@ -759,12 +759,12 @@ void FEBioMeshDataSection4::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 					++tag;
 				} while (!tag.isend());
 
-				vec3d v1(a[0], a[1], a[2]);
-				vec3d v2(d[0], d[1], d[2]);
+				Vector3d v1(a[0], a[1], a[2]);
+				Vector3d v2(d[0], d[1], d[2]);
 
-				vec3d e1(v1);
-				vec3d e3 = v1 ^ v2;
-				vec3d e2 = e3 ^ e1;
+				Vector3d e1(v1);
+				Vector3d e3 = v1 ^ v2;
+				Vector3d e2 = e3 ^ e1;
 
 				// normalize
 				e1.unit();
@@ -772,7 +772,7 @@ void FEBioMeshDataSection4::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 				e3.unit();
 
 				// set the value
-				mat3d Q(e1, e2, e3);
+				Matrix3d Q(e1, e2, e3);
 				map->setValue(lid, Q);
 			}
 			else throw XMLReader::InvalidTag(tag);

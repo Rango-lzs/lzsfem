@@ -77,10 +77,10 @@ set(FEMCORE_HEADERS
     femcore/FEAnalysis/RgAnalysis.h
     femcore/FEBodyLoad.h
     femcore/FEBoundaryCondition.h
-    femcore/FECore.h
-    femcore/FECoreClass.h
-    femcore/FECoreFactory.h
-    femcore/FECoreKernel.h
+    #femcore/FECore.h
+    #femcore/FECoreClass.h
+    #femcore/FECoreFactory.h
+    #femcore/FECoreKernel.h
     femcore/FECoreTask.h
     femcore/FEDataMap.h
     femcore/FEDiscreteSet.h
@@ -152,7 +152,6 @@ set(FEMCORE_HEADERS
     femcore/Matrix/MatrixProfile.h
     femcore/Matrix/SkylineMatrix.h
     femcore/Matrix/SparseMatrix.h
-    femcore/Matrix/matrix.h
     femcore/MatrixSolver/AccelerateSparseSolver.h
     femcore/MatrixSolver/BIPNSolver.h
     femcore/MatrixSolver/BiCGStabSolver.h
@@ -213,6 +212,7 @@ set(FEMCORE_HEADERS
     femcore/tools.h
     femcore/FEResidualVector.h
     femcore/units.h
+    femcore/FELinearConstraint.h
 )
 
 
@@ -315,8 +315,7 @@ set(FEMCORE_SOURCES
     femcore/Matrix/MMatrix.cpp
     femcore/Matrix/MatrixProfile.cpp
     femcore/Matrix/SkylineMatrix.cpp
-    femcore/Matrix/SparseMatrix.cpp
-    femcore/Matrix/matrix.cpp
+    femcore/Matrix/SparseMatrix.cpp    
     femcore/MatrixSolver/AccelerateSparseSolver.cpp
     femcore/MatrixSolver/BIPNSolver.cpp
     femcore/MatrixSolver/BiCGStabSolver.cpp
@@ -370,6 +369,7 @@ set(FEMCORE_SOURCES
     femcore/FESolidLinearSystem.cpp
     femcore/tools.cpp
     femcore/FEResidualVector.cpp
+    femcore/FELinearConstraint.cpp
 )
 
 set(PROJECT_SOURCES
@@ -406,6 +406,7 @@ set(DATA_STRUCTURE_HEADERS
     datastructure/tens4ds.hpp
     datastructure/tensor_base.h
     datastructure/vector_operator.h
+    datastructure/table.h
 )
 
 set(DATA_STRUCTURE_SOURCES

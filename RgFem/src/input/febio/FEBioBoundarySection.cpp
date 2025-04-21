@@ -1444,7 +1444,7 @@ void FEBioBoundarySection25::ParseRigidBody(XMLTag& tag)
 		else if (tag == "initial_velocity")
 		{
 			// get the initial velocity
-			vec3d v;
+			Vector3d v;
 			value(tag, v);
 
 			// create the initial condition
@@ -1458,7 +1458,7 @@ void FEBioBoundarySection25::ParseRigidBody(XMLTag& tag)
 		else if (tag == "initial_angular_velocity")
 		{
 			// get the initial angular velocity
-			vec3d w;
+			Vector3d w;
 			value(tag, w);
 
 			// create the initial condition

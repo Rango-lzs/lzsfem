@@ -151,7 +151,7 @@ REGISTER_FECORE_CLASS(FESphericalAnglesVectorGenerator, "angles");
 REGISTER_FECORE_CLASS(FEMappedValueVec3               , "map");
 REGISTER_FECORE_CLASS(FEUserVectorGenerator           , "user");
 
-// mat3d generators
+// Matrix3d generators
 REGISTER_FECORE_CLASS(FEConstValueMat3d       , "const"      );
 REGISTER_FECORE_CLASS(FEMat3dLocalElementMap  , "local"      );
 REGISTER_FECORE_CLASS(FEMat3dSphericalMap     , "spherical"  );
@@ -161,7 +161,7 @@ REGISTER_FECORE_CLASS(FEMat3dSphericalAngleMap, "angles"     );
 REGISTER_FECORE_CLASS(FEMat3dPolarMap         , "polar"      );
 REGISTER_FECORE_CLASS(FEMappedValueMat3d      , "map"        );
 
-// mat3ds generators
+// Matrix3ds generators
 REGISTER_FECORE_CLASS(FEConstValueMat3ds , "const");
 REGISTER_FECORE_CLASS(FEMappedValueMat3ds, "map");
 

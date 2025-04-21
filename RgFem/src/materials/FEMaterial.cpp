@@ -66,18 +66,18 @@ FEMaterial::~FEMaterial()
 
 //-----------------------------------------------------------------------------
 // evaluate local coordinate system at material point
-mat3d FEMaterial::GetLocalCS(const FEMaterialPoint& mp)
+Matrix3d FEMaterial::GetLocalCS(const FEMaterialPoint& mp)
 {
-	mat3d Q = (m_Q ? m_Q->operator()(mp) : mat3d::identity());
+	Matrix3d Q = (m_Q ? m_Q->operator()(mp) : Matrix3d::identity());
 	FEMaterial* parent = dynamic_cast<FEMaterial*>(GetParent());
 	if (parent) 
 	{
-		mat3d Qp = parent->GetLocalCS(mp);
+		Matrix3d Qp = parent->GetLocalCS(mp);
 		return Qp*Q;
 	}
 	else
 	{
-		mat3d A = mp.m_Q.RotationMatrix();
+		Matrix3d A = mp.m_Q.RotationMatrix();
 		return A*Q;
 	}
 }
@@ -134,7 +134,7 @@ FEMaterialProperty::FEMaterialProperty(FEModel* fem) : FEMaterialBase(fem)
 //-----------------------------------------------------------------------------
 // Since properties don't have local coordinate system,
 // we return the parent's 
-mat3d FEMaterialProperty::GetLocalCS(const FEMaterialPoint& mp)
+Matrix3d FEMaterialProperty::GetLocalCS(const FEMaterialPoint& mp)
 {
 	FEMaterialBase* parent = dynamic_cast<FEMaterialBase*>(GetParent()); assert(parent);
 	return parent->GetLocalCS(mp);

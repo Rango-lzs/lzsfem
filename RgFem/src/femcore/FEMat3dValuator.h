@@ -4,7 +4,7 @@
 class FEDataMap;
 
 //---------------------------------------------------------------------------------------
-// Base class for evaluating vec3d parameters
+// Base class for evaluating Vector3d parameters
 class FEM_EXPORT FEMat3dValuator : public FEValuator
 {
     META_CLASS_DECLARE(FEMat3dValuator, FEValuator);
@@ -12,13 +12,13 @@ class FEM_EXPORT FEMat3dValuator : public FEValuator
 public:
 	FEMat3dValuator(FEModel* fem) : FEValuator(fem) {};
 
-	virtual mat3d operator()(const FEMaterialPoint& pt) = 0;
+	virtual Matrix3d operator()(const FEMaterialPoint& pt) = 0;
 
 	virtual FEMat3dValuator* copy() = 0;
 
 	virtual bool isConst() { return false; }
 
-	virtual mat3d* constValue() { return nullptr; }
+	virtual Matrix3d* constValue() { return nullptr; }
 };
 
 //-----------------------------------------------------------------------------
@@ -30,18 +30,18 @@ public:
 
 	FEMat3dValuator* copy() override;
 
-	mat3d operator()(const FEMaterialPoint& pt) override { return m_val; }
+	Matrix3d operator()(const FEMaterialPoint& pt) override { return m_val; }
 
 	// is this a const value
 	bool isConst() override { return true; }
 
 	// get the const value (returns 0 if param is not const)
-	mat3d* constValue() override { return &m_val; }
+	Matrix3d* constValue() override { return &m_val; }
 
-	mat3d& value() { return m_val; }
+	Matrix3d& value() { return m_val; }
 
 private:
-	mat3d	m_val;
+	Matrix3d	m_val;
 
 	DECLARE_FECORE_CLASS();
 };
@@ -56,7 +56,7 @@ public:
 
 	bool Init() override;
 
-	mat3d operator () (const FEMaterialPoint& mp) override;
+	Matrix3d operator () (const FEMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
@@ -78,17 +78,17 @@ public:
 
 	bool Init() override;
 
-	void SetSphereCenter(const vec3d& c) { m_c = c; }
+	void SetSphereCenter(const Vector3d& c) { m_c = c; }
 
-	void SetSphereVector(const vec3d& r) { m_r = r; }
+	void SetSphereVector(const Vector3d& r) { m_r = r; }
 
-	mat3d operator() (const FEMaterialPoint& mp) override;
+	Matrix3d operator() (const FEMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
 public:
-	vec3d		m_c;	// center of map
-	vec3d		m_r;	// vector for parallel transport
+	Vector3d		m_c;	// center of map
+	Vector3d		m_r;	// vector for parallel transport
 
 protected:
 	DECLARE_FECORE_CLASS();
@@ -102,20 +102,20 @@ public:
 
 	bool Init() override;
 
-	void SetCylinderCenter(vec3d c) { m_c = c; }
+	void SetCylinderCenter(Vector3d c) { m_c = c; }
 
-	void SetCylinderAxis(vec3d a) { m_a = a; m_a.unit(); }
+	void SetCylinderAxis(Vector3d a) { m_a = a; m_a.unit(); }
 
-	void SetCylinderRef(vec3d r) { m_r = r; m_r.unit(); }
+	void SetCylinderRef(Vector3d r) { m_r = r; m_r.unit(); }
 
-	mat3d operator () (const FEMaterialPoint& mp) override;
+	Matrix3d operator () (const FEMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
 public:
-	vec3d		m_c;	// center of map
-	vec3d		m_a;	// axis
-	vec3d		m_r;	// reference direction
+	Vector3d		m_c;	// center of map
+	Vector3d		m_a;	// axis
+	Vector3d		m_r;	// reference direction
 
 protected:
 	DECLARE_FECORE_CLASS();
@@ -129,24 +129,24 @@ public:
 
 	bool Init() override;
 
-	void SetCenter(vec3d c) { m_c = c; }
+	void SetCenter(Vector3d c) { m_c = c; }
 
-	void SetAxis(vec3d a) { m_a = a; m_a.unit(); }
+	void SetAxis(Vector3d a) { m_a = a; m_a.unit(); }
 
-	void SetVector0(vec3d r) { m_d0 = r; m_d0.unit(); }
-	void SetVector1(vec3d r) { m_d1 = r; m_d1.unit(); }
+	void SetVector0(Vector3d r) { m_d0 = r; m_d0.unit(); }
+	void SetVector1(Vector3d r) { m_d1 = r; m_d1.unit(); }
 
 	void SetRadius0(double r) { m_R0 = r; }
 	void SetRadius1(double r) { m_R1 = r; }
 
-	mat3d operator () (const FEMaterialPoint& mp) override;
+	Matrix3d operator () (const FEMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
 public:
-	vec3d		m_c;		// center of map
-	vec3d		m_a;		// axis
-	vec3d		m_d0, m_d1;	// reference direction
+	Vector3d		m_c;		// center of map
+	Vector3d		m_a;		// axis
+	Vector3d		m_d0, m_d1;	// reference direction
 	double		m_R0, m_R1;
 
 protected:
@@ -161,17 +161,17 @@ public:
 
 	bool Init() override;
 
-	void SetVectors(vec3d a, vec3d d);
+	void SetVectors(Vector3d a, Vector3d d);
 
-	mat3d operator () (const FEMaterialPoint& mp) override;
+	Matrix3d operator () (const FEMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
 	void Serialize(DumpStream& ar) override;
 
 public:
-	vec3d	m_a, m_d;
-	mat3d	m_Q;
+	Vector3d	m_a, m_d;
+	Matrix3d	m_Q;
 
 	DECLARE_FECORE_CLASS();
 };
@@ -186,7 +186,7 @@ public:
 
 	FEDataMap* dataMap();
 
-	mat3d operator()(const FEMaterialPoint& pt) override;
+	Matrix3d operator()(const FEMaterialPoint& pt) override;
 
 	FEMat3dValuator* copy() override;
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "FEElement.h"
+#include "RgElement.h"
 
 
 //-----------------------------------------------------------------------------
@@ -42,14 +42,14 @@ public:
 public:
 	std::vector<double>	m_h0;	//!< initial shell thicknesses
 	std::vector<double>	m_ht;	//!< current shell thickness
-	std::vector<vec3d>	m_d0;   //!< initial shell director
+	std::vector<Vector3d>	m_d0;   //!< initial shell director
 
-	std::vector<vec3d>	m_g0[3];//!< reference covariant base vectors
-	std::vector<vec3d>	m_gt[3];//!< current covariant base vectors
-	std::vector<vec3d>	m_gp[3];//!< previous covariant base vectors
+	std::vector<Vector3d>	m_g0[3];//!< reference covariant base vectors
+	std::vector<Vector3d>	m_gt[3];//!< current covariant base vectors
+	std::vector<Vector3d>	m_gp[3];//!< previous covariant base vectors
 
-	std::vector<vec3d>	m_G0[3];//!< reference contravariant base vectors
-	std::vector<vec3d>	m_Gt[3];//!< current contravariant base vectors
+	std::vector<Vector3d>	m_G0[3];//!< reference contravariant base vectors
+	std::vector<Vector3d>	m_Gt[3];//!< current contravariant base vectors
 
 	// indices of solid elements this shell element is attached to.
 	// the first element is attached to the back of the shell
@@ -78,7 +78,7 @@ public:
 	void Serialize(DumpStream &ar) override;
 
 public:
-	std::vector<vec3d>	m_D0;	//!< initial shell directors
+	std::vector<Vector3d>	m_D0;	//!< initial shell directors
 };
 
 //-----------------------------------------------------------------------------
@@ -109,6 +109,6 @@ public: // EAS parameters
 	matrix          m_alphai;
 	std::vector<matrix>  m_Kua;
 	std::vector<matrix>  m_Kwa;
-	std::vector<mat3ds>  m_E;
+	std::vector<Matrix3ds>  m_E;
 };
 

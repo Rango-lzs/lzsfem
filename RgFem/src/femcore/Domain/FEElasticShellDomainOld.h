@@ -109,7 +109,7 @@ public:
 	double detJ(FEShellElementOld& el, int n);
     
 	// calculate deformation gradient
-	double defgrad(FEShellElementOld& el, mat3d& F, int n);
+	double defgrad(FEShellElementOld& el, Matrix3d& F, int n);
 
 	// inverse jacobian with respect to current frame
 	double invjact(FEShellElementOld& el, double J[3][3], int n);

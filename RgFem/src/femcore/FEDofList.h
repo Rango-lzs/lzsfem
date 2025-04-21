@@ -60,5 +60,5 @@ public:
 
 private:
 	FEModel*			m_fem;
-	std::vector<DofId>	m_dofList;
+	std::vector<int>	m_dofList;
 };
