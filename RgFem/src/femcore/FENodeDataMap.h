@@ -31,7 +31,7 @@ SOFTWARE.*/
 
 class FENodeSet;
 
-class FEM_EXPORT FENodeDataMap : public FEDataMap
+class FEM_EXPORT FENodeDataMap : public   
 {
 public:
 	FENodeDataMap();
