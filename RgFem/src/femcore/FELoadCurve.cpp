@@ -123,7 +123,7 @@ bool FELoadCurve::CopyFrom(FELoadCurve* lc)
 void FELoadCurve::Add(double time, double value)
 {
 //	m_fnc.Add(time, value);
-	m_points.push_back(vec2d(time, value));
+	m_points.push_back(Vector2d(time, value));
 }
 
 void FELoadCurve::Clear()

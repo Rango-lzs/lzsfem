@@ -97,7 +97,7 @@ void FESurfaceToSurfaceMap::value(const Vector3d& x, double& data)
 
 	// project x onto surface 1
 	Vector3d q1(0,0,0), q2(0,0,0);
-	vec2d r1, r2;
+	Vector2d r1, r2;
 	FESurfaceElement* pe1 = m_ccp1->Project(r, q1, r1);
 	if (pe1 == nullptr)
 	{

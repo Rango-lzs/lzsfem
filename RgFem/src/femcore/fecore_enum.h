@@ -140,14 +140,6 @@ enum FEDataType {
 	FE_MAT3DS
 };
 
-//-----------------------------------------------------------------------------
-enum FEDataMapType {
-	FE_INVALID_MAP_TYPE,
-	FE_NODE_DATA_MAP,
-	FE_DOMAIN_MAP,
-	FE_SURFACE_MAP,
-	FE_EDGE_MAP
-};
 
 //-----------------------------------------------------------------------------
 //! Different matrix types. This is used when requesting a sparse matrix format

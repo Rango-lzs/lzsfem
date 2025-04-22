@@ -111,10 +111,10 @@ void FESurfaceMap::setValue(int n, double v)
 }
 
 //-----------------------------------------------------------------------------
-void FESurfaceMap::setValue(int n, const vec2d& v)
+void FESurfaceMap::setValue(int n, const Vector2d& v)
 {
 	int index = n*m_maxFaceNodes;
-	for (int i = 0; i<m_maxFaceNodes; ++i) set<vec2d>(index + i, v);
+	for (int i = 0; i<m_maxFaceNodes; ++i) set<Vector2d>(index + i, v);
 }
 
 //-----------------------------------------------------------------------------
@@ -145,9 +145,9 @@ void FESurfaceMap::fillValue(double v)
 }
 
 //-----------------------------------------------------------------------------
-void FESurfaceMap::fillValue(const vec2d& v)
+void FESurfaceMap::fillValue(const Vector2d& v)
 {
-	set<vec2d>(v);
+	set<Vector2d>(v);
 }
 
 //-----------------------------------------------------------------------------

@@ -31,7 +31,7 @@ SOFTWARE.*/
 
 class FENodeSet;
 
-class FECORE_API FENodeDataMap : public FEDataMap
+class FEM_EXPORT FENodeDataMap : public FEDataMap
 {
 public:
 	FENodeDataMap();
@@ -48,7 +48,7 @@ public:
 
 public:
 	void setValue(int n, double v) override;
-	void setValue(int n, const vec2d& v) override;
+	void setValue(int n, const Vector2d& v) override;
 	void setValue(int n, const Vector3d& v) override;
 	void setValue(int n, const Matrix3d& v) override;
 	void setValue(int n, const Matrix3ds& v) override;
@@ -56,7 +56,7 @@ public:
 	double getValue(int n) const;
 
 	void fillValue(double v) override;
-	void fillValue(const vec2d& v) override;
+	void fillValue(const Vector2d& v) override;
 	void fillValue(const Vector3d& v) override;
 	void fillValue(const Matrix3d& v) override;
 	void fillValue(const Matrix3ds& v) override;

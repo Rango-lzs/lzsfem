@@ -35,14 +35,14 @@ public:
 	int GetExtendMode() const { return m_ext; }
 	void SetExtendMode(PointCurve::EXTMODE f);
 
-	std::vector<vec2d> GetPoints() const { return m_points; }
+	std::vector<Vector2d> GetPoints() const { return m_points; }
 
 	double GetValue(double time) override;
 
 private:
 	int		m_int;
 	int		m_ext;
-	std::vector<vec2d>	m_points;
+	std::vector<Vector2d>	m_points;
 
 private:
 	PointCurve	m_fnc;	//!< function to evaluate

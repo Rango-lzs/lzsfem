@@ -84,7 +84,7 @@ int FEPointFunction::Points() const
 
 //-----------------------------------------------------------------------------
 //! set the points
-void FEPointFunction::SetPoints(const std::vector<vec2d>& pts)
+void FEPointFunction::SetPoints(const std::vector<Vector2d>& pts)
 {
 	m_points = pts;
 }
@@ -110,7 +110,7 @@ void FEPointFunction::SetExtendMode(int mode) { m_ext = mode; }
 //! returns point i
 LOADPOINT FEPointFunction::LoadPoint(int i) const
 { 
-	const vec2d& p = m_points[i];
+	const Vector2d& p = m_points[i];
 	LOADPOINT lp;
 	lp.time  = p.x();
 	lp.value = p.y();
@@ -129,7 +129,7 @@ void FEPointFunction::Add(double x, double y)
 	while ((n<nsize) && (m_points[n].x() < x)) ++n;
 
 	// insert loadpoint
-	m_points.insert(m_points.begin() + n, vec2d(x, y));
+	m_points.insert(m_points.begin() + n, Vector2d(x, y));
 }
 
 //-----------------------------------------------------------------------------

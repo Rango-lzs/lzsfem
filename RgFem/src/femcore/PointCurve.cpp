@@ -38,7 +38,7 @@ class PointCurve::Imp
 public:
 	int		fnc;	//!< interpolation function
 	int		ext;	//!< extend mode
-	std::vector<vec2d>	points;
+	std::vector<Vector2d>	points;
 	BSpline* spline;    //!< B-spline
 };
 
@@ -86,13 +86,13 @@ int PointCurve::Add(double x, double y)
 	while ((n < nsize) && (im->points[n].x() < x)) ++n;
 
 	// insert loadpoint
-	im->points.insert(im->points.begin() + n, vec2d(x, y));
+	im->points.insert(im->points.begin() + n, Vector2d(x, y));
 
 	return n;
 }
 
 //-----------------------------------------------------------------------------
-int PointCurve::Add(const vec2d& p)
+int PointCurve::Add(const Vector2d& p)
 {
 	return Add(p.x(), p.y());
 }
@@ -119,26 +119,26 @@ int PointCurve::Points() const
 //
 void PointCurve::SetPoint(int i, double x, double y)
 {
-	vec2d& pt = im->points[i];
+	Vector2d& pt = im->points[i];
 	pt.x() = x;
 	pt.y() = y;
 }
 
 //-----------------------------------------------------------------------------
-void PointCurve::SetPoint(int i, const vec2d& p)
+void PointCurve::SetPoint(int i, const Vector2d& p)
 {
 	im->points[i] = p;
 }
 
 //-----------------------------------------------------------------------------
-void PointCurve::SetPoints(const std::vector<vec2d>& points)
+void PointCurve::SetPoints(const std::vector<Vector2d>& points)
 {
 	im->points = points;
 }
 
 //-----------------------------------------------------------------------------
 //! return all points
-std::vector<vec2d> PointCurve::GetPoints() const
+std::vector<Vector2d> PointCurve::GetPoints() const
 {
 	return im->points;
 }
@@ -173,7 +173,7 @@ int PointCurve::GetExtendMode() const
 
 //-----------------------------------------------------------------------------
 //! get a point
-vec2d PointCurve::Point(int i) const
+Vector2d PointCurve::Point(int i) const
 {
 	return im->points[i];
 }
@@ -246,7 +246,7 @@ inline double qerp(double t, double t0, double f0, double t1, double f1, double 
 
 double PointCurve::value(double time) const
 {
-	std::vector<vec2d>& points = im->points;
+	std::vector<Vector2d>& points = im->points;
 	int nsize = Points();
 	if (nsize == 0) return 0;
 	if (nsize == 1) return points[0].y();
@@ -389,7 +389,7 @@ double PointCurve::ExtendValue(double t) const
 	int nsize = Points();
 	int N = nsize - 1;
 
-	std::vector<vec2d>& points = im->points;
+	std::vector<Vector2d>& points = im->points;
 
 	if (nsize == 0) return 0;
 	if (nsize == 1) return points[0].y();
@@ -635,7 +635,7 @@ double PointCurve::integrate(double a, double b) const
 	// if both points are outside the bounds of the load curve 
 	// just do a single trapezoid
 	// TODO: add cases for  repeat and repeat offset curves
-	std::vector<vec2d>& points = im->points;
+	std::vector<Vector2d>& points = im->points;
 	if (a > points[Points() - 1].x() || b < points[0].x())
 	{
 		integral = (b - a) * (value(a) + value(b)) / 2;

@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 #pragma once
 #include "FEM_EXPORT.h"
-#include "vec2d.h"
+#include "Vector2d.h"
 #include <vector>
 
 class FEM_EXPORT PointCurve
@@ -59,20 +59,20 @@ public:
 	int Add(double x, double y);
 
 	//! adds a point to the point curve
-	int Add(const vec2d& p);
+	int Add(const Vector2d& p);
 
 	//! Clears the loadcurve data
 	void Clear();
 
 	//! set the x and y value of point i
 	void SetPoint(int i, double x, double y);
-	void SetPoint(int i, const vec2d& p);
+	void SetPoint(int i, const Vector2d& p);
 
 	//! set all points at once
-	void SetPoints(const std::vector<vec2d>& points);
+	void SetPoints(const std::vector<Vector2d>& points);
 
 	//! return all points
-	std::vector<vec2d> GetPoints() const;
+	std::vector<Vector2d> GetPoints() const;
 
 	//! remove a point
 	void Delete(int n);
@@ -93,7 +93,7 @@ public:
 	int GetExtendMode() const;
 
 	//! get a point
-	vec2d Point(int i) const;
+	Vector2d Point(int i) const;
 
 	//! finds closest load point
 	int FindPoint(double t, double& tval, int startIndex = 0);

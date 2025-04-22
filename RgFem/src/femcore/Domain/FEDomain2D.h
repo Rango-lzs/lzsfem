@@ -66,13 +66,13 @@ public:
     double invjact(FEElement2D& el, double J[2][2], int n);
     
     //! calculate in-plane gradient of function at integration points
-    vec2d gradient(FEElement2D& el, double* fn, int n);
+    Vector2d gradient(FEElement2D& el, double* fn, int n);
     
     //! calculate in-plane gradient of function at integration points
-    vec2d gradient(FEElement2D& el, vector<double>& fn, int n);
+    Vector2d gradient(FEElement2D& el, vector<double>& fn, int n);
 
     //! calculate in-plane gradient of vector function at integration points
-    mat2d gradient(FEElement2D& el, vec2d* fn, int n);
+    mat2d gradient(FEElement2D& el, Vector2d* fn, int n);
     
     //! calculate in-plane gradient of vector function at integration points
     Matrix3d gradient(FEElement2D& el, Vector3d* fn, int n);
@@ -84,22 +84,22 @@ public:
     double detJt(FEElement2D& el, int n);
     
     //! calculates covariant basis vectors at an integration point
-    void CoBaseVectors(FEElement2D& el, int j, vec2d g[2]);
+    void CoBaseVectors(FEElement2D& el, int j, Vector2d g[2]);
     
     //! calculates contravariant basis vectors at an integration point
-    void ContraBaseVectors(FEElement2D& el, int j, vec2d g[2]);
+    void ContraBaseVectors(FEElement2D& el, int j, Vector2d g[2]);
     
     //! calculates parametric derivatives of covariant basis vectors at an integration point
-    void CoBaseVectorDerivatives(FEElement2D& el, int j, vec2d dg[2][2]);
+    void CoBaseVectorDerivatives(FEElement2D& el, int j, Vector2d dg[2][2]);
     
     //! calculates parametric derivatives of contravariant basis vectors at an integration point
-    void ContraBaseVectorDerivatives(FEElement2D& el, int j, vec2d dg[2][2]);
+    void ContraBaseVectorDerivatives(FEElement2D& el, int j, Vector2d dg[2][2]);
     
     //! calculate the laplacian of a vector function at an integration point
-    vec2d lapvec(FEElement2D& el, vec2d* fn, int n);
+    Vector2d lapvec(FEElement2D& el, Vector2d* fn, int n);
     
     //! calculate the gradient of the divergence of a vector function at an integration point
-    vec2d gradivec(FEElement2D& el, vec2d* fn, int n);
+    Vector2d gradivec(FEElement2D& el, Vector2d* fn, int n);
     
 protected:
     vector<FEElement2D>	m_Elem;	//!< array of elements

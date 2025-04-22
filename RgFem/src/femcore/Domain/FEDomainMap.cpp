@@ -146,20 +146,20 @@ void FEDomainMap::setValue(int n, double v)
 }
 
 //-----------------------------------------------------------------------------
-void FEDomainMap::setValue(int n, const vec2d& v)
+void FEDomainMap::setValue(int n, const Vector2d& v)
 {
 	if (m_fmt == FMT_MULT)
 	{
 		int index = n*m_maxElemNodes;
-		for (int i = 0; i < m_maxElemNodes; ++i) set<vec2d>(index + i, v);
+		for (int i = 0; i < m_maxElemNodes; ++i) set<Vector2d>(index + i, v);
 	}
 	else if (m_fmt == FMT_ITEM)
 	{
-		set<vec2d>(n, v);
+		set<Vector2d>(n, v);
 	}
 	else if (m_fmt == FMT_NODE)
 	{
-		set<vec2d>(n, v);
+		set<Vector2d>(n, v);
 	}
 }
 
@@ -224,9 +224,9 @@ void FEDomainMap::fillValue(double v)
 }
 
 //-----------------------------------------------------------------------------
-void FEDomainMap::fillValue(const vec2d& v)
+void FEDomainMap::fillValue(const Vector2d& v)
 {
-	set<vec2d>(v);
+	set<Vector2d>(v);
 }
 
 //-----------------------------------------------------------------------------

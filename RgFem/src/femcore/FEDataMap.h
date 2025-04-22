@@ -9,7 +9,7 @@ class FEItemList;
 // TODO: This is a work in progress. 
 // This class was added to create a base for FESurfaceMap and FEDomainMap so that both could be used in 
 // FEMappedValue. 
-class FECORE_API FEDataMap : public FEDataArray
+class FEM_EXPORT FEDataMap : public FEDataArray
 {
 public:
 	FEDataMap(FEDataMapType mapType, FEDataType dataType = FE_INVALID_TYPE);

@@ -13,6 +13,16 @@
 class DumpStream;
 
 //-----------------------------------------------------------------------------
+enum FEDataMapType
+{
+    FE_INVALID_MAP_TYPE,
+    FE_NODE_DATA_MAP,
+    FE_DOMAIN_MAP,
+    FE_SURFACE_MAP,
+    FE_EDGE_MAP
+};
+
+//-----------------------------------------------------------------------------
 class FEM_EXPORT FEDataArray
 {
 public:
@@ -25,14 +35,14 @@ public:
 	virtual void setValue(int n, double v) = 0;
 	virtual void setValue(int n, const Vector2d& v) = 0;
 	virtual void setValue(int n, const Vector3d& v) = 0;
-	virtual void setValue(int n, const mat3d& v) = 0;
-	virtual void setValue(int n, const mat3ds& v) = 0;
+	virtual void setValue(int n, const Matrix3d& v) = 0;
+	virtual void setValue(int n, const Matrix3ds& v) = 0;
 
 	virtual void fillValue(double v) = 0;
 	virtual void fillValue(const Vector2d& v) = 0;
 	virtual void fillValue(const Vector3d& v) = 0;
-	virtual void fillValue(const mat3d& v) = 0;
-	virtual void fillValue(const mat3ds& v) = 0;
+	virtual void fillValue(const Matrix3d& v) = 0;
+	virtual void fillValue(const Matrix3ds& v) = 0;
 
 public:
 	//! get the value for a given facet index
@@ -111,18 +121,18 @@ template <> inline Vector3d FEDataArray::get<Vector3d>(int n) const
 	return	Vector3d(m_val[3*n], m_val[3*n + 1], m_val[3*n+2]);
 }
 
-template <> inline mat3d FEDataArray::get<mat3d>(int n) const
+template <> inline Matrix3d FEDataArray::get<Matrix3d>(int n) const
 {
-	assert(m_dataSize == fecoreType<mat3d>::size());
+	assert(m_dataSize == fecoreType<Matrix3d>::size());
 	const double* v = &(m_val[9*n]);
-	return	mat3d(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
+	return	Matrix3d(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
 }
 
-template <> inline mat3ds FEDataArray::get<mat3ds>(int n) const
+template <> inline Matrix3ds FEDataArray::get<Matrix3ds>(int n) const
 {
-	assert(m_dataSize == fecoreType<mat3ds>::size());
+	assert(m_dataSize == fecoreType<Matrix3ds>::size());
 	const double* v = &(m_val[6 * n]);
-	return	mat3ds(v[0], v[1], v[2], v[3], v[4], v[5]);
+	return	Matrix3ds(v[0], v[1], v[2], v[3], v[4], v[5]);
 }
 
 
@@ -150,18 +160,18 @@ template <> inline void FEDataArray::push_back<Vector3d>(const Vector3d& v)
 	m_dataCount++;
 }
 
-template <> inline void FEDataArray::push_back<mat3d>(const mat3d& v)
+template <> inline void FEDataArray::push_back<Matrix3d>(const Matrix3d& v)
 {
-	assert(m_dataSize == fecoreType<mat3d>::size());
+	assert(m_dataSize == fecoreType<Matrix3d>::size());
 	m_val.push_back(v[0][0]); m_val.push_back(v[0][1]); m_val.push_back(v[0][2]);
 	m_val.push_back(v[1][0]); m_val.push_back(v[1][1]); m_val.push_back(v[1][2]);
 	m_val.push_back(v[2][0]); m_val.push_back(v[2][1]); m_val.push_back(v[2][2]);
 	m_dataCount++;
 }
 
-template <> inline void FEDataArray::push_back<mat3ds>(const mat3ds& v)
+template <> inline void FEDataArray::push_back<Matrix3ds>(const Matrix3ds& v)
 {
-	assert(m_dataSize == fecoreType<mat3ds>::size());
+	assert(m_dataSize == fecoreType<Matrix3ds>::size());
 	m_val.push_back(v.xx());
 	m_val.push_back(v.yy());
 	m_val.push_back(v.zz());
@@ -199,9 +209,9 @@ template <> inline bool FEDataArray::set<Vector3d>(int n, const Vector3d& v)
 }
 
 //-----------------------------------------------------------------------------
-template <> inline bool FEDataArray::set<mat3d>(int n, const mat3d& v)
+template <> inline bool FEDataArray::set<Matrix3d>(int n, const Matrix3d& v)
 {
-	assert(m_dataSize == fecoreType<mat3d>::size());
+	assert(m_dataSize == fecoreType<Matrix3d>::size());
 	double* d = &(m_val[9 * n]);
 	d[0] = v[0][0]; d[1] = v[0][1]; d[2] = v[0][2];
 	d[3] = v[1][0]; d[4] = v[1][1]; d[5] = v[1][2];
@@ -210,9 +220,9 @@ template <> inline bool FEDataArray::set<mat3d>(int n, const mat3d& v)
 }
 
 //-----------------------------------------------------------------------------
-template <> inline bool FEDataArray::set<mat3ds>(int n, const mat3ds& v)
+template <> inline bool FEDataArray::set<Matrix3ds>(int n, const Matrix3ds& v)
 {
-	assert(m_dataSize == fecoreType<mat3ds>::size());
+	assert(m_dataSize == fecoreType<Matrix3ds>::size());
 	double* d = &(m_val[6 * n]);
 	d[0] = v.xx();
 	d[1] = v.yy();
@@ -257,9 +267,9 @@ template <> inline bool FEDataArray::set<Vector3d>(const Vector3d& v)
 }
 
 //-----------------------------------------------------------------------------
-template <> inline bool FEDataArray::set<mat3d>(const mat3d& v)
+template <> inline bool FEDataArray::set<Matrix3d>(const Matrix3d& v)
 {
-	assert(m_dataSize == fecoreType<mat3d>::size());
+	assert(m_dataSize == fecoreType<Matrix3d>::size());
 	for (int i = 0; i<(int)m_val.size(); i += 9)
 	{
 		double* d = &m_val[i];
@@ -271,9 +281,9 @@ template <> inline bool FEDataArray::set<mat3d>(const mat3d& v)
 }
 
 //-----------------------------------------------------------------------------
-template <> inline bool FEDataArray::set<mat3ds>(const mat3ds& v)
+template <> inline bool FEDataArray::set<Matrix3ds>(const Matrix3ds& v)
 {
-	assert(m_dataSize == fecoreType<mat3ds>::size());
+	assert(m_dataSize == fecoreType<Matrix3ds>::size());
 	for (int i = 0; i < (int)m_val.size(); i += 6)
 	{
 		double* d = &m_val[i];

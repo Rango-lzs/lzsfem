@@ -30,7 +30,7 @@ SOFTWARE.*/
 #include "fecore_enum.h"
 #include "FEM_EXPORT.h"
 
-class vec2d;
+class Vector2d;
 class Vector3d;
 class Matrix3d;
 class Matrix3ds;
@@ -43,7 +43,7 @@ template <> struct fecoreType<double>
 	static int size() { return 1; }
 };
 
-template <> struct fecoreType<vec2d>
+template <> struct fecoreType<Vector2d>
 {
 	static FEDataType type() { return FE_VEC2D; }
 	static int size() { return 2; }

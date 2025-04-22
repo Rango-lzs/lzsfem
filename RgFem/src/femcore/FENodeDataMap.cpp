@@ -61,9 +61,9 @@ void FENodeDataMap::setValue(int n, double v)
 	set<double>(n, v);
 }
 
-void FENodeDataMap::setValue(int n, const vec2d& v)
+void FENodeDataMap::setValue(int n, const Vector2d& v)
 {
-	set<vec2d>(n, v);
+	set<Vector2d>(n, v);
 }
 
 void FENodeDataMap::setValue(int n, const Vector3d& v)
@@ -86,9 +86,9 @@ void FENodeDataMap::fillValue(double v)
 	set<double>(v);
 }
 
-void FENodeDataMap::fillValue(const vec2d& v)
+void FENodeDataMap::fillValue(const Vector2d& v)
 {
-	set<vec2d>(v);
+	set<Vector2d>(v);
 }
 
 void FENodeDataMap::fillValue(const Vector3d& v)

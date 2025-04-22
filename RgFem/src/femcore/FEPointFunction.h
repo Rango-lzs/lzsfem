@@ -79,7 +79,7 @@ public:
 	int Points() const;
 
 	//! set the points
-	void SetPoints(const std::vector<vec2d>& pts);
+	void SetPoints(const std::vector<Vector2d>& pts);
 
 	//! Serialize data to archive
 	void Serialize(DumpStream& ar) override;
@@ -115,7 +115,7 @@ private:
 	int		m_int;	//!< interpolation function
 	int		m_ext;	//!< extend mode
     bool    m_bln;  //!< points represent (ln(x),y) instead of (x,y)
-	std::vector<vec2d>	m_points;
+	std::vector<Vector2d>	m_points;
 
 private:
 	PointCurve	m_fnc;
