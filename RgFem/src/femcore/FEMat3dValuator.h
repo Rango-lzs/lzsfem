@@ -7,7 +7,7 @@ class FEDataMap;
 // Base class for evaluating Vector3d parameters
 class FEM_EXPORT FEMat3dValuator : public FEValuator
 {
-    META_CLASS_DECLARE(FEMat3dValuator, FEValuator);
+    DECLARE_META_CLASS(FEMat3dValuator, FEValuator);
 
 public:
 	FEMat3dValuator(FEModel* fem) : FEValuator(fem) {};
@@ -23,7 +23,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // A constant valuator
-class FECORE_API FEConstValueMat3d : public FEMat3dValuator
+class FEM_EXPORT FEConstValueMat3d : public FEMat3dValuator
 {
 public:
 	FEConstValueMat3d(FEModel* fem);
@@ -43,13 +43,13 @@ public:
 private:
 	Matrix3d	m_val;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
 
 //-----------------------------------------------------------------------------
 //! This class generates a material axes based on the local element node numbering.
-class FECORE_API FEMat3dLocalElementMap : public FEMat3dValuator
+class FEM_EXPORT FEMat3dLocalElementMap : public FEMat3dValuator
 {
 public:
 	FEMat3dLocalElementMap(FEModel* pfem);
@@ -66,12 +66,12 @@ public:
 	int			m_n[3];	// local element nodes
 
 protected:
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
 //! This class generates material axes based on a spherical map. 
-class FECORE_API FEMat3dSphericalMap : public FEMat3dValuator
+class FEM_EXPORT FEMat3dSphericalMap : public FEMat3dValuator
 {
 public:
 	FEMat3dSphericalMap(FEModel* pfem);
@@ -91,11 +91,11 @@ public:
 	Vector3d		m_r;	// vector for parallel transport
 
 protected:
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API FEMat3dCylindricalMap : public FEMat3dValuator
+class FEM_EXPORT FEMat3dCylindricalMap : public FEMat3dValuator
 {
 public:
 	FEMat3dCylindricalMap(FEModel* pfem);
@@ -118,11 +118,11 @@ public:
 	Vector3d		m_r;	// reference direction
 
 protected:
-	DECLARE_FECORE_CLASS();
+    DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API FEMat3dPolarMap : public FEMat3dValuator
+class FEM_EXPORT FEMat3dPolarMap : public FEMat3dValuator
 {
 public:
 	FEMat3dPolarMap(FEModel* pfem);
@@ -150,11 +150,11 @@ public:
 	double		m_R0, m_R1;
 
 protected:
-	DECLARE_FECORE_CLASS();
+    DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API FEMat3dVectorMap : public FEMat3dValuator
+class FEM_EXPORT FEMat3dVectorMap : public FEMat3dValuator
 {
 public:
 	FEMat3dVectorMap(FEModel* pfem);
@@ -173,11 +173,11 @@ public:
 	Vector3d	m_a, m_d;
 	Matrix3d	m_Q;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
 //---------------------------------------------------------------------------------------
-class FECORE_API FEMappedValueMat3d : public FEMat3dValuator
+class FEM_EXPORT FEMappedValueMat3d : public FEMat3dValuator
 {
 public:
 	FEMappedValueMat3d(FEModel* fem);
@@ -198,5 +198,5 @@ private:
 private:
 	FEDataMap* m_val;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };

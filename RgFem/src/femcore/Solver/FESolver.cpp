@@ -15,7 +15,7 @@
 #include "femcore/FEModel.h"
 #include "femcore/FENode.h"
 #include "femcore/FENLConstraint.h"
-#include  "femcore/FENodalLoad.h"
+#include "femcore/FENodalLoad.h"
 #include "FENodeReorder.h"
 #include "femcore/FESurfacePairConstraint.h"
 #include "LinearSolver.h"
@@ -99,9 +99,9 @@ int FESolver::MatrixSymmetryFlag() const
 
 //-----------------------------------------------------------------------------
 //! get matrix type
-MatrixType FESolver::MatrixType() const
+MatrixType FESolver::MatType() const
 {
-    return (MatrixType)m_msymm;
+    return static_cast<MatrixType>(m_msymm);
 }
 
 //-----------------------------------------------------------------------------
@@ -305,7 +305,7 @@ bool FESolver::InitEquations()
     {
         FENode& node = mesh.Node(P[i]);
         if (node.HasFlags(FENode::EXCLUDE))
-            for (int j = 0; j < node.dofs(); ++j)
+            for (int j = 0; j < node.dofSize(); ++j)
                 node.setDofIdx(j, -1);
     }
     m_dofMap.clear();
@@ -434,7 +434,7 @@ void FESolver::AddEquations(int neq, int partition)
 //-----------------------------------------------------------------------------
 void FESolver::Serialize(DumpStream& ar)
 {
-    FECoreBase::Serialize(ar);
+    FEObjectBase::Serialize(ar);
     ar& m_nrhs& m_niter& m_nref& m_ntotref& m_naug;
 }
 
@@ -502,7 +502,7 @@ FENodalDofInfo FESolver::GetDOFInfoFromEquation(int ieq)
     for (int i = 0; i < mesh.Nodes(); ++i)
     {
         FENode& node = mesh.Node(i);
-        std::vector<int>& id = node.m_dofs;
+        const std::vector<int>& id = node.getDofs();
         for (int j = 0; j < id.size(); ++j)
         {
             if (id[j] == ieq)

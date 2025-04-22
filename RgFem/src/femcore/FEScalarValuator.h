@@ -1,14 +1,14 @@
 #pragma once
-#include "FEValuator.h"
-#include "MathObject.h"
-#include "FEDataMap.h"
-#include "FENodeDataMap.h"
+#include "femcore/FEValuator.h"
+//#include "datastructure/MathObject.h"
+#include "femcore/FEDataMap.h"
+#include "femcore/FENodeDataMap.h"
 
 //---------------------------------------------------------------------------------------
 // Base class for evaluating scalar parameters
 class FEM_EXPORT FEScalarValuator : public FEValuator
 {
-    META_CLASS_DECLARE(FEScalarValuator, FEValuator);
+    DECLARE_META_CLASS(FEScalarValuator, FEValuator);
 
 public:
 	FEScalarValuator(FEModel* fem) : FEValuator(fem) {};
@@ -38,55 +38,55 @@ public:
 private:
 	double	m_val;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
-//---------------------------------------------------------------------------------------
-class FEMathExpression : public MSimpleExpression
-{
-	struct MathParam
-	{
-		int			type;	// 0 = param, 1 = map
-		FEParam* pp;
-		FEDataMap* map;
-	};
-
-public:
-	bool Init(const std::string& expr, FECoreBase* pc = nullptr);
-
-	void operator = (const FEMathExpression& me);
-
-	double value(FEModel* fem, const FEMaterialPoint& pt);
-
-private:
-	std::vector<MathParam>	m_vars;
-};
-
-//---------------------------------------------------------------------------------------
-class FEM_EXPORT FEMathValue : public FEScalarValuator
-{
-public:
-	FEMathValue(FEModel* fem);
-	~FEMathValue();
-	double operator()(const FEMaterialPoint& pt) override;
-
-	bool Init() override;
-
-	FEScalarValuator* copy() override;
-
-	void setMathString(const std::string& s);
-
-	bool create(FECoreBase* pc = 0);
-
-	void Serialize(DumpStream& ar) override;
-
-private:
-	std::string			m_expr;
-	FEMathExpression	m_math;
-	FECoreBase*			m_parent;
-
-	DECLARE_FECORE_CLASS();
-};
+////---------------------------------------------------------------------------------------
+//class FEMathExpression : public MSimpleExpression
+//{
+//	struct MathParam
+//	{
+//		int			type;	// 0 = param, 1 = map
+//		FEParam* pp;
+//		FEDataMap* map;
+//	};
+//
+//public:
+//	bool Init(const std::string& expr, FECoreBase* pc = nullptr);
+//
+//	void operator = (const FEMathExpression& me);
+//
+//	double value(FEModel* fem, const FEMaterialPoint& pt);
+//
+//private:
+//	std::vector<MathParam>	m_vars;
+//};
+//
+////---------------------------------------------------------------------------------------
+//class FEM_EXPORT FEMathValue : public FEScalarValuator
+//{
+//public:
+//	FEMathValue(FEModel* fem);
+//	~FEMathValue();
+//	double operator()(const FEMaterialPoint& pt) override;
+//
+//	bool Init() override;
+//
+//	FEScalarValuator* copy() override;
+//
+//	void setMathString(const std::string& s);
+//
+//	bool create(FECoreBase* pc = 0);
+//
+//	void Serialize(DumpStream& ar) override;
+//
+//private:
+//	std::string			m_expr;
+//	FEMathExpression	m_math;
+//	FECoreBase*			m_parent;
+//
+//	DECLARE_FECORE_CLASS();
+//};
 
 //---------------------------------------------------------------------------------------
 class FEM_EXPORT FEMappedValue : public FEScalarValuator

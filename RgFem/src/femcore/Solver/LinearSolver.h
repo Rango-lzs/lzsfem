@@ -24,7 +24,7 @@ struct  LinearSolverStats
 
 class FEM_EXPORT LinearSolver : public FEObjectBase
 {
-	META_CLASS_DECLARE(LinearSolver, FEObjectBase);
+	DECLARE_META_CLASS(LinearSolver, FEObjectBase);
 
 public:
 	//! constructor

@@ -127,7 +127,7 @@ public:
     int MatrixSymmetryFlag() const;
 
     //! get matrix type
-    MatrixType MatrixType() const;
+    MatrixType MatType() const;
 
     //! build the matrix profile
     virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);

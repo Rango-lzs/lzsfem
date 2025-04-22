@@ -64,6 +64,8 @@ public:
     */
     void setDofIdx(int dof, int idx);
 
+    const std::vector<int>& getDofs();
+
     //! Get the nodal ID
     int GetID() const
     {

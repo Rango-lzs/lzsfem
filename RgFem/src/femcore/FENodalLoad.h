@@ -1,17 +1,17 @@
 #pragma once
-#include "FEModelLoad.h"
-#include "FENodeDataMap.h"
-#include "FEDofList.h"
-#include "FEModelParam.h"
+#include "femcore/FEModelLoad.h"
+#include "femcore/FENodeDataMap.h"
+#include "femcore/FEDofList.h"
+#include "femcore/FEModelParam.h"
 
 //-----------------------------------------------------------------------------
 class FENodeSet;
 
 //-----------------------------------------------------------------------------
 //! Nodal load boundary condition
-class FECORE_API FENodalLoad : public FEModelLoad
+class FEM_EXPORT FENodalLoad : public FEModelLoad
 {
-	FECORE_BASE_CLASS(FENodalLoad)
+    DECLARE_META_CLASS(FENodalLoad, FEModelLoad);
 
 public:
 	//! constructor
@@ -56,14 +56,14 @@ private:
 	FEDofList	m_dofs;
 	FENodeSet*	m_nodeSet;
 	bool		m_brelative;
-	vector<vector<double> >	m_rval;
+	std::vector<std::vector<double> >	m_rval;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
 // Class for prescribing the "load" on a degree of freedom.
-class FECORE_API FENodalDOFLoad : public FENodalLoad
+class FEM_EXPORT FENodalDOFLoad : public FENodalLoad
 {
 public:
 	FENodalDOFLoad(FEModel* fem);
@@ -90,5 +90,5 @@ private:
 
 	bool m_dtscale;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };

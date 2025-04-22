@@ -4,6 +4,7 @@
 #include "femcore/FEMat3dValuator.h"
 #include "femcore/FEMat3dsValuator.h"
 #include "femcore/FEItemList.h"
+#include "femcore/fem_export.h"
 
 //---------------------------------------------------------------------------------------
 // 定义模型的一些参数，买这些参数可以通过Valuator进行计算，有点类似表达式.
@@ -37,30 +38,41 @@ protected:
 class FEM_EXPORT FEParamDouble : public FEModelParam
 {
 public:
-	FEParamDouble();
-	~FEParamDouble();
+    FEParamDouble();
+    ~FEParamDouble();
 
-	FEParamDouble(const FEParamDouble& p);
+    FEParamDouble(const FEParamDouble& p);
 
-	// set the value
-	void operator = (double v);
-	void operator = (const FEParamDouble& p);
+    // set the value
+    void operator=(double v);
+    void operator=(const FEParamDouble& p);
 
-	// set the valuator
-	void setValuator(FEScalarValuator* val);
+    // set the valuator
+    void setValuator(FEScalarValuator* val);
 
-	// get the valuator
-	FEScalarValuator* valuator();
+    // get the valuator
+    FEScalarValuator* valuator();
 
-	// evaluate the parameter at a material point
-	double operator () (const FEMaterialPoint& pt) { return m_scl*(*m_val)(pt); }
+    // evaluate the parameter at a material point
+    double operator()(const FEMaterialPoint& pt)
+    {
+        return m_scl * (*m_val)(pt);
+    }
 
-	// is this a const value
-	bool isConst() const;
+    // is this a const value
+    bool isConst() const;
 
-	// get the const value (return value undefined if param is not const)
-	double& constValue();
+    // get the const value (return value undefined if param is not const)
+    double& constValue();
+	double constValue() const;
 
+    void Serialize(DumpStream& ar) override;
+
+    bool Init();
+
+private:
+    FEScalarValuator* m_val;
+};
 
 //=======================================================================================
 

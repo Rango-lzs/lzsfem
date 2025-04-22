@@ -1,5 +1,5 @@
-#include "FEMaterialPoint.h"
-#include "DumpStream.h"
+#include "materials/FEMaterialPoint.h"
+#include "basicio/DumpStream.h"
 #include <string.h>
 
 FEMaterialPointData::FEMaterialPointData(FEMaterialPointData* ppt)

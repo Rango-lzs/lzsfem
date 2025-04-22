@@ -66,7 +66,7 @@ typedef std::function<void(FESurfaceMaterialPoint& mp, const FESurfaceDofShape& 
 
 class FEM_EXPORT FESurface : public FEMeshPartition
 {
-    META_CLASS_DECLARE(FESurface, FEMeshPartition);
+    DECLARE_META_CLASS(FESurface, FEMeshPartition);
 
 public:
     //! default constructor
@@ -89,7 +89,7 @@ public:
     void Serialize(DumpStream& ar) override;
 
     //! unpack an LM vector from a dof list
-    void UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, vector<int>& lm);
+    void UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, std::vector<int>& lm);
 
     //! Extract a node set from this surface
     FENodeList GetNodeList();

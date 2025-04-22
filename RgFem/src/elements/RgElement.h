@@ -5,7 +5,6 @@
 #include "elements/FEElementTraits.h"
 #include "elements/RgElementState.h"
 #include "femcore/fem_export.h"
-
 #include <vector>
 
 using NodeId = int;
@@ -13,6 +12,7 @@ using ElemId = int;
 using MatId = int;
 
 class FEMaterialPoint;
+class FENode;
 
 /**
  *@~English
@@ -40,15 +40,15 @@ class FEM_EXPORT FEElement
 public:
 
     static constexpr int MAX_NODES = 28;
-    // Element Info
-    FEElement();
-    virtual ~FEElement()
-    {
-    }
 
+    FEElement();
+    virtual ~FEElement();
+
+    //µ¥Ôª±àºÅ
     int getID() const;
     void setID(int n);
 
+    //²ÄÁÏ±àºÅ
     int getMatID() const;
     void setMatID(int id);
 
@@ -57,7 +57,7 @@ public:
 
     virtual ElementType elementType() = 0;
     virtual void setNode(FENode* n, int i);
-    virtual std::vector<FENode*> getElementNodes();
+    virtual const std::vector<FENode*>& getNodes();
     virtual FENode* giveNode(int i) const = 0;
 
     //! Set the type of the element and initialize the traits by type
@@ -76,7 +76,7 @@ public:
     }
 
     //! return number of nodes
-    int Nodes() const
+    int NodeSize() const
     {
         return m_pTraits->m_neln;
     }
@@ -124,24 +124,6 @@ public:  // Filed evalulate
 
     virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) = 0;
     virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) = 0;
-
-    // project data to nodes, from gauss point to node
-    void Extrapolation(double* ai, double* ao) const
-    {
-        m_pTraits->project_to_nodes(ai, ao);
-    }
-    void Extrapolation(Vector3d* ai, Vector3d* ao) const
-    {
-        m_pTraits->project_to_nodes(ai, ao);
-    }
-    void Extrapolation(Matrix3ds* ai, Matrix3ds* ao) const
-    {
-        m_pTraits->project_to_nodes(ai, ao);
-    }
-    void Extrapolation(Matrix3d* ai, Matrix3d* ao) const
-    {
-        m_pTraits->project_to_nodes(ai, ao);
-    }
 
     int ShapeFunctions(int order);
     double* H(int order, int n);
