@@ -28,7 +28,7 @@ public:
 	double eval(double* d, int n)
 	{
 		double* N = H(n);
-		int ne = Nodes();
+		int ne = NodeSize();
 		double a = 0;
 		for (int i=0; i<ne; ++i) a += N[i]*d[i];
 		return a;
@@ -45,7 +45,7 @@ public:
 
 	double eval(double* d, double r, double s)
 	{
-		int n = Nodes();
+		int n = NodeSize();
 		double H[FEElement::MAX_NODES];
 		shape_fnc(H, r, s);
 		double a = 0;
@@ -65,7 +65,7 @@ public:
 
 	Vector3d eval(Vector3d* d, double r, double s)
 	{
-		int n = Nodes();
+		int n = NodeSize();
 		double H[FEElement::MAX_NODES];
 		shape_fnc(H, r, s);
 		Vector3d a(0,0,0);
@@ -75,7 +75,7 @@ public:
 
 	Vector3d eval(Vector3d* d, int n)
 	{
-		int ne = Nodes();
+		int ne = NodeSize();
 		double* N = H(n);
 		Vector3d a(0,0,0);
 		for (int i=0; i<ne; ++i) a += d[i]*N[i];
@@ -85,7 +85,7 @@ public:
 	double eval_deriv1(double* d, int j)
 	{
 		double* Hr = Gr(j);
-		int n = Nodes();
+		int n = NodeSize();
 		double s = 0;
 		for (int i=0; i<n; ++i) s +=  Hr[i]*d[i];
 		return s;
@@ -103,7 +103,7 @@ public:
 	double eval_deriv2(double* d, int j)
 	{
 		double* Hs = Gs(j);
-		int n = Nodes();
+		int n = NodeSize();
 		double s = 0;
 		for (int i=0; i<n; ++i) s +=  Hs[i]*d[i];
 		return s;
@@ -112,7 +112,7 @@ public:
 	Vector3d eval_deriv1(Vector3d* d, int j)
 	{
 		double* Hr = Gr(j);
-		int n = Nodes();
+		int n = NodeSize();
 		Vector3d v(0,0,0);
 		for (int i = 0; i<n; ++i) v += d[i]*Hr[i];
 		return v;
@@ -121,7 +121,7 @@ public:
 	Vector3d eval_deriv2(Vector3d* d, int j)
 	{
 		double* Hs = Gs(j);
-		int n = Nodes();
+		int n = NodeSize();
 		Vector3d v(0,0,0);
 		for (int i = 0; i<n; ++i) v += d[i]*Hs[i];
 		return v;
@@ -131,7 +131,7 @@ public:
 	{
 		double Hr[FEElement::MAX_NODES], Hs[FEElement::MAX_NODES];
 		shape_deriv(Hr, Hs, r, s);
-		int n = Nodes();
+		int n = NodeSize();
 		double a = 0;
 		for (int i = 0; i<n; ++i) a += Hr[i] * d[i];
 		return a;
@@ -151,7 +151,7 @@ public:
 	{
 		double Hr[FEElement::MAX_NODES], Hs[FEElement::MAX_NODES];
 		shape_deriv(Hr, Hs, r, s);
-		int n = Nodes();
+		int n = NodeSize();
 		double a = 0;
 		for (int i=0; i<n; ++i) a +=  Hs[i]*d[i];
 		return a;

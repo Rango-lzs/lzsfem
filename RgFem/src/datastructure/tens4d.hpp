@@ -714,7 +714,7 @@ inline void tens4d::zero()
 }
 
 //-----------------------------------------------------------------------------
-// extract 9x9 matrix
+// extract 9x9 Matrix
 inline void tens4d::extract(double D[9][9])
 {
     D[0][0] = d[ 0];    D[0][3] = d[27];    D[0][6] = d[54];
@@ -1415,7 +1415,7 @@ inline Matrix3d vdotTdotv(const Vector3d& a, const tens4d& T, const Vector3d& b)
 // inverse
 inline tens4d tens4d::inverse() const
 {
-    matrix c(9,9);
+    Matrix c(9,9);
     
     // populate c
     c(0,0) = d[ 0]; c(0,1) = d[ 9]; c(0,2) = d[18]; c(0,3) = d[27]; c(0,4) = d[36]; c(0,5) = d[45]; c(0,6) = d[54]; c(0,7) = d[63]; c(0,8) = d[72];
@@ -1429,7 +1429,7 @@ inline tens4d tens4d::inverse() const
     c(8,0) = d[ 8]; c(8,1) = d[17]; c(8,2) = d[26]; c(8,3) = d[35]; c(8,4) = d[44]; c(8,5) = d[53]; c(8,6) = d[62]; c(8,7) = d[71]; c(8,8) = d[80];
 
     // invert c
-    matrix s = c.inverse();
+    Matrix s = c.inverse();
     
     // return inverse
     tens4d S;

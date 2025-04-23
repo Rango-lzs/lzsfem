@@ -44,4 +44,6 @@ public:
 
 protected:
 	FEParamDouble m_density;	//!< material density
+
+	DECLARE_PARAM_LIST();
 };

@@ -215,6 +215,7 @@ set(FEMCORE_HEADERS
     femcore/FELinearConstraint.h
     femcore/FENodalLoad.h
     femcore/FEDataArray.h
+    femcore/FEPressureLoad.h
 )
 
 
@@ -374,8 +375,9 @@ set(FEMCORE_SOURCES
     femcore/FELinearConstraint.cpp
     femcore/FENodalLoad.cpp
     femcore/FEDataArray.cpp
-)
+    femcore/FEPressureLoad.cpp
 
+)
 
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}

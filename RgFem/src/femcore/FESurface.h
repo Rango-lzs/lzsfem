@@ -9,6 +9,7 @@
 #include "FENode.h"
 #include "FENodeSet.h"
 #include "FESurfaceElement.h"
+#include "basicio/DumpStream.h"
 
 //-----------------------------------------------------------------------------
 class FEMesh;

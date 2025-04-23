@@ -1,8 +1,8 @@
 #pragma once
-#include "femcore/FEModelLoad.h"
-#include "femcore/FENodeDataMap.h"
 #include "femcore/FEDofList.h"
+#include "femcore/FEModelLoad.h"
 #include "femcore/FEModelParam.h"
+#include "femcore/FENodeDataMap.h"
 
 //-----------------------------------------------------------------------------
 class FENodeSet;
@@ -14,51 +14,51 @@ class FEM_EXPORT FENodalLoad : public FEModelLoad
     DECLARE_META_CLASS(FENodalLoad, FEModelLoad);
 
 public:
-	//! constructor
-	FENodalLoad(FEModel* pfem);
+    //! constructor
+    FENodalLoad(FEModel* pfem);
 
-	//! initialization
-	bool Init() override;
+    //! initialization
+    bool Init() override;
 
-	//! activation
-	void Activate() override;
+    //! activation
+    void Activate() override;
 
-	//! Get the DOF list
-	const FEDofList& GetDOFList() const;
+    //! Get the DOF list
+    const FEDofList& GetDOFList() const;
 
-	//! add a node set
-	void SetNodeSet(FENodeSet* ns);
+    //! add a node set
+    void SetNodeSet(FENodeSet* ns);
 
-	//! get the nodeset
-	FENodeSet* GetNodeSet();
+    //! get the nodeset
+    FENodeSet* GetNodeSet();
 
-	//! serialiation
-	void Serialize(DumpStream& ar) override;
-
-public:
-	//! Get the DOF list
-	//! This must be implemented by derived classes.
-	virtual bool SetDofList(FEDofList& dofList) = 0;
-
-	//! Get the nodal value
-	//! This must be implemented by derived classes.
-	//! The vals array will have the same size as the dof list.
-	virtual void GetNodalValues(int inode, std::vector<double>& vals) = 0;
+    //! serialiation
+    void Serialize(DumpStream& ar) override;
 
 public:
-	//! evaluate the contribution to the residual
-	virtual void LoadVector(FEGlobalVector& R) override;
+    //! Get the DOF list
+    //! This must be implemented by derived classes.
+    virtual bool SetDofList(FEDofList& dofList) = 0;
 
-	//! evaluate the contribution to the global stiffness matrix
-	virtual void StiffnessMatrix(FELinearSystem& LS) override;
+    //! Get the nodal value
+    //! This must be implemented by derived classes.
+    //! The vals array will have the same size as the dof list.
+    virtual void GetNodalValues(int inode, std::vector<double>& vals) = 0;
+
+public:
+    //! evaluate the contribution to the residual
+    virtual void LoadVector(FEGlobalVector& R) override;
+
+    //! evaluate the contribution to the global stiffness matrix
+    virtual void StiffnessMatrix(FELinearSystem& LS) override;
 
 private:
-	FEDofList	m_dofs;
-	FENodeSet*	m_nodeSet;
-	bool		m_brelative;
-	std::vector<std::vector<double> >	m_rval;
+    FEDofList m_dofs;
+    FENodeSet* m_nodeSet;
+    bool m_brelative;
+    std::vector<std::vector<double>> m_rval;
 
-	DECLARE_PARAM_LIST();
+    DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
@@ -66,29 +66,35 @@ private:
 class FEM_EXPORT FENodalDOFLoad : public FENodalLoad
 {
 public:
-	FENodalDOFLoad(FEModel* fem);
+    FENodalDOFLoad(FEModel* fem);
 
-	//! Set the DOF list
-	bool SetDofList(FEDofList& dofList) override;
+    //! Set the DOF list
+    bool SetDofList(FEDofList& dofList) override;
 
-	//! get/set degree of freedom
-	void SetDOF(int ndof) { m_dof = ndof; }
-	int GetDOF() const { return m_dof; }
+    //! get/set degree of freedom
+    void SetDOF(int ndof)
+    {
+        m_dof = ndof;
+    }
+    int GetDOF() const
+    {
+        return m_dof;
+    }
 
-	//! get/set load 
-	void SetLoad(double s);
+    //! get/set load
+    void SetLoad(double s);
 
-	void GetNodalValues(int n, std::vector<double>& val) override;
+    void GetNodalValues(int n, std::vector<double>& val) override;
 
-	double NodeValue(int n);
+    double NodeValue(int n);
 
-	void SetDtScale(bool b);
+    void SetDtScale(bool b);
 
 private:
-	int				m_dof;		//!< degree of freedom index
-	FEParamDouble	m_scale;	//!< applied load scale factor
+    int m_dof;              //!< degree of freedom index
+    FEParamDouble m_scale;  //!< applied load scale factor
 
-	bool m_dtscale;
+    bool m_dtscale;
 
-	DECLARE_PARAM_LIST();
+    DECLARE_PARAM_LIST();
 };

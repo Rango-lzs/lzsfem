@@ -38,18 +38,7 @@ FEMaterial::~FEMaterial()
 // evaluate local coordinate system at material point
 Matrix3d FEMaterial::GetLocalCS(const FEMaterialPoint& mp)
 {
-	Matrix3d Q = (m_Q ? m_Q->operator()(mp) : Matrix3d::identity());
-	FEMaterial* parent = dynamic_cast<FEMaterial*>(GetParent());
-	if (parent) 
-	{
-		Matrix3d Qp = parent->GetLocalCS(mp);
-		return Qp*Q;
-	}
-	else
-	{
-		Matrix3d A = mp.m_Q.RotationMatrix();
-		return A*Q;
-	}
+	return (m_Q ? m_Q->operator()(mp) : Matrix3d::identity());
 }
 
 //-----------------------------------------------------------------------------
@@ -65,7 +54,7 @@ void FEMaterial::SetMaterialAxis(FEMat3dValuator* val)
 bool FEMaterial::Init()
 {
 	// initialize base class
-	return FECoreBase::Init();
+	return FEObjectBase::Init();
 }
 
 //-----------------------------------------------------------------------------
@@ -74,27 +63,10 @@ void FEMaterial::AddDomain(FEDomain* dom)
 	m_domList.AddDomain(dom);
 }
 
-//-----------------------------------------------------------------------------
-FEDomainParameter* FEMaterial::FindDomainParameter(const std::string& paramName)
-{
-	for (int i = 0; i < m_param.size(); ++i)
-	{
-		FEDomainParameter* pi = m_param[i];
-		if (pi->name() == paramName) return pi;
-	}
-	return nullptr;
-}
-
-//-----------------------------------------------------------------------------
-void FEMaterial::AddDomainParameter(FEDomainParameter* p)
-{
-	assert(p);
-	m_param.push_back(p);
-}
 
 //==============================================================================
-BEGIN_FECORE_CLASS(FEMaterialProperty, FEMaterialBase)
-END_FECORE_CLASS();
+BEGIN_PARAM_DEFINE(FEMaterialProperty, FEMaterialBase)
+END_PARAM_DEFINE();
 
 FEMaterialProperty::FEMaterialProperty(FEModel* fem) : FEMaterialBase(fem)
 {
@@ -106,6 +78,7 @@ FEMaterialProperty::FEMaterialProperty(FEModel* fem) : FEMaterialBase(fem)
 // we return the parent's 
 Matrix3d FEMaterialProperty::GetLocalCS(const FEMaterialPoint& mp)
 {
-	FEMaterialBase* parent = dynamic_cast<FEMaterialBase*>(GetParent()); assert(parent);
-	return parent->GetLocalCS(mp);
+	/*FEMaterialBase* parent = dynamic_cast<FEMaterialBase*>(GetParent()); assert(parent);
+	return parent->GetLocalCS(mp);*/
+    return Matrix3d::identity();
 }

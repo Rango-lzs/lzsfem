@@ -1,7 +1,7 @@
 #pragma once
-#include "FEStepComponent.h"
 #include "FEGlobalVector.h"
 #include "femcore/FEDofList.h"
+#include "FEStepComponent.h"
 
 //-----------------------------------------------------------------------------
 class FELinearSystem;
@@ -15,23 +15,23 @@ class FEM_EXPORT FEModelLoad : public FEStepComponent
     DECLARE_META_CLASS(FEModelLoad, FEStepComponent);
 
 public:
-	//! constructor
-	FEModelLoad(FEModel* pfem);
+    //! constructor
+    FEModelLoad(FEModel* pfem);
 
-	const FEDofList& GetDofList() const;
-	
-	void Serialize(DumpStream& ar) override;
+    const FEDofList& GetDofList() const;
+
+    void Serialize(DumpStream& ar) override;
 
 public:
-	// all classes derived from this base class must implement
-	// the following functions.
+    // all classes derived from this base class must implement
+    // the following functions.
 
-	//! evaluate the contribution to the external load vector
-	virtual void LoadVector(FEGlobalVector& R);
+    //! evaluate the contribution to the external load vector
+    virtual void LoadVector(FEGlobalVector& R) = 0;
 
-	//! evaluate the contribution to the global stiffness matrix
-	virtual void StiffnessMatrix(FELinearSystem& LS);
+    //! evaluate the contribution to the global stiffness matrix
+    virtual void StiffnessMatrix(FELinearSystem& LS) = 0;
 
 protected:
-	FEDofList	m_dof;
+    FEDofList m_dof;
 };

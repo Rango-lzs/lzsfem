@@ -30,7 +30,7 @@ SOFTWARE.*/
 // NOTE: This file is automatically included from tens4d.h
 // Users should not include this file manually!
 
-#include "matrix.h"
+#include "Matrix.h"
 
 inline tens4ds::tens4ds(const double g)
 {
@@ -356,7 +356,7 @@ inline void tens4ds::zero()
 	d[10] = d[11] = d[12] = d[13] = d[14] = d[15] = d[16] = d[17] = d[18] = d[19] = d[20] = 0;
 }
 
-// extract 6x6 matrix
+// extract 6x6 Matrix
 inline void tens4ds::extract(double D[6][6])
 {
 	D[0][0] = d[0];  D[0][1] = d[1];  D[0][2] = d[3];  D[0][3] = d[6];  D[0][4] = d[10]; D[0][5] = d[15];
@@ -369,7 +369,7 @@ inline void tens4ds::extract(double D[6][6])
 
 //-----------------------------------------------------------------------------
 // (a dyad1s a)_ijkl = a_ij a_kl
-inline tens4ds dyad1s(const mat3dd& a)
+inline tens4ds dyad1s(const Matrix3dd& a)
 {
 	tens4ds c;
     
@@ -477,7 +477,7 @@ inline tens4ds dyad1s(const Matrix3ds& a, const Matrix3ds& b)
 
 //-----------------------------------------------------------------------------
 // (a dyad1s b)_ijkl = a_ij b_kl + b_ij a_kl
-inline tens4ds dyad1s(const mat3dd& a, const mat3dd& b)
+inline tens4ds dyad1s(const Matrix3dd& a, const Matrix3dd& b)
 {
 	tens4ds c;
     
@@ -513,7 +513,7 @@ inline tens4ds dyad1s(const mat3dd& a, const mat3dd& b)
 
 //-----------------------------------------------------------------------------
 // (a dyad1s b)_ijkl = a_ij b_kl + b_ij a_kl
-inline tens4ds dyad1s(const Matrix3ds& a, const mat3dd& b)
+inline tens4ds dyad1s(const Matrix3ds& a, const Matrix3dd& b)
 {
 	tens4ds c;
     
@@ -549,7 +549,7 @@ inline tens4ds dyad1s(const Matrix3ds& a, const mat3dd& b)
 
 //-----------------------------------------------------------------------------
 // (a dyad4s a)_ijkl = (a_ik a_jl + a_il a_jk)/2
-inline tens4ds dyad4s(const mat3dd& a)
+inline tens4ds dyad4s(const Matrix3dd& a)
 {
 	tens4ds c;
     
@@ -621,7 +621,7 @@ inline tens4ds dyad4s(const Matrix3ds& a)
 
 //-----------------------------------------------------------------------------
 // (a dyad4s b)_ijkl = (a_ik b_jl + a_il b_jk)/2 +  (b_ik a_jl + b_il a_jk)/2
-inline tens4ds dyad4s(const Matrix3ds& a, const mat3dd& b)
+inline tens4ds dyad4s(const Matrix3ds& a, const Matrix3dd& b)
 {
 	tens4ds c;
 
@@ -940,7 +940,7 @@ inline Matrix3d vdotTdotv(const Vector3d& a, const tens4ds& T, const Vector3d& b
 // inverse
 inline tens4ds tens4ds::inverse() const
 {
-	matrix c(6,6);
+	Matrix c(6,6);
 	
 	// populate c
 	c(0,0) = d[0];
@@ -966,7 +966,7 @@ inline tens4ds tens4ds::inverse() const
 	c(4,5) = c(5,4) = d[19];
 	
 	// invert c
-	matrix s = c.inverse();
+	Matrix s = c.inverse();
 	
 	// return inverse
 	tens4ds S;

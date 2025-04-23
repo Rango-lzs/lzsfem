@@ -431,7 +431,7 @@ inline void tens4dmm::zero()
 }
 
 //-----------------------------------------------------------------------------
-// extract 6x6 matrix
+// extract 6x6 Matrix
 inline void tens4dmm::extract(double D[6][6])
 {
     D[0][0] = d[0]; D[0][1] = d[ 6]; D[0][2] = d[12]; D[0][3] = d[18]; D[0][4] = d[24]; D[0][5] = d[30];
@@ -668,7 +668,7 @@ inline tens4dmm ddot(const tens4dmm& a, const tens4ds& b)
 // inverse
 inline tens4dmm tens4dmm::inverse() const
 {
-    matrix c(6,6);
+    Matrix c(6,6);
     
     // populate c
     c(0,0) = d[ 0]; c(0,1) = d[ 6]; c(0,2) = d[12]; c(0,3) = d[18]; c(0,4) = d[24]; c(0,5) = d[30];
@@ -679,7 +679,7 @@ inline tens4dmm tens4dmm::inverse() const
     c(5,0) = d[ 5]; c(5,1) = d[11]; c(5,2) = d[17]; c(5,3) = d[23]; c(5,4) = d[29]; c(5,5) = d[35];
     
     // invert c
-    matrix s = c.inverse();
+    Matrix s = c.inverse();
     
     // return inverse
     tens4dmm S;

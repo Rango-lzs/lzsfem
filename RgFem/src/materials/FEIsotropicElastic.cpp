@@ -1,5 +1,6 @@
-#include "FEIsotropicElastic.h"
+#include "materials/FEIsotropicElastic.h"
 #include "femcore/units.h"
+#include "femcore/FEParamValidator.h"
 
 //-----------------------------------------------------------------------------
 // define the material parameters

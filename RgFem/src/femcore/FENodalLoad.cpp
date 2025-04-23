@@ -1,43 +1,15 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
-#include "FENodalLoad.h"
-#include "FENodeSet.h"
-#include "DumpStream.h"
-#include "FENode.h"
-#include "FEMaterialPoint.h"
+#include "femcore/FENodalLoad.h"
+#include "femcore/FENodeSet.h"
+#include "basicio/DumpStream.h"
+#include "femcore/FENode.h"
+#include "materials/FEMaterialPoint.h"
+#include "femcore/FEParam.h"
 
 //-----------------------------------------------------------------------------
-BEGIN_FECORE_CLASS(FENodalLoad, FEModelLoad)
+BEGIN_PARAM_DEFINE(FENodalLoad, FEModelLoad)
 	ADD_PARAMETER(m_brelative, "relative");
 //	ADD_PROPERTY(m_nodeSet, "node_set", FEProperty::Reference);
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 FENodalLoad::FENodalLoad(FEModel* pfem) : FEModelLoad(pfem), m_dofs(pfem)
@@ -83,7 +55,7 @@ void FENodalLoad::Activate()
 		int dofs = m_dofs.Size();
 		if ((dofs == 0) || (nodes == 0)) return;
 
-		m_rval.resize(nodes, vector<double>(dofs, 0.0));
+		m_rval.resize(nodes, std::vector<double>(dofs, 0.0));
 
 		// get the current nodal loads
 		for (int i = 0; i < nodes; ++i)
@@ -123,7 +95,7 @@ void FENodalLoad::LoadVector(FEGlobalVector& R)
 {
 	FENodeSet& nset = *m_nodeSet;
 	int dofs = m_dofs.Size();
-	vector<double> val(dofs, 0.0);
+	std::vector<double> val(dofs, 0.0);
 	int N = nset.Size();
 	for (int i = 0; i<N; ++i)
 	{
@@ -151,10 +123,10 @@ void FENodalLoad::StiffnessMatrix(FELinearSystem& LS)
 }
 
 //-----------------------------------------------------------------------------
-BEGIN_FECORE_CLASS(FENodalDOFLoad, FENodalLoad)
+BEGIN_PARAM_DEFINE(FENodalDOFLoad, FENodalLoad)
 	ADD_PARAMETER(m_dof, "dof", 0, "$(dof_list)");
 	ADD_PARAMETER(m_scale, "scale")->SetFlags(FE_PARAM_ADDLC | FE_PARAM_VOLATILE);
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 FENodalDOFLoad::FENodalDOFLoad(FEModel* fem) : FENodalLoad(fem)

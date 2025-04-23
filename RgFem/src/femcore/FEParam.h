@@ -1,6 +1,5 @@
 #pragma once
 #include "femcore/fem_export.h"
-
 #include <assert.h>
 #include <string>
 #include <vector>
@@ -9,6 +8,11 @@
 class FEParamValidator;
 class DumpStream;
 class FEParamObject;
+class FEParam;
+class Vector2d;
+class Vector3d;
+class Matrix3d;
+class Matrix3ds;
 
 // FEParam一般是由FEObject所持有的，比较持久化的参数, 具有更丰富的信息，可能是数组类型
 // FEParamList对其中的FEParam生命周期负责，FEParam对其中具体value的生命周期负责

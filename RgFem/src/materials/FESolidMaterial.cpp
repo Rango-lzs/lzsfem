@@ -1,39 +1,19 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
+/*********************************************************************
+ * \file   FESolidMaterial.cpp
+ * \brief  
+ * 
+ * \author Leizs
+ * \date   April 2025
+ *********************************************************************/
 
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
-#include "FESolidMaterial.h"
-#include "FEElasticMaterial.h"
+#include "materials/FESolidMaterial.h"
+#include "materials/FEElasticMaterial.h"
+#include "femcore/units.h"
 
 // Material parameters for FEElasticMaterial
-BEGIN_FECORE_CLASS(FESolidMaterial, FEMaterial)
+BEGIN_PARAM_DEFINE(FESolidMaterial, FEMaterial)
 	ADD_PARAMETER(m_density, "density")->setUnits(UNIT_DENSITY)->MakeTopLevel(true);
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 FESolidMaterial::FESolidMaterial(FEModel* pfem) : FEMaterial(pfem)
 {
@@ -41,7 +21,7 @@ FESolidMaterial::FESolidMaterial(FEModel* pfem) : FEMaterial(pfem)
 }
 
 //! set the material density
-void FESolidMaterial::SetDensity(const double d)
+void FESolidMaterial::SetDensity(double d)
 { 
 	m_density = d;
 }
@@ -70,7 +50,7 @@ Matrix3ds FESolidMaterial::SecantStress(FEMaterialPoint& pt, bool PK2)
 Matrix3ds FESolidMaterial::PK2Stress(FEMaterialPoint& mp, const Matrix3ds E)
 {
     // Evaluate right Cauchy-Green tensor from E
-    Matrix3ds C = mat3dd(1) + E*2;
+    Matrix3ds C = Matrix3dd(1) + E*2;
     
     // Evaluate right stretch tensor U from C
     Vector3d v[3];
@@ -106,8 +86,8 @@ Matrix3ds FESolidMaterial::PK2Stress(FEMaterialPoint& mp, const Matrix3ds E)
 //! needed for EAS analyses where the compatible strain (calculated from displacements) is enhanced
 tens4dmm FESolidMaterial::MaterialTangent(FEMaterialPoint& mp, const Matrix3ds E)
 {
-    // Evaluate right Cauchy-Green tensor from E
-    Matrix3ds C = mat3dd(1) + E*2;
+    // Evaluate right Cauchy-Green tensor from E  E= 1/2(C-I)
+    Matrix3ds C = Matrix3dd(1) + E*2;
     
     // Evaluate right stretch tensor U from C
     Vector3d v[3];
@@ -147,7 +127,7 @@ tens4dmm FESolidMaterial::SecantTangent(FEMaterialPoint& mp, bool mat)
     Matrix3d F = pt.m_F;
     double J = pt.m_J;
     Matrix3ds E = pt.Strain();
-    mat3dd I(1);
+    Matrix3dd I(1);
 
     // calculate the 2nd P-K stress at the current deformation gradient
     Matrix3ds S = PK2Stress(mp,E);

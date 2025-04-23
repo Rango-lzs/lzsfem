@@ -214,7 +214,7 @@ public:
         return m_rp - m_dp;
     }
 
-private:
+public:
     int mId;             //!< nodal ID
 
     std::vector<int> m_BC;             //!< boundary condition array, 用于标识自由度的状态，fix ，free， prescribe
