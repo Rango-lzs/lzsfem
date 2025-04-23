@@ -31,16 +31,16 @@ SOFTWARE.*/
 #include <vector>
 #include <complex>
 
-FECORE_API void linmin(double* p, double* xi, int n, double* fret, double(*fnc)(double[]));
-FECORE_API void powell(double* p, double* xi, int n, double ftol, int* iter, double* fret, double(*fnc)(double[]));
-FECORE_API double brent(double ax, double bx, double cx, double(*f)(double), double tol, double* xmin);
-FECORE_API void mnbrak(double* ax, double* bx, double* cx, double* fa, double* fb, double* fc, double(*fnc)(double));
-FECORE_API double golden(double ax, double bx, double cx, double(*f)(double), double tol, double* xmin);
-FECORE_API double zbrent(double f(double, void*), double x1, double x2, double tol, void* data);
-FECORE_API bool zbrac(double f(double, void*), double& x1, double& x2, void* data);
-FECORE_API void solve_3x3(double A[3][3], double b[3], double x[3]);
+FEM_EXPORT void linmin(double* p, double* xi, int n, double* fret, double(*fnc)(double[]));
+FEM_EXPORT void powell(double* p, double* xi, int n, double ftol, int* iter, double* fret, double(*fnc)(double[]));
+FEM_EXPORT double brent(double ax, double bx, double cx, double(*f)(double), double tol, double* xmin);
+FEM_EXPORT void mnbrak(double* ax, double* bx, double* cx, double* fa, double* fb, double* fc, double(*fnc)(double));
+FEM_EXPORT double golden(double ax, double bx, double cx, double(*f)(double), double tol, double* xmin);
+FEM_EXPORT double zbrent(double f(double, void*), double x1, double x2, double tol, void* data);
+FEM_EXPORT bool zbrac(double f(double, void*), double& x1, double& x2, void* data);
+FEM_EXPORT void solve_3x3(double A[3][3], double b[3], double x[3]);
 
-FECORE_API bool LinearRegression(const std::vector<std::pair<double, double> >& data, std::pair<double, double>& res);
-FECORE_API bool NonlinearRegression(const std::vector<std::pair<double, double> >& data, std::vector<double>& res, int func);
+FEM_EXPORT bool LinearRegression(const std::vector<std::pair<double, double> >& data, std::pair<double, double>& res);
+FEM_EXPORT bool NonlinearRegression(const std::vector<std::pair<double, double> >& data, std::vector<double>& res, int func);
 
-FECORE_API bool solvepoly(int n, std::vector<double> a, double& x, bool nwt = true);
+FEM_EXPORT bool solvepoly(int n, std::vector<double> a, double& x, bool nwt = true);

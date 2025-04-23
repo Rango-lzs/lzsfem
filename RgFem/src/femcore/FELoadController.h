@@ -1,7 +1,7 @@
 /*********************************************************************
  * \file   FELoadController.h
- * \brief  
- * 
+ * \brief
+ *
  * \author Leizs
  * \date   December 2024
  *********************************************************************/
@@ -11,27 +11,30 @@
 
 //-----------------------------------------------------------------------------
 // Class that describes a load controller. A load controller can modify the value
-// of model parameters during the analysis. 
+// of model parameters during the analysis.
 class FEM_EXPORT FELoadController : public FEModelComponent
 {
-	META_CLASS_DECLARE(FELoadController, FEModelComponent);
+    DECLARE_META_CLASS(FELoadController, FEModelComponent);
 
 public:
-	FELoadController(FEModel* fem);
+    FELoadController(FEModel* fem);
 
-	//! evaluate the load controller 
-	void Evaluate(double time);
+    //! evaluate the load controller
+    void Evaluate(double time);
 
-	//! return the last calculated value
-	double Value() const { return m_value; }
+    //! return the last calculated value
+    double Value() const
+    {
+        return m_value;
+    }
 
-	//! serialization
-	void Serialize(DumpStream& ar) override;
+    //! serialization
+    void Serialize(DumpStream& ar) override;
 
 protected:
-	// This must be implemented by derived classes
-	virtual double GetValue(double time) = 0;
+    // This must be implemented by derived classes
+    virtual double GetValue(double time) = 0;
 
 private:
-	double	m_value;	//!< last calculated value
+    double m_value;  //!< last calculated value
 };

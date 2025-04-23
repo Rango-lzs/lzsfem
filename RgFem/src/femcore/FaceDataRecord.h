@@ -32,7 +32,7 @@ class FESurfaceElement;
 
 //-----------------------------------------------------------------------------
 //! This is the base class for a face data value.
-class FECORE_API FELogFaceData : public FELogData
+class FEM_EXPORT FELogFaceData : public FELogData
 {
 	FECORE_SUPER_CLASS(FELOGFACEDATA_ID)
 	FECORE_BASE_CLASS(FELogFaceData)
@@ -45,7 +45,7 @@ public:
 
 //-----------------------------------------------------------------------------
 //! This class records surface data
-class FECORE_API FaceDataRecord : public DataRecord
+class FEM_EXPORT FaceDataRecord : public DataRecord
 {
 public:
 	FaceDataRecord(FEModel* pfem);

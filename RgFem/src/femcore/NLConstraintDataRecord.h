@@ -33,7 +33,7 @@ SOFTWARE.*/
 
 //-----------------------------------------------------------------------------
 //! Base class for nonlinear constraints log data (e.g. rigid connectors)
-class FECORE_API FELogNLConstraintData : public FELogData
+class FEM_EXPORT FELogNLConstraintData : public FELogData
 {
     FECORE_SUPER_CLASS(FELOGNLCONSTRAINTDATA_ID)
     FECORE_BASE_CLASS(FELogNLConstraintData)
@@ -45,7 +45,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API NLConstraintDataRecord : public DataRecord
+class FEM_EXPORT NLConstraintDataRecord : public DataRecord
 {
 public:
 	NLConstraintDataRecord(FEModel* pfem);

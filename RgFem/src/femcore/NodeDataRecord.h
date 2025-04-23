@@ -35,7 +35,7 @@ class FENode;
 
 //-----------------------------------------------------------------------------
 //! This is the base class for a node data value.
-class FECORE_API FELogNodeData : public FELogData
+class FEM_EXPORT FELogNodeData : public FELogData
 { 
 	FECORE_SUPER_CLASS(FELOGNODEDATA_ID)
 	FECORE_BASE_CLASS(FELogNodeData)
@@ -49,7 +49,7 @@ public:
 //-----------------------------------------------------------------------------
 //! This class records nodal data
 //! \todo should I create a different class for each data record? Like for the plot file?
-class FECORE_API NodeDataRecord : public DataRecord
+class FEM_EXPORT NodeDataRecord : public DataRecord
 {
 public:
 	NodeDataRecord(FEModel* pfem);
@@ -66,7 +66,7 @@ private:
 
 //-----------------------------------------------------------------------------
 // Special class for outputting nodal variables
-class FECORE_API FENodeVarData : public FELogNodeData
+class FEM_EXPORT FENodeVarData : public FELogNodeData
 {
 public:
 	FENodeVarData(FEModel* pfem, int ndof);

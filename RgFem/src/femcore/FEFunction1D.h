@@ -42,7 +42,7 @@ class DumpStream;
 //   - copy()       : Create a copy of the class
 //   - derive(double) : Calculate the derivative. This is optional, but allows implementation of more efficient algorithm, since default implements forward difference
 //
-class FECORE_API FEFunction1D : public FECoreBase
+class FEM_EXPORT FEFunction1D : public FECoreBase
 {
 	FECORE_SUPER_CLASS(FEFUNCTION1D_ID)
 	FECORE_BASE_CLASS(FEFunction1D);
@@ -80,7 +80,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // A constant function
-class FECORE_API FEConstFunction : public FEFunction1D
+class FEM_EXPORT FEConstFunction : public FEFunction1D
 {
 public:
 	FEConstFunction(FEModel* fem) : FEFunction1D(fem), m_value(0.0) {}
@@ -101,7 +101,7 @@ private:
 
 //-----------------------------------------------------------------------------
 // A linear function
-class FECORE_API FELinearFunction : public FEFunction1D
+class FEM_EXPORT FELinearFunction : public FEFunction1D
 {
 public:
 	FELinearFunction(FEModel* fem) : FEFunction1D(fem), m_slope(0.0), m_intercept(0.0) {}
@@ -132,7 +132,7 @@ private:
 
 //-----------------------------------------------------------------------------
 // A step function
-class FECORE_API FEStepFunction : public FEFunction1D
+class FEM_EXPORT FEStepFunction : public FEFunction1D
 {
 public:
 	FEStepFunction(FEModel* fem) : FEFunction1D(fem), m_x0(0.0), m_leftVal(0.0), m_rightVal(1.0) {}
@@ -168,7 +168,7 @@ private:
 
 //-----------------------------------------------------------------------------
 //! function defined via math expression
-class FECORE_API FEMathFunction : public FEFunction1D
+class FEM_EXPORT FEMathFunction : public FEFunction1D
 {
 public:
 	FEMathFunction(FEModel* fem);

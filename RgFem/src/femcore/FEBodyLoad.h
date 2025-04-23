@@ -39,7 +39,7 @@ class FELinearSystem;
 
 //-----------------------------------------------------------------------------
 //! Base class for body-loads
-class FECORE_API FEBodyLoad : public FEModelLoad
+class FEM_EXPORT FEBodyLoad : public FEModelLoad
 {
 	FECORE_BASE_CLASS(FEBodyLoad)
 

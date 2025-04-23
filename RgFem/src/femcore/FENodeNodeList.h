@@ -40,7 +40,7 @@ class FEDomain;
 //! This class analyzes a mesh and finds for each node all nodes that are 
 //! adjacent to this node
 
-class FECORE_API FENodeNodeList
+class FEM_EXPORT FENodeNodeList
 {
 public:
 	//! default constructor

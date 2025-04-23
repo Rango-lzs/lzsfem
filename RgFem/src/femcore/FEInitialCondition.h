@@ -27,23 +27,23 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FEStepComponent.h"
-#include <vector>
-#include "FENodeDataMap.h"
-#include "FENodeSet.h"
 #include "FEDofList.h"
 #include "FEModelParam.h"
+#include "FENodeDataMap.h"
+#include "FENodeSet.h"
+#include "FEStepComponent.h"
+
+#include <vector>
 
 //-----------------------------------------------------------------------------
 //! Base class for defining initial conditions.
-//! Initial conditions can be used to set the initial state of the model in an analysis. 
+//! Initial conditions can be used to set the initial state of the model in an analysis.
 class FEM_EXPORT FEInitialCondition : public FEStepComponent
 {
-	FECORE_SUPER_CLASS(FEIC_ID)
-	FECORE_BASE_CLASS(FEInitialCondition);
+    DECLARE_META_CLASS(FEInitialCondition, FEStepComponent);
 
 public:
-	FEInitialCondition(FEModel* pfem);
+    FEInitialCondition(FEModel* pfem);
 };
 
 //-----------------------------------------------------------------------------
@@ -51,33 +51,33 @@ public:
 class FEM_EXPORT FENodalIC : public FEInitialCondition
 {
 public:
-	FENodalIC(FEModel* fem);
+    FENodalIC(FEModel* fem);
 
-	// set the nodeset for this component
-	void SetNodeSet(FENodeSet* nset);
+    // set the nodeset for this component
+    void SetNodeSet(FENodeSet* nset);
 
-	// get the node set
-	FENodeSet* GetNodeSet();
+    // get the node set
+    FENodeSet* GetNodeSet();
 
-	// set the list of degrees of freedom
-	void SetDOFList(const FEDofList& dofList);
+    // set the list of degrees of freedom
+    void SetDOFList(const FEDofList& dofList);
 
-	// serialization
-	void Serialize(DumpStream& ar) override;
+    // serialization
+    void Serialize(DumpStream& ar) override;
 
-	// return the values for node i
-	virtual void GetNodalValues(int inode, std::vector<double>& values) = 0;
+    // return the values for node i
+    virtual void GetNodalValues(int inode, std::vector<double>& values) = 0;
 
 public:
-	void Activate() override;
+    void Activate() override;
 
-	bool Init() override;
+    bool Init() override;
 
 protected:
-	FEDofList		m_dofs;
-	FENodeSet*		m_nodeSet;
+    FEDofList m_dofs;
+    FENodeSet* m_nodeSet;
 
-	DECLARE_FECORE_CLASS();
+    DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
@@ -85,24 +85,24 @@ protected:
 class FEM_EXPORT FEInitialDOF : public FENodalIC
 {
 public:
-	FEInitialDOF(FEModel* pfem);
-	FEInitialDOF(FEModel* fem, int ndof, FENodeSet* nset);
+    FEInitialDOF(FEModel* pfem);
+    FEInitialDOF(FEModel* fem, int ndof, FENodeSet* nset);
 
-	void SetDOF(int ndof);
-	bool SetDOF(const char* szdof);
+    void SetDOF(int ndof);
+    bool SetDOF(const char* szdof);
 
-	void Serialize(DumpStream& ar) override;
+    void Serialize(DumpStream& ar) override;
 
-	bool Init() override;
+    bool Init() override;
 
-	// return the values for node i
-	void GetNodalValues(int inode, std::vector<double>& values) override;
+    // return the values for node i
+    void GetNodalValues(int inode, std::vector<double>& values) override;
 
-	void SetValue(double v);
+    void SetValue(double v);
 
 protected:
-	int				m_dof;		//!< degree of freedom
-	FEParamDouble	m_data;		//!< nodal values
+    int m_dof;             //!< degree of freedom
+    FEParamDouble m_data;  //!< nodal values
 
-	DECLARE_FECORE_CLASS();
+    DECLARE_PARAM_LIST();
 };

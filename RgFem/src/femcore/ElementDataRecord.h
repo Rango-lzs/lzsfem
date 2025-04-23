@@ -35,7 +35,7 @@ class FEElementSet;
 
 //-----------------------------------------------------------------------------
 //! Base class for element log data
-class FECORE_API FELogElemData : public FELogData
+class FEM_EXPORT FELogElemData : public FELogData
 {
 	FECORE_SUPER_CLASS(FELOGELEMDATA_ID)
 	FECORE_BASE_CLASS(FELogElemData)
@@ -48,7 +48,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API ElementDataRecord : public DataRecord
+class FEM_EXPORT ElementDataRecord : public DataRecord
 {
 	struct ELEMREF
 	{

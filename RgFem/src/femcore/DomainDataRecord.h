@@ -32,7 +32,7 @@ class FEDomain;
 
 //-----------------------------------------------------------------------------
 //! Base class for domain log data
-class FECORE_API FELogDomainData : public FELogData
+class FEM_EXPORT FELogDomainData : public FELogData
 {
     FECORE_SUPER_CLASS(FELOGDOMAINDATA_ID)
     FECORE_BASE_CLASS(FELogDomainData)
@@ -46,7 +46,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API FEDomainDataRecord : public DataRecord
+class FEM_EXPORT FEDomainDataRecord : public DataRecord
 {
 public:
     FEDomainDataRecord(FEModel* pfem);
@@ -61,7 +61,7 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API FELogAvgDomainData : public FELogDomainData
+class FEM_EXPORT FELogAvgDomainData : public FELogDomainData
 {
 public:
     FELogAvgDomainData(FEModel* pfem);
@@ -75,7 +75,7 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API FELogPctDomainData : public FELogDomainData
+class FEM_EXPORT FELogPctDomainData : public FELogDomainData
 {
 public:
     FELogPctDomainData(FEModel* pfem);
@@ -90,7 +90,7 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-class FECORE_API FELogIntegralDomainData : public FELogDomainData
+class FEM_EXPORT FELogIntegralDomainData : public FELogDomainData
 {
 public:
 	FELogIntegralDomainData(FEModel* pfem);

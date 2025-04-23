@@ -216,8 +216,11 @@ set(FEMCORE_HEADERS
     femcore/FENodalLoad.h
     femcore/FEDataArray.h
     femcore/FEPressureLoad.h
+    femcore/FENodalBC.h
+    femcore/FEFixedBC.h
+    femcore/FEFixedDisplacement.h
+    femcore/FEFixedRotation.h
 )
-
 
 set(FEMCORE_SOURCES
     femcore/Callback.cpp
@@ -376,6 +379,10 @@ set(FEMCORE_SOURCES
     femcore/FENodalLoad.cpp
     femcore/FEDataArray.cpp
     femcore/FEPressureLoad.cpp
+    femcore/FENodalBC.cpp
+    femcore/FEFixedBC.cpp
+    femcore/FEFixedDisplacement.cpp
+    femcore/FEFixedRotation.cpp
 
 )
 

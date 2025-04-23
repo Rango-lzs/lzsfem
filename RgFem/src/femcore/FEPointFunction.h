@@ -37,7 +37,7 @@ class DumpStream;
 //! has a way of specifying the function value outside of the domain defined by the first and 
 //! last data point. 
 
-class FECORE_API FEPointFunction : public FEFunction1D
+class FEM_EXPORT FEPointFunction : public FEFunction1D
 {
 public:
 	//! Load point structure
