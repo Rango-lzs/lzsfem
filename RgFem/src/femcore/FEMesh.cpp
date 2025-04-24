@@ -1,21 +1,19 @@
-#include "stdafx.h"
 #include "FEMesh.h"
 #include "FEException.h"
-#include "FEDiscreteDomain.h"
-#include "FETrussDomain.h"
-#include "FEShellDomain.h"
-#include "FESolidDomain.h"
-#include "FEDomain2D.h"
-#include "DOFS.h"
-#include "FEElemElemList.h"
-#include "FEElementList.h"
-#include "FESurface.h"
+//#include "femcore/Domain/FEDiscreteDomain.h"
+#include "femcore/Domain/FETrussDomain.h"
+#include "femcore/Domain/FEShellDomain.h"
+#include "femcore/Domain/FESolidDomain.h"
+#include "femcore/Domain/FEDomain2D.h"
+#include "femcore/DOFS.h"
+#include "elements/FEElemElemList.h"
+#include "elements/FEElementList.h"
+#include "femcore/FESurface.h"
 #include "FEDataArray.h"
-#include "FEDomainMap.h"
+#include "femcore/Domain/FEDomainMap.h"
 #include "FESurfaceMap.h"
 #include "FENodeDataMap.h"
-#include "DumpStream.h"
-#include "FECoreKernel.h"
+#include "basicio/DumpStream.h"
 #include <algorithm>
 
 //-----------------------------------------------------------------------------
@@ -179,7 +177,7 @@ void FEMesh::Serialize(DumpStream& ar)
 		// write data maps
 		ClearDataMaps();
 		int maps = 0;
-		string mapName;
+		std::string mapName;
 		ar >> maps;
 		for (int i = 0; i < maps; ++i)
 		{
@@ -299,7 +297,7 @@ int FEMesh::RemoveIsolatedVertices()
 	int i, j, k, N = Nodes(), n;
 
 	// create a valence array
-	vector<int> val; val.assign(N, 0);
+	std::vector<int> val; val.assign(N, 0);
 
 	// count the nodal valences
 	for (i=0; i<(int) m_Domain.size(); ++i)

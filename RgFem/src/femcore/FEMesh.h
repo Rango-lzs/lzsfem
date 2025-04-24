@@ -288,8 +288,8 @@ private:
  
     std::vector<FENodeSet*> m_NodeSet;       //!< node sets
     std::vector<FEElementSet*> m_ElemSet;    //!< element sets
-    std::vector<FEDiscreteSet*> m_DiscSet;   //!< discrete element sets
-    std::vector<FEFacetSet*> m_FaceSet;      //!< facet sets
+    std::vector<FEDiscreteSet*> m_DiscSet;   //!< discrete element sets， 离散节点对
+    std::vector<FEFacetSet*> m_FaceSet;      //!< facet sets  ， 实体单元的表面网格
     std::vector<FESurfacePair*> m_SurfPair;  //!< facet set pairs
 
     std::vector<FEDataMap*> m_DataMap;       //!< all data maps

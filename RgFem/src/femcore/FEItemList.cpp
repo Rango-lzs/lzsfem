@@ -1,6 +1,5 @@
-#include "stdafx.h"
 #include "FEItemList.h"
-#include "DumpStream.h"
+#include "basicio/DumpStream.h"
 #include "FEModel.h"
 
 FEItemList::FEItemList(FEMesh* mesh)// : FECoreBase(fem)

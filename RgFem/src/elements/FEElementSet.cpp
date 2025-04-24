@@ -1,37 +1,8 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEElementSet.h"
-#include "FEElement.h"
-#include "FEMesh.h"
-#include "FEDomain.h"
-#include "DumpStream.h"
+#include "elements/RgElement.h"
+#include "femcore/FEMesh.h"
+#include "femcore/FEDomain.h"
+#include "basicio/DumpStream.h"
 
 //-----------------------------------------------------------------------------
 FEElementSet::FEElementSet(FEModel* fem) : FEItemList(fem)
@@ -96,7 +67,7 @@ void FEElementSet::Create(FEDomain* dom)
 	for (int i = 0; i < NE; ++i)
 	{
 		FEElement& el = dom->ElementRef(i);
-		m_Elem[i] = el.GetID();
+		m_Elem[i] = el.getID();
 	}
 
 	BuildLUT();
@@ -136,7 +107,7 @@ void FEElementSet::Create(FEDomainList& domList)
 		for (int i = 0; i < NE; ++i)
 		{
 			FEElement& el = dom->ElementRef(i);
-			m_Elem[NT + i] = el.GetID();
+			m_Elem[NT + i] = el.getID();
 		}
 		NT += NE;
 	}
@@ -153,7 +124,7 @@ void FEElementSet::BuildLUT()
 	for (int i = 0; i < N; ++i)
 	{
 		FEElement* pe = mesh->FindElementFromID(m_Elem[i]);
-		int id = pe->GetID();
+		int id = pe->getID();
 
 		if ((id < m_minID) || (m_minID == -1)) m_minID = id;
 		if ((id > m_maxID) || (m_maxID == -1)) m_maxID = id;
@@ -164,7 +135,7 @@ void FEElementSet::BuildLUT()
 	for (int i = 0; i < N; ++i)
 	{
 		FEElement* pe = mesh->FindElementFromID(m_Elem[i]);
-		int id = pe->GetID() - m_minID;
+		int id = pe->getID() - m_minID;
 		m_LUT[id] = i;
 	}
 }
@@ -206,18 +177,18 @@ FENodeList FEElementSet::GetNodeList() const
 {
 	FEMesh* mesh = GetMesh();
 	FENodeList set(mesh);
-	vector<int> tag(mesh->Nodes(), 0);
+	std::vector<int> tag(mesh->Nodes(), 0);
 	for (int i = 0; i<Elements(); ++i)
 	{
 		const FEElement& el = Element(i);
-		int ne = el.Nodes();
+		int ne = el.NodeSize();
 		for (int j = 0; j<ne; ++j)
 		{
-			if (tag[el.m_node[j]] == 0)
+			/*if (tag[el.m_node[j]] == 0)
 			{
 				set.Add(el.m_node[j]);
 				tag[el.m_node[j]] = 1;
-			}
+			}*/
 		}
 	}
 	return set;

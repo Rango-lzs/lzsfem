@@ -58,8 +58,8 @@ public:
 
     virtual ElementType elementType() = 0;
     virtual void setNode(FENode* n, int i);
-    virtual const std::vector<FENode*>& getNodes();
-    virtual FENode* giveNode(int i) const = 0;
+    virtual NodeId getNodes(int idx);
+    virtual FENode* getNode(int idx) const = 0;
 
     //! Set the type of the element and initialize the traits by type
     void setType(int ntype)
