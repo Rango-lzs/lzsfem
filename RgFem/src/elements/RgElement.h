@@ -45,15 +45,15 @@ public:
     virtual ~FEElement();
 
     //µ¥Ôª±àºÅ
-    int getID() const;
-    void setID(int n);
+    int getId() const;
+    void setId(int n);
 
     //²ÄÁÏ±àºÅ
-    int getMatID() const;
-    void setMatID(int id);
+    int getMatId() const;
+    void setMatId(int id);
 
-    void setLocalID(int lid);
-    int getLocalID() const;
+    void setLocalId(int lid);
+    int getLocalId() const;
     const std::vector<NodeId>& getNodeIds();
 
     virtual ElementType elementType() = 0;
@@ -66,6 +66,7 @@ public:
     {
         FEElementLibrary::SetElementTraits(*this, ntype);
     }
+    int getType() const;
 
     //! Set the traits of an element
     virtual void SetTraits(FEElementTraits* ptraits);

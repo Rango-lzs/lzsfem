@@ -388,6 +388,7 @@ set(FEMCORE_SOURCES
 )
 
 
+
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
     ${FEMCORE_HEADERS}
@@ -462,7 +463,7 @@ set(ELEMENT_HEADERS
     elements/RgElementState.h
     elements/RgElementStatus.h
     elements/RgSolidElement2d.h
-    elements/RgTrussElement.h
+    elements/FETrussElement.h
 )
 
 set(ELEMENT_SOURCES
@@ -476,6 +477,7 @@ set(ELEMENT_SOURCES
     elements/FEShellElement.cpp
     elements/FESolidElement.cpp
     elements/RgElement.cpp
+    elements/FETrussElement.cpp
 )
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}

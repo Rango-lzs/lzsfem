@@ -1,5 +1,6 @@
 #include "elements/RgElement.h"
 #include "basicio/DumpStream.h"
+#include "materials/FEMaterialPoint.h"
 #include <math.h>
 
 //-----------------------------------------------------------------------------
@@ -23,75 +24,6 @@ FEElementState& FEElementState::operator = (const FEElementState& s)
 	return (*this);
 }
 
-//-----------------------------------------------------------------------------
-//! clear material point data
-void FEElement::ClearData()
-{
-	int nint = GaussPoints();
-	for (int i=0; i<nint; ++i)
-	{
-		FEMaterialPoint* mp = GetMaterialPoint(i);
-		delete mp;
-		m_state[i] = nullptr;
-	}
-}
-
-//-----------------------------------------------------------------------------
-double FEElement::Evaluate(double* fn, int n)
-{
-	double* Hn = H(n);
-	double f = 0;
-	const int N = Nodes();
-	for (int i=0; i<N; ++i) f += Hn[i]*fn[i];
-	return f;
-}
-
-double FEElement::Evaluate(int order, double* fn, int n)
-{
-	double* Hn = H(order, n);
-	double f = 0;
-	const int N = ShapeFunctions(order);
-	for (int i = 0; i<N; ++i) f += Hn[i] * fn[i];
-	return f;
-}
-
-double FEElement::Evaluate(vector<double>& fn, int n)
-{
-	double* Hn = H(n);
-	double f = 0;
-	const int N = Nodes();
-	for (int i=0; i<N; ++i) f += Hn[i]*fn[i];
-	return f;
-}
-
-vec2d FEElement::Evaluate(vec2d* vn, int n)
-{
-	double* Hn = H(n);
-	vec2d v(0,0);
-	const int N = Nodes();
-	for (int i=0; i<N; ++i) v += vn[i]*Hn[i];
-	return v;
-}
-
-Vector3d FEElement::Evaluate(Vector3d* vn, int n)
-{
-	double* Hn = H(n);
-	Vector3d v;
-	const int N = Nodes();
-	for (int i=0; i<N; ++i) v += vn[i]*Hn[i];
-	return v;
-}
-
-//-----------------------------------------------------------------------------
-double FEElement::Evaluate(double* fn, int order, int n)
-{
-	double* Hn = H(order, n);
-	double f = 0;
-	const int N = ShapeFunctions(order);
-	for (int i = 0; i<N; ++i) f += Hn[i] * fn[i];
-	return f;
-}
-
 double* FEElement::H(int order, int n)
 {
 	if (order == -1) return m_pTraits->m_H[n];
@@ -100,79 +32,80 @@ double* FEElement::H(int order, int n)
 
 int FEElement::ShapeFunctions(int order)
 {
-	return (order == -1 ? Nodes() : m_pTraits->ShapeFunctions(order));
+	return (order == -1 ? NodeSize() : m_pTraits->ShapeFunctions(order));
 }
 
-//-----------------------------------------------------------------------------
-bool FEElement::HasNode(int n) const
-{
-	int l = Nodes();
-	for (int i = 0; i<l; ++i)
-		if (m_node[i] == n) return true;
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-// see if this element has the list of nodes n. Return 0 if not, 1 if same order
-// and -1 if opposite order
-int FEElement::HasNodes(int* n, const int ns) const
-{
-    int order = 1;
-    int l = Nodes();
-    if (l < ns) return 0;
-    vector<int> num(ns,-1);
-    for (int j=0; j<ns; ++j) {
-        for (int i = 0; i<l; ++i)
-            if (m_node[i] == n[j]) num[j] = i;
-    }
-    for (int j=0; j<ns; ++j) {
-        if (num[j] == -1)
-            return 0;
-    }
-    if ((num[1] - num[0] < 0) || (num[2] - num[1] < 0)) order = -1;
-
-    return order;
-}
-
-//-----------------------------------------------------------------------------
-int FEElement::FindNode(int n) const
-{
-	int l = Nodes();
-	for (int i = 0; i<l; ++i)
-		if (m_node[i] == n) return i;
-	return -1;
-}
+////-----------------------------------------------------------------------------
+//bool FEElement::HasNode(int n) const
+//{
+//	int l = Nodes();
+//	for (int i = 0; i<l; ++i)
+//		if (m_node[i] == n) return true;
+//	return false;
+//}
+//
+////-----------------------------------------------------------------------------
+//// see if this element has the list of nodes n. Return 0 if not, 1 if same order
+//// and -1 if opposite order
+//int FEElement::HasNodes(int* n, const int ns) const
+//{
+//    int order = 1;
+//    int l = Nodes();
+//    if (l < ns) return 0;
+//    vector<int> num(ns,-1);
+//    for (int j=0; j<ns; ++j) {
+//        for (int i = 0; i<l; ++i)
+//            if (m_node[i] == n[j]) num[j] = i;
+//    }
+//    for (int j=0; j<ns; ++j) {
+//        if (num[j] == -1)
+//            return 0;
+//    }
+//    if ((num[1] - num[0] < 0) || (num[2] - num[1] < 0)) order = -1;
+//
+//    return order;
+//}
+//
+////-----------------------------------------------------------------------------
+//int FEElement::FindNode(int n) const
+//{
+//	int l = Nodes();
+//	for (int i = 0; i<l; ++i)
+//		if (m_node[i] == n) return i;
+//	return -1;
+//}
 
 //-----------------------------------------------------------------------------
 FEElement::FEElement() : m_pTraits(0) 
 { 
 	static int n = 1;
-	m_nID = n++;
-	m_lm = -1;
+	m_id = n++;
+	/*m_lm = -1;
 	m_val = 0.0;
 	m_lid = -1;
 	m_part = nullptr;
-	m_status = ACTIVE;
+	m_status = ACTIVE;*/
 }
 
+
 //! get the element ID
-int FEElement::GetID() const { return m_nID; }
+int FEElement::getId() const { return m_id; }
 
 //! set the element ID
-void FEElement::SetID(int n) { m_nID = n; }
+void FEElement::setId(int n) { m_id = n; }
 
 //! Get the element's material ID
-int FEElement::GetMatID() const { return m_mat; }
+int FEElement::getMatId() const { return m_mat_id; }
 
 //! Set the element's material ID
-void FEElement::SetMatID(int id) { m_mat = id; }
+void FEElement::setMatId(int id) { m_mat_id = id; }
 
 //-----------------------------------------------------------------------------
 void FEElement::SetTraits(FEElementTraits* ptraits)
 {
 	m_pTraits = ptraits;
-	m_node.resize(Nodes());
-	m_lnode.resize(Nodes());
+	m_node.resize(NodeSize());
+	//m_lnode.resize(NodeSize());
 	m_state.Create(GaussPoints());
 }
 
@@ -183,23 +116,23 @@ void FEElement::Serialize(DumpStream& ar)
 
 	if (ar.IsSaving())
 	{
-		int type = Type();
+		int type = getType();
 		ar << type;
-		ar << m_nID << m_lid << m_mat;
+		/*ar << m_nID << m_lid << m_mat;
 		ar << m_node;
 		ar << m_lnode;
 		ar << m_lm << m_val;
-		ar << m_status;
+		ar << m_status;*/
 	}
 	else
 	{
 		int ntype;
-		ar >> ntype; SetType(ntype);
-		ar >> m_nID >> m_lid >> m_mat;
-		ar >> m_node;
-		ar >> m_lnode;		
-		ar >> m_lm >> m_val;
-		ar >> m_status;
+		ar >> ntype; setType(ntype);
+        /*ar >> m_nID >> m_lid >> m_mat;
+        ar >> m_node;
+        ar >> m_lnode;
+        ar >> m_lm >> m_val;
+        ar >> m_status;*/
 	}
 }
 

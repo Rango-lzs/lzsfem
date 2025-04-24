@@ -41,6 +41,8 @@ public:
         return m_data[n];
     }
 
+    const std::vector<FEMaterialPoint*>& getMatPoints() const;
+
 private:
     std::vector<FEMaterialPoint*> m_data;
 };
