@@ -27,6 +27,7 @@
 #include <map>
 #include <stdarg.h>
 #include <string>
+#include "FEException.h"
 using namespace std;
 
 //-----------------------------------------------------------------------------
@@ -206,10 +207,10 @@ void FEModel::Clear()
 void FEModel::SetActiveModule(const std::string& moduleName)
 {
     m_imp->m_moduleName = moduleName;
-    FECoreKernel& fecore = FECoreKernel::GetInstance();
-    fecore.SetActiveModule(moduleName.c_str());
-    FEModule* pmod = fecore.GetActiveModule();
-    pmod->InitModel(this);
+    //FECoreKernel& fecore = FECoreKernel::GetInstance();
+    //fecore.SetActiveModule(moduleName.c_str());
+    //FEModule* pmod = fecore.GetActiveModule();
+   // pmod->InitModel(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -483,11 +484,11 @@ bool FEModel::Init()
 
     // evaluate all load parameters
     // Do this last in case any model components redefined their load curves.
-    if (EvaluateLoadParameters() == false)
-        return false;
+    /*if (EvaluateLoadParameters() == false)
+        return false;*/
 
     // activate all permanent dofs
-    Activate();
+    //Activate();
 
     bool ret = false;
     try
@@ -771,8 +772,8 @@ bool FEModel::DetachLoadController(FEParam* p)
             m_imp->m_Param.erase(m_imp->m_Param.begin() + i);
             return true;
         }
-    }
-    return false;*/
+    }*/
+    return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1055,20 +1056,22 @@ bool FEModel::DoCallback(unsigned int nevent)
 //-----------------------------------------------------------------------------
 void FEModel::SetGlobalConstant(const string& s, double v)
 {
-    m_imp->m_Const[s] = v;
+    //m_imp->m_Const[s] = v;
     return;
 }
 
 //-----------------------------------------------------------------------------
 double FEModel::GetGlobalConstant(const string& s)
 {
-    return (m_imp->m_Const.count(s) ? m_imp->m_Const.find(s)->second : 0);
+    //return (m_imp->m_Const.count(s) ? m_imp->m_Const.find(s)->second : 0);
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
 int FEModel::GlobalVariables() const
 {
-    return (int)m_imp->m_Var.size();
+    //return (int)m_imp->m_Var.size();
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -1078,126 +1081,129 @@ void FEModel::AddGlobalVariable(const string& s, double v)
     var->v = v;
     var->name = s;
     AddParameter(var->v, var->name.c_str());
-    m_imp->m_Var.push_back(var);
+    //m_imp->m_Var.push_back(var);
 }
 
 const FEGlobalVariable& FEModel::GetGlobalVariable(int n)
 {
-    return *m_imp->m_Var[n];
+    //return *m_imp->m_Var[n];
+    return FEGlobalVariable();
 }
 
 //-----------------------------------------------------------------------------
 void FEModel::AddGlobalData(FEGlobalData* psd)
 {
-    m_imp->m_GD.push_back(psd);
+    //m_imp->m_GD.push_back(psd);
 }
 
 //-----------------------------------------------------------------------------
 FEGlobalData* FEModel::GetGlobalData(int i)
 {
-    return m_imp->m_GD[i];
+    //return m_imp->m_GD[i];
+    return nullptr;
 }
 
 //-----------------------------------------------------------------------------
 FEGlobalData* FEModel::FindGlobalData(const char* szname)
 {
-    for (int i = 0; i < m_imp->m_GD.size(); ++i)
+    /*for (int i = 0; i < m_imp->m_GD.size(); ++i)
     {
         if (m_imp->m_GD[i]->GetName() == szname)
             return m_imp->m_GD[i];
-    }
+    }*/
     return nullptr;
 }
 
 //-----------------------------------------------------------------------------
 int FEModel::FindGlobalDataIndex(const char* szname)
 {
-    for (int i = 0; i < m_imp->m_GD.size(); ++i)
+    /*for (int i = 0; i < m_imp->m_GD.size(); ++i)
     {
         if (m_imp->m_GD[i]->GetName() == szname)
             return i;
-    }
+    }*/
     return -1;
 }
 
 //-----------------------------------------------------------------------------
 int FEModel::GlobalDataItems()
 {
-    return (int)m_imp->m_GD.size();
+    //return (int)m_imp->m_GD.size();
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
 // This function serializes data to a stream.
 // This is used for running and cold restarts.
-void FEModel::Impl::Serialize(DumpStream& ar)
-{
-    if (ar.IsShallow())
-    {
-        // stream model data
-        ar& m_timeInfo;
-
-        // stream mesh
-        m_fem->SerializeGeometry(ar);
-
-        // serialize contact
-        ar& m_CI;
-
-        // serialize nonlinear constraints
-        ar& m_NLC;
-
-        // serialize step and solver data
-        ar& m_Step;
-    }
-    else
-    {
-        if (ar.IsLoading())
-            m_fem->Clear();
-
-        ar& m_moduleName;
-
-        if (ar.IsLoading())
-        {
-            FECoreKernel::GetInstance().SetActiveModule(m_moduleName.c_str());
-        }
-
-        ar& m_timeInfo;
-        ar& m_dofs;
-        ar& m_Const;
-        ar& m_GD;
-        ar& m_ftime0;
-        ar& m_bsolved;
-
-        // we have to stream materials before the mesh
-        ar& m_MAT;
-
-        // we have to stream the mesh before any boundary conditions
-        m_fem->SerializeGeometry(ar);
-
-        // stream all boundary conditions
-        ar& m_BC;
-        ar& m_ML;
-        ar& m_IC;
-        ar& m_CI;
-        ar& m_NLC;
-
-        // stream step data next
-        ar& m_nStep;
-        ar& m_Step;
-        ar& mp_CurStep;  // This must be streamed after m_Step
-
-        // serialize linear constraints
-        if (m_LCM)
-            m_LCM->Serialize(ar);
-
-        // serialize data generators
-        ar& m_MD;
-
-        // load controllers and load parameters are streamed last
-        // since they can depend on other model parameters.
-        ar& m_LC;
-        ar& m_Param;
-    }
-}
+//void FEModel::Impl::Serialize(DumpStream& ar)
+//{
+//    if (ar.IsShallow())
+//    {
+//        // stream model data
+//        ar& m_timeInfo;
+//
+//        // stream mesh
+//        m_fem->SerializeGeometry(ar);
+//
+//        // serialize contact
+//        ar& m_CI;
+//
+//        // serialize nonlinear constraints
+//        ar& m_NLC;
+//
+//        // serialize step and solver data
+//        ar& m_Step;
+//    }
+//    else
+//    {
+//        if (ar.IsLoading())
+//            m_fem->Clear();
+//
+//        ar& m_moduleName;
+//
+//        if (ar.IsLoading())
+//        {
+//            FECoreKernel::GetInstance().SetActiveModule(m_moduleName.c_str());
+//        }
+//
+//        ar& m_timeInfo;
+//        ar& m_dofs;
+//        ar& m_Const;
+//        ar& m_GD;
+//        ar& m_ftime0;
+//        ar& m_bsolved;
+//
+//        // we have to stream materials before the mesh
+//        ar& m_MAT;
+//
+//        // we have to stream the mesh before any boundary conditions
+//        m_fem->SerializeGeometry(ar);
+//
+//        // stream all boundary conditions
+//        ar& m_BC;
+//        ar& m_ML;
+//        ar& m_IC;
+//        ar& m_CI;
+//        ar& m_NLC;
+//
+//        // stream step data next
+//        ar& m_nStep;
+//        ar& m_Step;
+//        ar& mp_CurStep;  // This must be streamed after m_Step
+//
+//        // serialize linear constraints
+//        if (m_LCM)
+//            m_LCM->Serialize(ar);
+//
+//        // serialize data generators
+//        ar& m_MD;
+//
+//        // load controllers and load parameters are streamed last
+//        // since they can depend on other model parameters.
+//        ar& m_LC;
+//        ar& m_Param;
+//    }
+//}
 
 //-----------------------------------------------------------------------------
 //! This is called to serialize geometry.
@@ -1214,7 +1220,7 @@ void FEModel::Serialize(DumpStream& ar)
 {
     TRACK_TIME(TimerID::Timer_Update);
 
-    m_imp->Serialize(ar);
+    //m_imp->Serialize(ar);
     DoCallback(ar.IsSaving() ? CB_SERIALIZE_SAVE : CB_SERIALIZE_LOAD);
 }
 

@@ -1,14 +1,14 @@
 #pragma once
 #include "femcore/Matrix/MatrixProfile.h"
 #include "datastructure/MatrixOperator.h"
-#include "datastructure/matrix.h"
+#include "datastructure/Matrix.h"
 #include <vector>
 
 //-----------------------------------------------------------------------------
 //! Base class for sparse matrices
 
-//! This is the base class for the sparse matrix classes and defines the interface
-//! to the different matrix classes
+//! This is the base class for the sparse Matrix classes and defines the interface
+//! to the different Matrix classes
 
 class FEM_EXPORT SparseMatrix : public MatrixOperator
 {
@@ -26,7 +26,7 @@ public:
 	//! return number of columns
 	int Columns() const { return m_ncol; }
 
-	//! is the matrix square?
+	//! is the Matrix square?
 	bool IsSquare() const { return (m_nrow == m_ncol); }
 
 	//! return number of nonzeros
@@ -34,17 +34,17 @@ public:
 
 public: // functions to be overwritten in derived classes
 
-	//! set all matrix elements to zero
+	//! set all Matrix elements to zero
 	virtual void Zero() = 0;
 
-	//! Create a sparse matrix from a sparse-matrix profile
+	//! Create a sparse Matrix from a sparse-Matrix profile
 	virtual void Create(SparseMatrixProfile& MP) = 0;
 
-	//! assemble a matrix into the sparse matrix
-	virtual void Assemble(const matrix& ke, const std::vector<int>& lm) = 0;
+	//! assemble a Matrix into the sparse Matrix
+	virtual void Assemble(const Matrix& ke, const std::vector<int>& lm) = 0;
 
-	//! assemble a matrix into the sparse matrix
-	virtual void Assemble(const matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) = 0;
+	//! assemble a Matrix into the sparse Matrix
+	virtual void Assemble(const Matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) = 0;
 
 	//! check if an entry was allocated
 	virtual bool check(int i, int j) = 0;
@@ -64,7 +64,7 @@ public: // functions to be overwritten in derived classes
 	//! release memory for storing data
 	virtual void Clear();
 
-	//! scale matrix
+	//! scale Matrix
 	virtual void scale(const std::vector<double>& L, const std::vector<double>& R);
 
 public:
@@ -81,6 +81,6 @@ public:
 
 protected:
 	// NOTE: These values are set by derived classes
-	int	m_nrow, m_ncol;		//!< dimension of matrix
-	int	m_nsize;			//!< number of nonzeroes (i.e. matrix elements actually allocated)
+	int	m_nrow, m_ncol;		//!< dimension of Matrix
+	int	m_nsize;			//!< number of nonzeroes (i.e. Matrix elements actually allocated)
 };

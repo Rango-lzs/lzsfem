@@ -1,39 +1,11 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FELinearConstraintManager.h"
 #include "FEMesh.h"
 #include "FEModel.h"
-#include "FEAnalysis.h"
-#include "DumpStream.h"
+#include "femcore/FEAnalysis/FEAnalysis.h"
+#include "basicio/DumpStream.h"
 #include "FEDomain.h"
 #include "FEGlobalMatrix.h"
+#include "femcore/RTTI/MetaClass.h"
 
 //-----------------------------------------------------------------------------
 FELinearConstraintManager::FELinearConstraintManager(FEModel* fem) : m_fem(fem)
@@ -59,7 +31,8 @@ void FELinearConstraintManager::CopyFrom(const FELinearConstraintManager& lcm)
 	Clear();
 	for (int i=0; i<lcm.LinearConstraints(); ++i)
 	{
-		FELinearConstraint* lc = fecore_alloc(FELinearConstraint, m_fem);
+        FELinearConstraint* lc = static_cast<FELinearConstraint*>(
+            FELinearConstraint::staic_meta()->create());  // fecore_alloc(FELinearConstraint, m_fem);
 		lc->CopyFrom(&(const_cast<FELinearConstraint&>(lcm.LinearConstraint(i))));
 		m_LinC.push_back(lc);
 	}
@@ -146,7 +119,7 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 	// Add linear constraints to the profile
 	// TODO: we need to add a function build_add(lmi, lmj) for
 	// this type of "elements". Now we allocate too much memory
-	vector<int> lm, elm;
+	std::vector<int> lm, elm;
 
 	// do the cross-term
 	// TODO: I have to make this easier. For instance,
@@ -163,17 +136,17 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 			int ne = (int)elm.size();
 
 			// keep a list of the constraints this element connects to
-			vector<int> constraintList;
+			std::vector<int> constraintList;
 
 			// see if this element connects to the 
 			// parent node of a linear constraint ...
-			int m = el.Nodes();
+			int m = el.NodeSize();
 			for (int j = 0; j<m; ++j)
 			{	
 				int ncols = m_LCT.columns();
 				for (int k = 0; k<ncols; ++k)
 				{
-					int n = m_LCT(el.m_node[j], k);
+                    int n = m_LCT(el.getNodeIds()[j], k);
 					if (n >= 0)
 					{
 						// ... it does so we need to connect the 
@@ -199,11 +172,11 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 			}
 
 			// This replaces the commented out section below, which sets up the connectivity 
-			// for the constraint block of the stiffness matrix. 
+			// for the constraint block of the stiffness Matrix. 
 			// The problem is that this will only work for linear constraints that are connected
 			// the element, so not for constraints connected to contact "elements". Howerver, I
 			// don't think this was working anyway, so this is okay for now.
-			// TODO: Replace this with a more generic algorithm that looks at the matrix profile 
+			// TODO: Replace this with a more generic algorithm that looks at the Matrix profile 
 			// directly instead of element by element. 
 			if (constraintList.empty() == false)
 			{
@@ -230,9 +203,9 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 
 	// do the constraint term
 	// NOTE: This block was replaced by the section above which reduces the size
-	// of the stiffness matrix, but might be less generic (altough not entirely sure
+	// of the stiffness Matrix, but might be less generic (altough not entirely sure
 	// about that). 
-/*	vector<FELinearConstraint>::iterator ic = m_LinC.begin();
+/*	std::vector<FELinearConstraint>::iterator ic = m_LinC.begin();
 	int n = 0;
 	for (int i = 0; i<nlin; ++i, ++ic) n += (int) ic->m_childDof.size();
 	lm.resize(n);
@@ -241,7 +214,7 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 	for (int i = 0; i<nlin; ++i, ++ic)
 	{
 		int ni = (int)ic->m_childDof.size();
-		vector<FELinearConstraintDOF>::iterator is = ic->m_childDof.begin();
+		std::vector<FELinearConstraintDOF>::iterator is = ic->m_childDof.begin();
 		for (int j = 0; j<ni; ++j, ++is) 
 		{
 			int neq = mesh.Node(is->node).m_ID[is->dof];
@@ -305,7 +278,7 @@ void FELinearConstraintManager::InitTable()
 	m_LCT.resize(mesh.Nodes(), MAX_NDOFS, -1);
 	m_LCT.set(-1);
 
-	vector<FELinearConstraint*>::iterator ic = m_LinC.begin();
+	std::vector<FELinearConstraint*>::iterator ic = m_LinC.begin();
 	int nlin = LinearConstraints();
 	for (int i = 0; i<nlin; ++i, ++ic)
 	{
@@ -353,7 +326,7 @@ bool FELinearConstraintManager::Activate()
 	m_up.assign(m_LinC.size(), 0.0);
 	if (m_LinC.size())
 	{
-		vector<FELinearConstraint*>::iterator il = m_LinC.begin();
+		std::vector<FELinearConstraint*>::iterator il = m_LinC.begin();
 		for (int l = 0; l<(int)m_LinC.size(); ++l, ++il) 
 		{
 			if ((*il)->IsActive()) (*il)->Activate();
@@ -364,7 +337,7 @@ bool FELinearConstraintManager::Activate()
 }
 
 //-----------------------------------------------------------------------------
-void FELinearConstraintManager::AssembleResidual(vector<double>& R, vector<int>& en, vector<int>& elm, vector<double>& fe)
+void FELinearConstraintManager::AssembleResidual(std::vector<double>& R, std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe)
 {
 	FEMesh& mesh = m_fem->GetMesh();
 
@@ -405,7 +378,7 @@ void FELinearConstraintManager::AssembleResidual(vector<double>& R, vector<int>&
 }
 
 //-----------------------------------------------------------------------------
-void FELinearConstraintManager::AssembleStiffness(FEGlobalMatrix& G, vector<double>& R, vector<double>& ui, const vector<int>& en, const vector<int>& lmi, const vector<int>& lmj, const matrix& ke)
+void FELinearConstraintManager::AssembleStiffness(FEGlobalMatrix& G, std::vector<double>& R, std::vector<double>& ui, const std::vector<int>& en, const std::vector<int>& lmi, const std::vector<int>& lmj, const Matrix& ke)
 {
 	FEMesh& mesh = m_fem->GetMesh();
 

@@ -15,7 +15,7 @@ class FEFacetSet;
 //! prescribed (FEPrescribedBC) boundary condition. 
 class FEM_EXPORT FEBoundaryCondition : public FEStepComponent
 {
-    FECORE_BASE_CLASS(FEBoundaryCondition, FEStepComponent);
+    DECLARE_META_CLASS(FEBoundaryCondition, FEStepComponent);
 
 public:
 	//! constructor

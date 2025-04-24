@@ -3,7 +3,7 @@
 #include "datastructure/table.h"
 
 class FEGlobalMatrix;
-class matrix;
+class Matrix;
 
 //-----------------------------------------------------------------------------
 // This class helps manage all the linear constraints
@@ -51,7 +51,7 @@ public:
 	void AssembleResidual(std::vector<double>& R, std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe);
 
 	// assemble element matrix into (reduced) global matrix
-	void AssembleStiffness(FEGlobalMatrix& K, std::vector<double>& R, std::vector<double>& ui, const std::vector<int>& en, const std::vector<int>& lmi, const std::vector<int>& lmj, const matrix& ke);
+	void AssembleStiffness(FEGlobalMatrix& K, std::vector<double>& R, std::vector<double>& ui, const std::vector<int>& en, const std::vector<int>& lmi, const std::vector<int>& lmj, const Matrix& ke);
 
 	// called before the first reformation for each time step
 	void PrepStep();

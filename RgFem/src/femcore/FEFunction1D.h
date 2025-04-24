@@ -1,35 +1,6 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
-#include "fecore_api.h"
-#include "FECoreBase.h"
-#include "MathObject.h"
+#include "femcore/FEObjectBase.h"
+//#include "femcore/MathObject.h"
 
 //-----------------------------------------------------------------------------
 class FEModel;
@@ -42,10 +13,9 @@ class DumpStream;
 //   - copy()       : Create a copy of the class
 //   - derive(double) : Calculate the derivative. This is optional, but allows implementation of more efficient algorithm, since default implements forward difference
 //
-class FEM_EXPORT FEFunction1D : public FECoreBase
+class FEM_EXPORT FEFunction1D : public FEObjectBase
 {
-	FECORE_SUPER_CLASS(FEFUNCTION1D_ID)
-	FECORE_BASE_CLASS(FEFunction1D);
+    DECLARE_META_CLASS(FEFunction1D, FEObjectBase);
 
 public:
 	FEFunction1D(FEModel* pfem);
@@ -96,7 +66,7 @@ protected:
 private:
 	double	m_value;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
@@ -127,7 +97,7 @@ private:
 	double	m_slope;
 	double	m_intercept;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------
@@ -162,44 +132,44 @@ private:
 	double	m_leftVal;
 	double	m_rightVal;
 
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
-
-//-----------------------------------------------------------------------------
-//! function defined via math expression
-class FEM_EXPORT FEMathFunction : public FEFunction1D
-{
-public:
-	FEMathFunction(FEModel* fem);
-
-	bool Init() override;
-
-	void Serialize(DumpStream& ar) override;
-
-	FEFunction1D* copy() override;
-
-	double value(double t) const override;
-
-	double derive(double t) const override;
-
-    double deriv2(double t) const override;
-
-	void SetMathString(const std::string& s);
-
-private:
-	void evalParams(std::vector<double>& val, double t) const;
-
-	bool BuildMathExpressions();
-
-private:
-	std::string			m_s;
-	int					m_ix;			// index of independent variable
-	std::vector<FEParamValue>	m_var;	// list of model parameters that are used as variables in expression.
-
-	MSimpleExpression	m_exp;
-	MSimpleExpression	m_dexp;
-    MSimpleExpression   m_d2exp;
-
-	DECLARE_FECORE_CLASS();
-};
+//
+////-----------------------------------------------------------------------------
+////! function defined via math expression
+//class FEM_EXPORT FEMathFunction : public FEFunction1D
+//{
+//public:
+//	FEMathFunction(FEModel* fem);
+//
+//	bool Init() override;
+//
+//	void Serialize(DumpStream& ar) override;
+//
+//	FEFunction1D* copy() override;
+//
+//	double value(double t) const override;
+//
+//	double derive(double t) const override;
+//
+//    double deriv2(double t) const override;
+//
+//	void SetMathString(const std::string& s);
+//
+//private:
+//	void evalParams(std::vector<double>& val, double t) const;
+//
+//	bool BuildMathExpressions();
+//
+//private:
+//	std::string			m_s;
+//	int					m_ix;			// index of independent variable
+//	std::vector<FEParamValue>	m_var;	// list of model parameters that are used as variables in expression.
+//
+//	MSimpleExpression	m_exp;
+//	MSimpleExpression	m_dexp;
+//    MSimpleExpression   m_d2exp;
+//
+//	DECLARE_PARAM_LIST();
+//};

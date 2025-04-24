@@ -1,5 +1,5 @@
 #pragma once
-#include "femcore/fem_export.h"
+#include "femcore/FEObjectBase.h"
 
 #include <stdexcept>
 #include <stdio.h>
@@ -38,7 +38,7 @@ public:
 
 class FEM_EXPORT DataRecord : public FEObjectBase
 {
-    META_CLASS_DECLARE(DataRecord, FEObjectBase);
+    DECLARE_META_CLASS(DataRecord, FEObjectBase);
 
 public:
     enum

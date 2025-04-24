@@ -139,12 +139,12 @@ void FEParamObject::SetParameter(const char* sz, T v)
 public:                                                                                                                \
     void BuildParamList() override;
 
-#define FECORE_BASE_CLASS(theClass)                                                                                    \
-public:                                                                                                                \
-    static const char* BaseClassName()                                                                                 \
-    {                                                                                                                  \
-        return #theClass;                                                                                              \
-    }
+//#define FECORE_BASE_CLASS(theClass)                                                                                    \
+//public:                                                                                                                \
+//    static const char* BaseClassName()                                                                                 \
+//    {                                                                                                                  \
+//        return #theClass;                                                                                              \
+//    }
 
 // the BEGIN_FECORE_CLASS defines the beginning of a parameter list
 #define BEGIN_PARAM_DEFINE(theClass, baseClass)                                                                        \

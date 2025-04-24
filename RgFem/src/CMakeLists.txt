@@ -224,6 +224,7 @@ set(FEMCORE_HEADERS
 
 set(FEMCORE_SOURCES
     femcore/Callback.cpp
+    femcore/DOFS.cpp
     femcore/DataRecord.cpp
     femcore/Domain/DomainDataRecord.cpp
     #femcore/Domain/FE3FieldElasticShellDomain.cpp
@@ -385,6 +386,7 @@ set(FEMCORE_SOURCES
     femcore/FEFixedRotation.cpp
 
 )
+
 
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}

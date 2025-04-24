@@ -12,6 +12,8 @@ class FESurfaceMaterialPoint;
 //! This is the base class for all loads that are applied to surfaces
 class FEM_EXPORT FESurfaceLoad : public FEModelLoad
 {
+    DECLARE_META_CLASS(FESurfaceLoad, FEModelLoad);
+
 public:
 	FESurfaceLoad(FEModel* pfem);
 	virtual ~FESurfaceLoad(void);
@@ -37,6 +39,4 @@ public:
 
 protected:
 	FESurface*	m_psurf;
-
-	FECORE_BASE_CLASS(FESurfaceLoad)
 };

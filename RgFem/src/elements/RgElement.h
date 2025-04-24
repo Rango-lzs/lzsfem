@@ -54,6 +54,7 @@ public:
 
     void setLocalID(int lid);
     int getLocalID() const;
+    const std::vector<NodeId>& getNodeIds();
 
     virtual ElementType elementType() = 0;
     virtual void setNode(FENode* n, int i);
