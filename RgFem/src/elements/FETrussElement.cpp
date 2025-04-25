@@ -1,6 +1,5 @@
-//=================================================================================================
-// FETrussElement
-//=================================================================================================
+#include "elements/FETrussElement.h"
+#include "basicio/DumpStream.h"
 
 //-----------------------------------------------------------------------------
 FETrussElement::FETrussElement()
@@ -21,13 +20,7 @@ FETrussElement::FETrussElement(const FETrussElement& el)
     }
 
     // copy base class data
-    m_mat = el.m_mat;
-    m_nID = el.m_nID;
-    m_lid = el.m_lid;
-    m_node = el.m_node;
-    m_lnode = el.m_lnode;
-    m_lm = el.m_lm;
-    m_val = el.m_val;
+    
 
     // truss data
     m_a0 = el.m_a0;
@@ -46,13 +39,7 @@ FETrussElement& FETrussElement::operator=(const FETrussElement& el)
     }
 
     // copy base class data
-    m_mat = el.m_mat;
-    m_nID = el.m_nID;
-    m_lid = el.m_lid;
-    m_node = el.m_node;
-    m_lnode = el.m_lnode;
-    m_lm = el.m_lm;
-    m_val = el.m_val;
+  
 
     // copy truss data
     m_a0 = el.m_a0;

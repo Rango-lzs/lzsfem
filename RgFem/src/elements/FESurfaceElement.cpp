@@ -1,31 +1,5 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-#include "stdafx.h"
-#include "FESurfaceElement.h"
-#include "DumpStream.h"
+#include "elements/FESurfaceElement.h"
+#include "basicio/DumpStream.h"
 
 //=================================================================================================
 // FESurfaceElement
@@ -44,14 +18,6 @@ FESurfaceElement::FESurfaceElement(const FESurfaceElement& el) : FEElement(el)
 	if (el.m_pTraits) SetTraits(el.m_pTraits);
 
 	// copy base class data
-	m_mat = el.m_mat;
-	m_nID = el.m_nID;
-	m_lid = el.m_lid;
-	m_node = el.m_node;
-	m_lnode = el.m_lnode;
-	m_lm = el.m_lm;
-	m_val = el.m_val;
-	m_status = el.m_status;
 
 	// copy surface element data
 	m_lid = el.m_lid;
@@ -66,13 +32,6 @@ FESurfaceElement& FESurfaceElement::operator = (const FESurfaceElement& el)
 	else assert(m_pTraits == el.m_pTraits);
 
 	// copy base class data
-	m_mat = el.m_mat;
-	m_nID = el.m_nID;
-	m_lid = el.m_lid;
-	m_node = el.m_node;
-	m_lnode = el.m_lnode;
-	m_lm = el.m_lm;
-	m_val = el.m_val;
 
 	// copy surface element data
 	m_lid = el.m_lid;
@@ -85,14 +44,14 @@ FESurfaceElement& FESurfaceElement::operator = (const FESurfaceElement& el)
 void FESurfaceElement::SetTraits(FEElementTraits* pt)
 {
 	m_pTraits = pt;
-	m_node.resize(Nodes());
-	m_lnode.resize(Nodes());
-	m_state.Create(GaussPoints());
+	m_node.resize(NodeSize());
+	m_loc_node.resize(NodeSize());
+	m_state.Create(GaussPointSize());
 }
 
 int FESurfaceElement::facet_edges() const
 {
-	int nn = Nodes(), nf = 0;
+	int nn = NodeSize(), nf = 0;
 	switch (nn)
 	{
 	case 3:
@@ -113,28 +72,28 @@ int FESurfaceElement::facet_edges() const
 
 void FESurfaceElement::facet_edge(int j, int* en) const
 {
-	int nn = Nodes();
+	int nn = NodeSize();
 	switch (nn)
 	{
 	case 3:
-		en[0] = m_lnode[j];
-		en[1] = m_lnode[(j + 1) % 3];
+		en[0] = m_loc_node[j];
+		en[1] = m_loc_node[(j + 1) % 3];
 		break;
 	case 6:
 	case 7:
-		en[0] = m_lnode[j];
-		en[1] = m_lnode[j + 3];
-		en[2] = m_lnode[(j + 1) % 3];
+		en[0] = m_loc_node[j];
+		en[1] = m_loc_node[j + 3];
+		en[2] = m_loc_node[(j + 1) % 3];
 		break;
 	case 4:
-		en[0] = m_lnode[j];
-		en[1] = m_lnode[(j + 1) % 4];
+		en[0] = m_loc_node[j];
+		en[1] = m_loc_node[(j + 1) % 4];
 		break;
 	case 8:
 	case 9:
-		en[0] = m_lnode[j];
-		en[1] = m_lnode[j + 4];
-		en[2] = m_lnode[(j + 1) % 4];
+		en[0] = m_loc_node[j];
+		en[1] = m_loc_node[j + 4];
+		en[2] = m_loc_node[(j + 1) % 4];
 		break;
 	}
 }

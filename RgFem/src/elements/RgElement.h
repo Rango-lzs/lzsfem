@@ -3,8 +3,9 @@
 #include "datastructure/Matrix3d.h"
 #include "elements/FEElementLibrary.h"
 #include "elements/FEElementTraits.h"
-#include "elements/RgElementState.h"
+#include "elements/FEElementState.h"
 #include "femcore/fem_export.h"
+
 #include <vector>
 
 using NodeId = int;
@@ -13,6 +14,8 @@ using MatId = int;
 
 class FEMaterialPoint;
 class FENode;
+class FEMeshPartition;
+class DumpStream;
 
 /**
  *@~English
@@ -38,17 +41,19 @@ class FENode;
 class FEM_EXPORT FEElement
 {
 public:
-
     static constexpr int MAX_NODES = 28;
 
     FEElement();
     virtual ~FEElement();
 
-    //单元编号
+    FEElement(const FEElement& other);
+    FEElement& operator=(const FEElement& other);
+
+    // 单元编号
     int getId() const;
     void setId(int n);
 
-    //材料编号
+    // 材料编号
     int getMatId() const;
     void setMatId(int id);
 
@@ -66,55 +71,44 @@ public:
     {
         FEElementLibrary::SetElementTraits(*this, ntype);
     }
+
     int getType() const;
 
-    //! Set the traits of an element
+    //Set the traits of an element
     virtual void SetTraits(FEElementTraits* ptraits);
 
-    //! Get the element traits
+    //Get the element traits
     FEElementTraits* GetTraits()
     {
         return m_pTraits;
     }
 
-    //! return number of nodes
+    //return number of nodes
     int NodeSize() const
     {
         return m_pTraits->m_neln;
     }
 
-public:  // Shape function
-    //! return number of integration points
-    int GaussPoints() const
-    {
-        return m_pTraits->m_nint;
-    }
+public: 
+    //return number of integration points
+    int GaussPointSize() const;
 
-    //! shape function values
-    double* H(int n)
-    {
-        return m_pTraits->m_H[n];
-    }
-    const double* H(int n) const
-    {
-        return m_pTraits->m_H[n];
-    }
+    int ShapeFunctions(int order);
+
+    // shape function values of derivations at gauss n
+    double* H(int order, int n);
+
+    //shape function values at gauss n
+    //return value is array contain all the shape functions
+    double* H(int n);
+    const double* H(int n) const;
+
 
 
 public:
-    //! Get the material point data
-    FEMaterialPoint* GetMaterialPoint(int n)
-    {
-        return m_state[n];
-    }
-
-    //! set the material point data
+    //Get the material point data
+    FEMaterialPoint* GetMaterialPoint(int n);
     void SetMaterialPointData(FEMaterialPoint* pmp, int n);
-        /*  {
-              pmp->m_elem = this;
-              pmp->m_index = n;
-              m_state[n] = pmp;
-          }*/
 
     //! serialize
     //! NOTE: state data is not serialized by the element. This has to be done by the domains.
@@ -127,14 +121,15 @@ public:  // Filed evalulate
     virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) = 0;
     virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) = 0;
 
-    int ShapeFunctions(int order);
-    double* H(int order, int n);
-
+  
 protected:
-    ElemId m_id;                 //!< element ID
-    ElemId m_loc_id;             //!< local ID
-    MatId m_mat_id;              //!< material index
-    std::vector<NodeId> m_node;  //!< connectivity
+    //下面的local是指在一个Domain里面的
+    ElemId m_id;                     //!< element Id
+    ElemId m_loc_id;                 //!< local Id
+    MatId m_mat_id;                  //!< material index
+    std::vector<NodeId> m_node;      //!< connectivity
+    std::vector<NodeId> m_loc_node;  //!< local connectivity
+    FEMeshPartition* m_part;
 
     FEElementState m_state;
     FEElementTraits* m_pTraits;  //!< pointer to element traits

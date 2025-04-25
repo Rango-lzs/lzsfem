@@ -126,9 +126,6 @@ set(FEMCORE_HEADERS
     femcore/FEScalarValuator.h
     femcore/FESolidAnalysis.h
     femcore/FEStepComponent.h
-    femcore/FESurface.h
-    femcore/FESurfaceElement.h
-    femcore/FESurfaceElementShape.h
     femcore/FESurfaceLoad.h
     femcore/FESurfaceMap.h
     femcore/FESurfacePair.h
@@ -222,6 +219,7 @@ set(FEMCORE_HEADERS
     femcore/FEFixedRotation.h
 )
 
+
 set(FEMCORE_SOURCES
     femcore/Callback.cpp
     femcore/DOFS.cpp
@@ -300,8 +298,6 @@ set(FEMCORE_SOURCES
     femcore/FESolidAnalysis.cpp
     femcore/FEStepComponent.cpp
     femcore/FESurface.cpp
-    femcore/FESurfaceElement.cpp
-    femcore/FESurfaceElementShape.cpp
     femcore/FESurfaceLoad.cpp
     femcore/FESurfaceMap.cpp
     femcore/FESurfacePair.cpp
@@ -460,10 +456,12 @@ set(ELEMENT_HEADERS
     elements/RgBeamElement.h
     elements/RgElemTypeDefine.h
     elements/RgElement.h
-    elements/RgElementState.h
+    elements/FEElementState.h
     elements/RgElementStatus.h
-    elements/RgSolidElement2d.h
+    elements/FEElement2d.h
     elements/FETrussElement.h
+    elements/FESurfaceElement.h
+    elements/FESurfaceElementShape.h
 )
 
 set(ELEMENT_SOURCES
@@ -477,7 +475,11 @@ set(ELEMENT_SOURCES
     elements/FEShellElement.cpp
     elements/FESolidElement.cpp
     elements/RgElement.cpp
+    elements/FEElement2d.cpp
     elements/FETrussElement.cpp
+    elements/FEElementState.cpp
+    elements/FESurfaceElement.cpp
+    elements/FESurfaceElementShape.cpp
 )
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}

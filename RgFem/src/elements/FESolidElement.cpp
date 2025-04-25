@@ -1,6 +1,6 @@
 
 #include "FESolidElement.h"
-#include "DumpStream.h"
+#include "basicio/DumpStream.h"
 
 
 //实体单元
@@ -10,14 +10,14 @@ FESolidElement::FESolidElement(const FESolidElement& el)
 	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
-	m_mat = el.m_mat;
-	m_nID = el.m_nID;
-	m_lid = el.m_lid;
+    m_mat_id = el.m_mat_id;
+    m_id = el.m_id;
+    m_loc_id = el.m_loc_id;
 	m_node = el.m_node;
-	m_lnode = el.m_lnode;
-	m_lm = el.m_lm;
-	m_val = el.m_val;
-	m_status = el.m_status;
+    m_loc_node = el.m_loc_node;
+    /*m_lm = el.m_lm;
+    m_val = el.m_val;*/
+    m_state = el.m_state;
 }
 
 FESolidElement& FESolidElement::operator = (const FESolidElement& el)
@@ -26,14 +26,14 @@ FESolidElement& FESolidElement::operator = (const FESolidElement& el)
 	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
 
 	// copy base class data
-	m_mat = el.m_mat;
-	m_nID = el.m_nID;
-	m_lid = el.m_lid;
+    m_mat_id = el.m_mat_id;
+	m_id = el.m_id;
+	m_loc_id = el.m_loc_id;
 	m_node = el.m_node;
-	m_lnode = el.m_lnode;
-	m_lm = el.m_lm;
-	m_val = el.m_val;
-	m_status = el.m_status;
+	m_loc_node = el.m_loc_node;
+    /*m_lm = el.m_lm;
+    m_val = el.m_val;*/
+	m_state = el.m_state;
 
 	return (*this);
 }
@@ -42,7 +42,7 @@ void FESolidElement::SetTraits(FEElementTraits* pt)
 {
 	FEElement::SetTraits(pt);
 
-	int ni = GaussPoints();
+	int ni = GaussPointSize();
 	m_J0i.resize(ni);
 }
 
@@ -50,7 +50,7 @@ Vector3d FESolidElement::evaluate(Vector3d* v, double r, double s, double t) con
 {
 	double H[FEElement::MAX_NODES];
 	shape_fnc(H, r, s, t);
-	int neln = Nodes();
+    int neln = NodeSize();
 	Vector3d p(0, 0, 0);
 	for (int i = 0; i<neln; ++i) p += v[i] * H[i];
 	return p;
@@ -60,7 +60,7 @@ double FESolidElement::evaluate(double* v, double r, double s, double t) const
 {
 	double H[FEElement::MAX_NODES];
 	shape_fnc(H, r, s, t);
-	int neln = Nodes();
+	int neln = NodeSize();
 	double p = 0.0;
 	for (int i = 0; i<neln; ++i) p += v[i] * H[i];
 	return p;

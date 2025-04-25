@@ -1,4 +1,6 @@
+#pragma once
 
+#include "elements/RgElement.h"
 //!  This class defines a 2D element
 class FEM_EXPORT FEElement2D : public FEElement
 {
