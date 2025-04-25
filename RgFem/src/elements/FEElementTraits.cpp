@@ -1,15 +1,15 @@
 #include "FEElementTraits.h"
-#include "FEElement.h"
-#include "FEException.h"
-#include "FESolidElementShape.h"
-#include "FESurfaceElementShape.h"
+#include "elements/RgElement.h"
+#include "femcore/FEException.h"
+#include "elements/ElementShape/FESolidElementShape.h"
+#include "elements/FESurfaceElementShape.h"
 using namespace std;
 
 #ifndef SQR
 #define SQR(x) ((x)*(x))
 #endif
 
-FEElementTraits::FEElementTraits(int ni, int ne, FE_Element_Class c, ElementShape s, ElementType t)
+FEElementTraits::FEElementTraits(int ni, int ne, ElementCategory c, ElementShape s, ElementType t)
 {
 	m_neln = ne;
 	m_nint = ni;
@@ -182,10 +182,10 @@ void FESolidElementTraits::init()
 	for (int i = 0; i <= maxOrder; ++i)
 	{
 		FESolidElementShape* shape = m_shapeP[i];
-		matrix& H = m_Hp[i];
-		matrix& Gr = m_Gr_p[i];
-		matrix& Gs = m_Gs_p[i];
-		matrix& Gt = m_Gt_p[i];
+		Matrix& H = m_Hp[i];
+		Matrix& Gr = m_Gr_p[i];
+		Matrix& Gs = m_Gs_p[i];
+		Matrix& Gt = m_Gt_p[i];
 		if (i == 0)
 		{
 			H.resize(m_nint, 1);
@@ -694,8 +694,8 @@ FETet10G4::FETet10G4() : FETet10_(NINT, FE_TET10G4)
 
 	init();
 
-	// setup the shape function matrix
-	matrix A(4,4);
+	// setup the shape function Matrix
+	Matrix A(4,4);
 	for (int i=0; i<4; ++i)
 	{
 		double r = gr[i];
@@ -708,7 +708,7 @@ FETet10G4::FETet10G4() : FETet10_(NINT, FE_TET10G4)
 		A[i][3] = t;
 	}
 
-	// calculate inverse matrix
+	// calculate inverse Matrix
 	Ai.resize(4, 4);
 	Ai = A.inverse();
 }
@@ -748,7 +748,7 @@ FETet10G8::FETet10G8() : FETet10_(NINT, FE_TET10G8)
 
 	init();
 
-	// setup the shape function matrix
+	// setup the shape function Matrix
 	N.resize(8, 4);
 	for (int i=0; i<8; ++i)
 	{
@@ -758,10 +758,10 @@ FETet10G8::FETet10G8() : FETet10_(NINT, FE_TET10G8)
 		N[i][3] = gt[i];
 	}
 
-	matrix A(4, 4);
+	Matrix A(4, 4);
 	A = N.transpose()*N;
 
-	// calculate inverse matrix
+	// calculate inverse Matrix
 	Ai.resize(4, 4);
 	Ai = A.inverse();
 }
@@ -859,8 +859,8 @@ FETet15G4::FETet15G4() : FETet15_(NINT, FE_TET15G4)
 
 	init();
 
-	// setup the shape function matrix
-	matrix A(4,4);
+	// setup the shape function Matrix
+	Matrix A(4,4);
 	for (int i=0; i<4; ++i)
 	{
 		double r = gr[i];
@@ -873,7 +873,7 @@ FETet15G4::FETet15G4() : FETet15_(NINT, FE_TET15G4)
 		A[i][3] = t;
 	}
 
-	// calculate inverse matrix
+	// calculate inverse Matrix
 	Ai.resize(4, 4);
 	Ai = A.inverse();
 }
@@ -921,7 +921,7 @@ FETet15G8::FETet15G8() : FETet15_(NINT, FE_TET15G8)
 
 	init();
 
-	// setup the shape function matrix
+	// setup the shape function Matrix
 	N.resize(8, 4);
 	for (int i=0; i<8; ++i)
 	{
@@ -931,10 +931,10 @@ FETet15G8::FETet15G8() : FETet15_(NINT, FE_TET15G8)
 		N[i][3] = gt[i];
 	}
 
-	matrix A(4, 4);
+	Matrix A(4, 4);
 	A = N.transpose()*N;
 
-	// calculate inverse matrix
+	// calculate inverse Matrix
 	Ai.resize(4, 4);
 	Ai = A.inverse();
 }
@@ -991,7 +991,7 @@ FETet15G11::FETet15G11() : FETet15_(NINT, FE_TET15G11)
 
 	init();
 
-	// setup the shape function matrix
+	// setup the shape function Matrix
 	N.resize(11, 4);
 	for (int i=0; i<11; ++i)
 	{
@@ -1001,10 +1001,10 @@ FETet15G11::FETet15G11() : FETet15_(NINT, FE_TET15G11)
 		N[i][3] = gt[i];
 	}
 
-	matrix A(4, 4);
+	Matrix A(4, 4);
 	A = N.transpose()*N;
 
-	// calculate inverse matrix
+	// calculate inverse Matrix
 	Ai.resize(4, 4);
 	Ai = A.inverse();
 }
@@ -1066,7 +1066,7 @@ FETet15G15::FETet15G15() : FETet15_(NINT, FE_TET15G15)
 
 	init();
 
-	// setup the shape function matrix
+	// setup the shape function Matrix
 	N.resize(NINT, 4);
 	for (int i=0; i<NINT; ++i)
 	{
@@ -1076,10 +1076,10 @@ FETet15G15::FETet15G15() : FETet15_(NINT, FE_TET15G15)
 		N[i][3] = gt[i];
 	}
 
-	matrix A(4, 4);
+	Matrix A(4, 4);
 	A = N.transpose()*N;
 
-	// calculate inverse matrix
+	// calculate inverse Matrix
 	Ai.resize(4, 4);
 	Ai = A.inverse();
 }
@@ -1155,7 +1155,7 @@ FETet20G15::FETet20G15() : FETet20_(NINT, FE_TET20G15)
 
 	init();
 
-	// setup the shape function matrix
+	// setup the shape function Matrix
 	N.resize(15, 4);
 	for (int i = 0; i<15; ++i)
 	{
@@ -1165,10 +1165,10 @@ FETet20G15::FETet20G15() : FETet20_(NINT, FE_TET20G15)
 		N[i][3] = gt[i];
 	}
 
-	matrix A(4, 4);
+	Matrix A(4, 4);
 	A = N.transpose()*N;
 
-	// calculate inverse matrix
+	// calculate inverse Matrix
 	Ai.resize(4, 4);
 	Ai = A.inverse();
 }
@@ -1448,7 +1448,7 @@ FEPyra5G8::FEPyra5G8() : FEPyra5_(NINT, FE_PYRA5G8)
 	init();
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN, NELN);
+	Matrix A(NELN, NELN);
 	m_Ai.resize(NELN, NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -1494,7 +1494,7 @@ FEPyra13G8::FEPyra13G8() : FEPyra13_(NINT, FE_PYRA13G8)
     init();
     
     // we need Ai to project integration point data to the nodes
-    matrix A(NELN, NELN);
+    Matrix A(NELN, NELN);
     m_Ai.resize(NELN, NELN);
     A = m_H.transpose()*m_H;
     m_Ai = A.inverse();
@@ -1577,9 +1577,9 @@ void FESurfaceElementTraits::init()
 	for (int i = 0; i <= maxOrder; ++i)
 	{
 		FESurfaceElementShape* shape = m_shapeP[i];
-		matrix& H = m_Hp[i];
-		matrix& Gr = Gr_p[i];
-		matrix& Gs = Gs_p[i];
+		Matrix& H = m_Hp[i];
+		Matrix& Gr = Gr_p[i];
+		Matrix& Gs = Gs_p[i];
 		if (i == 0)
 		{
 			H.resize(m_nint, 1);
@@ -1803,7 +1803,7 @@ FETri3G7::FETri3G7() : FETri3_(NINT, FE_TRI3G7)
 	init(); 
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN,NELN);
+	Matrix A(NELN,NELN);
 	m_Ai.resize(NELN,NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -1884,7 +1884,7 @@ FETri6G3::FETri6G3() : FETri6_(NINT, FE_TRI6G3)
 //-----------------------------------------------------------------------------
 void FETri6G3::project_to_nodes(double* ai, double* ao) const
 {
-	matrix H(3, 3);
+	Matrix H(3, 3);
 	for (int n=0; n<3; ++n)
 	{
 		H[n][0] = 1.0 - gr[n] - gs[n];
@@ -1944,7 +1944,7 @@ FETri6G7::FETri6G7() : FETri6_(NINT, FE_TRI6G7)
 	init(); 
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN,NELN);
+	Matrix A(NELN,NELN);
 	m_Ai.resize(NELN,NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -2139,7 +2139,7 @@ FETri6mG7::FETri6mG7() : FETri6m_(NINT, FE_TRI6MG7)
 	init(); 
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN,NELN);
+	Matrix A(NELN,NELN);
 	m_Ai.resize(NELN,NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -2180,7 +2180,7 @@ FETri7G3::FETri7G3() : FETri7_(NINT, FE_TRI7G3)
 //-----------------------------------------------------------------------------
 void FETri7G3::project_to_nodes(double* ai, double* ao) const
 {
-	matrix H(3, 3);
+	Matrix H(3, 3);
 	for (int n=0; n<3; ++n)
 	{
 		H[n][0] = 1.0 - gr[n] - gs[n];
@@ -2260,7 +2260,7 @@ FETri7G7::FETri7G7() : FETri7_(NINT, FE_TRI7G7)
 	init(); 
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN,NELN);
+	Matrix A(NELN,NELN);
 	m_Ai.resize(NELN,NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -2347,7 +2347,7 @@ FETri10G7::FETri10G7() : FETri10_(NINT, FE_TRI10G7)
 	init();
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN, NELN);
+	Matrix A(NELN, NELN);
 	m_Ai.resize(NELN, NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -2381,7 +2381,7 @@ FETri10G12::FETri10G12() : FETri10_(NINT, FE_TRI10G12)
 	init();
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN, NELN);
+	Matrix A(NELN, NELN);
 	m_Ai.resize(NELN, NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -2435,7 +2435,7 @@ FEQuad8G9::FEQuad8G9() : FEQuad8_(NINT, FE_QUAD8G9)
 	init();
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN,NELN);
+	Matrix A(NELN,NELN);
 	m_Ai.resize(NELN,NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -2532,7 +2532,7 @@ FEQuad9G9::FEQuad9G9() : FEQuad9_(NINT, FE_QUAD9G9)
 	init();
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN,NELN);
+	Matrix A(NELN,NELN);
 	m_Ai.resize(NELN,NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -3199,7 +3199,8 @@ void FETrussElementTraits::init()
 //
 //=============================================================================
 
-FE2DElementTraits::FE2DElementTraits(int ni, int ne, ElementShape es, ElementType et) : FEElementTraits(ni, ne, FE_ELEM_2D, es, et)
+FE2DElementTraits::FE2DElementTraits(int ni, int ne, ElementShape es, ElementType et)
+    : FEElementTraits(ni, ne, FE_ELEM_SOLID_2D, es, et)
 {
 	gr.resize(ni);
 	gs.resize(ni);
@@ -3358,7 +3359,7 @@ FE2DTri6G3::FE2DTri6G3() : FE2DTri6_(NINT, FE2D_TRI6G3)
 //-----------------------------------------------------------------------------
 void FE2DTri6G3::project_to_nodes(double* ai, double* ao) const
 {
-	matrix H(3, 3);
+	Matrix H(3, 3);
 	for (int n=0; n<3; ++n)
 	{
 		H[n][0] = 1.0 - gr[n] - gs[n];
@@ -3539,7 +3540,7 @@ FE2DQuad8G9::FE2DQuad8G9() : FE2DQuad8_(NINT, FE2D_QUAD8G9)
 	init();
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN,NELN);
+	Matrix A(NELN,NELN);
 	m_Ai.resize(NELN,NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();
@@ -3659,7 +3660,7 @@ FE2DQuad9G9::FE2DQuad9G9() : FE2DQuad9_(NINT, FE2D_QUAD9G9)
 	init();
 
 	// we need Ai to project integration point data to the nodes
-	matrix A(NELN,NELN);
+	Matrix A(NELN,NELN);
 	m_Ai.resize(NELN,NELN);
 	A = m_H.transpose()*m_H;
 	m_Ai = A.inverse();

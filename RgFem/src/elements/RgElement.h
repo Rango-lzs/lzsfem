@@ -42,6 +42,7 @@ class FEM_EXPORT FEElement
 {
 public:
     static constexpr int MAX_NODES = 28;
+    static constexpr int MAX_INTPOINTS = 4;
 
     FEElement();
     virtual ~FEElement();

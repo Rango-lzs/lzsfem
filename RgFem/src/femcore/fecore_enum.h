@@ -9,13 +9,7 @@
 #pragma once
 
 //-----------------------------------------------------------------------------
-// Shell formulations
-enum SHELL_FORMULATION {
-	NEW_SHELL,
-	OLD_SHELL,
-	EAS_SHELL,
-	ANS_SHELL
-};
+
 
 //-----------------------------------------------------------------------------
 //! This lists the super-class id's that can be used to register new classes

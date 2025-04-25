@@ -5,13 +5,14 @@ enum ElementCategory
 {
     FE_ELEM_INVALID_CLASS,
     FE_ELEM_SOLID,
-    FE_ELEM_Solid_2D,
+    FE_ELEM_SOLID_2D,
     FE_ELEM_SHELL,
     FE_ELEM_BEAM,
     
     FE_ELEM_TRUSS,
     FE_ELEM_SURFACE,
-    FE_ELEM_DISCRETE
+    FE_ELEM_DISCRETE,
+    FE_ELEM_EDGE
 };
 
 //-----------------------------------------------------------------------------
@@ -141,6 +142,15 @@ enum ElementType
 
     // unspecified
     FE_ELEM_INVALID_TYPE = 0xFFFF
+};
+
+// Shell formulations
+enum SHELL_FORMULATION
+{
+    NEW_SHELL,
+    OLD_SHELL,
+    EAS_SHELL,
+    ANS_SHELL
 };
 
 //! Helper class for creating domain classes.
