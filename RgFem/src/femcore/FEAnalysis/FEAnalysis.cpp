@@ -15,6 +15,9 @@
 #include "femcore/FEMesh.h"
 #include "femcore/FEParam.h"
 #include "femcore/FEParamValidator.h"
+#include "femcore/RTTI/MetaClass.h"
+
+DEFINE_META_CLASS(FEAnalysis, FEObjectBase,"");
 
 //---------------------------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FEAnalysis, FEObjectBase)
@@ -91,6 +94,10 @@ FEAnalysis::FEAnalysis(FEModel* fem)
     m_plotHint = 0;
 
     m_bactive = false;
+}
+
+ FEAnalysis::FEAnalysis()
+{
 }
 
 //-----------------------------------------------------------------------------

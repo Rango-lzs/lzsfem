@@ -6,7 +6,7 @@
  * \date   December 2024
  *********************************************************************/
 
-#include "RgFemApp.h"
+#include "app/RgFemApp.h"
 
 #ifdef USE_MPI
 #include <mpi.h>

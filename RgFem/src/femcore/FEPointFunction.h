@@ -120,7 +120,7 @@ private:
 private:
 	PointCurve	m_fnc;
     
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };
 
 typedef FEPointFunction::LOADPOINT LOADPOINT;

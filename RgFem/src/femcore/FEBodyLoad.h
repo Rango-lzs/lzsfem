@@ -28,8 +28,8 @@ SOFTWARE.*/
 
 #pragma once
 #include "FEModelLoad.h"
-#include "FEDomain.h"
-#include "FEDomainList.h"
+#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/FEDomainList.h"
 #include "FESurface.h"
 
 //-----------------------------------------------------------------------------
@@ -41,7 +41,7 @@ class FELinearSystem;
 //! Base class for body-loads
 class FEM_EXPORT FEBodyLoad : public FEModelLoad
 {
-	FECORE_BASE_CLASS(FEBodyLoad)
+	DECLARE_META_CLASS(FEBodyLoad, FEModelLoad);
 
 public:
 	FEBodyLoad(FEModel* pfem);

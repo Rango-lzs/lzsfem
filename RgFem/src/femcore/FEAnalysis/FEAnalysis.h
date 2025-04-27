@@ -19,9 +19,10 @@ class FEM_EXPORT FEAnalysis : public FEObjectBase
 public:
 	//! constructor
 	FEAnalysis(FEModel* pfem);
+	FEAnalysis();
 
 	//! destructor
-	virtual ~FEAnalysis();
+	virtual ~FEAnalysis() =0;
 
 	//! Initialization
 	virtual bool Init() override;

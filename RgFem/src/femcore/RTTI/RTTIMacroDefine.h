@@ -1,7 +1,7 @@
 /*********************************************************************
  * \file   RTTIMacroDefine.h
- * \brief  
- * 
+ * \brief
+ *
  * \author Leizs
  * \date   March 2025
  *********************************************************************/
@@ -14,21 +14,26 @@ public:                                                                         
     virtual const const MetaClass* meta() const;                                                                       \
     static const MetaClass* staic_meta();                                                                              \
     static std::string class_name();                                                                                   \
+    static std::string alias_name();                                                                                   \
     static MetaObject* meta_cast(MetaObject* pOther)
 
 
-#define DEFINE_META_CLASS(DERIVE_CLASS, BASE_CLASS)                                                                    \
+#define DEFINE_META_CLASS(DERIVE_CLASS, BASE_CLASS, ALIAS_NAME)                                                        \
     const const MetaClass* DERIVE_CLASS::meta() const                                                                  \
     {                                                                                                                  \
         return DERIVE_CLASS::staic_meta();                                                                             \
     }                                                                                                                  \
     const MetaClass* DERIVE_CLASS::staic_meta()                                                                        \
     {                                                                                                                  \
-        return ConcretMeta<DERIVE_CLASS>::instance();                                                                  \
+        return ConcreteMeta<DERIVE_CLASS>::instance();                                                                  \
     }                                                                                                                  \
     std::string DERIVE_CLASS::class_name()                                                                             \
     {                                                                                                                  \
         return #DERIVE_CLASS;                                                                                          \
+    }                                                                                                                  \
+    std::string DERIVE_CLASS::alias_name()                                                                              \
+    {                                                                                                                  \
+        return ALIAS_NAME;                                                                                             \
     }                                                                                                                  \
     MetaObject* DERIVE_CLASS::meta_cast(MetaObject* pOther)                                                            \
     {                                                                                                                  \
@@ -36,4 +41,4 @@ public:                                                                         
             return nullptr;                                                                                            \
         return pOther->isKindOf(MetaObject::staic_meta()) ? static_cast<MetaObject*>(pOther) : nullptr;                \
     }                                                                                                                  \
-    static const MetaClass* s_pMeta = ConcretMeta<DERIVE_CLASS>::instance()
+    static const MetaClass* s_pMeta = ConcreteMeta<DERIVE_CLASS>::instance()

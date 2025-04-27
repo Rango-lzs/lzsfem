@@ -8,7 +8,7 @@
 
 #include "RgFemApp.h"
 #include "app/AppUtils.h"
-#include "femcore/FEModel.h"
+#include "femcore/FERgModel.h"
 
 //#include "CLI/CLI.hpp"
 

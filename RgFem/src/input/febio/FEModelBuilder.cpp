@@ -1,24 +1,29 @@
 #include "FEModelBuilder.h"
 #include "materials/FEMaterial.h"
-#include <FECore/FEAnalysis.h>
-#include <FECore/FEBoundaryCondition.h>
-#include <FECore/FENodalLoad.h>
-#include <FECore/FESurfaceLoad.h>
-#include <FECore/FEEdgeLoad.h>
-#include <FECore/FEInitialCondition.h>
-#include <FECore/FEModelLoad.h>
-#include <FECore/FELoadCurve.h>
-#include <FECore/FESurfaceMap.h>
-#include <FECore/FEDomainMap.h>
-#include <FECore/FEEdge.h>
-#include <FECore/FEConstValueVec3.h>
-#include <FECore/log.h>
-#include <FECore/FEDataGenerator.h>
-#include <FECore/FEModule.h>
-#include <FECore/FEPointFunction.h>
-#include <FECore/FEBodyLoad.h>
-#include <FECore/FESurfacePairConstraint.h>
-#include <FECore/FENLConstraint.h>
+#include "femcore/FESolidAnalysis.h"
+#include "femcore/FEBoundaryCondition.h"
+#include "femcore/FENodalLoad.h"
+#include "femcore/FESurfaceLoad.h"
+//#include "femcore/FEEdgeLoad.h"
+#include "femcore/FEInitialCondition.h"
+#include "femcore/FEModelLoad.h"
+#include "femcore/FELoadCurve.h"
+#include "femcore/FESurfaceMap.h"
+#include "femcore/Domain/FEDomainMap.h"
+//#include "femcore/FEEdge.h"
+//#include "femcore/FEConstValueVec3.h"
+#include "logger/log.h"
+//#include "femcore/FEDataGenerator.h"
+#include "femcore/FEModule.h"
+#include "femcore/FEPointFunction.h"
+#include "femcore/FEBodyLoad.h"
+#include "femcore/FESurfacePairConstraint.h"
+#include "femcore/FENLConstraint.h"
+#include "femcore/RTTI/MetaClass.h"
+#include "femcore/FEMesh.h"
+#include "femcore/FEFacetSet.h"
+#include "elements/FESurfaceElement.h"
+
 #include <sstream>
 
 //-----------------------------------------------------------------------------
@@ -86,7 +91,8 @@ FEAnalysis* FEModelBuilder::CreateNewStep(bool allocSolver)
 {
 	// default analysis type should match module name
 	std::string modName = GetModuleName();
-	FEAnalysis* pstep = fecore_new<FEAnalysis>(modName.c_str(), &m_fem);
+	//可以通过MetaClass找到所有子类里面别名对得上的类
+	FEAnalysis* pstep = RANGO_NEW<FEAnalysis>(&m_fem, modName.c_str());
 
 	// make sure we have a solver defined
 	FESolver* psolver = pstep->GetFESolver();
@@ -103,17 +109,17 @@ FEAnalysis* FEModelBuilder::CreateNewStep(bool allocSolver)
 // create a material
 FEMaterial* FEModelBuilder::CreateMaterial(const char* sztype)
 {
-	FEMaterial* pmat = fecore_new<FEMaterial>(sztype, &m_fem);
+	FEMaterial* pmat = RANGO_NEW<FEMaterial>(sztype);
 	return pmat;
 }
 
 //-----------------------------------------------------------------------------
 FESolver* FEModelBuilder::BuildSolver(FEModel& fem)
 {
-	string moduleName = fem.GetModuleName();
+	std::string moduleName = fem.GetModuleName();
 	const char* sztype = moduleName.c_str();
 	if (m_defaultSolver.empty() == false) sztype = m_defaultSolver.c_str();
-	FESolver* ps = fecore_new<FESolver>(sztype, &fem);
+	FESolver* ps = RANGO_NEW<FESolver>(&fem, sztype);
 	return ps;
 }
 
@@ -145,9 +151,9 @@ FEModel& FEModelBuilder::GetFEModel()
 //! Create a domain
 FEDomain* FEModelBuilder::CreateDomain(FE_Element_Spec espec, FEMaterial* mat)
 {
-	FECoreKernel& febio = FECoreKernel::GetInstance();
+	/*FECoreKernel& febio = FECoreKernel::GetInstance();
 	FEDomain* pdom = febio.CreateDomain(espec, &m_fem.GetMesh(), mat);
-	return pdom;
+	return pdom;*/
 }
 
 //-----------------------------------------------------------------------------
@@ -202,12 +208,12 @@ void FEModelBuilder::AddSurfaceLoad(FESurfaceLoad* psl)
 	AddComponent(psl);
 }
 
-//-----------------------------------------------------------------------------
-void FEModelBuilder::AddEdgeLoad(FEEdgeLoad* pel)
-{
-	m_fem.AddModelLoad(pel);
-	AddComponent(pel);
-}
+////-----------------------------------------------------------------------------
+//void FEModelBuilder::AddEdgeLoad(FEEdgeLoad* pel)
+//{
+//	m_fem.AddModelLoad(pel);
+//	AddComponent(pel);
+//}
 
 //-----------------------------------------------------------------------------
 void FEModelBuilder::AddInitialCondition(FEInitialCondition* pic)
@@ -263,27 +269,27 @@ bool FEModelBuilder::BuildSurface(FESurface& s, FEFacetSet& fs, bool bnodal)
 		// set the element type/integration rule
 		if (bnodal)
 		{
-			if      (fi.ntype == 4) el.SetType(FE_QUAD4NI);
-			else if (fi.ntype == 3) el.SetType(FE_TRI3NI);
-			else if (fi.ntype == 6) el.SetType(FE_TRI6NI);
-			else if (fi.ntype == 8) el.SetType(FE_QUAD8NI);
-			else if (fi.ntype == 9) el.SetType(FE_QUAD9NI);
+			if      (fi.ntype == 4) el.setType(FE_QUAD4NI);
+			else if (fi.ntype == 3) el.setType(FE_TRI3NI);
+			else if (fi.ntype == 6) el.setType(FE_TRI6NI);
+			else if (fi.ntype == 8) el.setType(FE_QUAD8NI);
+			else if (fi.ntype == 9) el.setType(FE_QUAD9NI);
 			else return false;
 		}
 		else
 		{
-			if      (fi.ntype ==  3) el.SetType(m_ntri3);
-			else if (fi.ntype ==  4) el.SetType(m_nquad4);
-			else if (fi.ntype ==  6) el.SetType(m_ntri6);
-			else if (fi.ntype ==  7) el.SetType(m_ntri7);
-			else if (fi.ntype == 10) el.SetType(m_ntri10);
-			else if (fi.ntype ==  8) el.SetType(m_nquad8);
-			else if (fi.ntype ==  9) el.SetType(m_nquad9);
+			if      (fi.ntype ==  3) el.setType(m_ntri3);
+			else if (fi.ntype ==  4) el.setType(m_nquad4);
+			else if (fi.ntype ==  6) el.setType(m_ntri6);
+			else if (fi.ntype ==  7) el.setType(m_ntri7);
+			else if (fi.ntype == 10) el.setType(m_ntri10);
+			else if (fi.ntype ==  8) el.setType(m_nquad8);
+			else if (fi.ntype ==  9) el.setType(m_nquad9);
 			else return false;
 		}
-
-		int N = el.Nodes(); assert(N == fi.ntype);
-		for (int j = 0; j<N; ++j) el.m_node[j] = fi.node[j];
+#pragma TODO(Rango)
+		/*int N = el.NodeSize(); assert(N == fi.ntype);
+        for (int j = 0; j<N; ++j) el.setNode()[j] = fi.node[j];*/
 	}
 
     // copy the name
@@ -299,35 +305,35 @@ bool FEModelBuilder::BuildSurface(FESurface& s, FEFacetSet& fs, bool bnodal)
 }
 
 //-----------------------------------------------------------------------------
-bool FEModelBuilder::BuildEdge(FEEdge& e, FESegmentSet& es)
-{
-	FEMesh& m = m_fem.GetMesh();
-	int NN = m.Nodes();
-
-	// count nr of segments
-	int nsegs = es.Segments();
-
-	// allocate storage for faces
-	e.Create(nsegs);
-
-	// read segments
-	for (int i = 0; i<nsegs; ++i)
-	{
-		FELineElement& el = e.Element(i);
-		FESegmentSet::SEGMENT& si = es.Segment(i);
-
-		if (si.ntype == 2) el.SetType(FE_LINE2G1);
-		else return false;
-
-		int N = el.Nodes(); assert(N == si.ntype);
-		for (int j = 0; j<N; ++j) el.m_node[j] = si.node[j];
-	}
-
-	// copy the name
-	e.SetName(es.GetName());
-
-	return true;
-}
+//bool FEModelBuilder::BuildEdge(FEEdge& e, FESegmentSet& es)
+//{
+//	FEMesh& m = m_fem.GetMesh();
+//	int NN = m.Nodes();
+//
+//	// count nr of segments
+//	int nsegs = es.Segments();
+//
+//	// allocate storage for faces
+//	e.Create(nsegs);
+//
+//	// read segments
+//	for (int i = 0; i<nsegs; ++i)
+//	{
+//		FELineElement& el = e.Element(i);
+//		FESegmentSet::SEGMENT& si = es.Segment(i);
+//
+//		if (si.ntype == 2) el.SetType(FE_LINE2G1);
+//		else return false;
+//
+//		int N = el.Nodes(); assert(N == si.ntype);
+//		for (int j = 0; j<N; ++j) el.m_node[j] = si.node[j];
+//	}
+//
+//	// copy the name
+//	e.SetName(es.GetName());
+//
+//	return true;
+//}
 
 //-----------------------------------------------------------------------------
 FEModelBuilder::NodeSetPair* FEModelBuilder::FindNodeSetPair(const char* szname)
@@ -384,7 +390,7 @@ int FEModelBuilder::FindNodeFromID(int nid)
 }
 
 //-----------------------------------------------------------------------------
-void FEModelBuilder::GlobalToLocalID(int* l, int n, vector<int>& m)
+void FEModelBuilder::GlobalToLocalID(int* l, int n, std::vector<int>& m)
 {
 	assert((int)m.size() == n);
 	for (int i = 0; i<n; ++i)
@@ -578,7 +584,7 @@ FE_Element_Spec FEModelBuilder::ElementSpec(const char* sztype)
 	}
 
 	// determine the element class
-	FE_Element_Class eclass = FEElementLibrary::GetElementClass(etype);
+	ElementCategory eclass = FEElementLibrary::GetElementClass(etype);
 
 	// return the spec
 	FE_Element_Spec spec;
@@ -611,12 +617,12 @@ FE_Element_Spec FEModelBuilder::ElementSpec(const char* sztype)
     spec.m_shell_norm_nodal = m_shell_norm_nodal;
 
 	// Make sure this is a valid element specification
-	assert(FEElementLibrary::IsValid(spec));
+	//assert(FEElementLibrary::IsValid(spec));
 
 	return spec;
 }
 
-void FEModelBuilder::AddMappedParameter(FEParam* p, FECoreBase* parent, const char* szmap, int index)
+void FEModelBuilder::AddMappedParameter(FEParam* p, FEObjectBase* parent, const char* szmap, int index)
 {
 	MappedParameter mp;
 	mp.pp = p;
@@ -627,105 +633,105 @@ void FEModelBuilder::AddMappedParameter(FEParam* p, FECoreBase* parent, const ch
 	m_mappedParams.push_back(mp);
 }
 
-void FEModelBuilder::AddMeshDataGenerator(FEMeshDataGenerator* gen, FEDomainMap* map, FEParamDouble* pp)
-{
-	m_mapgen.push_back(DataGen{ gen, map, pp });
-}
+//void FEModelBuilder::AddMeshDataGenerator(FEMeshDataGenerator* gen, FEDomainMap* map, FEParamDouble* pp)
+//{
+//	m_mapgen.push_back(DataGen{ gen, map, pp });
+//}
 
 void FEModelBuilder::ApplyParameterMaps()
 {
-	FEMesh& mesh = m_fem.GetMesh();
-	for (int i = 0; i < m_mappedParams.size(); ++i)
-	{
-		MappedParameter& mp = m_mappedParams[i];
-		FEParam& p = *mp.pp;
+	//FEMesh& mesh = m_fem.GetMesh();
+	//for (int i = 0; i < m_mappedParams.size(); ++i)
+	//{
+	//	MappedParameter& mp = m_mappedParams[i];
+	//	FEParam& p = *mp.pp;
 
-		FEDataMap* data = (FEDataMap*)mesh.FindDataMap(mp.szname);
-		if (data == nullptr)
-		{
-			stringstream ss;
-			ss << "Can't find map \"" << mp.szname << "\" for parameter \"" << p.name() << "\"";
-			throw std::runtime_error(ss.str());
-		}
+	//	FEDataMap* data = (FEDataMap*)mesh.FindDataMap(mp.szname);
+	//	if (data == nullptr)
+	//	{
+	//		std::stringstream ss;
+	//		ss << "Can't find map \"" << mp.szname << "\" for parameter \"" << p.name() << "\"";
+	//		throw std::runtime_error(ss.str());
+	//	}
 
-		FEItemList* itemList = data->GetItemList();
+	//	FEItemList* itemList = data->GetItemList();
 
-		// find the map of this parameter
-		if (p.type() == FE_PARAM_DOUBLE_MAPPED)
-		{
-			FEParamDouble& v = p.value<FEParamDouble>(mp.index);
-			FEMappedValue* map = fecore_alloc(FEMappedValue, &m_fem);
-			if (data->DataType() != FE_DOUBLE)
-			{
-				std::stringstream ss;
-				ss << "Cannot assign map \"" << data->GetName() << "\" to parameter \"" << p.name() << "\" : bad data type";
-				string err = ss.str();
-				throw std::runtime_error(err.c_str());
-			}
-			map->setDataMap(data);
-			v.setValuator(map);
-			v.SetItemList(itemList);
-		}
-		else if (p.type() == FE_PARAM_VEC3D_MAPPED)
-		{
-			FEParamVec3& v = p.value<FEParamVec3>();
-			FEMappedValueVec3* map = fecore_alloc(FEMappedValueVec3, &m_fem);
-			if (data->DataType() != FE_VEC3D)
-			{
-				std::stringstream ss;
-				ss << "Cannot assign map \"" << data->GetName() << "\" to parameter \"" << p.name() << "\" : bad data type";
-				string err = ss.str();
-				throw std::runtime_error(err.c_str());
-			}
-			map->setDataMap(data);
-			v.setValuator(map);
-			v.SetItemList(itemList);
-		}
-		else if (p.type() == FE_PARAM_MAT3D_MAPPED)
-		{
-			FEParamMat3d& v = p.value<FEParamMat3d>();
-			FEMappedValueMat3d* map = fecore_alloc(FEMappedValueMat3d, &m_fem);
-			if (data->DataType() != FE_MAT3D)
-			{
-				std::stringstream ss;
-				ss << "Cannot assign map \"" << data->GetName() << "\" to parameter \"" << p.name() << "\" : bad data type";
-				string err = ss.str();
-				throw std::runtime_error(err.c_str());
-			}
-			map->setDataMap(data);
-			v.setValuator(map);
-			v.SetItemList(itemList);
-		}
-        else if (p.type() == FE_PARAM_MAT3DS_MAPPED)
-        {
-            FEParamMat3ds& v = p.value<FEParamMat3ds>();
-            FEMappedValueMat3ds* map = fecore_alloc(FEMappedValueMat3ds, &m_fem);
-            if (data->DataType() != FE_MAT3DS)
-            {
-                std::stringstream ss;
-                ss << "Cannot assign map \"" << data->GetName() << "\" to parameter \"" << p.name() << "\" : bad data type";
-                string err = ss.str();
-                throw std::runtime_error(err.c_str());
-            }
-            map->setDataMap(data);
-            v.setValuator(map);
-            v.SetItemList(itemList);
-        }
-		else
-		{
-			assert(false);
-		}
-	}
+	//	// find the map of this parameter
+	//	if (p.type() == FE_PARAM_DOUBLE_MAPPED)
+	//	{
+	//		FEParamDouble& v = p.value<FEParamDouble>(mp.index);
+	//		FEMappedValue* map = fecore_alloc(FEMappedValue, &m_fem);
+	//		if (data->DataType() != FE_DOUBLE)
+	//		{
+	//			std::stringstream ss;
+	//			ss << "Cannot assign map \"" << data->GetName() << "\" to parameter \"" << p.name() << "\" : bad data type";
+	//			std::string err = ss.str();
+	//			throw std::runtime_error(err.c_str());
+	//		}
+	//		map->setDataMap(data);
+	//		v.setValuator(map);
+	//		v.SetItemList(itemList);
+	//	}
+	//	else if (p.type() == FE_PARAM_VEC3D_MAPPED)
+	//	{
+	//		FEParamVec3& v = p.value<FEParamVec3>();
+	//		FEMappedValueVec3* map = fecore_alloc(FEMappedValueVec3, &m_fem);
+	//		if (data->DataType() != FE_VEC3D)
+	//		{
+	//			std::stringstream ss;
+	//			ss << "Cannot assign map \"" << data->GetName() << "\" to parameter \"" << p.name() << "\" : bad data type";
+	//			std::string err = ss.str();
+	//			throw std::runtime_error(err.c_str());
+	//		}
+	//		map->setDataMap(data);
+	//		v.setValuator(map);
+	//		v.SetItemList(itemList);
+	//	}
+	//	else if (p.type() == FE_PARAM_MAT3D_MAPPED)
+	//	{
+	//		FEParamMat3d& v = p.value<FEParamMat3d>();
+	//		FEMappedValueMat3d* map = fecore_alloc(FEMappedValueMat3d, &m_fem);
+	//		if (data->DataType() != FE_MAT3D)
+	//		{
+	//			std::stringstream ss;
+	//			ss << "Cannot assign map \"" << data->GetName() << "\" to parameter \"" << p.name() << "\" : bad data type";
+	//			std::string err = ss.str();
+	//			throw std::runtime_error(err.c_str());
+	//		}
+	//		map->setDataMap(data);
+	//		v.setValuator(map);
+	//		v.SetItemList(itemList);
+	//	}
+ //       else if (p.type() == FE_PARAM_MAT3DS_MAPPED)
+ //       {
+ //           FEParamMat3ds& v = p.value<FEParamMat3ds>();
+ //           FEMappedValueMat3ds* map = fecore_alloc(FEMappedValueMat3ds, &m_fem);
+ //           if (data->DataType() != FE_MAT3DS)
+ //           {
+ //               std::stringstream ss;
+ //               ss << "Cannot assign map \"" << data->GetName() << "\" to parameter \"" << p.name() << "\" : bad data type";
+ //               string err = ss.str();
+ //               throw std::runtime_error(err.c_str());
+ //           }
+ //           map->setDataMap(data);
+ //           v.setValuator(map);
+ //           v.SetItemList(itemList);
+ //       }
+	//	else
+	//	{
+	//		assert(false);
+	//	}
+	//}
 }
 
-FENodeSet* FEModelBuilder::FindNodeSet(const string& setName)
+FENodeSet* FEModelBuilder::FindNodeSet(const std::string& setName)
 {
 	FEMesh& mesh = m_fem.GetMesh();
 
 	if (setName.compare(0, 9, "@surface:") == 0)
 	{
 		// see if we can find a surface
-		string surfName = setName.substr(9);
+		std::string surfName = setName.substr(9);
 		FEFacetSet* surf = mesh.FindFacetSet(surfName);
 		if (surf == nullptr) return nullptr;
 
@@ -745,29 +751,29 @@ FENodeSet* FEModelBuilder::FindNodeSet(const string& setName)
 	}
 	if (setName.compare(0, 6, "@edge:") == 0)
 	{
-		// see if we can find an edge
-		string edgeName = setName.substr(6);
-		FESegmentSet* edge = mesh.FindSegmentSet(edgeName);
-		if (edge == nullptr) return nullptr;
+		//// see if we can find an edge
+		//std::string edgeName = setName.substr(6);
+		//FESegmentSet* edge = mesh.FindSegmentSet(edgeName);
+		//if (edge == nullptr) return nullptr;
 
-		// we might have been here before. If so, we already create a nodeset
-		// with the same name as the edge, so look for that first.
-		FENodeSet* ps = mesh.FindNodeSet(edgeName);
-		if (ps) return ps;
+		//// we might have been here before. If so, we already create a nodeset
+		//// with the same name as the edge, so look for that first.
+		//FENodeSet* ps = mesh.FindNodeSet(edgeName);
+		//if (ps) return ps;
 
-		// okay, first time here, so let's create a node set from this surface
-		FENodeList nodeList = edge->GetNodeList();
-		ps = new FENodeSet(&m_fem);
-		ps->Add(nodeList);
-		ps->SetName(edgeName);
-		mesh.AddNodeSet(ps);
+		//// okay, first time here, so let's create a node set from this surface
+		//FENodeList nodeList = edge->GetNodeList();
+		//ps = new FENodeSet(&m_fem);
+		//ps->Add(nodeList);
+		//ps->SetName(edgeName);
+		//mesh.AddNodeSet(ps);
 
-		return ps;
+		//return ps;
 	}
 	else if (setName.compare(0, 10, "@elem_set:") == 0)
 	{
 		// see if we can find an element set
-		string esetName = setName.substr(10);
+		std::string esetName = setName.substr(10);
 		FEElementSet* part = mesh.FindElementSet(esetName);
 		if (part == nullptr) return nullptr;
 
@@ -813,98 +819,98 @@ void FEModelBuilder::ApplyLoadcurvesToFunctions()
 
 bool FEModelBuilder::GenerateMeshDataMaps()
 {
-	FEModel& fem = GetFEModel();
-	FEMesh& mesh = GetMesh();
-	for (int i = 0; i < m_mapgen.size(); ++i)
-	{
-		FEMeshDataGenerator* gen = m_mapgen[i].gen;
-
-		// try to initialize the generator
-		if (gen->Init() == false) return false;
-
-		FENodeDataGenerator* ngen = dynamic_cast<FENodeDataGenerator*>(gen);
-		if (ngen)
-		{
-			// generate the node data map
-			FENodeDataMap* map = ngen->Generate();
-			if (map == nullptr) return false;
-
-			map->SetName(ngen->GetName());
-
-			// see if this map is already defined
-			string mapName = map->GetName();
-			FENodeDataMap* oldMap = dynamic_cast<FENodeDataMap*>(mesh.FindDataMap(mapName));
-			if (oldMap)
-			{
-				// TODO: implement merge
-				assert(false);
-				// it is, so merge it
+//	FEModel& fem = GetFEModel();
+//	FEMesh& mesh = GetMesh();
+//	for (int i = 0; i < m_mapgen.size(); ++i)
+//	{
+//		FEMeshDataGenerator* gen = m_mapgen[i].gen;
+//
+//		// try to initialize the generator
+//		if (gen->Init() == false) return false;
+//
+//		FENodeDataGenerator* ngen = dynamic_cast<FENodeDataGenerator*>(gen);
+//		if (ngen)
+//		{
+//			// generate the node data map
+//			FENodeDataMap* map = ngen->Generate();
+//			if (map == nullptr) return false;
+//
+//			map->SetName(ngen->GetName());
+//
+//			// see if this map is already defined
+//			string mapName = map->GetName();
+//			FENodeDataMap* oldMap = dynamic_cast<FENodeDataMap*>(mesh.FindDataMap(mapName));
+//			if (oldMap)
+//			{
+//				// TODO: implement merge
+//				assert(false);
+//				// it is, so merge it
+////				oldMap->Merge(*map);
+//
+//				// we can now delete this map
+//				delete map;
+//			}
+//			else
+//			{
+//				// nope, so add it
+//				map->SetName(mapName);
+//				mesh.AddDataMap(map);
+//			}
+//		}
+//
+//		FEFaceDataGenerator* fgen = dynamic_cast<FEFaceDataGenerator*>(gen);
+//		if (fgen)
+//		{
+//			FESurfaceMap* map = fgen->Generate();
+//			if (map == nullptr) return false;
+//			map->SetName(fgen->GetName());
+//			mesh.AddDataMap(map);
+//		}
+//
+//		FEElemDataGenerator* egen = dynamic_cast<FEElemDataGenerator*>(gen);
+//		if (egen)
+//		{
+//			FEDomainMap* map = m_mapgen[i].map;
+//			FEParamDouble* pp = m_mapgen[i].pp;
+//
+//			// generate the data
+//			if (map)
+//			{
+//				if (egen->Generate(*map) == false) return false;
+//			}
+//			else
+//			{
+//				map = egen->Generate();
+//				map->SetName(egen->GetName());
+//			}
+//
+//			// see if this map is already defined
+//			string mapName = map->GetName();
+//			FEDomainMap* oldMap = dynamic_cast<FEDomainMap*>(mesh.FindDataMap(mapName));
+//			if (oldMap)
+//			{
+//				// it is, so merge it
 //				oldMap->Merge(*map);
-
-				// we can now delete this map
-				delete map;
-			}
-			else
-			{
-				// nope, so add it
-				map->SetName(mapName);
-				mesh.AddDataMap(map);
-			}
-		}
-
-		FEFaceDataGenerator* fgen = dynamic_cast<FEFaceDataGenerator*>(gen);
-		if (fgen)
-		{
-			FESurfaceMap* map = fgen->Generate();
-			if (map == nullptr) return false;
-			map->SetName(fgen->GetName());
-			mesh.AddDataMap(map);
-		}
-
-		FEElemDataGenerator* egen = dynamic_cast<FEElemDataGenerator*>(gen);
-		if (egen)
-		{
-			FEDomainMap* map = m_mapgen[i].map;
-			FEParamDouble* pp = m_mapgen[i].pp;
-
-			// generate the data
-			if (map)
-			{
-				if (egen->Generate(*map) == false) return false;
-			}
-			else
-			{
-				map = egen->Generate();
-				map->SetName(egen->GetName());
-			}
-
-			// see if this map is already defined
-			string mapName = map->GetName();
-			FEDomainMap* oldMap = dynamic_cast<FEDomainMap*>(mesh.FindDataMap(mapName));
-			if (oldMap)
-			{
-				// it is, so merge it
-				oldMap->Merge(*map);
-
-				// we can now delete this map
-				delete map;
-			}
-			else
-			{
-				// nope, so add it
-				map->SetName(mapName);
-				mesh.AddDataMap(map);
-
-				// apply the map
-				if (pp)
-				{
-					FEMappedValue* val = fecore_alloc(FEMappedValue, &fem);
-					val->setDataMap(map);
-					pp->setValuator(val);
-				}
-			}
-		}
-	}
+//
+//				// we can now delete this map
+//				delete map;
+//			}
+//			else
+//			{
+//				// nope, so add it
+//				map->SetName(mapName);
+//				mesh.AddDataMap(map);
+//
+//				// apply the map
+//				if (pp)
+//				{
+//					FEMappedValue* val = fecore_alloc(FEMappedValue, &fem);
+//					val->setDataMap(map);
+//					pp->setValuator(val);
+//				}
+//			}
+//		}
+//	}
 
 	return true;
 }

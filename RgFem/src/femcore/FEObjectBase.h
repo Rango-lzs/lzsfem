@@ -19,8 +19,10 @@ class FEModel;
 //! classes that can be registered with the framework.
 class FEM_EXPORT FEObjectBase : public FEParamObject
 {
+    DECLARE_META_CLASS(FEObjectBase, FEParamObject);
 public:
     //! constructor
+    FEObjectBase();
     explicit FEObjectBase(FEModel* pModel);
 
     //! destructor

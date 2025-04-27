@@ -3,9 +3,10 @@
 #include "femcore/FEMesh.h"
 #include "femcore/FEDomain.h"
 #include "basicio/DumpStream.h"
+#include "femcore/FEModel.h"
 
 //-----------------------------------------------------------------------------
-FEElementSet::FEElementSet(FEModel* fem) : FEItemList(fem)
+FEElementSet::FEElementSet(FEModel* fem) : FEItemList(&fem->GetMesh())
 {
 	m_minID = -1;
 	m_maxID = -1;
@@ -67,7 +68,7 @@ void FEElementSet::Create(FEDomain* dom)
 	for (int i = 0; i < NE; ++i)
 	{
 		FEElement& el = dom->ElementRef(i);
-		m_Elem[i] = el.getID();
+		m_Elem[i] = el.getId();
 	}
 
 	BuildLUT();
@@ -107,7 +108,7 @@ void FEElementSet::Create(FEDomainList& domList)
 		for (int i = 0; i < NE; ++i)
 		{
 			FEElement& el = dom->ElementRef(i);
-			m_Elem[NT + i] = el.getID();
+			m_Elem[NT + i] = el.getId();
 		}
 		NT += NE;
 	}
@@ -124,7 +125,7 @@ void FEElementSet::BuildLUT()
 	for (int i = 0; i < N; ++i)
 	{
 		FEElement* pe = mesh->FindElementFromID(m_Elem[i]);
-		int id = pe->getID();
+		int id = pe->getId();
 
 		if ((id < m_minID) || (m_minID == -1)) m_minID = id;
 		if ((id > m_maxID) || (m_maxID == -1)) m_maxID = id;
@@ -135,7 +136,7 @@ void FEElementSet::BuildLUT()
 	for (int i = 0; i < N; ++i)
 	{
 		FEElement* pe = mesh->FindElementFromID(m_Elem[i]);
-		int id = pe->getID() - m_minID;
+		int id = pe->getId() - m_minID;
 		m_LUT[id] = i;
 	}
 }

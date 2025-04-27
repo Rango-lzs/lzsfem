@@ -217,6 +217,7 @@ set(FEMCORE_HEADERS
     femcore/FEFixedBC.h
     femcore/FEFixedDisplacement.h
     femcore/FEFixedRotation.h
+    femcore/FETransform.h
 )
 
 
@@ -380,6 +381,7 @@ set(FEMCORE_SOURCES
     femcore/FEFixedBC.cpp
     femcore/FEFixedDisplacement.cpp
     femcore/FEFixedRotation.cpp
+    femcore/FETransform.cpp
 
 )
 
