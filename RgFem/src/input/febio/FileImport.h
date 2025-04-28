@@ -5,6 +5,7 @@
 #include "input/febio/febioxml_api.h"
 #include "input/febio/FEModelBuilder.h"
 #include "input/XML/XMLReader.h"
+#include "femcore/FEParam.h"
 
 #include <map>
 #include <stdio.h>

@@ -1,50 +1,17 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEBioBoundarySection.h"
-#include <FECore/FEModel.h>
-#include <FECore/FEDiscreteMaterial.h>
-#include <FECore/FEDiscreteDomain.h>
-#include <FECore/FEAugLagLinearConstraint.h>
-#include <FECore/FEPrescribedDOF.h>
-#include <FECore/FEFixedBC.h>
-#include <FECore/FECoreKernel.h>
-#include <FECore/FELinearConstraintManager.h>
-#include <FECore/FEPeriodicLinearConstraint.h>
-//#include <FEBioRVE/FEPeriodicLinearConstraint2O.h>
-#include <FECore/FEMergedConstraint.h>
-#include <FEBioMech/FEMechModel.h>
-#include <FEBioMech/FERigidMaterial.h>
-#include <FECore/FEFacetSet.h>
-#include <FECore/log.h>
-#include <FECore/FEModelLoad.h>
-#include <FECore/FEInitialCondition.h>
+#include"femcore/FEModel.h"
+//#include"femcore/Domain/FEDiscreteDomain.h"
+//#include"femcore/FEAugLagLinearConstraint.h"
+//#include"femcore/FEPrescribedDOF.h"
+#include"femcore/FEFixedBC.h"
+#include"femcore/FELinearConstraintManager.h"
+//#include"femcore/FEPeriodicLinearConstraint.h"
+//#include <FEBioRVE/FEPeriodicLinearConstraint2O.h"
+//#include"femcore/FEMergedConstraint.h"
+#include"femcore/FEFacetSet.h"
+#include"logger/log.h"
+#include"femcore/FEModelLoad.h"
+#include"femcore/FEInitialCondition.h"
 
 //---------------------------------------------------------------------------------
 void FEBioBoundarySection::BuildNodeSetMap()
@@ -150,26 +117,26 @@ bool FEBioBoundarySection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int nf
 		// set the element type/integration rule
 		if (bnodal)
 		{
-			if      (tag == "quad4") el.SetType(FE_QUAD4NI);
-			else if (tag == "tri3" ) el.SetType(FE_TRI3NI );
-			else if (tag == "tri6" ) el.SetType(FE_TRI6NI );
-            else if (tag == "quad8" ) el.SetType(FE_QUAD8NI);
-            else if (tag == "quad9" ) el.SetType(FE_QUAD9NI);
+			if      (tag == "quad4") el.setType(FE_QUAD4NI);
+			else if (tag == "tri3" ) el.setType(FE_TRI3NI );
+			else if (tag == "tri6" ) el.setType(FE_TRI6NI );
+            else if (tag == "quad8" ) el.setType(FE_QUAD8NI);
+            else if (tag == "quad9" ) el.setType(FE_QUAD9NI);
 			else throw XMLReader::InvalidTag(tag);
 		}
 		else
 		{
-			if      (tag == "quad4") el.SetType(FE_QUAD4G4);
-			else if (tag == "tri3" ) el.SetType(feb->m_ntri3);
-			else if (tag == "tri6" ) el.SetType(feb->m_ntri6);
-			else if (tag == "tri7" ) el.SetType(feb->m_ntri7);
-			else if (tag == "tri10") el.SetType(feb->m_ntri10);
-			else if (tag == "quad8") el.SetType(FE_QUAD8G9);
-			else if (tag == "quad9") el.SetType(FE_QUAD9G9);
+			if      (tag == "quad4") el.setType(FE_QUAD4G4);
+			else if (tag == "tri3" ) el.setType(feb->m_ntri3);
+			else if (tag == "tri6" ) el.setType(feb->m_ntri6);
+			else if (tag == "tri7" ) el.setType(feb->m_ntri7);
+			else if (tag == "tri10") el.setType(feb->m_ntri10);
+			else if (tag == "quad8") el.setType(FE_QUAD8G9);
+			else if (tag == "quad9") el.setType(FE_QUAD9G9);
 			else throw XMLReader::InvalidTag(tag);
 		}
 
-		N = el.Nodes();
+		N = el.NodeSize();
 
 		if (nfmt == 0)
 		{

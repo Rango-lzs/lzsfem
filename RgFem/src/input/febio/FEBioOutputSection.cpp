@@ -1,16 +1,18 @@
 #include "FEBioOutputSection.h"
-#include <femcore/NodeDataRecord.h>
-#include <femcore/FaceDataRecord.h>
-#include <femcore/ElementDataRecord.h>
-#include <femcore/ObjectDataRecord.h>
-#include <femcore/NLConstraintDataRecord.h>
-#include <femcore/SurfaceDataRecord.h>
-#include <femcore/DomainDataRecord.h>
-#include <femcore/FEModelDataRecord.h>
-#include <femcore/FEModel.h>
-#include <femcore/FSPath.h>
-#include <femcore/FEPlotDataStore.h>
-#include <femcore/FESurface.h>
+#include "femcore/NodeDataRecord.h"
+#include "femcore/FaceDataRecord.h"
+#include "femcore/ElementDataRecord.h"
+#include "femcore/ObjectDataRecord.h"
+#include "femcore/NLConstraintDataRecord.h"
+#include "femcore/SurfaceDataRecord.h"
+#include "femcore/DomainDataRecord.h"
+#include "femcore/FEModelDataRecord.h"
+#include "femcore/FEModel.h"
+#include "femcore/FSPath.h"
+#include "femcore/FEPlotDataStore.h"
+#include "femcore/FESurface.h"
+#include "femcore/DataRecord.h"
+//#include "femcore/FESurfaceDataRecord.h"
 
 bool string_to_int_vector(const char* szlist, std::vector<int>& list)
 {
@@ -133,7 +135,7 @@ void FEBioOutputSection::ParseLogfile(XMLTag &tag)
 		DataRecord* pdr = nullptr;
 		if (tag == "node_data")
 		{
-			pdr = fecore_new<DataRecord>("node_data", &fem);
+            pdr = RANGO_NEW<DataRecord>(&fem,"node_data");
 
 			const char* sztmp = "set";
 			if (GetFileReader()->GetFileVersion() >= 0x0205) sztmp = "node_set";
@@ -160,7 +162,7 @@ void FEBioOutputSection::ParseLogfile(XMLTag &tag)
 		}
 		else if (tag == "face_data")
 		{
-			pdr = fecore_new<DataRecord>("face_data", &fem);
+            pdr = RANGO_NEW<DataRecord>(&fem ,"face_data");
 
 			const char* sz = tag.AttributeValue("surface");
 			FESurface* surf = mesh.FindSurface(sz);
@@ -186,7 +188,7 @@ void FEBioOutputSection::ParseLogfile(XMLTag &tag)
 		}
 		else if (tag == "element_data")
 		{
-			pdr = fecore_new<DataRecord>("element_data", &fem);
+            pdr = RANGO_NEW<DataRecord>(&fem ,"element_data");
 
 			const char* sztmp = "elset";
 			if (GetFileReader()->GetFileVersion() >= 0x0205) sztmp = "elem_set";
@@ -208,14 +210,14 @@ void FEBioOutputSection::ParseLogfile(XMLTag &tag)
 		}
 		else if (tag == "rigid_body_data")
 		{
-			pdr = fecore_new<DataRecord>("rigid_body_data", &fem);
+            pdr = RANGO_NEW<DataRecord>(&fem ,"rigid_body_data");
 			std::vector<int> items;
 			string_to_int_vector(tag.szvalue(), items);
 			pdr->SetItemList(items);
 		}
         else if (tag == "rigid_connector_data")
         {
-			pdr = fecore_new<DataRecord>("rigid_connector_data", &fem);
+            pdr = RANGO_NEW<DataRecord>(&fem ,"rigid_connector_data");
 			std::vector<int> items;
 			string_to_int_vector(tag.szvalue(), items);
 			pdr->SetItemList(items);

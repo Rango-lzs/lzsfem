@@ -18,8 +18,6 @@
 #include <type_traits>
 
 // 是否需要一个RxStore来管理所有的RxClass信息？
-
-class MetaObject;
 using ObjectConstructor = std::function<MetaObject*()>;
 
 class MetaClass
@@ -30,7 +28,9 @@ public:
     ~MetaClass() = default;
 
     const std::string& name() const;
+    const std::string& alias_name() const;
     const MetaClass* parent() const;
+    const std::list<MetaClass*>& childs() const;
     bool isKindOf(const MetaClass* pParent) const;
     MetaObject* create() const;
     

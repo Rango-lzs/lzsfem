@@ -154,6 +154,7 @@ FEDomain* FEModelBuilder::CreateDomain(FE_Element_Spec espec, FEMaterial* mat)
 	/*FECoreKernel& febio = FECoreKernel::GetInstance();
 	FEDomain* pdom = febio.CreateDomain(espec, &m_fem.GetMesh(), mat);
 	return pdom;*/
+    return nullptr;
 }
 
 //-----------------------------------------------------------------------------

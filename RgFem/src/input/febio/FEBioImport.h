@@ -12,7 +12,7 @@ class DataRecord;
 
 //-----------------------------------------------------------------------------
 //! Base class for FEBio (feb) file sections.
-class FEBioFileSection : public FEFileSection
+class FEM_EXPORT FEBioFileSection : public FEFileSection
 {
 public:
     FEBioFileSection(FEBioImport* feb);
@@ -23,7 +23,7 @@ public:
 //=============================================================================
 //! Implements a class to import FEBio input files
 //!
-class FEBIOXML_API FEBioImport : public FEFileImport
+class FEM_EXPORT FEBioImport : public FEFileImport
 {
 public:
     // invalid version

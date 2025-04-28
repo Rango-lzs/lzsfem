@@ -8,6 +8,7 @@
 #pragma once
 
 #include "femcore/FEParamObject.h"
+#include "femcore/RTTI/MetaClass.h"
 #include <string>
 
 //-----------------------------------------------------------------------------
@@ -65,3 +66,51 @@ private:
     FEModel* m_fem;      //!< the model this class belongs to
     int m_nID;           //!< component ID
 };
+
+
+template <class T>
+T* RANGO_NEW(const std::string& aliasName = "")
+{
+    const MetaClass* pTarget = nullptr;
+    T* pNewObj = nullptr;
+    if (aliasName.empty() || aliasName == T::alias_name())
+    {
+        pTarget = T::static_meta();
+    }
+    else
+    {
+        for (auto pMeta : pTarget->childs())
+        {
+            if (pMeta->alias_name() == aliasName)
+            {
+                pTarget = pMeta;
+            }
+        }
+    }
+    pNewObj = static_cast<T*>(pTarget->create());
+    return pNewObj;
+}
+
+template <class T>
+T* RANGO_NEW(FEModel* pModel, const std::string& aliasName)
+{
+    const MetaClass* pTarget = nullptr;
+    T* pNewObj = nullptr;
+    if (aliasName.empty() || aliasName == T::alias_name())
+    {
+        pTarget = T::static_meta();
+    }
+    else
+    {
+        for (auto pMeta : pTarget->childs())
+        {
+            if (pMeta->alias_name() == aliasName)
+            {
+                pTarget = pMeta;
+            }
+        }
+    }
+    pNewObj = static_cast<T*>(pTarget->create());
+    pNewObj->SetFEModel(pModel);
+    return pNewObj;
+}

@@ -11,7 +11,6 @@
 #define META_OBJECT_H
 
 #include "femcore/fem_export.h"
-
 #include <string>
 
 class MetaClass;
@@ -32,53 +31,5 @@ public:
 public:
     MetaObject() = default;
 };
-
-// ±éÀú
-template <class T>
-T* RANGO_NEW(const std::string& aliasName = "")
-{
-    const MetaClass* pTarget = nullptr;
-    T* pNewObj = nullptr;
-    if (aliasName.empty() || aliasName == T::alias_name())
-    {
-        pTarget = T::static_meta();
-    }
-    else
-    {
-        for (auto pMeta : pTarget->m_childs)
-        {
-            if (pMeta->m_alias_name == aliasName)
-            {
-                pTarget = pMeta;
-            }
-        }
-    }
-    pNewObj = static_cast<T*>(pMeta->create());
-    return pNewObj;
-}
-
-template <class T>
-T* RANGO_NEW(FEModel* pModel, const std::string& aliasName)
-{
-    const MetaClass* pTarget = nullptr;
-    T* pNewObj = nullptr;
-    if (aliasName.empty() || aliasName == T::alias_name())
-    {
-        pTarget = T::static_meta();
-    }
-    else
-    {
-        for (auto pMeta : pTarget->m_childs)
-        {
-            if (pMeta->m_alias_name == aliasName)
-            {
-                pTarget = pMeta;
-            }
-        }
-    }
-    pNewObj = static_cast<T*>(pMeta->create());
-    pNewObj->SetModel(pModel);
-    return pNewObj;
-}
 
 #endif
