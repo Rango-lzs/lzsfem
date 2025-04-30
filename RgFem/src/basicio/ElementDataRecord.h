@@ -1,0 +1,45 @@
+#pragma once
+#include "femcore/DataRecord.h"
+
+class FEElement;
+class FEElementSet;
+
+//-----------------------------------------------------------------------------
+//! Base class for element log data
+class FEM_EXPORT FELogElemData : public FELogData
+{
+    DECLARE_META_CLASS(FELogElemData, FELogData);
+
+public:
+    FELogElemData(FEModel* fem);
+    virtual ~FELogElemData();
+    virtual double value(FEElement& el) = 0;
+};
+
+//-----------------------------------------------------------------------------
+class FEM_EXPORT ElementDataRecord : public DataRecord
+{
+    struct ELEMREF
+    {
+        int ndom;
+        int nid;
+    };
+
+public:
+    ElementDataRecord(FEModel* pfem);
+    double Evaluate(int item, int ndata);
+    void SetData(const char* sz) override;
+    void SelectAllItems();
+    int Size() const;
+    void SetElementSet(FEElementSet* pg);
+
+    void SetItemList(FEItemList* itemList, const std::vector<int>& selection) override;
+
+protected:
+    void BuildELT();
+
+protected:
+    std::vector<ELEMREF> m_ELT;
+    int m_offset;
+    std::vector<FELogElemData*> m_Data;
+};

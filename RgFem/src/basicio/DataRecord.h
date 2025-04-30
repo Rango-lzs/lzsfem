@@ -1,11 +1,9 @@
 #pragma once
 #include "femcore/FEObjectBase.h"
-
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
 #include <vector>
-
 
 //-----------------------------------------------------------------------------
 // forward declaration
