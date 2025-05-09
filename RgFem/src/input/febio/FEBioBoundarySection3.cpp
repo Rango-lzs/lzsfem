@@ -1,8 +1,8 @@
 #include "FEBioBoundarySection3.h"
-#include <femcore/FENodalBC.h>
-#include <femcore/FESurfaceBC.h>
-#include <femcore/FEModel.h>
-#include <femcore/FELinearConstraintManager.h>
+#include "femcore/FENodalBC.h"
+#include "femcore/FESurfaceBC.h"
+#include "femcore/FEModel.h"
+#include "femcore/FELinearConstraintManager.h"
 
 //-----------------------------------------------------------------------------
 void FEBioBoundarySection3::Parse(XMLTag& tag)
@@ -46,7 +46,7 @@ void FEBioBoundarySection3::ParseBC(XMLTag& tag)
 	}
 
 	// create the boundary condition
-	FEBoundaryCondition* pbc = fecore_new<FEBoundaryCondition>(sztype, fem);
+    FEBoundaryCondition* pbc = RANGO_NEW<FEBoundaryCondition>(fem, sztype);
 	if (pbc == 0) throw XMLReader::InvalidTag(tag);
 
 	// read the (optional) name 
@@ -77,7 +77,7 @@ void FEBioBoundarySection3::ParseBC(XMLTag& tag)
 		if (pface == 0) throw XMLReader::InvalidAttributeValue(tag, "surface", surfaceName);
 
 		// create a surface from this facet set
-		FESurface* psurf = fecore_alloc(FESurface, fem);
+        FESurface* psurf = RANGO_NEW<FESurface>(fem, "");
 		GetBuilder()->BuildSurface(*psurf, *pface);
 
 		// assign it
@@ -108,7 +108,7 @@ void FEBioBoundarySection3::ParseBCRigid(XMLTag& tag)
 	if (nodeSet == 0) throw XMLReader::InvalidAttributeValue(tag, "node_set", szset);
 
 	// create new rigid node set
-	FENodalBC* prn = fecore_new_class<FENodalBC>("FERigidNodeSet", &fem);
+    FENodalBC* prn = RANGO_NEW<FENodalBC>(&fem ,"FERigidNodeSet");
 
 	prn->SetNodeSet(nodeSet);
 
@@ -138,7 +138,7 @@ void FEBioBoundarySection3::ParseLinearConstraint(XMLTag& tag)
 
 	FEModelBuilder* feb = GetBuilder();
 
-	FELinearConstraint* lc = fecore_alloc(FELinearConstraint, &fem);
+	FELinearConstraint* lc = RANGO_NEW<FELinearConstraint>(&fem, "");
 
 	++tag;
 	do

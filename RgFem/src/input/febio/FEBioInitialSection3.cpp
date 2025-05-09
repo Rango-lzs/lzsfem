@@ -29,7 +29,7 @@ void FEBioInitialSection3::ParseIC(XMLTag& tag)
 	const char* sztype = tag.AttributeValue("type");
 
 	// try to allocate the initial condition
-	FEInitialCondition* pic = fecore_new<FEInitialCondition>(sztype, fem);
+    FEInitialCondition* pic = RANGO_NEW<FEInitialCondition>(fem,sztype);
 	if (pic == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
 	// add it to the model

@@ -9,9 +9,10 @@
 #include <list>
 #include <memory>
 #include <stdio.h>
+#include "FEParameterList.h"
 
 class DumpStream;
-class FEParameterList;
+//class FEParameterList;
 class FEParam;
 enum FEParamType;
 class RANGE;

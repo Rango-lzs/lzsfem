@@ -1,6 +1,6 @@
 #pragma once
 #include "FileImport.h"
-#include <FECore/FESurfacePairConstraint.h>
+#include "femcore/FESurfacePairConstraint.h"
 
 //-----------------------------------------------------------------------------
 // Contact section (new in version 2.0)

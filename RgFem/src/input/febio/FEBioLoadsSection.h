@@ -9,7 +9,7 @@ public:
 
 protected:
 	void ParseNodalLoad  (XMLTag& tag);
-	void ParseEdgeLoad   (XMLTag& tag);
+	//void ParseEdgeLoad   (XMLTag& tag);
 	void ParseSurfaceLoad(XMLTag& tag);
 	void ParseBodyLoad   (XMLTag& tag);
 };

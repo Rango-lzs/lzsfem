@@ -48,8 +48,8 @@ source_group("basicio" FILES ${BASICIO_SOURCES})
 set(FEMCORE_HEADERS
     femcore/Callback.h
     femcore/DOFS.h
-    femcore/DataRecord.h
-    femcore/Domain/DomainDataRecord.h
+    #femcore/DataRecord.h
+    #femcore/Domain/DomainDataRecord.h
     #femcore/Domain/FE3FieldElasticShellDomain.h
     #femcore/Domain/FE3FieldElasticSolidDomain.h
     femcore/Domain/FEBeamDomain.h
@@ -70,8 +70,8 @@ set(FEMCORE_HEADERS
     femcore/Domain/FESolidDomain.h
     femcore/Domain/FESolidDomainFactory.h
     femcore/Domain/FETrussDomain.h
-    femcore/DomainDataRecord.h
-    femcore/ElementDataRecord.h
+    #femcore/DomainDataRecord.h
+    #femcore/ElementDataRecord.h
     #femcore/FE3FieldElasticSolidDomain.h
     femcore/FEAnalysis/FEAnalysis.h
     femcore/FEAnalysis/RgAnalysis.h
@@ -102,7 +102,7 @@ set(FEMCORE_HEADERS
     femcore/FEMeshPartition.h
     femcore/FEModel.h
     femcore/FEModelComponent.h
-    femcore/FEModelDataRecord.h
+    #femcore/FEModelDataRecord.h
     femcore/FEModelLoad.h
     femcore/FEModelParam.h
     femcore/FEModule.h
@@ -126,6 +126,7 @@ set(FEMCORE_HEADERS
     femcore/FEScalarValuator.h
     femcore/FESolidAnalysis.h
     femcore/FEStepComponent.h
+    femcore/FESurfaceBC.h
     femcore/FESurfaceLoad.h
     femcore/FESurfaceMap.h
     femcore/FESurfacePair.h
@@ -136,7 +137,7 @@ set(FEMCORE_HEADERS
     femcore/FEValuator.h
     femcore/FEVec3dValuator.h
     femcore/FSPath.h
-    femcore/FaceDataRecord.h
+    #femcore/FaceDataRecord.h
     femcore/Matrix/CSRMatrix.h
     femcore/Matrix/CompactMatrix.h
     femcore/Matrix/CompactSymmMatrix.h
@@ -166,9 +167,9 @@ set(FEMCORE_HEADERS
     femcore/MatrixSolver/TestSolver.h
     femcore/MetaObject.h
     femcore/MetaObjectDemo.h
-    femcore/NLConstraintDataRecord.h
-    femcore/NodeDataRecord.h
-    femcore/ObjectDataRecord.h
+    #femcore/NLConstraintDataRecord.h
+    #femcore/NodeDataRecord.h
+    #femcore/ObjectDataRecord.h
     femcore/PointCurve.h
     femcore/RTTI/MetaClass.h
     femcore/RTTI/MetaClassStore.h
@@ -193,7 +194,7 @@ set(FEMCORE_HEADERS
     femcore/Solver/LUSolver.h
     femcore/Solver/LinearSolver.h
     femcore/Solver/SkylineSolver.h
-    femcore/SurfaceDataRecord.h
+    #femcore/SurfaceDataRecord.h
     femcore/TimeStep/FETimeInfo.h
     femcore/TimeStep/FETimeStepController.h
     femcore/Timer.h
@@ -224,8 +225,8 @@ set(FEMCORE_HEADERS
 set(FEMCORE_SOURCES
     femcore/Callback.cpp
     femcore/DOFS.cpp
-    femcore/DataRecord.cpp
-    femcore/Domain/DomainDataRecord.cpp
+    #femcore/DataRecord.cpp
+    #femcore/Domain/DomainDataRecord.cpp
     #femcore/Domain/FE3FieldElasticShellDomain.cpp
     #femcore/Domain/FE3FieldElasticSolidDomain.cpp
     femcore/Domain/FEBeamDomain.cpp
@@ -246,8 +247,8 @@ set(FEMCORE_SOURCES
     femcore/Domain/FESolidDomain.cpp
     femcore/Domain/FESolidDomainFactory.cpp
     femcore/Domain/FETrussDomain.cpp
-    femcore/DomainDataRecord.cpp
-    femcore/ElementDataRecord.cpp
+    #femcore/DomainDataRecord.cpp
+    #femcore/ElementDataRecord.cpp
     #femcore/FE3FieldElasticSolidDomain.cpp
     femcore/FEAnalysis/FEAnalysis.cpp
     femcore/FEBodyLoad.cpp
@@ -276,7 +277,7 @@ set(FEMCORE_SOURCES
     femcore/FEMesh.cpp
     femcore/FEMeshPartition.cpp
     femcore/FEModel.cpp
-    femcore/FEModelDataRecord.cpp
+    #femcore/FEModelDataRecord.cpp
     femcore/FEModelLoad.cpp
     femcore/FEModelParam.cpp
     femcore/FEModule.cpp
@@ -299,6 +300,7 @@ set(FEMCORE_SOURCES
     femcore/FESolidAnalysis.cpp
     femcore/FEStepComponent.cpp
     femcore/FESurface.cpp
+    femcore/FESurfaceBC.cpp
     femcore/FESurfaceLoad.cpp
     femcore/FESurfaceMap.cpp
     femcore/FESurfacePair.cpp
@@ -308,7 +310,7 @@ set(FEMCORE_SOURCES
     femcore/FETimeInfo.cpp
     femcore/FEVec3dValuator.cpp
     femcore/FSPath.cpp
-    femcore/FaceDataRecord.cpp
+    #femcore/FaceDataRecord.cpp
     femcore/Matrix/CSRMatrix.cpp
     femcore/Matrix/CompactMatrix.cpp
     femcore/Matrix/CompactSymmMatrix.cpp
@@ -337,9 +339,9 @@ set(FEMCORE_SOURCES
     femcore/MatrixSolver/TestSolver.cpp
     femcore/MetaObject.cpp
     femcore/MetaObjectDemo.cpp
-    femcore/NLConstraintDataRecord.cpp
-    femcore/NodeDataRecord.cpp
-    femcore/ObjectDataRecord.cpp
+    #femcore/NLConstraintDataRecord.cpp
+    #femcore/NodeDataRecord.cpp
+    #femcore/ObjectDataRecord.cpp
     femcore/PointCurve.cpp
     femcore/RTTI/MetaClass.cpp
     femcore/RTTI/MetaClassStore.cpp
@@ -363,7 +365,7 @@ set(FEMCORE_SOURCES
     femcore/Solver/LUSolver.cpp
     femcore/Solver/LinearSolver.cpp
     femcore/Solver/SkylineSolver.cpp
-    femcore/SurfaceDataRecord.cpp
+    #femcore/SurfaceDataRecord.cpp
     femcore/TimeStep/FETimeInfo.cpp
     femcore/TimeStep/FETimeStepController.cpp
     femcore/Timer.cpp

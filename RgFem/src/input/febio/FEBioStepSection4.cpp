@@ -48,7 +48,7 @@ void FEBioStepSection4::Parse(XMLTag& tag)
 	Map["Boundary"   ] = new FEBioBoundarySection3(imp);
 	Map["Loads"      ] = new FEBioLoadsSection3(imp);
 	Map["Constraints"] = new FEBioConstraintsSection25(imp);
-	Map["Contact"    ] = new FEBioContactSection25(imp);
+	//Map["Contact"    ] = new FEBioContactSection25(imp);
 	Map["Rigid"      ] = new FEBioRigidSection4(imp);
 	Map["MeshAdaptor"] = new FEBioMeshAdaptorSection(imp);
 
