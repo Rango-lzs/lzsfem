@@ -24,17 +24,17 @@ protected:
 	void ParseShellThickness(XMLTag& tag, FEElementSet& set);
 	void ParseMaterialFibers(XMLTag& tag, FEElementSet& set);
 	void ParseMaterialAxes  (XMLTag& tag, FEElementSet& set);
-	void ParseMaterialData  (XMLTag& tag, FEElementSet& set, const string& name);
+	void ParseMaterialData  (XMLTag& tag, FEElementSet& set, const std::string& name);
 	void ParseMaterialFiberProperty(XMLTag& tag, FEElementSet& set);
 
 private:
-	void ParseElementData(XMLTag& tag, FEElementSet& set, vector<ELEMENT_DATA>& values, int nvalues);
+	void ParseElementData(XMLTag& tag, FEElementSet& set, std::vector<ELEMENT_DATA>& values, int nvalues);
 	void ParseElementData(XMLTag& tag, FEDomainMap& map);
 	void ParseDataArray(XMLTag& tag, FEDataArray& map, const char* sztag);
 	FEElement* ParseElement(XMLTag& tag, FEElementSet& set);
 
 private:
-	vector<FEElement*> m_pelem;
+	std::vector<FEElement*> m_pelem;
 };
 
 //-----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ protected:
 	void ParseMaterialAxesProperty(XMLTag& tag, FEElementSet& set);
 
 private:
-	void ParseElementData(XMLTag& tag, FEElementSet& set, vector<ELEMENT_DATA>& values, int nvalues);
+	void ParseElementData(XMLTag& tag, FEElementSet& set, std::vector<ELEMENT_DATA>& values, int nvalues);
 	void ParseElementData(XMLTag& tag, FEDomainMap& map);
 	void ParseSurfaceData(XMLTag& tag, FESurfaceMap& map);
 	void ParseNodeData   (XMLTag& tag, FENodeDataMap& map);
@@ -95,7 +95,7 @@ protected:
 private:
 	void ParseNodeData(XMLTag& tag, FENodeDataMap& map);
 	void ParseSurfaceData(XMLTag& tag, FESurfaceMap& map);
-	void ParseElementData(XMLTag& tag, FEElementSet& set, vector<ELEMENT_DATA>& values, int nvalues);
+	void ParseElementData(XMLTag& tag, FEElementSet& set, std::vector<ELEMENT_DATA>& values, int nvalues);
 	void ParseElementData(XMLTag& tag, FEDomainMap& map);
 	void ParseShellThickness(XMLTag& tag, FEElementSet& set);
 	void ParseMaterialAxes(XMLTag& tag, FEElementSet& set);

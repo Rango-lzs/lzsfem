@@ -1,17 +1,17 @@
 #include "FEBioOutputSection.h"
-#include "femcore/NodeDataRecord.h"
-#include "femcore/FaceDataRecord.h"
-#include "femcore/ElementDataRecord.h"
-#include "femcore/ObjectDataRecord.h"
-#include "femcore/NLConstraintDataRecord.h"
-#include "femcore/SurfaceDataRecord.h"
-#include "femcore/DomainDataRecord.h"
-#include "femcore/FEModelDataRecord.h"
+#include "basicio/NodeDataRecord.h"
+#include "basicio/FaceDataRecord.h"
+#include "basicio/ElementDataRecord.h"
+#include "basicio/ObjectDataRecord.h"
+#include "basicio/NLConstraintDataRecord.h"
+#include "basicio/SurfaceDataRecord.h"
+#include "basicio/DomainDataRecord.h"
+#include "basicio/FEModelDataRecord.h"
 #include "femcore/FEModel.h"
 #include "femcore/FSPath.h"
 #include "femcore/FEPlotDataStore.h"
 #include "femcore/FESurface.h"
-#include "femcore/DataRecord.h"
+#include "basicio/DataRecord.h"
 //#include "femcore/FESurfaceDataRecord.h"
 
 bool string_to_int_vector(const char* szlist, std::vector<int>& list)
@@ -338,7 +338,7 @@ void FEBioOutputSection::ParsePlotfile(XMLTag &tag)
                     if (ps)
                     {
                         // create a new surface
-                        FESurface* psurf = fecore_alloc(FESurface, &fem);
+                        FESurface* psurf = RANGO_NEW < FESurface>(&fem, "");
                         fem.GetMesh().AddSurface(psurf);
                         if (GetBuilder()->BuildSurface(*psurf, *ps) == false) throw XMLReader::InvalidTag(tag);
 

@@ -1,11 +1,11 @@
 #pragma once
-#include "femcore/DataRecord.h"
+#include "basicio/DataRecord.h"
 
 //-----------------------------------------------------------------------------
 //! This is the base class for a model data
 class FEM_EXPORT FEModelLogData : public FELogData
 {
-    META_CLASS_DECLARE(FEModelLogData, FELogData);
+    DECLARE_META_CLASS(FEModelLogData, FELogData);
 
 public:
     FEModelLogData(FEModel* fem);

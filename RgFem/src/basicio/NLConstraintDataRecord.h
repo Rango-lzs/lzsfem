@@ -1,6 +1,6 @@
 #pragma once
-#include "femcore/DataRecord.h"
-#include "FENLConstraint.h"
+#include "basicio/DataRecord.h"
+#include "femcore/FENLConstraint.h"
 
 //-----------------------------------------------------------------------------
 //! Base class for nonlinear constraints log data (e.g. rigid connectors)
