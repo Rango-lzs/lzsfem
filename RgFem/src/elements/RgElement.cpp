@@ -10,7 +10,7 @@ double* FEElement::H(int order, int n)
 	else return m_pTraits->m_Hp[order][n];
 }
 
-int FEElement::ShapeFunctions(int order)
+int FEElement::ShapeFunctions(int order) const
 {
 	return (order == -1 ? NodeSize() : m_pTraits->ShapeFunctions(order));
 }

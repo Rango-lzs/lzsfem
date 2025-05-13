@@ -61,7 +61,7 @@ public:  // overrides from FEElasticDomain
     //! body forces
     void BodyForce(FEGlobalVector& R, FEBodyForce& BF) override;
 
-    //! calculates the global stiffness matrix for this domain
+    //! calculates the global stiffness Matrix for this domain
     void StiffnessMatrix(FELinearSystem& LS) override;
 
     //! calculates inertial stiffness
@@ -73,14 +73,14 @@ public:  // overrides from FEElasticDomain
 public:
     // --- S T I F F N E S S ---
 
-    //! calculates the solid element stiffness matrix
-    virtual void ElementStiffness(const FETimeInfo& tp, int iel, matrix& ke);
+    //! calculates the solid element stiffness Matrix
+    virtual void ElementStiffness(const FETimeInfo& tp, int iel, Matrix& ke);
 
     //! geometrical stiffness (i.e. initial stress)
-    virtual void ElementGeometricalStiffness(FESolidElement& el, matrix& ke);
+    virtual void ElementGeometricalStiffness(FESolidElement& el, Matrix& ke);
 
     //! material stiffness component
-    virtual void ElementMaterialStiffness(FESolidElement& el, matrix& ke);
+    virtual void ElementMaterialStiffness(FESolidElement& el, Matrix& ke);
 
     // --- R E S I D U A L ---
 

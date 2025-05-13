@@ -1,44 +1,15 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
 
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEElasticTrussDomain.h"
-#include <FECore/FEModel.h>
-#include <FECore/FELinearSystem.h>
-#include "FEUncoupledMaterial.h"
-#include "FEElasticMaterialPoint.h"
-#include "FEBioMech.h"
+#include "femcore/FEModel.h"
+#include "femcore/FELinearSystem.h"
+#include "materials/FEUncoupledMaterial.h"
+#include "materials/FEElasticMaterialPoint.h"
 
 //-----------------------------------------------------------------------------
-BEGIN_FECORE_CLASS(FEElasticTrussDomain, FETrussDomain)
+BEGIN_PARAM_DEFINE(FEElasticTrussDomain, FETrussDomain)
 	ADD_PARAMETER(m_a0, "cross_sectional_area");
 	ADD_PARAMETER(m_v, "v")->setLongName("Poisson's ratio");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 //-----------------------------------------------------------------------------
 //! Constructor
 FEElasticTrussDomain::FEElasticTrussDomain(FEModel* pfem) : FETrussDomain(pfem), FEElasticDomain(pfem), m_dofU(pfem)
@@ -50,7 +21,7 @@ FEElasticTrussDomain::FEElasticTrussDomain(FEModel* pfem) : FETrussDomain(pfem),
 	// TODO: Can this be done in Init, since there is no error checking
 	if (pfem)
 	{
-		m_dofU.AddVariable(FEBioMech::GetVariableName(FEBioMech::DISPLACEMENT));
+		//m_dofU.AddVariable(FEBioMech::GetVariableName(FEBioMech::DISPLACEMENT));
 	}
 }
 

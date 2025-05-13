@@ -1,37 +1,37 @@
 set(HEADERS
-    DataRecord.h
-    DataStore.h
-    DomainDataRecord.h
-    DumpFile.h
-    DumpMemStream.h
-    DumpStream.h
-    ElementDataRecord.h
-    FEModelDataRecord.h
-    FEPlotData.h
-    FEPlotDataStore.h
-    FaceDataRecord.h
-    NLConstraintDataRecord.h
-    NodeDataRecord.h
-    ObjectDataRecord.h
-    SurfaceDataRecord.h
+    basicio/DataRecord.h
+    basicio/DataStore.h
+    basicio/DomainDataRecord.h
+    basicio/DumpFile.h
+    basicio/DumpMemStream.h
+    basicio/DumpStream.h
+    basicio/ElementDataRecord.h
+    basicio/FEModelDataRecord.h
+    basicio/FEPlotData.h
+    basicio/FEPlotDataStore.h
+    basicio/FaceDataRecord.h
+    basicio/NLConstraintDataRecord.h
+    basicio/NodeDataRecord.h
+    basicio/ObjectDataRecord.h
+    basicio/SurfaceDataRecord.h
 )
 
 set(SOURCES
-    DataRecord.cpp
-    DataStore.cpp
-    DomainDataRecord.cpp
-    DumpFile.cpp
-    DumpMemStream.cpp
-    DumpStream.cpp
-    ElementDataRecord.cpp
-    FEModelDataRecord.cpp
-    FEPlotData.cpp
-    FEPlotDataStore.cpp
-    FaceDataRecord.cpp
-    NLConstraintDataRecord.cpp
-    NodeDataRecord.cpp
-    ObjectDataRecord.cpp
-    SurfaceDataRecord.cpp
+    basicio/DataRecord.cpp
+    basicio/DataStore.cpp
+    basicio/DomainDataRecord.cpp
+    basicio/DumpFile.cpp
+    basicio/DumpMemStream.cpp
+    basicio/DumpStream.cpp
+    basicio/ElementDataRecord.cpp
+    basicio/FEModelDataRecord.cpp
+    basicio/FEPlotData.cpp
+    basicio/FEPlotDataStore.cpp
+    basicio/FaceDataRecord.cpp
+    basicio/NLConstraintDataRecord.cpp
+    basicio/NodeDataRecord.cpp
+    basicio/ObjectDataRecord.cpp
+    basicio/SurfaceDataRecord.cpp
 )
 
 set(BASICIO_SOURCES_

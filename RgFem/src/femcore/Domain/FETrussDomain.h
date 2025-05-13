@@ -1,5 +1,6 @@
 #pragma once
 #include "FEBeamDomain.h"
+#include "elements/FETrussElement.h"
 
 class FETrussElement;
 

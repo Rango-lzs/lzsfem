@@ -1,6 +1,6 @@
 #include "FaceDataRecord.h"
-#include "FEModel.h"
-#include "FESurface.h"
+#include "femcore/FEModel.h"
+#include "femcore/FESurface.h"
 #include "femcore/FEFacetSet.h"
 
 //-----------------------------------------------------------------------------

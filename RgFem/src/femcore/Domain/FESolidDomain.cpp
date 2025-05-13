@@ -6,6 +6,9 @@
 #include "femcore/FEException.h"
 #include "elements/FESolidElement.h"
 #include "datastructure/FEBoundingBox.h"
+#include "../FEMesh.h"
+#include "../FENode.h"
+#include "../FEGlobalVector.h"
 
 //-----------------------------------------------------------------------------
 FESolidDomain::FESolidDomain(FEModel* pfem) : FEDomain(FE_DOMAIN_SOLID, pfem), m_dofU(pfem), m_dofSU(pfem)
@@ -29,13 +32,13 @@ bool FESolidDomain::Create(int nsize, FE_Element_Spec espec)
 	for (int i = 0; i < nsize; ++i)
 	{
 		FESolidElement& el = m_Elem[i];
-		el.SetLocalID(i);
+		el.setLocalId(i);
 		el.SetMeshPartition(this);
 	}
 
 	// set element type
 	if (espec.etype != FE_ELEM_INVALID_TYPE)
-		ForEachElement([=](FEElement& el) { el.SetType(espec.etype); });
+		ForEachElement([=](FEElement& el) { el.setType(espec.etype); });
 
 	m_elemSpec = espec;
 
@@ -88,10 +91,10 @@ bool FESolidDomain::Init()
 			// evaluate nodal coordinates
 			const int NELN = FEElement::MAX_NODES;
 			Vector3d r0[NELN], r[NELN], v[NELN], a[NELN];
-			int neln = el.Nodes();
+			int neln = el.NodeSize();
 			for (int j = 0; j < neln; ++j)
 			{
-				FENode& node = m_pMesh->Node(el.m_node[j]);
+				FENode& node = m_pMesh->Node(el.getNodeId(j));
 				r0[j] = node.m_r0;
 			}
 
@@ -99,7 +102,7 @@ bool FESolidDomain::Init()
 			double Ji[3][3];
 
 			// loop over the integration points
-			int nint = el.GaussPoints();
+			int nint = el.GaussPointSize();
 			for (int n = 0; n < nint; ++n)
 			{
 				FEMaterialPoint& mp = *el.GetMaterialPoint(n);
@@ -109,7 +112,8 @@ bool FESolidDomain::Init()
 				el.m_J0i[n] = Matrix3d(Ji);
 
 				// material point coordinates
-				mp.m_r0 = el.Evaluate(r0, n);
+                // Rnago TODO:
+				//mp.m_r0 = el.Evaluate(r0, n);
 			}
 		});
 	}
@@ -144,11 +148,11 @@ FESolidElement* FESolidDomain::FindElement(const Vector3d& y, double r[3])
     {
         // get the next element
         FESolidElement& e = Element(i);
-        assert(e.Type() == FE_HEX8G8);
+        assert(e.elementType() == FE_HEX8G8);
         
         // get the element nodal coordinates
-        int neln = e.Nodes();
-        for (j=0; j<neln; ++j) x[j] = m_pMesh->Node(e.m_node[j]).m_rt;
+        int neln = e.NodeSize();
+        for (j=0; j<neln; ++j) x[j] = m_pMesh->Node(e.getNodeId(j)).m_rt;
         
         // first, as a quick check, we see if y lies in the bounding box defined by x
         FEBoundingBox box(x[0]);
@@ -184,8 +188,8 @@ FESolidElement* FESolidDomain::FindReferenceElement(const Vector3d& y, double r[
 		FESolidElement& e = Element(i);
 
 		// get the element nodal coordinates
-		int neln = e.Nodes();
-		for (int j = 0; j<neln; ++j) x[j] = m_pMesh->Node(e.m_node[j]).m_r0;
+		int neln = e.NodeSize();
+		for (int j = 0; j<neln; ++j) x[j] = m_pMesh->Node(e.getNodeId(j)).m_r0;
 
 		// first, as a quick check, we see if y lies in the bounding box defined by x
 		FEBoundingBox box(x[0]);
@@ -209,8 +213,8 @@ void FESolidDomain::ProjectToElement(FESolidElement& el, const Vector3d& p, doub
 	Vector3d rt[MN];
 
 	// get the element nodal coordinates
-	int ne = el.Nodes();
-	for (int i = 0; i<ne; ++i) rt[i] = m_pMesh->Node(el.m_node[i]).m_rt;
+	int ne = el.NodeSize();
+	for (int i = 0; i<ne; ++i) rt[i] = m_pMesh->Node(el.getNodeId(i)).m_rt;
 
     r[0] = r[1] = r[2] = 0;
     const double tol = 1e-5;
@@ -257,8 +261,8 @@ bool FESolidDomain::ProjectToReferenceElement(FESolidElement& el, const Vector3d
 	Vector3d rt[MN];
 
 	// get the element nodal coordinates
-	int ne = el.Nodes();
-	for (int i = 0; i<ne; ++i) rt[i] = m_pMesh->Node(el.m_node[i]).m_r0;
+	int ne = el.NodeSize();
+	for (int i = 0; i<ne; ++i) rt[i] = m_pMesh->Node(el.getNodeId(i)).m_r0;
 
     r[0] = r[1] = r[2] = 0;
     const double tol = 1e-5;
@@ -337,8 +341,8 @@ bool FESolidDomain::ProjectToReferenceElement(FESolidElement& el, const Vector3d
 //! get the current nodal coordinates
 void FESolidDomain::GetCurrentNodalCoordinates(const FESolidElement& el, Vector3d* rt)
 {
-	int neln = el.Nodes();
-	for (int i = 0; i<neln; ++i) rt[i] = m_pMesh->Node(el.m_node[i]).m_rt;
+	int neln = el.NodeSize();
+	for (int i = 0; i<neln; ++i) rt[i] = m_pMesh->Node(el.getNodeId(i)).m_rt;
 
 	// check for solid-shell interface nodes
 	if (el.m_bitfc.empty() == false)
@@ -347,7 +351,7 @@ void FESolidDomain::GetCurrentNodalCoordinates(const FESolidElement& el, Vector3
 		{
 			if (el.m_bitfc[i])
 			{
-				FENode& nd = m_pMesh->Node(el.m_node[i]);
+				FENode& nd = m_pMesh->Node(el.getNodeId(i));
 				rt[i] -= nd.m_dt;
 			}
 		}
@@ -358,9 +362,9 @@ void FESolidDomain::GetCurrentNodalCoordinates(const FESolidElement& el, Vector3
 //! get the current nodal coordinates
 void FESolidDomain::GetCurrentNodalCoordinates(const FESolidElement& el, Vector3d* rt, double alpha)
 {
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i) {
-		FENode& nd = m_pMesh->Node(el.m_node[i]);
+		FENode& nd = m_pMesh->Node(el.getNodeId(i));
 		rt[i] = nd.m_rt*alpha + nd.m_rp*(1 - alpha);
 	}
 
@@ -369,12 +373,13 @@ void FESolidDomain::GetCurrentNodalCoordinates(const FESolidElement& el, Vector3
 	{
 		for (int i = 0; i<neln; ++i)
 		{
-			if (el.m_bitfc[i]) {
-				FENode& nd = m_pMesh->Node(el.m_node[i]);
-				rt[i] = nd.m_r0 - nd.m_d0 \
-					+ nd.get_vec3d(m_dofSU[0], m_dofSU[1], m_dofSU[2])*alpha \
-					+ nd.get_vec3d_prev(m_dofSU[0], m_dofSU[1], m_dofSU[2])*(1 - alpha);
-			}
+            //Rango TODO:
+            /*if (el.m_bitfc[i]) {
+                FENode& nd = m_pMesh->Node(el.getNodeId(i));
+                rt[i] = nd.m_r0 - nd.m_d0 \
+                    + nd.get_vec3d(m_dofSU[0], m_dofSU[1], m_dofSU[2])*alpha \
+                    + nd.get_vec3d_prev(m_dofSU[0], m_dofSU[1], m_dofSU[2])*(1 - alpha);
+            }*/
 		}
 	}
 
@@ -384,8 +389,8 @@ void FESolidDomain::GetCurrentNodalCoordinates(const FESolidElement& el, Vector3
 //! get the reference nodal coordinates
 void FESolidDomain::GetReferenceNodalCoordinates(const FESolidElement& el, Vector3d* r0)
 {
-	int neln = el.Nodes();
-	for (int i = 0; i<neln; ++i) r0[i] = m_pMesh->Node(el.m_node[i]).m_r0;
+	int neln = el.NodeSize();
+	for (int i = 0; i<neln; ++i) r0[i] = m_pMesh->Node(el.getNodeId(i)).m_r0;
 
 	// check for solid-shell interface nodes
 	if (el.m_bitfc.empty() == false)
@@ -394,7 +399,7 @@ void FESolidDomain::GetReferenceNodalCoordinates(const FESolidElement& el, Vecto
 		{
 			if (el.m_bitfc[i])
 			{
-				FENode& nd = m_pMesh->Node(el.m_node[i]);
+				FENode& nd = m_pMesh->Node(el.getNodeId(i));
 				r0[i] -= nd.m_d0;
 			}
 		}
@@ -405,8 +410,8 @@ void FESolidDomain::GetReferenceNodalCoordinates(const FESolidElement& el, Vecto
 //! get the previous nodal coordinates
 void FESolidDomain::GetPreviousNodalCoordinates(const FESolidElement& el, Vector3d* rp)
 {
-	int neln = el.Nodes();
-	for (int i = 0; i<neln; ++i) rp[i] = m_pMesh->Node(el.m_node[i]).m_rp;
+	int neln = el.NodeSize();
+	for (int i = 0; i<neln; ++i) rp[i] = m_pMesh->Node(el.getNodeId(i)).m_rp;
 
 	// check for solid-shell interface nodes
 	if (el.m_bitfc.empty() == false)
@@ -415,7 +420,7 @@ void FESolidDomain::GetPreviousNodalCoordinates(const FESolidElement& el, Vector
 		{
 			if (el.m_bitfc[i])
 			{
-				FENode& nd = m_pMesh->Node(el.m_node[i]);
+				FENode& nd = m_pMesh->Node(el.getNodeId(i));
 				rp[i] -= nd.m_dp;
 			}
 		}
@@ -446,7 +451,7 @@ double FESolidDomain::defgrad(FESolidElement &el, Matrix3d &F, int n)
 	F[0][0] = F[0][1] = F[0][2] = 0;
     F[1][0] = F[1][1] = F[1][2] = 0;
     F[2][0] = F[2][1] = F[2][2] = 0;
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
     {
         double Gri = Grn[i];
@@ -470,7 +475,7 @@ double FESolidDomain::defgrad(FESolidElement &el, Matrix3d &F, int n)
     }
     
     double D = F.det();
-    if (D <= 0) throw NegativeJacobian(el.GetID(), n, D, &el);
+    if (D <= 0) throw NegativeJacobian(el.getId(), n, D, &el);
     
     return D;
 }
@@ -516,7 +521,7 @@ Vector3d FESolidDomain::GradJ(FESolidElement &el, int n)
     Matrix3d gradTF1, gradTF2, gradTF3;
     gradTF.d[ 0] = gradTF.d[ 1] = gradTF.d[ 2] = gradTF.d[ 3] = gradTF.d[ 4] = gradTF.d[ 5] = gradTF.d[ 6] = gradTF.d[ 7] = gradTF.d[ 8] = gradTF.d[ 9] = gradTF.d[10] = gradTF.d[11] = gradTF.d[12] = gradTF.d[13] = gradTF.d[14] = gradTF.d[15] = gradTF.d[16] = gradTF.d[17] = gradTF.d[18] = gradTF.d[19] = gradTF.d[20] = gradTF.d[21] = gradTF.d[22] = gradTF.d[23] = gradTF.d[24] = gradTF.d[25] = gradTF.d[26] = 0.0;
     
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     for (int i = 0; i<neln; ++i)
     {
         double Gri = Grn[i];
@@ -567,7 +572,7 @@ Vector3d FESolidDomain::GradJ(FESolidElement &el, int n)
     }
     
     double D = F.det();
-    if (D <= 0) throw NegativeJacobian(el.GetID(), n, D, &el);
+    if (D <= 0) throw NegativeJacobian(el.getId(), n, D, &el);
     Matrix3d FinvT = F.transinv();
     Vector3d gJ = gradTF.contract2(FinvT)*D;
     
@@ -614,7 +619,7 @@ Vector3d FESolidDomain::GradJp(FESolidElement &el, int n)
     Matrix3d gradTF1, gradTF2, gradTF3;
     gradTF.d[ 0] = gradTF.d[ 1] = gradTF.d[ 2] = gradTF.d[ 3] = gradTF.d[ 4] = gradTF.d[ 5] = gradTF.d[ 6] = gradTF.d[ 7] = gradTF.d[ 8] = gradTF.d[ 9] = gradTF.d[10] = gradTF.d[11] = gradTF.d[12] = gradTF.d[13] = gradTF.d[14] = gradTF.d[15] = gradTF.d[16] = gradTF.d[17] = gradTF.d[18] = gradTF.d[19] = gradTF.d[20] = gradTF.d[21] = gradTF.d[22] = gradTF.d[23] = gradTF.d[24] = gradTF.d[25] = gradTF.d[26] = 0.0;
     
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     for (int i = 0; i<neln; ++i)
     {
         double Gri = Grn[i];
@@ -665,7 +670,7 @@ Vector3d FESolidDomain::GradJp(FESolidElement &el, int n)
     }
     
     double D = F.det();
-    if (D <= 0) throw NegativeJacobian(el.GetID(), n, D, &el);
+    if (D <= 0) throw NegativeJacobian(el.getId(), n, D, &el);
     Matrix3d FinvT = F.transinv();
     Vector3d gJ = gradTF.contract2(FinvT)*D;
     
@@ -711,7 +716,7 @@ tens3dls FESolidDomain::Gradb(FESolidElement &el, int n)
     tens3dls GB;
     GB.zero();
     
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     for (int i = 0; i<neln; ++i)
     {
         double Gri = Grn[i];
@@ -757,7 +762,7 @@ tens3dls FESolidDomain::Gradb(FESolidElement &el, int n)
     }
     
     double D = F.det();
-    if (D <= 0) throw NegativeJacobian(el.GetID(), n, D, &el);
+    if (D <= 0) throw NegativeJacobian(el.getId(), n, D, &el);
     b = F*F.transpose();
     
     return GB;
@@ -802,7 +807,7 @@ tens3dls FESolidDomain::Gradbp(FESolidElement &el, int n)
     tens3dls GB;
     GB.zero();
     
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     for (int i = 0; i<neln; ++i)
     {
         double Gri = Grn[i];
@@ -848,7 +853,7 @@ tens3dls FESolidDomain::Gradbp(FESolidElement &el, int n)
     }
     
     double D = F.det();
-    if (D <= 0) throw NegativeJacobian(el.GetID(), n, D, &el);
+    if (D <= 0) throw NegativeJacobian(el.getId(), n, D, &el);
     b = F*F.transpose();
     
     return GB;
@@ -875,7 +880,7 @@ double FESolidDomain::defgrad(FESolidElement &el, Matrix3d &F, int n, Vector3d* 
 	F[0][0] = F[0][1] = F[0][2] = 0;
 	F[1][0] = F[1][1] = F[1][2] = 0;
 	F[2][0] = F[2][1] = F[2][2] = 0;
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
 	{
 		double Gri = Grn[i];
@@ -899,7 +904,7 @@ double FESolidDomain::defgrad(FESolidElement &el, Matrix3d &F, int n, Vector3d* 
 	}
 
 	double D = F.det();
-	if (D <= 0) throw NegativeJacobian(el.GetID(), n, D, &el);
+	if (D <= 0) throw NegativeJacobian(el.getId(), n, D, &el);
 
 	return D;
 }
@@ -925,7 +930,7 @@ double FESolidDomain::defgrad(FESolidElement &el, Matrix3d &F, double r, double 
 	F[0][0] = F[0][1] = F[0][2] = 0;
     F[1][0] = F[1][1] = F[1][2] = 0;
     F[2][0] = F[2][1] = F[2][2] = 0;
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
     {
         double Gri = Gr[i];
@@ -949,7 +954,7 @@ double FESolidDomain::defgrad(FESolidElement &el, Matrix3d &F, double r, double 
     }
     
     double D = F.det();
-    if (D <= 0) throw NegativeJacobian(el.GetID(), -1, D, &el);
+    if (D <= 0) throw NegativeJacobian(el.getId(), -1, D, &el);
     
     return D;
 }
@@ -978,7 +983,7 @@ double FESolidDomain::defgradp(FESolidElement &el, Matrix3d &F, int n)
     F[0][0] = F[0][1] = F[0][2] = 0;
     F[1][0] = F[1][1] = F[1][2] = 0;
     F[2][0] = F[2][1] = F[2][2] = 0;
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
     {
         double Gri = Grn[i];
@@ -1002,7 +1007,7 @@ double FESolidDomain::defgradp(FESolidElement &el, Matrix3d &F, int n)
     }
     
     double D = F.det();
-    if (D <= 0) throw NegativeJacobian(el.GetID(), n, D, &el);
+    if (D <= 0) throw NegativeJacobian(el.getId(), n, D, &el);
     
     return D;
 }
@@ -1019,7 +1024,7 @@ double FESolidDomain::invjac0(const FESolidElement& el, double Ji[3][3], int n)
    
     // calculate Jacobian
     double J[3][3] = {0};
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
     {
         const double& Gri = el.Gr(n)[i];
@@ -1041,7 +1046,7 @@ double FESolidDomain::invjac0(const FESolidElement& el, double Ji[3][3], int n)
 				+ J[0][2]*(J[1][0]*J[2][1] - J[1][1]*J[2][0]);
     
     // make sure the determinant is positive
-    if (det <= 0) throw NegativeJacobian(el.GetID(), n+1, det);
+    if (det <= 0) throw NegativeJacobian(el.getId(), n+1, det);
     
     // calculate the inverse jacobian
     double deti = 1.0 / det;
@@ -1078,7 +1083,7 @@ double FESolidDomain::invjac0(const FESolidElement& el, double Ji[3][3], double 
     
     // calculate Jacobian
     double J[3][3] = {0};
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
     {
         const double& Gri = Gr[i];
@@ -1100,7 +1105,7 @@ double FESolidDomain::invjac0(const FESolidElement& el, double Ji[3][3], double 
 				+ J[0][2]*(J[1][0]*J[2][1] - J[1][1]*J[2][0]);
     
     // make sure the determinant is positive
-    if (det <= 0) throw NegativeJacobian(el.GetID(), -1, det);
+    if (det <= 0) throw NegativeJacobian(el.getId(), -1, det);
     
     // calculate the inverse jacobian
     double deti = 1.0 / det;
@@ -1141,7 +1146,7 @@ double FESolidDomain::invjact(FESolidElement& el, double Ji[3][3], int n)
 
     // calculate jacobian
     double J[3][3] = {0};
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
     {
         const double& Gri = el.Gr(n)[i];
@@ -1163,7 +1168,7 @@ double FESolidDomain::invjact(FESolidElement& el, double Ji[3][3], int n)
 				+ J[0][2]*(J[1][0]*J[2][1] - J[1][1]*J[2][0]);
     
     // make sure the determinant is positive
-    if (det <= 0) throw NegativeJacobian(el.GetID(), n+1, det);
+    if (det <= 0) throw NegativeJacobian(el.getId(), n+1, det);
     
     // calculate inverse jacobian
     double deti = 1.0 / det;
@@ -1191,7 +1196,7 @@ double FESolidDomain::invjact(FESolidElement& el, double Ji[3][3], int n, const 
 {
 	// calculate jacobian
 	double J[3][3] = { 0 };
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
 	{
 		const double& Gri = el.Gr(n)[i];
@@ -1213,7 +1218,7 @@ double FESolidDomain::invjact(FESolidElement& el, double Ji[3][3], int n, const 
 		+ J[0][2] * (J[1][0] * J[2][1] - J[1][1] * J[2][0]);
 
 	// make sure the determinant is positive
-	if (det <= 0) throw NegativeJacobian(el.GetID(), n + 1, det);
+	if (det <= 0) throw NegativeJacobian(el.getId(), n + 1, det);
 
 	// calculate inverse jacobian
 	double deti = 1.0 / det;
@@ -1244,7 +1249,7 @@ double FESolidDomain::invjact(FESolidElement& el, double Ji[3][3], int n, const 
 	GetCurrentNodalCoordinates(el, rt, alpha);
     
     // calculate jacobian
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	double J[3][3] = { 0 };
     for (int i=0; i<neln; ++i)
     {
@@ -1267,7 +1272,7 @@ double FESolidDomain::invjact(FESolidElement& el, double Ji[3][3], int n, const 
 				+ J[0][2]*(J[1][0]*J[2][1] - J[1][1]*J[2][0]);
     
     // make sure the determinant is positive
-    if (det <= 0) throw NegativeJacobian(el.GetID(), n+1, det);
+    if (det <= 0) throw NegativeJacobian(el.getId(), n+1, det);
     
     // calculate inverse jacobian
     double deti = 1.0 / det;
@@ -1298,7 +1303,7 @@ double FESolidDomain::invjactp(FESolidElement& el, double Ji[3][3], int n)
 	GetPreviousNodalCoordinates(el, rt);
     
     // calculate jacobian
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	double J[3][3] = { 0 };
     for (int i=0; i<neln; ++i)
     {
@@ -1321,7 +1326,7 @@ double FESolidDomain::invjactp(FESolidElement& el, double Ji[3][3], int n)
 				+ J[0][2]*(J[1][0]*J[2][1] - J[1][1]*J[2][0]);
     
     // make sure the determinant is positive
-    if (det <= 0) throw NegativeJacobian(el.GetID(), n+1, det);
+    if (det <= 0) throw NegativeJacobian(el.getId(), n+1, det);
     
     // calculate inverse jacobian
     double deti = 1.0 / det;
@@ -1358,7 +1363,7 @@ double FESolidDomain::invjact(FESolidElement& el, double Ji[3][3], double r, dou
     
     // calculate Jacobian
     double J[3][3] = {0};
-	const int neln = el.Nodes();
+	const int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
     {
         const double& Gri = Gr[i];
@@ -1380,7 +1385,7 @@ double FESolidDomain::invjact(FESolidElement& el, double Ji[3][3], double r, dou
 				+ J[0][2]*(J[1][0]*J[2][1] - J[1][1]*J[2][0]);
     
     // make sure the determinant is positive
-    if (det <= 0) throw NegativeJacobian(el.GetID(), -1, det);
+    if (det <= 0) throw NegativeJacobian(el.getId(), -1, det);
     
     // calculate the inverse jacobian
     double deti = 1.0 / det;
@@ -1414,7 +1419,7 @@ Vector3d FESolidDomain::gradient(FESolidElement& el, double* fn, int n)
     double Gx, Gy, Gz;
     
     Vector3d gradf;
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
     {
         // calculate global gradient of shape functions
@@ -1466,7 +1471,7 @@ Vector3d FESolidDomain::gradient(FESolidElement& el, int order, double* fn, int 
 
 //-----------------------------------------------------------------------------
 //! calculate gradient of function at integration points
-Vector3d FESolidDomain::gradient(FESolidElement& el, vector<double>& fn, int n)
+Vector3d FESolidDomain::gradient(FESolidElement& el, std::vector<double>& fn, int n)
 {
     double Ji[3][3];
     invjact(el, Ji, n);
@@ -1478,7 +1483,7 @@ Vector3d FESolidDomain::gradient(FESolidElement& el, vector<double>& fn, int n)
     double Gx, Gy, Gz;
     
     Vector3d gradf;
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
     {
         // calculate global gradient of shape functions
@@ -1513,7 +1518,7 @@ Matrix3d FESolidDomain::gradient(FESolidElement& el, Vector3d* fn, int n)
     
     Matrix3d gradf;
     gradf.zero();
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         gradf += fn[i] & (g1*Gr[i] + g2*Gs[i] + g3*Gt[i]);
     
@@ -1522,7 +1527,7 @@ Matrix3d FESolidDomain::gradient(FESolidElement& el, Vector3d* fn, int n)
 
 //-----------------------------------------------------------------------------
 //! calculate gradient of function at integration points at intermediate time
-Vector3d FESolidDomain::gradient(FESolidElement& el, vector<double>& fn, int n, const double alpha)
+Vector3d FESolidDomain::gradient(FESolidElement& el, std::vector<double>& fn, int n, const double alpha)
 {
     double Ji[3][3];
     invjact(el, Ji, n, alpha);
@@ -1534,7 +1539,7 @@ Vector3d FESolidDomain::gradient(FESolidElement& el, vector<double>& fn, int n, 
     double Gx, Gy, Gz;
     
     Vector3d gradf;
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
     {
         // calculate global gradient of shape functions
@@ -1569,7 +1574,7 @@ Matrix3d FESolidDomain::gradient(FESolidElement& el, Vector3d* fn, int n, const 
     
     Matrix3d gradf;
     gradf.zero();
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         gradf += fn[i] & (g1*Gr[i] + g2*Gs[i] + g3*Gt[i]);
     
@@ -1594,7 +1599,7 @@ Matrix3d FESolidDomain::gradientp(FESolidElement& el, Vector3d* fn, int n)
     
     Matrix3d gradf;
     gradf.zero();
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         gradf += fn[i] & (g1*Gr[i] + g2*Gs[i] + g3*Gt[i]);
     
@@ -1618,7 +1623,7 @@ tens3dls FESolidDomain::gradient(FESolidElement& el, Matrix3ds* fn, int n)
     
     tens3dls gradf;
     gradf.zero();
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         gradf += dyad3ls(fn[i], (g1*Gr[i] + g2*Gs[i] + g3*Gt[i]));
     
@@ -1643,7 +1648,7 @@ tens3dls FESolidDomain::gradientp(FESolidElement& el, Matrix3ds* fn, int n)
     
     tens3dls gradf;
     gradf.zero();
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         gradf += dyad3ls(fn[i], (g1*Gr[i] + g2*Gs[i] + g3*Gt[i]));
     
@@ -1652,7 +1657,7 @@ tens3dls FESolidDomain::gradientp(FESolidElement& el, Matrix3ds* fn, int n)
 
 //-----------------------------------------------------------------------------
 //! calculate material gradient of function at integration points
-Vector3d FESolidDomain::Gradient(FESolidElement& el, vector<double>& fn, int n)
+Vector3d FESolidDomain::Gradient(FESolidElement& el, std::vector<double>& fn, int n)
 {
     double Ji[3][3];
     invjac0(el, Ji, n);
@@ -1664,7 +1669,7 @@ Vector3d FESolidDomain::Gradient(FESolidElement& el, vector<double>& fn, int n)
     double Gx, Gy, Gz;
     
     Vector3d Gradf;
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
     {
         // calculate global gradient of shape functions
@@ -1696,7 +1701,7 @@ Vector3d FESolidDomain::Gradient(FESolidElement& el, double* fn, int n)
     double Gx, Gy, Gz;
     
     Vector3d Gradf;
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
     {
         // calculate global gradient of shape functions
@@ -1726,7 +1731,7 @@ Matrix3d FESolidDomain::Gradient(FESolidElement& el, Vector3d* fn, int n)
     
     Matrix3d Gradf;
     Gradf.zero();
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         Gradf += fn[i] & (Gcnt[0]*Gr[i] + Gcnt[1]*Gs[i] + Gcnt[2]*Gt[i]);
     
@@ -1745,7 +1750,7 @@ tens3dls FESolidDomain::Gradient(FESolidElement& el, Matrix3ds* fn, int n)
     
     tens3dls Gradf;
     Gradf.zero();
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         Gradf += dyad3ls(fn[i], (Gcnt[0]*Gr[i] + Gcnt[1]*Gs[i] + Gcnt[2]*Gt[i]));
     
@@ -1767,7 +1772,7 @@ double FESolidDomain::detJt(FESolidElement &el, int n)
     
     // jacobian matrix
     double J[3][3] = {0};
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
     {
         const double& Gri = Grn[i];
@@ -1805,7 +1810,7 @@ double FESolidDomain::detJt(FESolidElement &el, int n, const double alpha)
     double* Gtn = el.Gt(n);
     
     // jacobian matrix
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	double J[3][3] = { 0 };
     for (int i=0; i<neln; ++i)
     {
@@ -1845,7 +1850,7 @@ double FESolidDomain::detJ0(FESolidElement &el, int n)
     
     // jacobian matrix
     double J[3][3] = {0};
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
     {
         const double& Gri = Grn[i];
@@ -1885,7 +1890,7 @@ void FESolidDomain::CoBaseVectors0(FESolidElement& el, int j, Vector3d g[3])
 	GetReferenceNodalCoordinates(el, r0);
     
     g[0] = g[1] = g[2] = Vector3d(0,0,0);
-	int n = el.Nodes();
+	int n = el.NodeSize();
 	for (int i = 0; i<n; ++i)
     {
         g[0] += r0[i]*Hr[i];
@@ -1910,7 +1915,7 @@ void FESolidDomain::CoBaseVectors(FESolidElement& el, int j, Vector3d g[3])
 	GetCurrentNodalCoordinates(el, rt);
 
     g[0] = g[1] = g[2] = Vector3d(0,0,0);
-	int n = el.Nodes();
+	int n = el.NodeSize();
 	for (int i = 0; i<n; ++i)
     {
         g[0] += rt[i]*Hr[i];
@@ -1935,7 +1940,7 @@ void FESolidDomain::CoBaseVectors(FESolidElement& el, int j, Vector3d g[3], cons
     GetCurrentNodalCoordinates(el, rt, alpha);
     
     g[0] = g[1] = g[2] = Vector3d(0,0,0);
-    int n = el.Nodes();
+    int n = el.NodeSize();
     for (int i = 0; i<n; ++i)
     {
         g[0] += rt[i]*Hr[i];
@@ -2010,7 +2015,7 @@ void FESolidDomain::CoBaseVectorDerivatives(FESolidElement& el, int j, Vector3d 
     FEMesh& m = *m_pMesh;
     
     // get the nr of nodes
-    int n = el.Nodes();
+    int n = el.NodeSize();
     
     // get the shape function derivatives
     double* Hrr = el.Grr(j); double* Hrs = el.Grs(j); double* Hrt = el.Grt(j);
@@ -2023,7 +2028,7 @@ void FESolidDomain::CoBaseVectorDerivatives(FESolidElement& el, int j, Vector3d 
     
     for (int i=0; i<n; ++i)
     {
-        Vector3d rt = m.Node(el.m_node[i]).m_rt;
+        Vector3d rt = m.Node(el.getNodeId(i)).m_rt;
         dg[0][0] += rt*Hrr[i]; dg[0][1] += rt*Hsr[i]; dg[0][2] += rt*Htr[i];
         dg[1][0] += rt*Hrs[i]; dg[1][1] += rt*Hss[i]; dg[1][2] += rt*Hts[i];
         dg[2][0] += rt*Hrt[i]; dg[2][1] += rt*Hst[i]; dg[2][2] += rt*Htt[i];
@@ -2039,7 +2044,7 @@ void FESolidDomain::CoBaseVectorDerivatives0(FESolidElement& el, int j, Vector3d
     FEMesh& m = *m_pMesh;
     
     // get the nr of nodes
-    int n = el.Nodes();
+    int n = el.NodeSize();
     
     // get the shape function derivatives
     double* Hrr = el.Grr(j); double* Hrs = el.Grs(j); double* Hrt = el.Grt(j);
@@ -2052,7 +2057,7 @@ void FESolidDomain::CoBaseVectorDerivatives0(FESolidElement& el, int j, Vector3d
     
     for (int i=0; i<n; ++i)
     {
-        Vector3d rt = m.Node(el.m_node[i]).m_r0;
+        Vector3d rt = m.Node(el.getNodeId(i)).m_r0;
         dg[0][0] += rt*Hrr[i]; dg[0][1] += rt*Hsr[i]; dg[0][2] += rt*Htr[i];
         dg[1][0] += rt*Hrs[i]; dg[1][1] += rt*Hss[i]; dg[1][2] += rt*Hts[i];
         dg[2][0] += rt*Hrt[i]; dg[2][1] += rt*Hst[i]; dg[2][2] += rt*Htt[i];
@@ -2068,7 +2073,7 @@ void FESolidDomain::CoBaseVectorDerivatives(FESolidElement& el, int j, Vector3d 
     FEMesh& m = *m_pMesh;
     
     // get the nr of nodes
-    int n = el.Nodes();
+    int n = el.NodeSize();
     
     // get the shape function derivatives
     double* Hrr = el.Grr(j); double* Hrs = el.Grs(j); double* Hrt = el.Grt(j);
@@ -2081,7 +2086,7 @@ void FESolidDomain::CoBaseVectorDerivatives(FESolidElement& el, int j, Vector3d 
     
     for (int i=0; i<n; ++i)
     {
-        Vector3d rt = m.Node(el.m_node[i]).m_rt*alpha + m.Node(el.m_node[i]).m_rp*(1.0-alpha);
+        Vector3d rt = m.Node(el.getNodeId(i)).m_rt*alpha + m.Node(el.getNodeId(i)).m_rp*(1.0-alpha);
         dg[0][0] += rt*Hrr[i]; dg[0][1] += rt*Hsr[i]; dg[0][2] += rt*Htr[i];
         dg[1][0] += rt*Hrs[i]; dg[1][1] += rt*Hss[i]; dg[1][2] += rt*Hts[i];
         dg[2][0] += rt*Hrt[i]; dg[2][1] += rt*Hst[i]; dg[2][2] += rt*Htt[i];
@@ -2188,7 +2193,7 @@ Vector3d FESolidDomain::lapvec(FESolidElement& el, Vector3d* fn, int n)
     double* Htr = el.Gtr(n); double* Hts = el.Gts(n); double* Htt = el.Gtt(n);
     
     Vector3d lapv(0,0,0);
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         lapv += fn[i]*((gcnt[0]*Hrr[i]+dgcnt[0][0]*Gr[i])*gcnt[0]+
                        (gcnt[0]*Hrs[i]+dgcnt[0][1]*Gr[i])*gcnt[1]+
@@ -2222,7 +2227,7 @@ Vector3d FESolidDomain::gradivec(FESolidElement& el, Vector3d* fn, int n)
     double* Htr = el.Gtr(n); double* Hts = el.Gts(n); double* Htt = el.Gtt(n);
     
     Vector3d gdv(0,0,0);
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         gdv +=
         gcnt[0]*((gcnt[0]*Hrr[i]+dgcnt[0][0]*Gr[i])*fn[i])+
@@ -2242,9 +2247,9 @@ Vector3d FESolidDomain::gradivec(FESolidElement& el, Vector3d* fn, int n)
 //! This function calculates the transpose of the spatial gradient of the shape
 //! function spatial gradients, gradT(grad H), at an integration point
 
-void FESolidDomain::gradTgradShape(FESolidElement& el, int j, vector<Matrix3d>& mn)
+void FESolidDomain::gradTgradShape(FESolidElement& el, int j, std::vector<Matrix3d>& mn)
 {
-    int N = el.Nodes();
+    int N = el.NodeSize();
     Vector3d g[3], dg[3][3];
     ContraBaseVectors(el, j, g);
     ContraBaseVectorDerivatives(el, j, dg);
@@ -2277,7 +2282,7 @@ double FESolidDomain::ShapeGradient(FESolidElement& el, int n, Vector3d* GradH)
     double detJt = invjact(el, Ji, n);
     
     // evaluate shape function derivatives
-    int ne = el.Nodes();
+    int ne = el.NodeSize();
     for (int i = 0; i<ne; ++i)
     {
         double Gr = el.Gr(n)[i];
@@ -2302,7 +2307,7 @@ double FESolidDomain::ShapeGradient(FESolidElement& el, int n, Vector3d* GradH, 
     double detJt = invjact(el, Ji, n, alpha);
     
     // evaluate shape function derivatives
-    int ne = el.Nodes();
+    int ne = el.NodeSize();
     for (int i = 0; i<ne; ++i)
     {
         double Gr = el.Gr(n)[i];
@@ -2327,7 +2332,7 @@ double FESolidDomain::ShapeGradient0(FESolidElement& el, int n, Vector3d* GradH)
     double detJ0 = invjac0(el, Ji, n);
     
     // evaluate shape function derivatives
-    int ne = el.Nodes();
+    int ne = el.NodeSize();
     for (int i = 0; i<ne; ++i)
     {
         double Gr = el.Gr(n)[i];
@@ -2357,7 +2362,7 @@ double FESolidDomain::ShapeGradient(FESolidElement& el, double r, double s, doub
     double Gt[FEElement::MAX_NODES];
     el.shape_deriv(Gr, Gs, Gt, r, s, t);
     
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     for (int i = 0; i<neln; ++i)
     {
         // calculate global gradient of shape functions
@@ -2383,7 +2388,7 @@ double FESolidDomain::ShapeGradient0(FESolidElement& el, double r, double s, dou
     double Gt[FEElement::MAX_NODES];
     el.shape_deriv(Gr, Gs, Gt, r, s, t);
     
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     for (int i = 0; i<neln; ++i)
     {
         // calculate global gradient of shape functions
@@ -2402,10 +2407,10 @@ double FESolidDomain::Volume(FESolidElement& el)
 {
 	Vector3d r0[FEElement::MAX_NODES];
 
-	int neln = el.Nodes();
-	for (int i = 0; i<neln; ++i) r0[i] = Node(el.m_lnode[i]).m_r0;
+	int neln = el.NodeSize();
+	for (int i = 0; i<neln; ++i) r0[i] = Node(el.getLocNodeId(i)).m_r0;
 
-	int nint = el.GaussPoints();
+	int nint = el.GaussPointSize();
 	double *w = el.GaussWeights();
 	double V = 0;
 	for (int n = 0; n<nint; ++n)
@@ -2449,10 +2454,10 @@ double FESolidDomain::CurrentVolume(FESolidElement& el)
 {
     Vector3d rt[FEElement::MAX_NODES];
 
-    int neln = el.Nodes();
-    for (int i = 0; i < neln; ++i) rt[i] = Node(el.m_lnode[i]).m_rt;
+    int neln = el.NodeSize();
+    for (int i = 0; i < neln; ++i) rt[i] = Node(el.getLocNodeId(i)).m_rt;
 
-    int nint = el.GaussPoints();
+    int nint = el.GaussPointSize();
     double* w = el.GaussWeights();
     double V = 0;
     for (int n = 0; n < nint; ++n)
@@ -2494,7 +2499,7 @@ double FESolidDomain::CurrentVolume(FESolidElement& el)
 //! return the degrees of freedom of an element for this domain
 int FESolidDomain::GetElementDofs(FESolidElement& el)
 {
-	return (int)GetDOFList().Size()*el.Nodes();
+	return (int)GetDOFList().Size()*el.NodeSize();
 }
 
 //-----------------------------------------------------------------------------
@@ -2517,23 +2522,23 @@ void FESolidDomain::LoadVector(
 	{
 		// get the next element
 		FESolidElement& el = Element(i);
-		int neln = el.Nodes();
+		int neln = el.NodeSize();
 
 		// only consider active elements
-		if (el.isActive()) 
+		if (1/*el.isActive()*/) 
 		{
 			std::vector<double> val(dofPerNode, 0.0);
 
 			// total size of the element vector
-			int ndof = dofPerNode * el.Nodes();
+			int ndof = dofPerNode * el.NodeSize();
 
 			// setup the element vector
-			vector<double> fe;
+			std::vector<double> fe;
 			fe.assign(ndof, 0);
 
 			// loop over integration points
 			double* w = el.GaussWeights();
-			int nint = el.GaussPoints();
+			int nint = el.GaussPointSize();
 			for (int n = 0; n<nint; ++n)
 			{
 				FEMaterialPoint& mp = *el.GetMaterialPoint(n);
@@ -2556,11 +2561,11 @@ void FESolidDomain::LoadVector(
 			}
 
 			// get the element's LM vector
-			vector<int> lm(ndof, -1);
+			std::vector<int> lm(ndof, -1);
 			for (int j = 0; j < neln; ++j)
 			{
-				FENode& node = mesh.Node(el.m_node[j]);
-				vector<int>& ID = node.m_dofs;
+				FENode& node = mesh.Node(el.getNodeId(j));
+				const std::vector<int>& ID = node.getDofs();
 				for (int k = 0; k < dofPerNode; ++k)
 				{
 					lm[dofPerNode*j + k] = ID[dofList[k]];
@@ -2568,7 +2573,8 @@ void FESolidDomain::LoadVector(
 			}
 
 			// Assemble into global vector
-			R.Assemble(el.m_node, lm, fe);
+            // Rango TODO:
+			//R.Assemble(el.getNodeIds(), lm, fe);
 		}
 	}
 }
@@ -2584,7 +2590,7 @@ void FESolidDomain::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a
 	FEMesh& mesh = *GetMesh();
 	Vector3d rt[FEElement::MAX_NODES];
 
-	matrix kab(dofPerNode_a, dofPerNode_b);
+	Matrix kab(dofPerNode_a, dofPerNode_b);
 
 	int NE = Elements();
 	for (int m = 0; m<NE; ++m)
@@ -2593,16 +2599,16 @@ void FESolidDomain::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a
 		FESolidElement& el = Element(m);
 
 		// calculate nodal normal tractions
-		int neln = el.Nodes();
+		int neln = el.NodeSize();
 
 		// get the element stiffness matrix
-		ke.SetNodes(el.m_node);
+		ke.SetNodes(el.getNodeIds());
 		int ndof_a = dofPerNode_a * neln;
 		int ndof_b = dofPerNode_b * neln;
 		ke.resize(ndof_a, ndof_b);
 
 		// calculate element stiffness
-		int nint = el.GaussPoints();
+		int nint = el.GaussPointSize();
 
 		// gauss weights
 		double* w = el.GaussWeights();
@@ -2623,7 +2629,8 @@ void FESolidDomain::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a
 					// evaluate integrand
 					kab.zero();
 					f(pt, i, j, kab);
-					ke.adds(dofPerNode_a * i, dofPerNode_b * j, kab, w[n]);
+                    //Rango TODO::
+					//ke.adds(dofPerNode_a * i, dofPerNode_b * j, kab, w[n]);
 				}
 		}
 
@@ -2634,7 +2641,7 @@ void FESolidDomain::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a
 		lmb.assign(ndof_b, -1);
 		for (int j = 0; j < neln; ++j)
 		{
-			FENode& node = mesh.Node(el.m_node[j]);
+			FENode& node = mesh.Node(el.getNodeId(j));
 			std::vector<int>& ID = node.m_dofs;
 
 			for (int k = 0; k < dofPerNode_a; ++k)

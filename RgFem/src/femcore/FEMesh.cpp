@@ -80,13 +80,14 @@ void FEMesh::Serialize(DumpStream& ar)
 	if (ar.IsSaving())
 	{
 		// write segment sets
-		int ssets = SegmentSets();
-		ar << ssets;
-		for (int i=0; i<ssets; ++i)
-		{
-			FESegmentSet& sset = SegmentSet(i);
-			sset.Serialize(ar);
-		}
+		//Rango TODO:
+        /*int ssets = SegmentSets();
+        ar << ssets;
+        for (int i=0; i<ssets; ++i)
+        {
+            FESegmentSet& sset = SegmentSet(i);
+            sset.Serialize(ar);
+        }*/
 
 		// write element sets
 		ar << m_ElemSet;
@@ -106,13 +107,13 @@ void FEMesh::Serialize(DumpStream& ar)
 		}
 
 		// write discrete sets
-		int dsets = DiscreteSets();
+		/*int dsets = DiscreteSets();
 		ar << dsets;
 		for (int i=0; i<dsets; ++i)
 		{
 			FEDiscreteSet& dset = DiscreteSet(i);
 			dset.Serialize(ar);
-		}
+		}*/
 
 		// write data maps
 		int maps = DataMaps();
@@ -130,12 +131,12 @@ void FEMesh::Serialize(DumpStream& ar)
 		// read segment sets
 		int ssets = 0;
 		ar >> ssets;
-		for (int i=0; i<ssets; ++i)
+		/*for (int i=0; i<ssets; ++i)
 		{
 			FESegmentSet* sset = new FESegmentSet(fem);
 			AddSegmentSet(sset);
 			sset->Serialize(ar);
-		}
+		}*/
 
 		// read element sets
 		ar >> m_ElemSet;
@@ -169,9 +170,9 @@ void FEMesh::Serialize(DumpStream& ar)
 		ar >> dsets;
 		for (int i=0; i<dsets; ++i)
 		{
-			FEDiscreteSet* dset = new FEDiscreteSet(this);
+			/*FEDiscreteSet* dset = new FEDiscreteSet(this);
 			AddDiscreteSet(dset);
-			dset->Serialize(ar);
+			dset->Serialize(ar);*/
 		}
 
 		// write data maps
@@ -306,8 +307,8 @@ int FEMesh::RemoveIsolatedVertices()
 		for (j=0; j<d.Elements(); ++j)
 		{
 			FEElement& el = d.ElementRef(j);
-			n = el.Nodes();
-			for (k=0; k<n; ++k) ++val[el.m_node[k]];
+			n = el.NodeSize();
+			for (k=0; k<n; ++k) ++val[el.getNodeId(k)];
 		}
 	}
 
@@ -346,7 +347,7 @@ void FEMesh::Clear()
 //	for (size_t i=0; i<m_Surf.size   (); ++i) delete m_Surf   [i];
 
 	for (size_t i=0; i<m_NodeSet.size (); ++i) delete m_NodeSet [i];
-	for (size_t i=0; i<m_LineSet.size (); ++i) delete m_LineSet [i];
+	//for (size_t i=0; i<m_LineSet.size (); ++i) delete m_LineSet [i];
 	for (size_t i=0; i<m_ElemSet.size (); ++i) delete m_ElemSet [i];
 	for (size_t i=0; i<m_DiscSet.size (); ++i) delete m_DiscSet [i];
 	for (size_t i=0; i<m_FaceSet.size (); ++i) delete m_FaceSet [i];
@@ -355,7 +356,7 @@ void FEMesh::Clear()
 	m_Domain.clear();
 	m_Surf.clear();
 	m_NodeSet.clear();
-	m_LineSet.clear();
+	//m_LineSet.clear();
 	m_ElemSet.clear();
 	m_DiscSet.clear();
 	m_FaceSet.clear();
@@ -382,11 +383,11 @@ void FEMesh::Reset()
         node.m_dp = node.m_dt = node.m_d0;
 
 		// reset ID arrays
-		int ndof = (int)node.dofs();
+		int ndof = (int)node.dofSize();
 		for (int i=0; i<ndof; ++i) 
 		{
 			node.set_inactive(i);
-			node.set_bc(i, DOF_OPEN);
+			node.setDofState(i, DOF_OPEN);
 			node.set(i, 0.0);
 			node.set_load(i, 0.0);
 		}
@@ -459,11 +460,11 @@ FENodeSet* FEMesh::FindNodeSet(const std::string& name)
 //-----------------------------------------------------------------------------
 //! Find a segment set set by name
 
-FESegmentSet* FEMesh::FindSegmentSet(const std::string& name)
-{
-	for (size_t i=0; i<m_LineSet.size(); ++i) if (m_LineSet[i]->GetName() ==  name) return m_LineSet[i];
-	return 0;
-}
+//FESegmentSet* FEMesh::FindSegmentSet(const std::string& name)
+//{
+//	for (size_t i=0; i<m_LineSet.size(); ++i) if (m_LineSet[i]->GetName() ==  name) return m_LineSet[i];
+//	return 0;
+//}
 
 //-----------------------------------------------------------------------------
 //! Find a surface set set by name
@@ -485,7 +486,7 @@ int FEMesh::FindSurfaceIndex(const std::string& name)
 
 FESurface* FEMesh::CreateSurface(FEFacetSet& facetSet)
 {
-	FESurface* surf = fecore_alloc(FESurface, m_fem);
+	FESurface* surf = RANGO_NEW<FESurface>(m_fem,"");
 	surf->Create(facetSet);
 	AddSurface(surf);
 	return surf;
@@ -494,11 +495,11 @@ FESurface* FEMesh::CreateSurface(FEFacetSet& facetSet)
 //-----------------------------------------------------------------------------
 //! Find a discrete element set set by name
 
-FEDiscreteSet* FEMesh::FindDiscreteSet(const std::string& name)
-{
-	for (size_t i=0; i<m_DiscSet.size(); ++i) if (m_DiscSet[i]->GetName() == name) return m_DiscSet[i];
-	return 0;
-}
+//FEDiscreteSet* FEMesh::FindDiscreteSet(const std::string& name)
+//{
+//	for (size_t i=0; i<m_DiscSet.size(); ++i) if (m_DiscSet[i]->GetName() == name) return m_DiscSet[i];
+//	return 0;
+//}
 
 //-----------------------------------------------------------------------------
 //! Find a element set by name
@@ -555,7 +556,7 @@ int FEMesh::FindDomainIndex(const std::string& name)
 
 FEDomain* FEMesh::FindDomain(int domId)
 {
-	for (size_t i = 0; i<m_Domain.size(); ++i) if (m_Domain[i]->GetID() == domId) return m_Domain[i];
+	for (size_t i = 0; i<m_Domain.size(); ++i) if (m_Domain[i]->getId() == domId) return m_Domain[i];
 	return 0;
 }
 
@@ -628,20 +629,20 @@ bool FEMesh::IsType(ElementShape eshape)
 
 //-----------------------------------------------------------------------------
 // Find the element in which point y lies
-FESolidElement* FEMesh::FindSolidElement(Vector3d y, double r[3])
-{
-	int ND = (int) m_Domain.size();
-	for (int i=0; i<ND; ++i)
-	{
-		if (m_Domain[i]->Class() == FE_DOMAIN_SOLID)
-		{
-			FESolidDomain& bd = static_cast<FESolidDomain&>(*m_Domain[i]);
-			FESolidElement* pe = bd.FindElement(y, r);
-			if (pe) return pe;
-		}
-	}
-	return 0;
-}
+//FESolidElement* FEMesh::FindSolidElement(Vector3d y, double r[3])
+//{
+//	int ND = (int) m_Domain.size();
+//	for (int i=0; i<ND; ++i)
+//	{
+//		if (m_Domain[i]->Class() == FE_DOMAIN_SOLID)
+//		{
+//			FESolidDomain& bd = static_cast<FESolidDomain&>(*m_Domain[i]);
+//			FESolidElement* pe = bd.FindElement(y, r);
+//			if (pe) return pe;
+//		}
+//	}
+//	return 0;
+//}
 
 //-----------------------------------------------------------------------------
 void FEMesh::ClearDomains()
@@ -687,11 +688,11 @@ FESurface* FEMesh::ElementBoundarySurface(bool boutside, bool binside)
 		{
 			FEElement* pen = EEL.Neighbor(i, j);
 			if ((pen == 0) && boutside) ++NF;
-			if ((pen != 0) && (el.GetID() < pen->GetID()) && binside ) ++NF;
+			if ((pen != 0) && (el.getId() < pen->getId()) && binside ) ++NF;
 		}
 	}
 	// create the surface
-	FESurface* ps = fecore_alloc(FESurface, GetFEModel());
+	FESurface* ps = RANGO_NEW<FESurface>( GetFEModel(),"");
 	if (NF == 0) return ps;
 	ps->Create(NF);
 
@@ -707,19 +708,19 @@ FESurface* FEMesh::ElementBoundarySurface(bool boutside, bool binside)
 		{
 			FEElement* pen = EEL.Neighbor(i, j);
 			if (((pen == 0) && boutside)||
-				((pen != 0) && (el.GetID() < pen->GetID()) && binside ))
+				((pen != 0) && (el.getId() < pen->getId()) && binside ))
 			{
 				FESurfaceElement& se = ps->Element(NF++);
 				int faceNodes = el.GetFace(j, face);
 
 				switch (faceNodes)
 				{
-				case 4: se.SetType(FE_QUAD4G4); break;
-				case 8: se.SetType(FE_QUAD8G9); break;
-				case 9: se.SetType(FE_QUAD9G9); break;
-				case 3: se.SetType(FE_TRI3G1 ); break;
-				case 6: se.SetType(FE_TRI6G7 ); break;
-				case 7: se.SetType(FE_TRI7G7); break;
+				case 4: se.setType(FE_QUAD4G4); break;
+				case 8: se.setType(FE_QUAD8G9); break;
+				case 9: se.setType(FE_QUAD9G9); break;
+				case 3: se.setType(FE_TRI3G1 ); break;
+				case 6: se.setType(FE_TRI6G7 ); break;
+				case 7: se.setType(FE_TRI7G7); break;
 				default:
 					assert(false);
 				}
@@ -727,10 +728,11 @@ FESurface* FEMesh::ElementBoundarySurface(bool boutside, bool binside)
 				se.m_elem[0] = &el;
 				if (pen) se.m_elem[1] = pen;
 				
-				int nn = se.Nodes();
+				int nn = se.NodeSize();
 				for (int k=0; k<nn; ++k)
 				{
-					se.m_node[k] = face[k];
+					//Rango TODO:
+					//se.setNode(k) = face[k];
 				}
 			}
 		}
@@ -766,16 +768,16 @@ FESurface* FEMesh::ElementBoundarySurface(std::vector<FEDomain*> domains, bool b
 			int nf = el.Faces();
 			for (int k = 0; k<nf; ++k)
 			{
-				FEElement* pen = EEL.Neighbor(el.GetID()-1, k);
+				FEElement* pen = EEL.Neighbor(el.getId()-1, k);
 				if ((pen == nullptr) && boutside) ++NF;
 				else if (pen && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) == domains.end()) && boutside) ++NF;
-				if ((pen != nullptr) && (el.GetID() < pen->GetID()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())) ++NF;
+				if ((pen != nullptr) && (el.getId() < pen->getId()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())) ++NF;
 			}
 		}
 	}
 
 	// create the surface
-	FESurface* ps = fecore_alloc(FESurface, GetFEModel());
+	FESurface* ps = RANGO_NEW<FESurface>( GetFEModel(),"");
 	if (NF == 0) return ps;
 	ps->Create(NF);
 
@@ -790,22 +792,22 @@ FESurface* FEMesh::ElementBoundarySurface(std::vector<FEDomain*> domains, bool b
 			int nf = el.Faces();
 			for (int k = 0; k < nf; ++k)
 			{
-				FEElement* pen = EEL.Neighbor(el.GetID()-1, k);
+				FEElement* pen = EEL.Neighbor(el.getId()-1, k);
 				if (((pen == nullptr) && boutside) ||
 					(pen && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) == domains.end()) && boutside) ||
-					((pen != nullptr) && (el.GetID() < pen->GetID()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())))
+					((pen != nullptr) && (el.getId() < pen->getId()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())))
 				{
 					FESurfaceElement& se = ps->Element(NF++);
 					int faceNodes = el.GetFace(k, face);
 
 					switch (faceNodes)
 					{
-					case 4: se.SetType(FE_QUAD4G4); break;
-					case 8: se.SetType(FE_QUAD8G9); break;
-					case 9: se.SetType(FE_QUAD9G9); break;
-					case 3: se.SetType(FE_TRI3G1 ); break;
-					case 6: se.SetType(FE_TRI6G7 ); break;
-					case 7: se.SetType(FE_TRI7G7 ); break;
+					case 4: se.setType(FE_QUAD4G4); break;
+					case 8: se.setType(FE_QUAD8G9); break;
+					case 9: se.setType(FE_QUAD9G9); break;
+					case 3: se.setType(FE_TRI3G1 ); break;
+					case 6: se.setType(FE_TRI6G7 ); break;
+					case 7: se.setType(FE_TRI7G7 ); break;
 					default:
 						assert(false);
 					}
@@ -813,10 +815,11 @@ FESurface* FEMesh::ElementBoundarySurface(std::vector<FEDomain*> domains, bool b
 					se.m_elem[0] = &el;
 					if (pen) se.m_elem[1] = pen;
 
-					int nn = se.Nodes();
+					int nn = se.NodeSize();
 					for (int p = 0; p < nn; ++p)
 					{
-						se.m_node[p] = face[p];
+						//Rango TODO:
+						//se.m_node[p] = face[p];
 					}
 				}
 			}
@@ -853,10 +856,10 @@ FEFacetSet* FEMesh::DomainBoundary(std::vector<FEDomain*> domains, bool boutside
 			int nf = el.Faces();
 			for (int k = 0; k < nf; ++k)
 			{
-				FEElement* pen = EEL.Neighbor(el.GetID() - 1, k);
+				FEElement* pen = EEL.Neighbor(el.getId() - 1, k);
 				if ((pen == nullptr) && boutside) ++NF;
 				else if (pen && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) == domains.end()) && boutside) ++NF;
-				if ((pen != nullptr) && (el.GetID() < pen->GetID()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())) ++NF;
+				if ((pen != nullptr) && (el.getId() < pen->getId()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())) ++NF;
 			}
 		}
 	}
@@ -877,10 +880,10 @@ FEFacetSet* FEMesh::DomainBoundary(std::vector<FEDomain*> domains, bool boutside
 			int nf = el.Faces();
 			for (int k = 0; k < nf; ++k)
 			{
-				FEElement* pen = EEL.Neighbor(el.GetID() - 1, k);
+				FEElement* pen = EEL.Neighbor(el.getId() - 1, k);
 				if (((pen == nullptr) && boutside) ||
 					(pen && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) == domains.end()) && boutside) ||
-					((pen != nullptr) && (el.GetID() < pen->GetID()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())))
+					((pen != nullptr) && (el.getId() < pen->getId()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())))
 				{
 					FEFacetSet::FACET& f = ps->Face(NF++);
 					int fn = el.GetFace(k, faceNodes);
@@ -914,7 +917,7 @@ FEFacetSet* FEMesh::DomainBoundary(std::vector<FEDomain*> domains, bool boutside
 //! Retrieve the nodal coordinates of an element in the reference configuration.
 void FEMesh::GetInitialNodalCoordinates(const FEElement& el, Vector3d* node)
 {
-	const int neln = el.Nodes();
+	const int neln = el.NodeSize();
 	for (int i=0; i<neln; ++i) node[i] = Node(el.m_node[i]).m_r0;
 }
 
@@ -922,7 +925,7 @@ void FEMesh::GetInitialNodalCoordinates(const FEElement& el, Vector3d* node)
 //! Retrieve the nodal coordinates of an element in the current configuration.
 void FEMesh::GetNodalCoordinates(const FEElement& el, Vector3d* node)
 {
-	const int neln = el.Nodes();
+	const int neln = el.NodeSize();
 	for (int i=0; i<neln; ++i) node[i] = Node(el.m_node[i]).m_rt;
 }
 
@@ -940,7 +943,7 @@ FEElementLUT::FEElementLUT(FEMesh& mesh)
 		for (int j=0; j<NE; ++j)
 		{
 			FEElement& el = dom.ElementRef(j);
-			int eid = el.GetID();
+			int eid = el.getId();
 			if ((eid < m_minID) || (m_minID == -1)) m_minID = eid;
 			if ((eid > m_maxID) || (m_maxID == -1)) m_maxID = eid;
 		}
@@ -958,7 +961,7 @@ FEElementLUT::FEElementLUT(FEMesh& mesh)
 		for (int j = 0; j<NE; ++j)
 		{
 			FEElement& el = dom.ElementRef(j);
-			int eid = el.GetID();
+			int eid = el.getId();
 			m_elem[eid - m_minID] = &el;
 		}
 	}
@@ -1127,11 +1130,11 @@ void FEMesh::CopyFrom(FEMesh& mesh)
 		FEDomain* pd = nullptr;
 		switch (dom.Class())
 		{
-		case FE_DOMAIN_SOLID   : pd = fecore_new<FESolidDomain   >(sz, nullptr); break;
-		case FE_DOMAIN_SHELL   : pd = fecore_new<FEShellDomain   >(sz, nullptr); break;
-		case FE_DOMAIN_BEAM    : pd = fecore_new<FEBeamDomain    >(sz, nullptr); break;
-		case FE_DOMAIN_2D      : pd = fecore_new<FEDomain2D      >(sz, nullptr); break;
-		case FE_DOMAIN_DISCRETE: pd = fecore_new<FEDiscreteDomain>(sz, nullptr); break;
+		case FE_DOMAIN_SOLID   : pd = RANGO_NEW<FESolidDomain   >(nullptr,sz); break;
+		case FE_DOMAIN_SHELL: pd = RANGO_NEW<FEShellDomain   >(nullptr,sz); break;
+		case FE_DOMAIN_BEAM: pd = RANGO_NEW<FEBeamDomain    >(nullptr,sz); break;
+		case FE_DOMAIN_2D: pd = RANGO_NEW<FEDomain2D      >(nullptr,sz); break;
+		//case FE_DOMAIN_DISCRETE: pd = RANGO_NEW<FEDiscreteDomain>(nullptr,sz); break;
 		}
 		assert(pd);
 		pd->SetMesh(this);

@@ -1,35 +1,6 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
-#include "FEShellDomain.h"
-#include "FEMesh.h"
-#include "FEMaterial.h"
+#include "femcore/Domain/FEShellDomain.h"
+#include "femcore/FEMesh.h"
+#include "materials/FEMaterial.h"
 
 //-----------------------------------------------------------------------------
 //! constructor
@@ -49,10 +20,10 @@ void FEShellDomain::PreSolveUpdate(const FETimeInfo& timeInfo)
 void FEShellDomain::Reset()
 {
 	ForEachShellElement([](FEShellElement& el) {
-		int ni = el.GaussPoints();
+		int ni = el.GaussPointSize();
 		for (int j = 0; j<ni; ++j) el.GetMaterialPoint(j)->Init();
 
-		int ne = el.Nodes();
+		int ne = el.NodeSize();
 		for (int j = 0; j<ne; ++j) el.m_ht[j] = el.m_h0[j];
 	});
 }
@@ -61,7 +32,7 @@ void FEShellDomain::Reset()
 void FEShellDomain::InitShells()
 {
 	ForEachShellElement([](FEShellElement& el) {
-		int n = el.Nodes();
+		int n = el.NodeSize();
 		for (int j = 0; j<n; ++j) el.m_ht[j] = el.m_h0[j];
 	});
 }
@@ -70,27 +41,27 @@ void FEShellDomain::InitShells()
 //! get the current nodal coordinates
 void FEShellDomain::GetCurrentNodalCoordinates(const FEShellElement& el, Vector3d* rt, const bool back)
 {
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     if (!back)
-        for (int i = 0; i<neln; ++i) rt[i] = m_pMesh->Node(el.m_node[i]).m_rt;
+        for (int i = 0; i<neln; ++i) rt[i] = m_pMesh->Node(el.getNodeId(i)).m_rt;
     else
-        for (int i = 0; i<neln; ++i) rt[i] = m_pMesh->Node(el.m_node[i]).st();
+        for (int i = 0; i<neln; ++i) rt[i] = m_pMesh->Node(el.getNodeId(i)).st();
 }
 
 //-----------------------------------------------------------------------------
 //! get the current nodal coordinates
 void FEShellDomain::GetCurrentNodalCoordinates(const FEShellElement& el, Vector3d* rt, double alpha, const bool back)
 {
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     if (!back) {
         for (int i = 0; i<neln; ++i) {
-            FENode& nd = m_pMesh->Node(el.m_node[i]);
+            FENode& nd = m_pMesh->Node(el.getNodeId(i));
             rt[i] = nd.m_rt*alpha + nd.m_rp*(1 - alpha);
         }
     }
     else {
         for (int i = 0; i<neln; ++i) {
-            FENode& nd = m_pMesh->Node(el.m_node[i]);
+            FENode& nd = m_pMesh->Node(el.getNodeId(i));
             rt[i] = nd.st()*alpha + nd.sp()*(1 - alpha);
         }
     }
@@ -100,22 +71,22 @@ void FEShellDomain::GetCurrentNodalCoordinates(const FEShellElement& el, Vector3
 //! get the reference nodal coordinates
 void FEShellDomain::GetReferenceNodalCoordinates(const FEShellElement& el, Vector3d* r0, const bool back)
 {
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     if (!back)
-        for (int i = 0; i<neln; ++i) r0[i] = m_pMesh->Node(el.m_node[i]).m_r0;
+        for (int i = 0; i<neln; ++i) r0[i] = m_pMesh->Node(el.getNodeId(i)).m_r0;
     else
-        for (int i = 0; i<neln; ++i) r0[i] = m_pMesh->Node(el.m_node[i]).s0();
+        for (int i = 0; i<neln; ++i) r0[i] = m_pMesh->Node(el.getNodeId(i)).s0();
 }
 
 //-----------------------------------------------------------------------------
 //! get the previous nodal coordinates
 void FEShellDomain::GetPreviousNodalCoordinates(const FEShellElement& el, Vector3d* rp, const bool back)
 {
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     if (!back)
-        for (int i = 0; i<neln; ++i) rp[i] = m_pMesh->Node(el.m_node[i]).m_rp;
+        for (int i = 0; i<neln; ++i) rp[i] = m_pMesh->Node(el.getNodeId(i)).m_rp;
     else
-        for (int i = 0; i<neln; ++i) rp[i] = m_pMesh->Node(el.m_node[i]).sp();
+        for (int i = 0; i<neln; ++i) rp[i] = m_pMesh->Node(el.getNodeId(i)).sp();
 }
 
 //-----------------------------------------------------------------------------
@@ -138,12 +109,12 @@ bool FEShellDomainOld::Create(int nelems, FE_Element_Spec espec)
 	for (int i = 0; i < nelems; ++i)
 	{
 		FEShellElementOld& el = m_Elem[i];
-		el.SetLocalID(i);
+		el.setLocalId(i);
 		el.SetMeshPartition(this);
 	}
 
 	if (espec.etype != FE_ELEM_INVALID_TYPE)
-		for (int i=0; i<nelems; ++i) m_Elem[i].SetType(espec.etype);
+		for (int i=0; i<nelems; ++i) m_Elem[i].setType(espec.etype);
 
 	return true;
 }
@@ -153,17 +124,17 @@ double FEShellDomainOld::Volume(FEShellElement& se)
 {
 	FEShellElementOld& el = static_cast<FEShellElementOld&>(se);
 
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 
 	// initial nodal coordinates and directors
 	Vector3d r0[FEElement::MAX_NODES], D0[FEElement::MAX_NODES];
 	for (int i = 0; i<neln; ++i)
 	{
-		r0[i] = Node(el.m_lnode[i]).m_r0;
+		r0[i] = Node(el.getLocNodeId(i)).m_r0;
 		D0[i] = el.m_D0[i];
 	}
 
-	int nint = el.GaussPoints();
+	int nint = el.GaussPointSize();
 	double *w = el.GaussWeights();
 	double V = 0;
 	Vector3d g[3];
@@ -209,10 +180,10 @@ void FEShellDomainOld::InitShells()
 	for (int i = 0; i<Elements(); ++i)
 	{
 		FEShellElementOld& el = ShellElement(i);
-		int ne = el.Nodes();
+		int ne = el.NodeSize();
 		for (int j = 0; j<ne; ++j)
 		{
-			Vector3d d0 = mesh.Node(el.m_node[j]).m_d0;
+			Vector3d d0 = mesh.Node(el.getNodeId(j)).m_d0;
 			d0.unit();
 			el.m_D0[j] = d0 * el.m_h0[j];
 		}
@@ -221,9 +192,9 @@ void FEShellDomainOld::InitShells()
 
 //=================================================================================================
 
-BEGIN_FECORE_CLASS(FEShellDomainNew, FEShellDomain)
+BEGIN_PARAM_DEFINE(FEShellDomainNew, FEShellDomain)
 	ADD_PARAMETER(m_h0, "shell_thickness");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 FEShellDomainNew::FEShellDomainNew(FEModel* fem) : FEShellDomain(fem)
 {
@@ -233,16 +204,17 @@ FEShellDomainNew::FEShellDomainNew(FEModel* fem) : FEShellDomain(fem)
 //-----------------------------------------------------------------------------
 bool FEShellDomainNew::Create(int nelems, FE_Element_Spec espec)
 {
+	FEShellElementNew* p = new FEShellElementNew();
 	m_Elem.resize(nelems);
 	for (int i = 0; i < nelems; ++i)
 	{
 		FEShellElementNew& el = m_Elem[i];
-		el.SetLocalID(i);
+		el.setLocalId(i);
 		el.SetMeshPartition(this);
 	}
 
 	if (espec.etype != FE_ELEM_INVALID_TYPE)
-		for (int i = 0; i<nelems; ++i) m_Elem[i].SetType(espec.etype);
+		for (int i = 0; i<nelems; ++i) m_Elem[i].setType(espec.etype);
 
 	return true;
 }
@@ -256,7 +228,7 @@ void FEShellDomainNew::AssignDefaultShellThickness()
 	for (int j = 0; j < Elements(); ++j)
 	{
 		FEShellElement& el = Element(j);
-		int ne = el.Nodes();
+		int ne = el.NodeSize();
 		for (int n = 0; n < ne; ++n) el.m_ht[n] = el.m_h0[n] = h0;
 	}
 }
@@ -266,17 +238,17 @@ double FEShellDomainNew::Volume(FEShellElement& se)
 {
 	FEShellElementNew& el = static_cast<FEShellElementNew&>(se);
 
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 
 	// initial nodal coordinates and directors
 	Vector3d r0[FEElement::MAX_NODES], D0[FEElement::MAX_NODES];
 	for (int i = 0; i<neln; ++i)
 	{
-		r0[i] = Node(el.m_lnode[i]).m_r0;
-		D0[i] = Node(el.m_lnode[i]).m_d0;
+		r0[i] = Node(el.getLocNodeId(i)).m_r0;
+		D0[i] = Node(el.getLocNodeId(i)).m_d0;
 	}
 
-	int nint = el.GaussPoints();
+	int nint = el.GaussPointSize();
 	double *w = el.GaussWeights();
 	double V = 0;
 	Vector3d g[3];

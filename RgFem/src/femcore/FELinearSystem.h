@@ -36,7 +36,7 @@ public:
 
 	// This assembles a matrix to the RHS by pre-multiplying the matrix with the 
 	// prescribed value array U and then adding it to F
-	void AssembleRHS(std::vector<int>& lm, matrix& ke, std::vector<double>& U);
+	void AssembleRHS(std::vector<int>& lm, Matrix& ke, std::vector<double>& U);
 
 	// This assembles a vetor to the RHS
 	void AssembleRHS(std::vector<int>& lm, std::vector<double>& fe);

@@ -3,7 +3,7 @@
 #include "FEModel.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
 #include "basicio/DumpStream.h"
-#include "FEDomain.h"
+#include "femcore/Domain/FEDomain.h"
 #include "FEGlobalMatrix.h"
 #include "femcore/RTTI/MetaClass.h"
 

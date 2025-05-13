@@ -1,39 +1,11 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
 
 #pragma once
-#include "FESSIShellDomain.h"
 #include "FEElasticDomain.h"
-#include "FESolidMaterial.h"
+#include "materials/FESolidMaterial.h"
 
 //-----------------------------------------------------------------------------
 //! Domain described by 3D shell elements
-class FEElasticANSShellDomain : public FESSIShellDomain, public FEElasticDomain
+class FEElasticANSShellDomain : public FEElasticDomain
 {
 public:
     FEElasticANSShellDomain(FEModel* pfem);
@@ -45,7 +17,7 @@ public:
     void Activate() override;
     
     //! Unpack shell element data
-    void UnpackLM(FEElement& el, vector<int>& lm) override;
+    void UnpackLM(FEElement& el, std::vector<int>& lm) override;
     
     //! Set flag for update for dynamic quantities
     void SetDynamicUpdateFlag(bool b);
@@ -68,7 +40,7 @@ public: // overrides from FEElasticDomain
     void InternalForces(FEGlobalVector& R) override;
     
     //! Calculates inertial forces for dynamic problems
-    void InertialForces(FEGlobalVector& R, vector<double>& F) override;
+    void InertialForces(FEGlobalVector& R, std::vector<double>& F) override;
     
     //! calculate body force
     void BodyForce(FEGlobalVector& R, FEBodyForce& bf) override;
@@ -82,7 +54,7 @@ public: // overrides from FEElasticDomain
     //! initialize elements for this domain
     void PreSolveUpdate(const FETimeInfo& timeInfo) override;
     
-    //! calculates the global stiffness matrix for this domain
+    //! calculates the global stiffness Matrix for this domain
     void StiffnessMatrix(FELinearSystem& LS) override;
     
     // inertial stiffness
@@ -91,51 +63,51 @@ public: // overrides from FEElasticDomain
     // body force stiffness
     void BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf) override;
     
-    // evaluate strain E and matrix hu and hw
-	void EvaluateEh(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& E, vector<matrix>& hu, vector<matrix>& hw, vector<Vector3d>& Nu, vector<Vector3d>& Nw);
+    // evaluate strain E and Matrix hu and hw
+	void EvaluateEh(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& E, std::vector<Matrix>& hu, std::vector<Matrix>& hw, std::vector<Vector3d>& Nu, std::vector<Vector3d>& Nw);
     
 public:
     
     // --- S T I F F N E S S ---
     
-    //! calculates the shell element stiffness matrix
-    void ElementStiffness(int iel, matrix& ke);
+    //! calculates the shell element stiffness Matrix
+    void ElementStiffness(int iel, Matrix& ke);
     
     // --- R E S I D U A L ---
     
-    //! Calculates the internal stress vector for shell elements
-	void ElementInternalForce(FEShellElementNew& el, vector<double>& fe);
+    //! Calculates the internal stress std::vector for shell elements
+	void ElementInternalForce(FEShellElementNew& el, std::vector<double>& fe);
     
     //! Calculate extenral body forces for shell elements
-	void ElementBodyForce(FEModel& fem, FEShellElementNew& el, vector<double>& fe);
+	void ElementBodyForce(FEModel& fem, FEShellElementNew& el, std::vector<double>& fe);
     
     //! Calculate extenral body forces for shell elements
-	void ElementBodyForce(FEBodyForce& BF, FEShellElementNew& el, vector<double>& fe);
+	void ElementBodyForce(FEBodyForce& BF, FEShellElementNew& el, std::vector<double>& fe);
     
     //! Calculates the inertial force for shell elements
-    void ElementInertialForce(FEShellElementNew& el, vector<double>& fe);
+    void ElementInertialForce(FEShellElementNew& el, std::vector<double>& fe);
     
-    //! calculates the solid element mass matrix
-	void ElementMassMatrix(FEShellElementNew& el, matrix& ke, double a);
+    //! calculates the solid element mass Matrix
+	void ElementMassMatrix(FEShellElementNew& el, Matrix& ke, double a);
     
-    //! calculates the stiffness matrix due to body forces
-	void ElementBodyForceStiffness(FEBodyForce& bf, FEShellElementNew& el, matrix& ke);
+    //! calculates the stiffness Matrix due to body forces
+	void ElementBodyForceStiffness(FEBodyForce& bf, FEShellElementNew& el, Matrix& ke);
     
 public:
     
     // --- A N S  M E T H O D ---
     
     // Evaluate contravariant components of Matrix3ds tensor
-    void mat3dsCntMat61(const Matrix3ds s, const Vector3d* Gcnt, matrix& S);
+    void mat3dsCntMat61(const Matrix3ds s, const Vector3d* Gcnt, Matrix& S);
     
     // Evaluate contravariant components of tens4ds tensor
-    void tens4dsCntMat66(const tens4ds c, const Vector3d* Gcnt, matrix& C);
-    void tens4dmmCntMat66(const tens4dmm c, const Vector3d* Gcnt, matrix& C);
+    void tens4dsCntMat66(const tens4ds c, const Vector3d* Gcnt, Matrix& C);
+    void tens4dmmCntMat66(const tens4dmm c, const Vector3d* Gcnt, Matrix& C);
 
     // Evaluate the strain using the ANS method
-	void CollocationStrainsANS(FEShellElementNew& el, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW, matrix& NS, matrix& NN);
+	void CollocationStrainsANS(FEShellElementNew& el, std::vector<double>& E, std::vector< std::vector<Vector3d>>& HU, std::vector< std::vector<Vector3d>>& HW, Matrix& NS, Matrix& NN);
     
-	void EvaluateANS(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& Ec, vector<matrix>& hu, vector<matrix>& hw, vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW);
+	void EvaluateANS(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& Ec, std::vector<Matrix>& hu, std::vector<Matrix>& hw, std::vector<double>& E, std::vector< std::vector<Vector3d>>& HU, std::vector< std::vector<Vector3d>>& HW);
     
 protected:
     FESolidMaterial*    m_pMat;

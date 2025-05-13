@@ -1,45 +1,16 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEMat3dValuator.h"
 #include "FEModel.h"
 #include "FEMesh.h"
 #include "FEDataMap.h"
-#include "DumpStream.h"
+#include "basicio/DumpStream.h"
 
 //=============================================================================
 // FELocalMap
 //-----------------------------------------------------------------------------
 
-BEGIN_FECORE_CLASS(FEConstValueMat3d, FEMat3dValuator)
+BEGIN_PARAM_DEFINE(FEConstValueMat3d, FEMat3dValuator)
 	ADD_PARAMETER(m_val, "const");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 FEConstValueMat3d::FEConstValueMat3d(FEModel* fem) : FEMat3dValuator(fem)
 {
@@ -48,7 +19,7 @@ FEConstValueMat3d::FEConstValueMat3d(FEModel* fem) : FEMat3dValuator(fem)
 
 FEMat3dValuator* FEConstValueMat3d::copy()
 {
-	FEConstValueMat3d* map = fecore_alloc(FEConstValueMat3d, GetFEModel());
+	FEConstValueMat3d* map = RANGO_NEW<FEConstValueMat3d>( GetFEModel(),"");
 	map->m_val = m_val;
 	return map;
 }
@@ -57,9 +28,9 @@ FEMat3dValuator* FEConstValueMat3d::copy()
 // FELocalMap
 //-----------------------------------------------------------------------------
 
-BEGIN_FECORE_CLASS(FEMat3dLocalElementMap, FEMat3dValuator)
+BEGIN_PARAM_DEFINE(FEMat3dLocalElementMap, FEMat3dValuator)
 	ADD_PARAMETER(m_n, 3, "local");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 FEMat3dLocalElementMap::FEMat3dLocalElementMap(FEModel* pfem) : FEMat3dValuator(pfem)
@@ -87,7 +58,7 @@ Matrix3d FEMat3dLocalElementMap::operator () (const FEMaterialPoint& mp)
 	FEElement& el = *mp.m_elem;
 
 	Vector3d r0[FEElement::MAX_NODES];
-	for (int i=0; i<el.Nodes(); ++i) r0[i] = mesh.Node(el.m_node[i]).m_r0;
+	for (int i=0; i<el.NodeSize(); ++i) r0[i] = mesh.Node(el.m_node[i]).m_r0;
 
 	Vector3d a, b, c, d;
 	Matrix3d Q;

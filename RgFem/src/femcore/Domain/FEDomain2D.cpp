@@ -1,35 +1,8 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEDomain2D.h"
-#include "FEMesh.h"
-#include "FEMaterial.h"
+#include "femcore/FEMesh.h"
+#include "materials/FEMaterial.h"
+#include "elements/FEElement2d.h"
+#include "../FEException.h"
 
 //-----------------------------------------------------------------------------
 bool FEDomain2D::Create(int nelems, FE_Element_Spec espec)
@@ -38,14 +11,40 @@ bool FEDomain2D::Create(int nelems, FE_Element_Spec espec)
 	for (int i = 0; i < nelems; ++i)
 	{
 		FEElement2D& el = m_Elem[i];
-		el.SetLocalID(i);
+		el.setLocalId(i);
 		el.SetMeshPartition(this);
 	}
 
 	if (espec.etype != FE_ELEM_INVALID_TYPE) 
-		for (int i=0; i<nelems; ++i) m_Elem[i].SetType(espec.etype);
+		for (int i=0; i<nelems; ++i) m_Elem[i].setType(espec.etype);
 
 	return true;
+}
+
+
+//! return nr of elements
+int FEDomain2D::Elements() const
+{
+    return (int)m_Elem.size();
+}
+
+//! element access
+FEElement2D& FEDomain2D::Element(int n)
+{
+    return m_Elem[n];
+}
+FEElement& FEDomain2D::ElementRef(int n)
+{
+    return m_Elem[n];
+}
+const FEElement& FEDomain2D::ElementRef(int n) const
+{
+    return m_Elem[n];
+}
+
+int FEDomain2D::GetElementType()
+{
+    return m_Elem[0].elementType();
 }
 
 //-----------------------------------------------------------------------------
@@ -71,12 +70,12 @@ void FEDomain2D::Reset()
 double FEDomain2D::invjac0(FEElement2D& el, double Ji[2][2], int n)
 {
     // initial nodal coordinates
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     double x[FEElement::MAX_NODES];
     double y[FEElement::MAX_NODES];
     for (int i=0; i<neln; ++i)
     {
-        Vector3d& ri = m_pMesh->Node(el.m_node[i]).m_r0;
+        Vector3d& ri = m_pMesh->Node(el.getNodeId(i)).m_r0;
 		x[i] = ri.x;
 		y[i] = ri.y;
     }
@@ -96,7 +95,7 @@ double FEDomain2D::invjac0(FEElement2D& el, double Ji[2][2], int n)
 	double det =  J[0][0]*J[1][1] - J[0][1]*J[1][0];
 		
 	// make sure the determinant is positive
-	if (det <= 0) throw NegativeJacobian(el.GetID(), n+1, det);
+	if (det <= 0) throw NegativeJacobian(el.getId(), n+1, det);
 
 	// calculate the inverse jacobian
 	double deti = 1.0 / det;
@@ -115,14 +114,14 @@ double FEDomain2D::invjac0(FEElement2D& el, double Ji[2][2], int n)
 double FEDomain2D::invjact(FEElement2D& el, double Ji[2][2], int n)
 {
     // number of nodes
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     
     // nodal coordinates
     double x[FEElement::MAX_NODES];
     double y[FEElement::MAX_NODES];
     for (int i=0; i<neln; ++i)
     {
-        Vector3d& ri = m_pMesh->Node(el.m_node[i]).m_rt;
+        Vector3d& ri = m_pMesh->Node(el.getNodeId(i)).m_rt;
 		x[i] = ri.x;
 		y[i] = ri.y;
     }
@@ -142,7 +141,7 @@ double FEDomain2D::invjact(FEElement2D& el, double Ji[2][2], int n)
 	double det =  J[0][0]*J[1][1] - J[0][1]*J[1][0];
 		
 	// make sure the determinant is positive
-	if (det <= 0) throw NegativeJacobian(el.GetID(), n+1, det);
+	if (det <= 0) throw NegativeJacobian(el.getId(), n+1, det);
 
 	// calculate the inverse jacobian
 	double deti = 1.0 / det;
@@ -167,7 +166,7 @@ Vector2d FEDomain2D::gradient(FEElement2D& el, double* fn, int n)
     double Gx, Gy;
     
     Vector2d gradf(0,0);
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
     {
         // calculate global gradient of shape functions
@@ -186,7 +185,7 @@ Vector2d FEDomain2D::gradient(FEElement2D& el, double* fn, int n)
 //-----------------------------------------------------------------------------
 //! calculate gradient of function at integration points
 //! A 2D element is assumed to have no variation through the thickness.
-Vector2d FEDomain2D::gradient(FEElement2D& el, vector<double>& fn, int n)
+Vector2d FEDomain2D::gradient(FEElement2D& el, std::vector<double>& fn, int n)
 {
     double Ji[2][2];
     invjact(el, Ji, n);
@@ -195,7 +194,7 @@ Vector2d FEDomain2D::gradient(FEElement2D& el, vector<double>& fn, int n)
     double* Gsn = el.Hs(n);
     
     Vector2d gradf(0,0);
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
     {
         // calculate global gradient of shape functions
@@ -213,7 +212,7 @@ Vector2d FEDomain2D::gradient(FEElement2D& el, vector<double>& fn, int n)
 
 //-----------------------------------------------------------------------------
 //! calculate spatial gradient of function at integration points
-mat2d FEDomain2D::gradient(FEElement2D& el, Vector2d* fn, int n)
+Matrix2d FEDomain2D::gradient(FEElement2D& el, Vector2d* fn, int n)
 {
     double Ji[2][2];
     invjact(el, Ji, n);
@@ -224,9 +223,9 @@ mat2d FEDomain2D::gradient(FEElement2D& el, Vector2d* fn, int n)
     double* Gr = el.Hr(n);
     double* Gs = el.Hs(n);
     
-    mat2d gradf;
+    Matrix2d gradf;
     gradf.zero();
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
     {
         Vector2d tmp = g1*Gr[i] + g2*Gs[i];
@@ -252,7 +251,7 @@ Matrix3d FEDomain2D::gradient(FEElement2D& el, Vector3d* fn, int n)
     
     Matrix3d gradf;
     gradf.zero();
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         gradf += fn[i] & (g1*Gr[i] + g2*Gs[i]);
     
@@ -264,12 +263,12 @@ Matrix3d FEDomain2D::gradient(FEElement2D& el, Vector3d* fn, int n)
 double FEDomain2D::detJ0(FEElement2D &el, int n)
 {
     // initial nodal coordinates
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     double x[FEElement::MAX_NODES];
     double y[FEElement::MAX_NODES];
     for (int i=0; i<neln; ++i)
     {
-        Vector3d& ri = m_pMesh->Node(el.m_node[i]).m_r0;
+        Vector3d& ri = m_pMesh->Node(el.getNodeId(i)).m_r0;
 		x[i] = ri.x;
 		y[i] = ri.y;
     }
@@ -295,12 +294,12 @@ double FEDomain2D::detJ0(FEElement2D &el, int n)
 double FEDomain2D::detJt(FEElement2D &el, int n)
 {
     // initial nodal coordinates
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     double x[FEElement::MAX_NODES];
     double y[FEElement::MAX_NODES];
     for (int i=0; i<neln; ++i)
     {
-        Vector3d& ri = m_pMesh->Node(el.m_node[i]).m_rt;
+        Vector3d& ri = m_pMesh->Node(el.getNodeId(i)).m_rt;
         x[i] = ri.x;
         y[i] = ri.y;
     }
@@ -330,7 +329,7 @@ void FEDomain2D::CoBaseVectors(FEElement2D& el, int j, Vector2d g[2])
     FEMesh& m = *m_pMesh;
     
     // get the nr of nodes
-    int n = el.Nodes();
+    int n = el.NodeSize();
     
     // get the shape function derivatives
     double* Hr = el.Hr(j);
@@ -339,7 +338,7 @@ void FEDomain2D::CoBaseVectors(FEElement2D& el, int j, Vector2d g[2])
     g[0] = g[1] = Vector2d(0,0);
     for (int i=0; i<n; ++i)
     {
-        Vector2d rt = Vector2d(m.Node(el.m_node[i]).m_rt.x,m.Node(el.m_node[i]).m_rt.y);
+        Vector2d rt = Vector2d(m.Node(el.getNodeId(i)).m_rt.x,m.Node(el.getNodeId(i)).m_rt.y);
         g[0] += rt*Hr[i];
         g[1] += rt*Hs[i];
     }
@@ -354,7 +353,7 @@ void FEDomain2D::ContraBaseVectors(FEElement2D& el, int j, Vector2d gcnt[2])
     Vector2d gcov[2];
     CoBaseVectors(el, j, gcov);
     
-    mat2d J = mat2d(gcov[0].x(), gcov[1].x(),
+    Matrix2d J = Matrix2d(gcov[0].x(), gcov[1].x(),
                     gcov[0].y(), gcov[1].y());
     Matrix3d Ji = J.inverse();
     
@@ -371,7 +370,7 @@ void FEDomain2D::CoBaseVectorDerivatives(FEElement2D& el, int j, Vector2d dg[2][
     FEMesh& m = *m_pMesh;
     
     // get the nr of nodes
-    int n = el.Nodes();
+    int n = el.NodeSize();
     
     // get the shape function derivatives
     double* Hrr = el.Hrr(j); double* Hrs = el.Hrs(j);
@@ -382,7 +381,7 @@ void FEDomain2D::CoBaseVectorDerivatives(FEElement2D& el, int j, Vector2d dg[2][
     
     for (int i=0; i<n; ++i)
     {
-        Vector2d rt = Vector2d(m.Node(el.m_node[i]).m_rt.x,m.Node(el.m_node[i]).m_rt.y);
+        Vector2d rt = Vector2d(m.Node(el.getNodeId(i)).m_rt.x,m.Node(el.getNodeId(i)).m_rt.y);
         dg[0][0] += rt*Hrr[i]; dg[0][1] += rt*Hsr[i];
         dg[1][0] += rt*Hrs[i]; dg[1][1] += rt*Hss[i];
     }
@@ -425,7 +424,7 @@ Vector2d FEDomain2D::lapvec(FEElement2D& el, Vector2d* fn, int n)
     double* Hsr = el.Hsr(n); double* Hss = el.Hss(n);
     
     Vector2d lapv(0,0);
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         lapv += fn[i]*((gcnt[0]*Hrr[i]+dgcnt[0][0]*Gr[i])*gcnt[0]+
                        (gcnt[0]*Hrs[i]+dgcnt[0][1]*Gr[i])*gcnt[1]+
@@ -452,7 +451,7 @@ Vector2d FEDomain2D::gradivec(FEElement2D& el, Vector2d* fn, int n)
     double* Hsr = el.Hsr(n); double* Hss = el.Hss(n);
     
     Vector2d gdv(0,0);
-    int N = el.Nodes();
+    int N = el.NodeSize();
     for (int i=0; i<N; ++i)
         gdv +=
         gcnt[0]*((gcnt[0]*Hrr[i]+dgcnt[0][0]*Gr[i])*fn[i])+

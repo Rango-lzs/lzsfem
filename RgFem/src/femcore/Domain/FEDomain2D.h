@@ -1,40 +1,13 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
 #include "FEDomain.h"
+
+class FEElement2D;
 
 //-----------------------------------------------------------------------------
 //! Abstract base class for shell elements
 class FEM_EXPORT FEDomain2D : public FEDomain
 {
-    FECORE_SUPER_CLASS(FEDOMAIN2D_ID)
-    FECORE_BASE_CLASS(FEDomain2D)
+    DECLARE_META_CLASS(FEDomain2D, FEDomain);
 
 public:
     //! constructor
@@ -44,14 +17,14 @@ public:
 	bool Create(int nsize, FE_Element_Spec espec) override;
 
     //! return nr of elements
-    int Elements() const override { return (int)m_Elem.size(); }
+    int Elements() const override;
     
     //! element access
-    FEElement2D& Element(int n) { return m_Elem[n]; }
-    FEElement& ElementRef(int n) override { return m_Elem[n]; }
-	const FEElement& ElementRef(int n) const override { return m_Elem[n]; }
+    FEElement2D& Element(int n);
+    FEElement& ElementRef(int n) override;
+    const FEElement& ElementRef(int n) const override;
 
-    int GetElementType() { return m_Elem[0].Type(); }
+    int GetElementType();
     
     //! Initialize elements
     void PreSolveUpdate(const FETimeInfo& timeInfo) override;
@@ -69,10 +42,10 @@ public:
     Vector2d gradient(FEElement2D& el, double* fn, int n);
     
     //! calculate in-plane gradient of function at integration points
-    Vector2d gradient(FEElement2D& el, vector<double>& fn, int n);
+    Vector2d gradient(FEElement2D& el, std::vector<double>& fn, int n);
 
     //! calculate in-plane gradient of vector function at integration points
-    mat2d gradient(FEElement2D& el, Vector2d* fn, int n);
+    Matrix2d gradient(FEElement2D& el, Vector2d* fn, int n);
     
     //! calculate in-plane gradient of vector function at integration points
     Matrix3d gradient(FEElement2D& el, Vector3d* fn, int n);
@@ -102,5 +75,5 @@ public:
     Vector2d gradivec(FEElement2D& el, Vector2d* fn, int n);
     
 protected:
-    vector<FEElement2D>	m_Elem;	//!< array of elements
+    std::vector<FEElement2D>	m_Elem;	//!< array of elements
 };

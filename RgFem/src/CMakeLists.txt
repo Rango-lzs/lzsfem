@@ -253,10 +253,10 @@ set(FEMCORE_SOURCES
     femcore/FEAnalysis/FEAnalysis.cpp
     femcore/FEBodyLoad.cpp
     femcore/FEBoundaryCondition.cpp
-    femcore/FECore.cpp
-    femcore/FECoreClass.cpp
-    femcore/FECoreFactory.cpp
-    femcore/FECoreKernel.cpp
+    #femcore/FECore.cpp
+    #femcore/FECoreClass.cpp
+    #femcore/FECoreFactory.cpp
+    #femcore/FECoreKernel.cpp
     femcore/FECoreTask.cpp
     femcore/FEDataMap.cpp
     femcore/FEDiscreteSet.cpp

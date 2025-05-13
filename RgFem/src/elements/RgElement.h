@@ -58,14 +58,29 @@ public:
     int getMatId() const;
     void setMatId(int id);
 
+    // Get the mesh partition that contains this element
+    FEMeshPartition* GetMeshPartition() const
+    {
+        return m_part;
+    }
+
+    // Set the mesh partition that contains this element
+    void SetMeshPartition(FEMeshPartition* part)
+    {
+        m_part = part;
+    }
+
     void setLocalId(int lid);
     int getLocalId() const;
     const std::vector<NodeId>& getNodeIds();
 
-    virtual ElementType elementType() = 0;
+    virtual ElementType elementType() const = 0;
+    
+    virtual NodeId getNodeId(int idx) const;
+    virtual NodeId getLocNodeId(int idx) const;
+
     virtual void setNode(FENode* n, int i);
-    virtual NodeId getNode(int idx);
-    virtual FENode* getNode(int idx) const = 0;
+    virtual FENode* getNode(int idx) const;
 
     //! Set the type of the element and initialize the traits by type
     void setType(int ntype)
@@ -91,10 +106,17 @@ public:
     }
 
 public: 
+
+    //! return the element shape
+    ElementShape Shape() const
+    {
+        return m_pTraits->Shape();
+    }
+
     //return number of integration points
     int GaussPointSize() const;
 
-    int ShapeFunctions(int order);
+    int ShapeFunctions(int order) const;
 
     // shape function values of derivations at gauss n
     double* H(int order, int n);

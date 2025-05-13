@@ -4,6 +4,7 @@
 #include "femcore/FELinearSystem.h"
 #include "elements/FESolidElement.h"
 #include <functional>
+#include "datastructure/tens3d.h"
 
 //-----------------------------------------------------------------------------
 // This typedef defines a surface integrand. 
@@ -11,15 +12,15 @@
 // it the val std::vector. The size of the std::vector is determined by the field variable
 // that is being integrated and is already set when the integrand is called.
 // This is used in the FESurface::LoadVector function.
-typedef std::function<void(FEMaterialPoint& mp, int node_a, std::std::vector<double>& val)> FEVolumeVectorIntegrand;
+typedef std::function<void(FEMaterialPoint& mp, int node_a, std::vector<double>& val)> FEVolumeVectorIntegrand;
 
-typedef std::function<void(FEMaterialPoint& mp, int node_a, int node_b, matrix& val)> FEVolumeMatrixIntegrand;
+typedef std::function<void(FEMaterialPoint& mp, int node_a, int node_b, Matrix& val)> FEVolumeMatrixIntegrand;
 
 //-----------------------------------------------------------------------------
 //! abstract base class for 3D volumetric elements
 class FEM_EXPORT FESolidDomain : public FEDomain
 {
-    META_CLASS_DECLARE(FESolidDomain, FEDomain);
+    DECLARE_META_CLASS(FESolidDomain, FEDomain);
 
 public:
     //! constructor
@@ -45,9 +46,9 @@ public:
     FEElement& ElementRef(int n) override { return m_Elem[n]; }
 	const FEElement& ElementRef(int n) const override { return m_Elem[n]; }
 
-    int GetElementType() const { return m_Elem[0].Type(); }
+    ElementType GetElementType() const { return m_Elem[0].elementType(); }
     
-    int GetElementShape() const { return m_Elem[0].Shape(); }
+    int GetElementShape() const { return m_Elem[0].ShapeFunctions(-1); }
 
 	FE_Element_Spec GetElementSpec() const;
     

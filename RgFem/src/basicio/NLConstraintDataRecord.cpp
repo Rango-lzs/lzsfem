@@ -1,5 +1,5 @@
 #include "NLConstraintDataRecord.h"
-#include "FEModel.h"
+#include "femcore/FEModel.h"
 
 //-----------------------------------------------------------------------------
 void NLConstraintDataRecord::SetData(const char* szexpr)

@@ -2,6 +2,7 @@
 #include "basicio/ElementDataRecord.h"
 #include "femcore/FEModel.h"
 #include "femcore/Domain/FEDomain.h"
+#include "femcore/FEMesh.h"
 
 //-----------------------------------------------------------------------------
 FELogElemData::FELogElemData(FEModel* fem) : FELogData(fem) {}
@@ -49,7 +50,7 @@ double ElementDataRecord::Evaluate(int item, int ndata)
 		ELEMREF& e = m_ELT[index];
 		assert((e.ndom != -1) && (e.nid != -1));
 		FEElement* pe = &mesh.Domain(e.ndom).ElementRef(e.nid); assert(pe);
-		assert(pe->GetID() == item);
+		assert(pe->getId() == item);
 
 		// get the element value
 		return m_Data[ndata]->value(*pe);
@@ -72,7 +73,7 @@ void ElementDataRecord::BuildELT()
 		for (int j = 0; j<NE; ++j)
 		{
 			FEElement& el = dom.ElementRef(j);
-			int id = el.GetID(); assert(id > 0);
+			int id = el.getId(); assert(id > 0);
 
 			if ((minID < 0) || (id < minID)) minID = id;
 			if (id > maxID) maxID = id;
@@ -97,7 +98,7 @@ void ElementDataRecord::BuildELT()
 		for (int j=0; j<ne; ++j)
 		{
 			FEElement& el = d.ElementRef(j);
-			int id = el.GetID() - minID;
+			int id = el.getId() - minID;
 			m_ELT[id].ndom = i;
 			m_ELT[id].nid  = j;
 		}
@@ -124,7 +125,7 @@ void ElementDataRecord::SelectAllItems()
 		for (int j=0; j<NE; ++j, n++)
 		{
 			FEElement& el = dom.ElementRef(j);
-			m_item[n] = el.GetID();
+			m_item[n] = el.getId();
 		}
 	}
 }
@@ -140,7 +141,7 @@ void ElementDataRecord::SetElementSet(FEElementSet* pg)
 }
 
 //-----------------------------------------------------------------------------
-void ElementDataRecord::SetItemList(FEItemList* itemList, const vector<int>& selection)
+void ElementDataRecord::SetItemList(FEItemList* itemList, const std::vector<int>& selection)
 {
 	FEElementSet* pg = dynamic_cast<FEElementSet*>(itemList);
 	assert(selection.empty());

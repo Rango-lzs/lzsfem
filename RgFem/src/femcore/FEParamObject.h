@@ -67,7 +67,7 @@ public:
 
 public:
     //! This function will be overridden by each class that defines a parameter list
-    virtual void BuildParamList() = 0;
+    virtual void BuildParamList();
 
     //! Add a parameter to the list
     FEParam* AddParameter(void* pv, const FEParamType& type, int ndim, const char* sz, bool* watch = nullptr);

@@ -1,34 +1,7 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-#include "stdafx.h"
 #include "FEDomainMap.h"
-#include "FEMesh.h"
-#include "DumpStream.h"
-#include "mathalg.h"
+#include "femcore/FEMesh.h"
+#include "basicio/DumpStream.h"
+//#include "mathalg.h"
 
 //-----------------------------------------------------------------------------
 FEDomainMap::FEDomainMap() : FEDataMap(FE_DOMAIN_MAP)
@@ -79,7 +52,7 @@ bool FEDomainMap::Create(FEElementSet* ps, double val)
 		for (int i = 0; i < NE; ++i)
 		{
 			FEElement& el = *mesh->FindElementFromID((*ps)[i]);
-			int ne = el.Nodes();
+			int ne = el.NodeSize();
 			if (ne > m_maxElemNodes) m_maxElemNodes = ne;
 		}
 		return resize(NE*m_maxElemNodes, val);
@@ -119,7 +92,7 @@ bool FEDomainMap::Create(FEElementSet* ps, double val)
 		for (int i = 0; i < NE; ++i)
 		{
 			FEElement& el = *mesh->FindElementFromID((*ps)[i]);
-			int ne = el.GaussPoints();
+			int ne = el.GaussPointSize();
 			if (ne > m_maxElemNodes) m_maxElemNodes = ne;
 		}
 		return resize(NE*m_maxElemNodes, val);
@@ -277,7 +250,7 @@ double FEDomainMap::value(const FEMaterialPoint& pt)
 		// get shape functions
 		double* H = pe->H(pt.m_index);
 
-		int ne = pe->Nodes();
+		int ne = pe->NodeSize();
 		for (int i = 0; i < ne; ++i)
 		{
 			double vi = value<double>(lid, i);
@@ -315,7 +288,7 @@ Vector3d FEDomainMap::valueVector3d(const FEMaterialPoint& pt)
 	{
 		// get shape functions
 		double* H = pe->H(pt.m_index);
-		int ne = pe->Nodes();
+		int ne = pe->NodeSize();
 		for (int i = 0; i < ne; ++i)
 		{
 			Vector3d vi = value<Vector3d>(lid, i);
