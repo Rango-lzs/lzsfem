@@ -1,4 +1,4 @@
-#include "femcore/FEDomain.h"
+#include "femcore/Domain/FEDomain.h"
 #include "materials/FEMaterial.h"
 #include "basicio/DumpStream.h"
 #include "femcore/FEMesh.h"
@@ -20,7 +20,7 @@ void FEDomain::SetMaterial(FEMaterial* pm)
 //-----------------------------------------------------------------------------
 void FEDomain::SetMatID(int mid)
 {
-	ForEachElement([=](FEElement& el) { el.SetMatID(mid); });
+	ForEachElement([=](FEElement& el) { el.setMatId(mid); });
 }
 
 //-----------------------------------------------------------------------------
@@ -34,10 +34,10 @@ void FEDomain::CreateMaterialPointData()
 	if (pmat) ForEachElement([=](FEElement& el) {
 
 		Vector3d r[FEElement::MAX_NODES];
-		int ne = el.Nodes();
-		for (int i = 0; i < ne; ++i) r[i] = mesh->Node(el.m_node[i]).m_r0;
+		int ne = el.NodeSize();
+		for (int i = 0; i < ne; ++i) r[i] = mesh->Node(el.getNodeIds()[i]).m_r0;
 
-		for (int k = 0; k < el.GaussPoints(); ++k)
+		for (int k = 0; k < el.GaussPointSize(); ++k)
 		{
 			FEMaterialPoint* mp = new FEMaterialPoint(pmat->CreateMaterialPointData());
 			mp->m_r0 = el.Evaluate(r, k);
@@ -60,7 +60,7 @@ void FEDomain::Serialize(DumpStream& ar)
 		{
 			FEElement& el = ElementRef(i);
 			el.Serialize(ar);
-			int nint = el.GaussPoints();
+			int nint = el.GaussPointSize();
 			for (int j = 0; j < nint; ++j) el.GetMaterialPoint(j)->Serialize(ar);
 		}
 	}
@@ -77,7 +77,7 @@ void FEDomain::Serialize(DumpStream& ar)
 			{
 				FEElement& el = ElementRef(i);
 				el.Serialize(ar);
-				int nint = el.GaussPoints();
+				int nint = el.GaussPointSize();
 				for (int j = 0; j < nint; ++j) el.GetMaterialPoint(j)->Serialize(ar);
 			}
 		}
@@ -96,7 +96,7 @@ void FEDomain::Serialize(DumpStream& ar)
 			{
 				FEElement& el = ElementRef(i);
 				el.Serialize(ar);
-				int nint = el.GaussPoints();
+				int nint = el.GaussPointSize();
 				for (int j = 0; j < nint; ++j)
 				{
 					FEMaterialPoint* mp = new FEMaterialPoint(pmat->CreateMaterialPointData());
@@ -129,13 +129,13 @@ void FEDomain::Activate()
 void FEDomain::UnpackLM(FEElement& ele, const FEDofList& dof, std::vector<int>& lm)
 {
 	FEMesh* mesh = GetMesh();
-	int N = ele.Nodes();
+	int N = ele.NodeSize();
 	int ndofs = dof.Size();
 	lm.resize(N*ndofs);
 	for (int i = 0; i<N; ++i)
 	{
-		FENode& node = ele.giveNode(i);
-		std::vector<int>& id = node.getDofs();
+		FENode& node = *ele.getNode(i);
+		const std::vector<int>& id = node.getDofs();
 		for (int j = 0; j<ndofs; ++j) lm[i*ndofs + j] = id[dof[j]];
 	}
 }

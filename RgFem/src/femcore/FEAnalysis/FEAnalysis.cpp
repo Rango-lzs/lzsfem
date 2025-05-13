@@ -1,4 +1,4 @@
-#include "FEAnalysis.h"
+#include "femcore/FEAnalysis/FEAnalysis.h"
 #include "basicio/DumpMemStream.h"
 #include "femcore/DOFS.h"
 #include "femcore/FEBoundaryCondition.h"
@@ -17,7 +17,7 @@
 #include "femcore/FEParamValidator.h"
 #include "femcore/RTTI/MetaClass.h"
 
-DEFINE_META_CLASS(FEAnalysis, FEObjectBase,"");
+DEFINE_META_CLASS(FEAnalysis, FEObjectBase, "");
 
 //---------------------------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FEAnalysis, FEObjectBase)

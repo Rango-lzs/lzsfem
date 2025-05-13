@@ -1,5 +1,5 @@
 #include "basicio/DumpStream.h"
-#include "datastructure/matrix.h"
+#include "datastructure/Matrix.h"
 
 //-----------------------------------------------------------------------------
 DumpStream::DumpStream(FEModel& fem) : m_fem(fem)
@@ -224,7 +224,7 @@ void DumpStream::AddPointer(void* p)
 }
 
 //-----------------------------------------------------------------------------
-DumpStream& DumpStream::write_matrix(matrix& o)
+DumpStream& DumpStream::write_matrix(Matrix& o)
 {
 	if (mbTypeInfo) writeType(TypeID::TYPE_MATRIX);
 
@@ -239,7 +239,7 @@ DumpStream& DumpStream::write_matrix(matrix& o)
 	int nsize = nr*nc;
 	if (nsize > 0)
 	{
-		vector<double> data;
+		std::vector<double> data;
 		data.reserve(nr*nc);
 		for (int i = 0; i < nr; ++i)
 			for (int j = 0; j < nc; ++j) data.push_back(o(i, j));
@@ -253,7 +253,7 @@ DumpStream& DumpStream::write_matrix(matrix& o)
 }
 
 //-----------------------------------------------------------------------------
-DumpStream& DumpStream::read_matrix(matrix& o)
+DumpStream& DumpStream::read_matrix(Matrix& o)
 {
 	if (mbTypeInfo) readType(TypeID::TYPE_MATRIX);
 
@@ -268,7 +268,7 @@ DumpStream& DumpStream::read_matrix(matrix& o)
 	if (nsize > 0)
 	{
 		o.resize(nr, nc);
-		vector<double> data;
+		std::vector<double> data;
 		ar >> data;
 		int n = 0;
 		for (int i = 0; i < nr; ++i)
@@ -303,17 +303,17 @@ bool DumpStream::readBlock(DataBlock& d)
 	case TypeID::TYPE_UINT    : { unsigned int v; read_raw(v); d.m_pd = new unsigned int(v); } break;
 	case TypeID::TYPE_FLOAT   : { float        v; read_raw(v); d.m_pd = new float       (v); } break;
 	case TypeID::TYPE_DOUBLE  : { double       v; read_raw(v); d.m_pd = new double      (v); } break;
-	case TypeID::TYPE_VEC2D   : { vec2d        v; read_raw(v); d.m_pd = new vec2d       (v); } break;
+	case TypeID::TYPE_VEC2D   : { Vector2d        v; read_raw(v); d.m_pd = new Vector2d       (v); } break;
 	case TypeID::TYPE_Vector3d   : { Vector3d        v; read_raw(v); d.m_pd = new Vector3d       (v); } break;
-	case TypeID::TYPE_MAT2D   : { mat2d        v; read_raw(v); d.m_pd = new mat2d       (v); } break;
+	case TypeID::TYPE_MAT2D   : { Matrix2d        v; read_raw(v); d.m_pd = new Matrix2d       (v); } break;
 	case TypeID::TYPE_MAT3D   : { Matrix3d        v; read_raw(v); d.m_pd = new Matrix3d       (v); } break;
-	case TypeID::TYPE_MAT3DD  : { mat3dd       v; read_raw(v); d.m_pd = new mat3dd      (v); } break;
+	case TypeID::TYPE_MAT3DD  : { Matrix3dd       v; read_raw(v); d.m_pd = new Matrix3dd      (v); } break;
 	case TypeID::TYPE_MAT3DS  : { Matrix3ds       v; read_raw(v); d.m_pd = new Matrix3ds      (v); } break;
-	case TypeID::TYPE_MAT3DA  : { mat3da       v; read_raw(v); d.m_pd = new mat3da      (v); } break;
+	case TypeID::TYPE_MAT3DA  : { Matrix3da       v; read_raw(v); d.m_pd = new Matrix3da      (v); } break;
 	case TypeID::TYPE_QUATD   : { quatd        v; read_raw(v); d.m_pd = new quatd       (v); } break;
 	case TypeID::TYPE_TENS3DS : { tens3ds      v; read_raw(v); d.m_pd = new tens3ds     (v); } break;
 	case TypeID::TYPE_TENS3DRS: { tens3drs     v; read_raw(v); d.m_pd = new tens3drs    (v); } break;
-	case TypeID::TYPE_MATRIX  : { matrix       v; read_raw(v); d.m_pd = new matrix      (v); } break;
+	case TypeID::TYPE_MATRIX  : { Matrix       v; read_raw(v); d.m_pd = new Matrix      (v); } break;
 	default:
 		assert(false);
 		mbTypeInfo = true;

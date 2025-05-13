@@ -16,7 +16,7 @@ const MetaClass* MetaObject::meta() const
     return gsMetaObjClass;
 }
 
-const MetaClass* MetaObject::staic_meta()
+const MetaClass* MetaObject::static_meta()
 {
     return gsMetaObjClass;
 }

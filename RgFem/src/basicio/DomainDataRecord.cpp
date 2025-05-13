@@ -1,33 +1,7 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-#include "stdafx.h"
-#include "DomainDataRecord.h"
-#include "FECoreKernel.h"
-#include "FEModel.h"
-#include "FEDomain.h"
+#include "basicio/DomainDataRecord.h"
+#include "femcore/FEModel.h"
+#include "femcore/Domain/FEDomain.h"
+#include "femcore/FEMesh.h"
 
 //-----------------------------------------------------------------------------
 void FEDomainDataRecord::SetData(const char* szexpr)
@@ -62,13 +36,13 @@ void FEDomainDataRecord::SetData(const char* szexpr)
 			szparam = cl;
 		}
 
-        FELogDomainData* pdata = fecore_new<FELogDomainData>(sz, GetFEModel());
+        FELogDomainData* pdata = RANGO_NEW<FELogDomainData>(GetFEModel() ,sz);
 		if (pdata)
 		{
 			m_Data.push_back(pdata);
 			if (szparam)
 			{
-				vector<string> params; params.push_back(szparam);
+				std::vector<std::string> params; params.push_back(szparam);
 				if (pdata->SetParameters(params) == false) throw UnknownDataField(sz);
 			}
 		}
@@ -128,7 +102,7 @@ bool FELogAvgDomainData::SetParameters(std::vector<std::string>& params)
     std::string& v1 = params[0];
     if (v1.empty()) return false;
 
-    m_elemData = fecore_new<FELogElemData>(v1.c_str(), GetFEModel());
+    m_elemData = RANGO_NEW<FELogElemData>(GetFEModel() , v1.c_str());
     if (m_elemData == nullptr) return false;
 
     return true;
@@ -171,7 +145,7 @@ bool FELogPctDomainData::SetParameters(std::vector<std::string>& params)
     std::string& v2 = params[1];
     if (v1.empty() || v2.empty()) return false;
 
-    m_elemData = fecore_new<FELogElemData>(v1.c_str(), GetFEModel());
+    m_elemData = RANGO_NEW<FELogElemData>(GetFEModel(), v1.c_str());
     if (m_elemData == nullptr) return false;
 
     m_pct = atof(v2.c_str());
@@ -186,7 +160,7 @@ double FELogPctDomainData::value(FEDomain& dom)
     if (m_elemData == nullptr) return 0.0;
 
     const int NE = dom.Elements();
-    vector<double> val(NE, 0.0);
+    std::vector<double> val(NE, 0.0);
     for (int i = 0; i < NE; ++i)
     {
         FEElement& el = dom.ElementRef(i);
@@ -218,7 +192,7 @@ bool FELogIntegralDomainData::SetParameters(std::vector<std::string>& params)
 	std::string& v1 = params[0];
 	if (v1.empty()) return false;
 
-	m_elemData = fecore_new<FELogElemData>(v1.c_str(), GetFEModel());
+	m_elemData = RANGO_NEW<FELogElemData>(GetFEModel() , v1.c_str());
 	if (m_elemData == nullptr) return false;
 
 	return true;

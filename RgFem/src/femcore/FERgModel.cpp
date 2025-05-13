@@ -43,7 +43,9 @@ FERgModel::FERgModel()
 
     // Add the output callback
     // We call this function always since we want to flush the logfile for each event.
-    AddCallback(handleCB, CB_ALWAYS, this);
+    // 
+    //Rango TODO:
+    //AddCallback(handleCB, CB_ALWAYS, this);
 }
 
 //-----------------------------------------------------------------------------

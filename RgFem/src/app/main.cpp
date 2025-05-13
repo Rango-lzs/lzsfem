@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 	int ret = theApp->Run();
 
 	// do some cleanup
-	theApp->Finalize();
+    theApp->Finish();
 
 #ifdef USE_MPI
 	MPI_Finalize();

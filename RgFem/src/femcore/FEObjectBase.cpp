@@ -104,6 +104,7 @@ FEObjectBase* FEObjectBase::LoadClass(DumpStream& ar, FEObjectBase* a)
 	//if (a == nullptr) throw DumpStream::ReadError();
 
 	//return a;
+    return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -212,133 +213,6 @@ bool FEObjectBase::Init()
 	return true;
 }
 
-//-----------------------------------------------------------------------------
-void FEObjectBase::AddProperty(FEProperty* pp, const char* sz, unsigned int flags)
-{
-	pp->SetName(sz);
-	pp->SetLongName(sz);
-	pp->SetFlags(flags);
-	pp->SetParent(this);
-	m_Prop.push_back(pp);
-}
-
-//-----------------------------------------------------------------------------
-void FEObjectBase::RemoveProperty(int i)
-{
-	m_Prop[i] = nullptr;
-}
-
-//-----------------------------------------------------------------------------
-void FEObjectBase::ClearProperties()
-{
-	for (int i = 0; i < m_Prop.size(); ++i)
-	{
-		delete m_Prop[i];
-	}
-	m_Prop.clear();
-}
-
-//-----------------------------------------------------------------------------
-int FEObjectBase::Properties()
-{
-	int N = (int)m_Prop.size();
-	int n = 0;
-	for (int i = 0; i<N; ++i) n += m_Prop[i]->size();
-	return n;
-}
-
-//-----------------------------------------------------------------------------
-int FEObjectBase::FindPropertyIndex(const char* sz)
-{
-	int NP = (int)m_Prop.size();
-	for (int i = 0; i<NP; ++i)
-	{
-		const FEProperty* pm = m_Prop[i];
-		if (pm && (strcmp(pm->GetName(), sz) == 0)) return i;
-	}
-	return -1;
-}
-
-//-----------------------------------------------------------------------------
-FEProperty* FEObjectBase::FindProperty(const char* sz, bool searchChildren)
-{
-	// first, search the class' properties
-	int NP = (int)m_Prop.size();
-	for (int i = 0; i<NP; ++i)
-	{
-		FEProperty* pm = m_Prop[i];
-		if (pm && (strcmp(pm->GetName(), sz) == 0)) return pm;
-	}
-
-	// the property, wasn't found so look into the properties' properties
-	if (searchChildren)
-	{
-		for (int i = 0; i < NP; ++i)
-		{
-			FEProperty* pm = m_Prop[i];
-			if (pm)
-			{
-				int m = pm->size();
-				for (int j = 0; j < m; ++j)
-				{
-					FEObjectBase* pcj = pm->get(j);
-					if (pcj)
-					{
-						// Note: we don't search children's children!
-						FEProperty* pj = pcj->FindProperty(sz);
-						if (pj) return pj;
-					}
-				}
-			}
-		}
-	}
-
-	return nullptr;
-}
-
-//-----------------------------------------------------------------------------
-FEObjectBase* FEObjectBase::GetProperty(int n)
-{
-	int N = (int)m_Prop.size();
-	int m = 0;
-	for (int i = 0; i<N; ++i)
-	{
-		FEProperty* pm = m_Prop[i];
-		int l = pm->size();
-		if (m + l > n) return pm->get(n - m);
-		m += l;
-	}
-	return 0;
-}
-
-//-----------------------------------------------------------------------------
-bool FEObjectBase::SetProperty(int i, FEObjectBase* pb)
-{
-	FEProperty* pm = m_Prop[i];
-	if (pm->IsType(pb))
-	{
-		pm->SetProperty(pb);
-		if (pb) pb->SetParent(this);
-		return true;
-	}
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-//! Set a property via name
-bool FEObjectBase::SetProperty(const char* sz, FEObjectBase* pb)
-{
-	FEProperty* prop = FindProperty(sz);
-	if (prop == nullptr) return false;
-
-	if (prop->IsType(pb))
-	{
-		prop->SetProperty(pb);
-		if (pb) pb->SetParent(this);
-		return true;
-	}
-	return false;
-}
 
 //-----------------------------------------------------------------------------
 //! number of parameters
@@ -347,55 +221,55 @@ int FEObjectBase::Parameters() const
 	return GetParameterList().Parameters();
 }
 
-//-----------------------------------------------------------------------------
-FEParam* FEObjectBase::FindParameter(const ParamString& s)
+////-----------------------------------------------------------------------------
+FEParam* FEObjectBase::FindParameter(const std::string& s)
 {
-	// first search the parameter list
-	FEParam* p = FEParamContainer::FindParameter(s);
-	if (p) return p;
-
-	// next, let's try the property list
-	int NP = (int)m_Prop.size();
-	for (int i = 0; i<NP; ++i)
-	{
-		// get the property
-		FEProperty* mp = m_Prop[i];
-
-		// see if matches
-		if (s == mp->GetName())
-		{
-			if (mp->IsArray())
-			{
-				// get the number of items in this property
-				int nsize = mp->size();
-				int index = s.Index();
-				if ((index >= 0) && (index < nsize))
-				{
-					return mp->get(index)->FindParameter(s.next());
-				}
-				else
-				{
-					int nid = s.ID();
-					if (nid != -1)
-					{
-						FEObjectBase* pc = mp->getFromID(nid);
-						if (pc) return pc->FindParameter(s.next());
-					}
-					else if (s.IDString())
-					{
-						FEObjectBase* c = mp->get(s.IDString());
-						if (c) return c->FindParameter(s.next());
-					}
-				}
-			}
-			else
-			{
-				FEObjectBase* pc = mp->get(0);
-				return (pc ? pc->FindParameter(s.next()) : nullptr);
-			}
-		}
-	}
-
+//	// first search the parameter list
+//	FEParam* p = FEParamContainer::FindParameter(s);
+//	if (p) return p;
+//
+//	// next, let's try the property list
+//	int NP = (int)m_Prop.size();
+//	for (int i = 0; i<NP; ++i)
+//	{
+//		// get the property
+//		FEProperty* mp = m_Prop[i];
+//
+//		// see if matches
+//		if (s == mp->GetName())
+//		{
+//			if (mp->IsArray())
+//			{
+//				// get the number of items in this property
+//				int nsize = mp->size();
+//				int index = s.Index();
+//				if ((index >= 0) && (index < nsize))
+//				{
+//					return mp->get(index)->FindParameter(s.next());
+//				}
+//				else
+//				{
+//					int nid = s.ID();
+//					if (nid != -1)
+//					{
+//						FEObjectBase* pc = mp->getFromID(nid);
+//						if (pc) return pc->FindParameter(s.next());
+//					}
+//					else if (s.IDString())
+//					{
+//						FEObjectBase* c = mp->get(s.IDString());
+//						if (c) return c->FindParameter(s.next());
+//					}
+//				}
+//			}
+//			else
+//			{
+//				FEObjectBase* pc = mp->get(0);
+//				return (pc ? pc->FindParameter(s.next()) : nullptr);
+//			}
+//		}
+//	}
+//
 	return nullptr;
 }
 
@@ -403,176 +277,49 @@ FEParam* FEObjectBase::FindParameter(const ParamString& s)
 //! return the property (or this) that owns a parameter
 FEObjectBase* FEObjectBase::FindParameterOwner(void* pd)
 {
-	// see if this class is the owner of the data pointer
-	FEParam* p = FindParameterFromData(pd);
-	if (p) return this;
+	//// see if this class is the owner of the data pointer
+	//FEParam* p = FindParameterFromData(pd);
+	//if (p) return this;
 
-	// it's not se let's check the properties
-	int NP = PropertyClasses();
-	for (int i = 0; i < NP; ++i)
-	{
-		FEProperty* pi = PropertyClass(i);
-		int n = pi->size();
-		for (int j = 0; j < n; ++j)
-		{
-			FEObjectBase* pcj = pi->get(j);
-			if (pcj)
-			{
-				FEObjectBase* pc = pcj->FindParameterOwner(pd);
-				if (pc) return pc;
-			}
-		}
-	}
+	//// it's not se let's check the properties
+	//int NP = PropertyClasses();
+	//for (int i = 0; i < NP; ++i)
+	//{
+	//	FEProperty* pi = PropertyClass(i);
+	//	int n = pi->size();
+	//	for (int j = 0; j < n; ++j)
+	//	{
+	//		FEObjectBase* pcj = pi->get(j);
+	//		if (pcj)
+	//		{
+	//			FEObjectBase* pc = pcj->FindParameterOwner(pd);
+	//			if (pc) return pc;
+	//		}
+	//	}
+	//}
 
 	// sorry, no luck
 	return nullptr;
 }
 
-//-----------------------------------------------------------------------------
-//! return the number of properties defined
-int FEObjectBase::PropertyClasses() const 
-{ 
-	return (int)m_Prop.size(); 
-}
 
-//! return a property
-FEProperty* FEObjectBase::PropertyClass(int i)
-{ 
-	return m_Prop[i]; 
-}
-
-//-----------------------------------------------------------------------------
-FEProperty* FEObjectBase::FindProperty(const ParamString& prop)
-{
-	int NP = (int)m_Prop.size();
-	for (int i = 0; i < NP; ++i)
-	{
-		FEProperty* mp = m_Prop[i];
-
-		if (prop == mp->GetName())
-		{
-			if (mp->IsArray())
-			{
-				// get the number of items in this property
-				int nsize = mp->size();
-				int index = prop.Index();
-				if ((index >= 0) && (index < nsize))
-				{
-					FEObjectBase* pc = mp->get(index);
-					if (pc)
-					{
-						ParamString next = prop.next();
-						if (next.count() == 0) return nullptr;
-						else return pc->FindProperty(next);
-					}
-				}
-				else
-				{
-					int nid = prop.ID();
-					if (nid != -1)
-					{
-						FEObjectBase* pc = mp->getFromID(nid);
-						// TODO: What to do here? 
-						assert(false);
-					}
-					else if (prop.IDString())
-					{
-						FEObjectBase* pc = mp->get(prop.IDString());
-						if (pc)
-						{
-							ParamString next = prop.next();
-							if (next.count() == 0) return nullptr;
-							else return pc->FindProperty(next);
-						}
-					}
-				}
-			}
-			else
-			{
-				ParamString next = prop.next();
-				if (next.count() == 0) return mp;
-				else return FindProperty(next);
-			}
-		}
-	}
-
-	return 0;
-}
-
-//-----------------------------------------------------------------------------
-FEObjectBase* FEObjectBase::GetProperty(const ParamString& prop)
-{
-	int NP = (int) m_Prop.size();
-	for (int i=0; i<NP; ++i)
-	{	
-		FEProperty* mp = m_Prop[i];
-
-		if (prop == mp->GetName())
-		{
-			if (mp->IsArray())
-			{
-				// get the number of items in this property
-				int nsize = mp->size();
-				int index = prop.Index();
-				if ((index >= 0) && (index < nsize))
-				{
-					FEObjectBase* pc = mp->get(index);
-					if (pc)
-					{
-						ParamString next = prop.next();
-						if (next.count() == 0) return pc;
-						else return pc->GetProperty(next);
-					}
-				}
-				else
-				{
-					int nid = prop.ID();
-					if (nid != -1)
-					{
-						FEObjectBase* pc = mp->getFromID(nid);
-					}
-					else if (prop.IDString())
-					{
-						FEObjectBase* pc = mp->get(prop.IDString());
-						if (pc)
-						{
-							ParamString next = prop.next();
-							if (next.count() == 0) return pc;
-							else return pc->GetProperty(next);
-						}
-					}
-				}
-			}
-			else
-			{
-				FEObjectBase* pc = mp->get(0);
-				ParamString next = prop.next();
-				if (next.count() == 0) return pc;
-				else return pc->GetProperty(next);
-			}
-		}
-	}
-
-	return 0;
-}
-
-//-----------------------------------------------------------------------------
-bool FEObjectBase::BuildClass()
-{
-	GetParameterList();
-
-	for (int i = 0; i < PropertyClasses(); ++i)
-	{
-		FEProperty* pp = PropertyClass(i);
-		int m = pp->size();
-		for (int j = 0; j < m; ++j)
-		{
-			FEObjectBase* pj = pp->get(j);
-			if (pj) pj->BuildClass();
-		}
-	}
-	return true;
-}
+////-----------------------------------------------------------------------------
+//bool FEObjectBase::BuildClass()
+//{
+//	GetParameterList();
+//
+//	for (int i = 0; i < PropertyClasses(); ++i)
+//	{
+//		FEProperty* pp = PropertyClass(i);
+//		int m = pp->size();
+//		for (int j = 0; j < m; ++j)
+//		{
+//			FEObjectBase* pj = pp->get(j);
+//			if (pj) pj->BuildClass();
+//		}
+//	}
+//	return true;
+//}
 
 //-----------------------------------------------------------------------------
 bool FEObjectBase::UpdateParams()

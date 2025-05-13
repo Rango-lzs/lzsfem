@@ -1,16 +1,16 @@
 #include "FEGlobalMatrix.h"
 #include "femcore/FEModel.h"
 #include "femcore/Domain/FEDomain.h"
-#include "FESurface.h"
+#include "femcore/FESurface.h"
 
 //-----------------------------------------------------------------------------
 FEElementMatrix::FEElementMatrix(const FEElement& el)
 {
-	m_node = el.m_node;
+	m_node = el.getNodeIds();
 }
 
 //-----------------------------------------------------------------------------
-FEElementMatrix::FEElementMatrix(const FEElementMatrix& ke) : matrix(ke)
+FEElementMatrix::FEElementMatrix(const FEElementMatrix& ke) : Matrix(ke)
 {
 	m_node = ke.m_node;
 	m_lmi = ke.m_lmi;
@@ -23,13 +23,13 @@ FEElementMatrix::FEElementMatrix(const FEElementMatrix& ke, double scale)
 	m_node = ke.m_node;
 	m_lmi = ke.m_lmi;
 	m_lmj = ke.m_lmj;
-	matrix& T = *this;
-	const matrix& K = ke;
+	Matrix& T = *this;
+	const Matrix& K = ke;
 	T = (scale == 1.0 ? K : K*scale);
 }
 
 //-----------------------------------------------------------------------------
-FEElementMatrix::FEElementMatrix(const FEElement& el, const vector<int>& lmi) : matrix((int)lmi.size(), (int)lmi.size())
+FEElementMatrix::FEElementMatrix(const FEElement& el, const std::vector<int>& lmi) : Matrix((int)lmi.size(), (int)lmi.size())
 {
 	m_node = el.m_node;
 	m_lmi = lmi;
@@ -37,7 +37,7 @@ FEElementMatrix::FEElementMatrix(const FEElement& el, const vector<int>& lmi) : 
 }
 
 //-----------------------------------------------------------------------------
-FEElementMatrix::FEElementMatrix(const FEElement& el, vector<int>& lmi, vector<int>& lmj) : matrix((int)lmi.size(), (int)lmj.size())
+FEElementMatrix::FEElementMatrix(const FEElement& el, std::vector<int>& lmi, std::vector<int>& lmj) : Matrix((int)lmi.size(), (int)lmj.size())
 {
 	m_node = el.m_node;
 	m_lmi = lmi;
@@ -46,14 +46,14 @@ FEElementMatrix::FEElementMatrix(const FEElement& el, vector<int>& lmi, vector<i
 
 //-----------------------------------------------------------------------------
 // assignment operator
-void FEElementMatrix::operator = (const matrix& ke)
+void FEElementMatrix::operator = (const Matrix& ke)
 {
-	matrix::operator=(ke);
+	Matrix::operator=(ke);
 }
 
 
 //-----------------------------------------------------------------------------
-//! Takes a SparseMatrix structure that defines the structure of the global matrix.
+//! Takes a SparseMatrix structure that defines the structure of the global Matrix.
 FEGlobalMatrix::FEGlobalMatrix(SparseMatrix* pK, bool del)
 {
 	m_pA = pK;
@@ -86,7 +86,7 @@ void FEGlobalMatrix::build_begin(int neq)
 	if (m_pMP) delete m_pMP;
 	m_pMP = new SparseMatrixProfile(neq, neq);
 
-	// initialize it to a diagonal matrix
+	// initialize it to a diagonal Matrix
 	// TODO: Is this necessary?
 	m_pMP->CreateDiagonal();
 
@@ -94,13 +94,13 @@ void FEGlobalMatrix::build_begin(int neq)
 }
 
 //-----------------------------------------------------------------------------
-//! Add an "element" to the matrix profile. The definition of an element is quite
+//! Add an "element" to the Matrix profile. The definition of an element is quite
 //! general at this point. Any two or more degrees of freedom that are connected 
 //! somehow are considered an element. This function takes one argument, namely a
 //! list of degrees of freedom that are part of such an "element". Elements are 
 //! first copied into a local LM array.  When this array is full it is flushed and
-//! all elements in this array are added to the matrix profile.
-void FEGlobalMatrix::build_add(vector<int>& lm)
+//! all elements in this array are added to the Matrix profile.
+void FEGlobalMatrix::build_add(std::vector<int>& lm)
 {
 	if (lm.empty() == false)
 	{
@@ -112,7 +112,7 @@ void FEGlobalMatrix::build_add(vector<int>& lm)
 //-----------------------------------------------------------------------------
 //! Flush the LM array. The LM array stores a buffer of elements that have to be
 //! added to the profile. When this buffer is full it needs to be flushed. This
-//! flushin operation causes the actual update of the matrix profile.
+//! flushin operation causes the actual update of the Matrix profile.
 void FEGlobalMatrix::build_flush()
 {
 	int i, j, n, *lm;
@@ -135,7 +135,7 @@ void FEGlobalMatrix::build_flush()
 
 //-----------------------------------------------------------------------------
 //! This function makes sure the LM buffer is flushed and creates the actual
-//! sparse matrix from the matrix profile.
+//! sparse Matrix from the Matrix profile.
 void FEGlobalMatrix::build_end()
 {
 	if (m_nlm > 0) build_flush();
@@ -146,7 +146,7 @@ void FEGlobalMatrix::build_end()
 bool FEGlobalMatrix::Create(FEModel* pfem, int neq, bool breset)
 {
 	// The first time we come here we build the "static" profile.
-	// This static profile stores the contribution to the matrix profile
+	// This static profile stores the contribution to the Matrix profile
 	// of the "elements" that do not change. Most elements are static except
 	// for instance contact elements which can change connectivity in between
 	// calls to the Create() function. Storing the static profile instead of
@@ -167,7 +167,7 @@ bool FEGlobalMatrix::Create(FEModel* pfem, int neq, bool breset)
 		{
 			m_MPs.Clear();
 
-			// build the matrix profile
+			// build the Matrix profile
 			pfem->BuildMatrixProfile(*this, true);
 
 			// copy the static profile to the MP object
@@ -185,14 +185,14 @@ bool FEGlobalMatrix::Create(FEModel* pfem, int neq, bool breset)
 		pfem->BuildMatrixProfile(*this, false);
 	}
 	// All done! We can now finish building the profile and create 
-	// the actual sparse matrix. This is done in the following function
+	// the actual sparse Matrix. This is done in the following function
 	build_end();
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-//! Constructs the stiffness matrix from a FEMesh object. 
+//! Constructs the stiffness Matrix from a FEMesh object. 
 bool FEGlobalMatrix::Create(FEMesh& mesh, int neq)
 {
 	// begin building the profile
@@ -207,14 +207,14 @@ bool FEGlobalMatrix::Create(FEMesh& mesh, int neq)
 		}
 	}
 	// All done! We can now finish building the profile and create 
-	// the actual sparse matrix. This is done in the following function
+	// the actual sparse Matrix. This is done in the following function
 	build_end();
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-//! construct the stiffness matrix from a mesh
+//! construct the stiffness Matrix from a mesh
 bool FEGlobalMatrix::Create(FEMesh& mesh, int nstart, int nend)
 {
 	if (nstart > nend) return false;
@@ -229,7 +229,7 @@ bool FEGlobalMatrix::Create(FEMesh& mesh, int nstart, int nend)
 		{
 			FEDomain& d = mesh.Domain(nd);
 
-			vector<int> elm, lm;
+			std::vector<int> elm, lm;
 			const int NE = d.Elements();
 			for (int j = 0; j<NE; ++j)
 			{
@@ -254,14 +254,14 @@ bool FEGlobalMatrix::Create(FEMesh& mesh, int nstart, int nend)
 		}
 	}
 	// All done! We can now finish building the profile and create 
-	// the actual sparse matrix. This is done in the following function
+	// the actual sparse Matrix. This is done in the following function
 	build_end();
 
 	return true;
 }
 
-//! construct a stiffness matrix from a surface
-bool FEGlobalMatrix::Create(const FESurface& surf, const std::vector<int>& equationIDs)
+//! construct a stiffness Matrix from a surface
+bool FEGlobalMatrix::Create(const FESurface& surf, const std::std::vector<int>& equationIDs)
 {
 	int N = surf.Nodes();
 	if ((int)equationIDs.size() != N) return false;
@@ -271,11 +271,11 @@ bool FEGlobalMatrix::Create(const FESurface& surf, const std::vector<int>& equat
 	for (int i = 0; i < N; ++i) if (equationIDs[i] != -1) neq++;
 	if (neq == 0) return false;
 
-	// build the matrix, assuming one degree of freedom per node
+	// build the Matrix, assuming one degree of freedom per node
 	build_begin(neq);
 	for (int i = 0; i<surf.Elements(); ++i) {
 		const FESurfaceElement& el = surf.Element(i);
-		vector<int> elm(el.Nodes(), -1);
+		std::vector<int> elm(el.Nodes(), -1);
 		for (int j = 0; j<el.Nodes(); ++j)
 			elm[j] = equationIDs[el.m_lnode[j]];
 		build_add(elm);

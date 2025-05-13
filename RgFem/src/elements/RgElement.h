@@ -64,7 +64,7 @@ public:
 
     virtual ElementType elementType() = 0;
     virtual void setNode(FENode* n, int i);
-    virtual NodeId getNodes(int idx);
+    virtual NodeId getNode(int idx);
     virtual FENode* getNode(int idx) const = 0;
 
     //! Set the type of the element and initialize the traits by type

@@ -1,36 +1,8 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
 
-#include "FECoreBase.h"
-#include "fecore_enum.h"
-#include "FEDataStream.h"
+#include "basicio/FEDataStream.h"
+#include "femcore/FEObjectBase.h"
+#include "femcore/fecore_enum.h"
 #include <functional>
 
 //-----------------------------------------------------------------------------
@@ -60,10 +32,8 @@ class FEElement;
 //! base class. Instead they'll use one of the more specialized classes
 //! defined below.
 //!
-class FEM_EXPORT FEPlotData : public FECoreBase
+class FEM_EXPORT FEPlotData : public FEObjectBase
 {
-	FECORE_SUPER_CLASS(FEPLOTDATA_ID)
-
 public:
 	FEPlotData(FEModel* fem);
 	FEPlotData(FEModel* fem, Region_Type R, Var_Type t, Storage_Fmt s);
@@ -85,9 +55,15 @@ public:
 
 	int VarSize(Var_Type t);
 
-	void SetItemList(vector<int>& item) { m_item = item; }
+	void SetItemList(std::vector<int>& item)
+    {
+        m_item = item;
+    }
 
-	vector<int> GetItemList() { return m_item; }
+	std::vector<int> GetItemList()
+    {
+        return m_item;
+    }
     
     void SetDomainName(const char* szdom);
 	const char* GetDomainName() { return m_szdom;  }
@@ -111,8 +87,11 @@ public: // used by array variables
 	void SetArraySize(int n);
 	int GetArraysize() const;
 
-	void SetArrayNames(vector<string>& s) { m_arrayNames = s; }
-	vector<string>& GetArrayNames() { return m_arrayNames; }
+	void SetArrayNames(std::vector<std::string>& s) { m_arrayNames = s; }
+    std::vector<std::string>& GetArrayNames()
+    {
+        return m_arrayNames;
+    }
 
 public:
 	void SetUnits(const char* sz) { m_szunit = sz; }
@@ -122,11 +101,11 @@ private:
 	Region_Type		m_nregion;		//!< region type
 	Var_Type		m_ntype;		//!< data type
 	Storage_Fmt		m_sfmt;			//!< data storage format
-	vector<int>		m_item;			//!< Data will only be stored for the item's in this list
+	std::vector<int>		m_item;			//!< Data will only be stored for the item's in this list
     char			m_szdom[64];	//!< Data will only be stored for the domain with this name
 	const char*		m_szunit;
 	int				m_arraySize;	//!< size of arrays (used by arrays)
-	vector<string>	m_arrayNames;	//!< optional names of array components (used by arrays)
+    std::vector<std::string> m_arrayNames;  //!< optional names of array components (used by arrays)
 };
 
 //-----------------------------------------------------------------------------
@@ -134,8 +113,6 @@ private:
 //! evaluated on a part of the mesh should inherit from this class. 
 class FEM_EXPORT FEPlotGlobalData : public FEPlotData
 {
-	FECORE_BASE_CLASS(FEPlotGlobalData)
-
 public:
 	FEPlotGlobalData(FEModel* fem, Var_Type t) : FEPlotData(fem, FE_REGION_GLOBAL, t, FMT_ITEM) {}
 };
@@ -145,8 +122,6 @@ public:
 //! associated with each node of the mesh, will use this base class.
 class FEM_EXPORT FEPlotNodeData : public FEPlotData
 {
-	FECORE_BASE_CLASS(FEPlotNodeData)
-
 public:
 	FEPlotNodeData(FEModel* fem, Var_Type t, Storage_Fmt s) : FEPlotData(fem, FE_REGION_NODE, t, s) {}
 };
@@ -156,8 +131,6 @@ public:
 //! associated with each element or node of a domain, will use this base class.
 class FEM_EXPORT FEPlotDomainData : public FEPlotData
 {
-	FECORE_BASE_CLASS(FEPlotDomainData)
-
 public:
 	FEPlotDomainData(FEModel* fem, Var_Type t, Storage_Fmt s) : FEPlotData(fem, FE_REGION_DOMAIN, t, s) {}
 };
@@ -167,7 +140,6 @@ public:
 //! associated with each node or facet of a surface, will use this base class.
 class FEM_EXPORT FEPlotSurfaceData : public FEPlotData
 {
-	FECORE_BASE_CLASS(FEPlotSurfaceData)
 
 public:
 	FEPlotSurfaceData(FEModel* fem, Var_Type t, Storage_Fmt s) : FEPlotData(fem, FE_REGION_SURFACE, t, s) {}

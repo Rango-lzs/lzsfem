@@ -23,7 +23,7 @@ public:
     virtual ~MetaObject() = 0;
 
     virtual const MetaClass* meta() const = 0;  // called by instance
-    static const MetaClass* staic_meta();       // called by class
+    static const MetaClass* static_meta();       // called by class
     static MetaObject* meta_cast(MetaObject* pOther);
     static std::string class_name();
     bool isKindOf(const MetaClass* pMeta) const;
