@@ -3,6 +3,7 @@
 #include "FEMesh.h"
 #include "FEDataMap.h"
 #include "basicio/DumpStream.h"
+#include "materials/FEMaterialPoint.h"
 
 //=============================================================================
 // FELocalMap
@@ -58,7 +59,7 @@ Matrix3d FEMat3dLocalElementMap::operator () (const FEMaterialPoint& mp)
 	FEElement& el = *mp.m_elem;
 
 	Vector3d r0[FEElement::MAX_NODES];
-	for (int i=0; i<el.NodeSize(); ++i) r0[i] = mesh.Node(el.m_node[i]).m_r0;
+	for (int i=0; i<el.NodeSize(); ++i) r0[i] = mesh.Node(el.getNodeId(i)).m_r0;
 
 	Vector3d a, b, c, d;
 	Matrix3d Q;
@@ -110,10 +111,10 @@ void FEMat3dLocalElementMap::Serialize(DumpStream& ar)
 // FESphericalMap
 //-----------------------------------------------------------------------------
 
-BEGIN_FECORE_CLASS(FEMat3dSphericalMap, FEMat3dValuator)
+BEGIN_PARAM_DEFINE(FEMat3dSphericalMap, FEMat3dValuator)
 	ADD_PARAMETER(m_c, "center");
 	ADD_PARAMETER(m_r, "vector");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 FEMat3dSphericalMap::FEMat3dSphericalMap(FEModel* pfem): FEMat3dValuator(pfem)
@@ -180,11 +181,11 @@ FEMat3dValuator* FEMat3dSphericalMap::copy()
 // FECylindricalMap
 //-----------------------------------------------------------------------------
 
-BEGIN_FECORE_CLASS(FEMat3dCylindricalMap, FEMat3dValuator)
+BEGIN_PARAM_DEFINE(FEMat3dCylindricalMap, FEMat3dValuator)
 	ADD_PARAMETER(m_c, "center");
 	ADD_PARAMETER(m_a, "axis"  );
 	ADD_PARAMETER(m_r, "vector");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 FEMat3dCylindricalMap::FEMat3dCylindricalMap(FEModel* pfem) : FEMat3dValuator(pfem)
@@ -256,14 +257,14 @@ FEMat3dValuator* FEMat3dCylindricalMap::copy()
 // FEPolarMap
 //-----------------------------------------------------------------------------
 
-BEGIN_FECORE_CLASS(FEMat3dPolarMap, FEMat3dValuator)
+BEGIN_PARAM_DEFINE(FEMat3dPolarMap, FEMat3dValuator)
 	ADD_PARAMETER(m_c, "center");
 	ADD_PARAMETER(m_a, "axis"  );
 	ADD_PARAMETER(m_d0, "vector1");
 	ADD_PARAMETER(m_d1, "vector2");
 	ADD_PARAMETER(m_R0, "radius1");
 	ADD_PARAMETER(m_R1, "radius2");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 FEMat3dPolarMap::FEMat3dPolarMap(FEModel* pfem) : FEMat3dValuator(pfem)
@@ -354,10 +355,10 @@ FEMat3dValuator* FEMat3dPolarMap::copy()
 // FEVectorMap
 //-----------------------------------------------------------------------------
 
-BEGIN_FECORE_CLASS(FEMat3dVectorMap, FEMat3dValuator)
+BEGIN_PARAM_DEFINE(FEMat3dVectorMap, FEMat3dValuator)
 	ADD_PARAMETER(m_a, "a");
 	ADD_PARAMETER(m_d, "d");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 FEMat3dVectorMap::FEMat3dVectorMap(FEModel* pfem) : FEMat3dValuator(pfem)
@@ -438,9 +439,9 @@ void FEMat3dVectorMap::Serialize(DumpStream &ar)
 // FEMappedValueMat3d
 //-----------------------------------------------------------------------------
 
-BEGIN_FECORE_CLASS(FEMappedValueMat3d, FEMat3dValuator)
+BEGIN_PARAM_DEFINE(FEMappedValueMat3d, FEMat3dValuator)
 	ADD_PARAMETER(m_mapName, "map");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 
 FEMappedValueMat3d::FEMappedValueMat3d(FEModel* fem) : FEMat3dValuator(fem)
@@ -465,7 +466,7 @@ Matrix3d FEMappedValueMat3d::operator()(const FEMaterialPoint& pt)
 
 FEMat3dValuator* FEMappedValueMat3d::copy()
 {
-	FEMappedValueMat3d* map = fecore_alloc(FEMappedValueMat3d, GetFEModel());
+    FEMappedValueMat3d* map = RANGO_NEW<FEMappedValueMat3d>(GetFEModel(), "");
 	map->m_val = m_val;
 	return map;
 }

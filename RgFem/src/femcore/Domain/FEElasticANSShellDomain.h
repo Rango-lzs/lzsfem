@@ -1,11 +1,19 @@
 
 #pragma once
-#include "FEElasticDomain.h"
+#include "femcore/Domain/FEElasticDomain.h"
+#include "femcore/Domain/FESSIShellDomain.h"
 #include "materials/FESolidMaterial.h"
+
+class FEMaterial;
+class FEElement;
+class DumpStream;
+class FEDofList;
+class FEShellElementNew;
+class FETimeInfo;
 
 //-----------------------------------------------------------------------------
 //! Domain described by 3D shell elements
-class FEElasticANSShellDomain : public FEElasticDomain
+class FEElasticANSShellDomain : public FESSIShellDomain, public FEElasticDomain
 {
 public:
     FEElasticANSShellDomain(FEModel* pfem);

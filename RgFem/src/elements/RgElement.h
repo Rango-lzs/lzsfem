@@ -79,6 +79,8 @@ public:
     virtual NodeId getNodeId(int idx) const;
     virtual NodeId getLocNodeId(int idx) const;
 
+    void setNodeId(int idx, int id);
+
     virtual void setNode(FENode* n, int i);
     virtual FENode* getNode(int idx) const;
 
@@ -126,6 +128,17 @@ public:
     double* H(int n);
     const double* H(int n) const;
 
+    //! return number of faces
+    int Faces() const
+    {
+        return m_pTraits->Faces();
+    }
+
+    //! return the nodes of the face
+    int GetFace(int nface, int* nodeList) const;
+
+    //根据节点坐标，插值计算高斯点坐标
+    Vector3d Evaluate(Vector3d* value, int iGauss);
 
 
 public:

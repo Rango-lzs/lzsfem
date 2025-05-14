@@ -59,7 +59,7 @@ public:
 
 	//! call the callback function
 	//! This function returns false if the run is to be aborted
-	static bool DoCallback(FEModel* fem, unsigned int nevent);
+	bool DoCallback(FEModel* fem, unsigned int nevent);
 
 	//! Get the current callback reason (or zero if not inside DoCallback)
 	unsigned int CurrentEvent() const;

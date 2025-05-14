@@ -2,6 +2,7 @@
 #include "FEValuator.h"
 
 class FEDataMap;
+class FEMaterialPoint;
 
 //---------------------------------------------------------------------------------------
 // Base class for evaluating Vector3d parameters

@@ -230,4 +230,6 @@ private:
     ConvergenceInfo m_residuNorm;                 // residual convergence info
     ConvergenceInfo m_energyNorm;                 // energy convergence info
     std::vector<ConvergenceInfo> m_solutionNorm;  // converge info for solution variables
+
+    DECLARE_PARAM_LIST();
 };

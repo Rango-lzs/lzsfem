@@ -1,16 +1,26 @@
 #include "FEElasticANSShellDomain.h"
 #include "materials/FEElasticMaterial.h"
-#include "femcore/FEBodyForce.h"
+//#include "femcore/FEBodyForce.h"
 #include "logger/log.h"
 #include "femcore/FEModel.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
 #include <math.h>
 #include "femcore/Domain/FESolidDomain.h"
 #include "femcore/FELinearSystem.h"
+#include "basicio/DumpStream.h"
+#include "../FENode.h"
+#include "../FEException.h"
 
 
 //-----------------------------------------------------------------------------
-FEElasticANSShellDomain::FEElasticANSShellDomain(FEModel* pfem) : FESSIShellDomain(pfem), FEElasticDomain(pfem), m_dofV(pfem), m_dofSV(pfem), m_dofSA(pfem), m_dofR(pfem), m_dof(pfem)
+FEElasticANSShellDomain::FEElasticANSShellDomain(FEModel* pfem)
+    : FESSIShellDomain(pfem)
+    , FEElasticDomain(pfem)
+    , m_dofV(pfem)
+    , m_dofSV(pfem)
+    , m_dofSA(pfem)
+    , m_dofR(pfem)
+    , m_dof(pfem)
 {
     m_pMat = nullptr;
 
@@ -49,7 +59,7 @@ void FEElasticANSShellDomain::SetDynamicUpdateFlag(bool b)
 void FEElasticANSShellDomain::Serialize(DumpStream& ar)
 {
     //erialize the base class, which instantiates the elements
-    FESSIShellDomain::Serialize(ar);
+    FEShellDomain::Serialize(ar);
     if (ar.IsShallow()) return;
     
     // serialize class variables
@@ -80,16 +90,17 @@ void FEElasticANSShellDomain::Activate()
         {
             if (node.m_rid < 0)
             {
-                node.set_active(m_dofU[0]);
+                //Rango TODO:
+                /*node.set_active(m_dofU[0]);
                 node.set_active(m_dofU[1]);
                 node.set_active(m_dofU[2]);
-                
+
                 if (node.HasFlags(FENode::SHELL))
                 {
                     node.set_active(m_dofSU[0]);
                     node.set_active(m_dofSU[1]);
                     node.set_active(m_dofSU[2]);
-                }
+                }*/
             }
         }
     }
@@ -99,7 +110,7 @@ void FEElasticANSShellDomain::Activate()
 //! Initialize element data
 void FEElasticANSShellDomain::PreSolveUpdate(const FETimeInfo& timeInfo)
 {
-    FESSIShellDomain::PreSolveUpdate(timeInfo);
+    FEShellDomain::PreSolveUpdate(timeInfo);
     const int NE = FEElement::MAX_NODES;
     Vector3d x0[NE], xt[NE], r0, rt;
     for (size_t i=0; i<m_Elem.size(); ++i)
@@ -107,7 +118,7 @@ void FEElasticANSShellDomain::PreSolveUpdate(const FETimeInfo& timeInfo)
         FEShellElementNew& el = m_Elem[i];
         el.m_alphai.zero();
         
-        int n = el.GaussPoints();
+        int n = el.GaussPointSize();
         for (int j=0; j<n; ++j)
         {
             FEMaterialPoint& mp = *el.GetMaterialPoint(j);
@@ -127,25 +138,25 @@ void FEElasticANSShellDomain::InternalForces(FEGlobalVector& R)
 #pragma omp parallel for shared (NS)
     for (int i=0; i<NS; ++i)
     {
-        // element force vector
-        vector<double> fe;
-        vector<int> lm;
+        // element force std::vector
+        std::vector<double> fe;
+        std::vector<int> lm;
         
         // get the element
 		FEShellElementNew& el = m_Elem[i];
         
-        // create the element force vector and initialize to zero
-        int ndof = 6*el.Nodes();
+        // create the element force std::vector and initialize to zero
+        int ndof = 6*el.NodeSize();
         fe.assign(ndof, 0);
         
         // calculate element's internal force
         ElementInternalForce(el, fe);
         
-        // get the element's LM vector
+        // get the element's LM std::vector
         UnpackLM(el, lm);
         
         // assemble the residual
-        R.Assemble(el.m_node, lm, fe, true);
+        R.Assemble(el.getNodeIds(), lm, fe, true);
     }
 }
 
@@ -154,38 +165,38 @@ void FEElasticANSShellDomain::InternalForces(FEGlobalVector& R)
 //! Note that we use a one-point gauss integration rule for the thickness
 //! integration. This will integrate linear functions exactly.
 
-void FEElasticANSShellDomain::ElementInternalForce(FEShellElementNew& el, vector<double>& fe)
+void FEElasticANSShellDomain::ElementInternalForce(FEShellElementNew& el, std::vector<double>& fe)
 {
     int i, n;
     
-    // jacobian matrix determinant
+    // jacobian Matrix determinant
     double detJt;
     
-    int nint = el.GaussPoints();
-    int neln = el.Nodes();
+    int nint = el.GaussPointSize();
+    int neln = el.NodeSize();
     
     double*    gw = el.GaussWeights();
     
     Vector3d Gcnt[3];
     
     // allocate arrays
-    vector<Matrix3ds> S(nint);
-    vector<tens4ds> C(nint);
-    vector<double> EE;
-    vector< vector<Vector3d>> HU;
-    vector< vector<Vector3d>> HW;
-    matrix NS(neln,16);
-    matrix NN(neln,8);
+    std::vector<Matrix3ds> S(nint);
+    std::vector<tens4ds> C(nint);
+    std::vector<double> EE;
+    std::vector< std::vector<Vector3d>> HU;
+    std::vector< std::vector<Vector3d>> HW;
+    Matrix NS(neln,16);
+    Matrix NN(neln,8);
     
     // ANS method: Evaluate collocation strains
     CollocationStrainsANS(el, EE, HU, HW, NS, NN);
     
-    vector<matrix> hu(neln, matrix(3,6));
-    vector<matrix> hw(neln, matrix(3,6));
-    vector<Vector3d> Nu(neln);
-    vector<Vector3d> Nw(neln);
+    std::vector<Matrix> hu(neln, Matrix(3,6));
+    std::vector<Matrix> hw(neln, Matrix(3,6));
+    std::vector<Vector3d> Nu(neln);
+    std::vector<Vector3d> Nw(neln);
     
-    matrix Fu(3,1), Fw(3,1);
+    Matrix Fu(3,1), Fw(3,1);
     
     // repeat for all integration points
     for (n=0; n<nint; ++n)
@@ -198,7 +209,7 @@ void FEElasticANSShellDomain::ElementInternalForce(FEShellElementNew& el, vector
         EvaluateANS(el, n, Gcnt, el.m_E[n], hu, hw, EE, HU, HW);
         
         // evaluate 2nd P-K stress
-        matrix SC(6,1);
+        Matrix SC(6,1);
         Matrix3ds S = m_pMat->PK2Stress(mp, el.m_E[n]);
         mat3dsCntMat61(S, Gcnt, SC);
         
@@ -212,7 +223,7 @@ void FEElasticANSShellDomain::ElementInternalForce(FEShellElementNew& el, vector
             
             // calculate internal force
             // the '-' sign is so that the internal forces get subtracted
-            // from the global residual vector
+            // from the global residual std::vector
             fe[6*i  ] -= Fu(0,0)*detJt;
             fe[6*i+1] -= Fu(1,0)*detJt;
             fe[6*i+2] -= Fu(2,0)*detJt;
@@ -231,21 +242,21 @@ void FEElasticANSShellDomain::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 #pragma omp parallel for
     for (int i=0; i<NS; ++i)
     {
-        // element force vector
-        vector<double> fe;
-        vector<int> lm;
+        // element force std::vector
+        std::vector<double> fe;
+        std::vector<int> lm;
         
         // get the element
 		FEShellElementNew& el = m_Elem[i];
         
-        // create the element force vector and initialize to zero
-        int ndof = 6*el.Nodes();
+        // create the element force std::vector and initialize to zero
+        int ndof = 6*el.NodeSize();
         fe.assign(ndof, 0);
         
         // apply body forces to shells
         ElementBodyForce(BF, el, fe);
         
-        // get the element's LM vector
+        // get the element's LM std::vector
         UnpackLM(el, lm);
         
         // assemble the residual
@@ -256,7 +267,7 @@ void FEElasticANSShellDomain::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 //-----------------------------------------------------------------------------
 //! Calculates element body forces for shells
 
-void FEElasticANSShellDomain::ElementBodyForce(FEBodyForce& BF, FEShellElementNew& el, vector<double>& fe)
+void FEElasticANSShellDomain::ElementBodyForce(FEBodyForce& BF, FEShellElementNew& el, std::vector<double>& fe)
 {
     // integration weights
     double* gw = el.GaussWeights();
@@ -264,8 +275,8 @@ void FEElasticANSShellDomain::ElementBodyForce(FEBodyForce& BF, FEShellElementNe
     double *M, detJt;
     
     // loop over integration points
-    int nint = el.GaussPoints();
-    int neln = el.Nodes();
+    int nint = el.GaussPointSize();
+    int neln = el.NodeSize();
     
     for (int n=0; n<nint; ++n)
     {
@@ -299,44 +310,44 @@ void FEElasticANSShellDomain::ElementBodyForce(FEBodyForce& BF, FEShellElementNe
 
 //-----------------------------------------------------------------------------
 // Calculate inertial forces
-void FEElasticANSShellDomain::InertialForces(FEGlobalVector& R, vector<double>& F)
+void FEElasticANSShellDomain::InertialForces(FEGlobalVector& R, std::vector<double>& F)
 {
     int NE = (int)m_Elem.size();
 #pragma omp parallel for shared (NE)
     for (int i=0; i<NE; ++i)
     {
-        // element force vector
-        vector<double> fe;
-        vector<int> lm;
+        // element force std::vector
+        std::vector<double> fe;
+        std::vector<int> lm;
         
         // get the element
         FEShellElementNew& el = m_Elem[i];
         
-        // get the element force vector and initialize it to zero
-        int ndof = 6*el.Nodes();
+        // get the element force std::vector and initialize it to zero
+        int ndof = 6*el.NodeSize();
         fe.assign(ndof, 0);
         
-        // calculate internal force vector
+        // calculate internal force std::vector
         ElementInertialForce(el, fe);
         
-        // get the element's LM vector
+        // get the element's LM std::vector
         UnpackLM(el, lm);
         
-        // assemble element 'fe'-vector into global R vector
+        // assemble element 'fe'-std::vector into global R std::vector
         R.Assemble(el.m_node, lm, fe, true);
     }
 }
 
 //-----------------------------------------------------------------------------
-void FEElasticANSShellDomain::ElementInertialForce(FEShellElementNew& el, vector<double>& fe)
+void FEElasticANSShellDomain::ElementInertialForce(FEShellElementNew& el, std::vector<double>& fe)
 {
     const FETimeInfo& tp = GetFEModel()->GetTime();
     double alpham = tp.alpham;
     
-    int nint = el.GaussPoints();
-    int neln = el.Nodes();
+    int nint = el.GaussPointSize();
+    int neln = el.NodeSize();
     
-    // evaluate the element inertial force vector
+    // evaluate the element inertial force std::vector
     for (int n=0; n<nint; ++n)
     {
         FEMaterialPoint& mp = *el.GetMaterialPoint(n);
@@ -366,10 +377,10 @@ void FEElasticANSShellDomain::ElementInertialForce(FEShellElementNew& el, vector
 
 //-----------------------------------------------------------------------------
 //! This function calculates the stiffness due to body forces
-void FEElasticANSShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShellElementNew &el, matrix &ke)
+void FEElasticANSShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShellElementNew &el, Matrix &ke)
 {
     int i, j, i6, j6;
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     
     // jacobian
     double detJ;
@@ -380,7 +391,7 @@ void FEElasticANSShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShell
     double Mu[FEElement::MAX_NODES], Md[FEElement::MAX_NODES];
     
     // loop over integration points
-    int nint = el.GaussPoints();
+    int nint = el.GaussPointSize();
     for (int n=0; n<nint; ++n)
     {
         FEMaterialPoint& mp = *el.GetMaterialPoint(n);
@@ -440,20 +451,20 @@ void FEElasticANSShellDomain::StiffnessMatrix(FELinearSystem& LS)
     {
 		FEShellElement& el = m_Elem[iel];
 
-        // create the element's stiffness matrix
+        // create the element's stiffness Matrix
 		FEElementMatrix ke(el);
-		int ndof = 6*el.Nodes();
+		int ndof = 6*el.NodeSize();
         ke.resize(ndof, ndof);
         
-        // calculate the element stiffness matrix
+        // calculate the element stiffness Matrix
         ElementStiffness(iel, ke);
         
-        // get the element's LM vector
-		vector<int> lm;
+        // get the element's LM std::vector
+		std::vector<int> lm;
 		UnpackLM(el, lm);
 		ke.SetIndices(lm);
 
-		// assemble element matrix in global stiffness matrix
+		// assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
     }
 }
@@ -468,21 +479,21 @@ void FEElasticANSShellDomain::MassMatrix(FELinearSystem& LS, double scale)
     {
 		FEShellElementNew& el = m_Elem[iel];
 
-        // create the element's stiffness matrix
+        // create the element's stiffness Matrix
 		FEElementMatrix ke(el);
-		int ndof = 6*el.Nodes();
+		int ndof = 6*el.NodeSize();
         ke.resize(ndof, ndof);
         ke.zero();
         
         // calculate inertial stiffness
         ElementMassMatrix(el, ke, scale);
         
-        // get the element's LM vector
-		vector<int> lm;
+        // get the element's LM std::vector
+		std::vector<int> lm;
 		UnpackLM(el, lm);
 		ke.SetIndices(lm);
         
-        // assemble element matrix in global stiffness matrix
+        // assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
     }
 }
@@ -497,39 +508,39 @@ void FEElasticANSShellDomain::BodyForceStiffness(FELinearSystem& LS, FEBodyForce
     {
 		FEShellElementNew& el = m_Elem[iel];
         
-        // create the element's stiffness matrix
+        // create the element's stiffness Matrix
 		FEElementMatrix ke(el);
-		int ndof = 6*el.Nodes();
+		int ndof = 6*el.NodeSize();
         ke.resize(ndof, ndof);
         ke.zero();
         
         // calculate inertial stiffness
         ElementBodyForceStiffness(bf, el, ke);
         
-        // get the element's LM vector
-		vector<int> lm;
+        // get the element's LM std::vector
+		std::vector<int> lm;
 		UnpackLM(el, lm);
 		ke.SetIndices(lm);
         
-        // assemble element matrix in global stiffness matrix
+        // assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
     }
 }
 
 //-----------------------------------------------------------------------------
-//! Calculates the shell element stiffness matrix
+//! Calculates the shell element stiffness Matrix
 
-void FEElasticANSShellDomain::ElementStiffness(int iel, matrix& ke)
+void FEElasticANSShellDomain::ElementStiffness(int iel, Matrix& ke)
 {
 	FEShellElementNew& el = ShellElement(iel);
     
     int i, i6, j, j6, n;
     
     // Get the current element's data
-    const int nint = el.GaussPoints();
-    const int neln = el.Nodes();
+    const int nint = el.GaussPointSize();
+    const int neln = el.NodeSize();
     
-    // jacobian matrix determinant
+    // jacobian Matrix determinant
     double detJt;
     
     // weights at gauss points
@@ -538,25 +549,25 @@ void FEElasticANSShellDomain::ElementStiffness(int iel, matrix& ke)
     Vector3d Gcnt[3];
     
     // allocate arrays
-    vector<double> EE;
-    vector< vector<Vector3d>> HU;
-    vector< vector<Vector3d>> HW;
-    matrix NS(neln,16);
-    matrix NN(neln,8);
+    std::vector<double> EE;
+    std::vector< std::vector<Vector3d>> HU;
+    std::vector< std::vector<Vector3d>> HW;
+    Matrix NS(neln,16);
+    Matrix NN(neln,8);
     
     bool ANS = true;
     
     if (ANS) CollocationStrainsANS(el, EE, HU, HW, NS, NN);
     
-    // calculate element stiffness matrix
-    vector<matrix> hu(neln, matrix(3,6));
-    vector<matrix> hw(neln, matrix(3,6));
-    vector<Vector3d> Nu(neln);
-    vector<Vector3d> Nw(neln);
+    // calculate element stiffness Matrix
+    std::vector<Matrix> hu(neln, Matrix(3,6));
+    std::vector<Matrix> hw(neln, Matrix(3,6));
+    std::vector<Vector3d> Nu(neln);
+    std::vector<Vector3d> Nw(neln);
     
     ke.zero();
     
-    matrix KUU(3,3), KUW(3,3), KWU(3,3), KWW(3,3);
+    Matrix KUU(3,3), KUW(3,3), KWU(3,3), KWW(3,3);
     for (n=0; n<nint; ++n)
     {
         FEMaterialPoint& mp = *(el.GetMaterialPoint(n));
@@ -570,12 +581,12 @@ void FEElasticANSShellDomain::ElementStiffness(int iel, matrix& ke)
         detJt = detJ0(el, n)*gw[n];
         
         // evaluate 2nd P-K stress
-        matrix SC(6,1);
+        Matrix SC(6,1);
         Matrix3ds S = m_pMat->PK2Stress(mp, el.m_E[n]);
         mat3dsCntMat61(S, Gcnt, SC);
         
         // evaluate the material tangent
-        matrix CC(6,6);
+        Matrix CC(6,6);
         tens4dmm c = m_pMat->MaterialTangent(mp, el.m_E[n]);
         tens4dmmCntMat66(c, Gcnt, CC);
 //        tens4dsCntMat66(c, Gcnt, CC);
@@ -586,7 +597,7 @@ void FEElasticANSShellDomain::ElementStiffness(int iel, matrix& ke)
         {
             for (j=0, j6 = 0; j<neln; ++j, j6 += 6)
             {
-                matrix KUU(3,3), KUW(3,3), KWU(3,3), KWW(3,3);
+                Matrix KUU(3,3), KUW(3,3), KWU(3,3), KWW(3,3);
                 KUU = hu[i]*CC*hu[j].transpose();
                 KUW = hu[i]*CC*hw[j].transpose();
                 KWU = hw[i]*CC*hu[j].transpose();
@@ -731,17 +742,17 @@ void FEElasticANSShellDomain::ElementStiffness(int iel, matrix& ke)
 }
 
 //-----------------------------------------------------------------------------
-//! calculates element inertial stiffness matrix
-void FEElasticANSShellDomain::ElementMassMatrix(FEShellElementNew& el, matrix& ke, double a)
+//! calculates element inertial stiffness Matrix
+void FEElasticANSShellDomain::ElementMassMatrix(FEShellElementNew& el, Matrix& ke, double a)
 {
     // Get the current element's data
-    const int nint = el.GaussPoints();
-    const int neln = el.Nodes();
+    const int nint = el.GaussPointSize();
+    const int neln = el.NodeSize();
     
     // weights at gauss points
     const double *gw = el.GaussWeights();
     
-    // calculate element stiffness matrix
+    // calculate element stiffness Matrix
     for (int n=0; n<nint; ++n)
     {
 		FEMaterialPoint& mp = *el.GetMaterialPoint(n);
@@ -791,7 +802,7 @@ void FEElasticANSShellDomain::ElementMassMatrix(FEShellElementNew& el, matrix& k
 //-----------------------------------------------------------------------------
 //! Calculates body forces for shells
 
-void FEElasticANSShellDomain::ElementBodyForce(FEModel& fem, FEShellElementNew& el, vector<double>& fe)
+void FEElasticANSShellDomain::ElementBodyForce(FEModel& fem, FEShellElementNew& el, std::vector<double>& fe)
 {
     int NF = fem.ModelLoads();
     for (int nf = 0; nf < NF; ++nf)
@@ -805,8 +816,8 @@ void FEElasticANSShellDomain::ElementBodyForce(FEModel& fem, FEShellElementNew& 
             double *M, detJt;
             
             // loop over integration points
-            int nint = el.GaussPoints();
-            int neln = el.Nodes();
+            int nint = el.GaussPointSize();
+            int neln = el.NodeSize();
             
             for (int n=0; n<nint; ++n)
             {
@@ -886,10 +897,10 @@ void FEElasticANSShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
     FEShellElementNew& el = m_Elem[iel];
     
     // get the number of integration points
-    int nint = el.GaussPoints();
+    int nint = el.GaussPointSize();
     
     // number of nodes
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     
     const int NELN = FEElement::MAX_NODES;
     Vector3d r0[NELN], s0[NELN], r[NELN], s[NELN];
@@ -983,14 +994,14 @@ void FEElasticANSShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 //! to the solid element ordering. This is because for shell elements the
 //! nodes have six degrees of freedom each, where for solids they only
 //! have 3 dofs.
-void FEElasticANSShellDomain::UnpackLM(FEElement& el, vector<int>& lm)
+void FEElasticANSShellDomain::UnpackLM(FEElement& el, std::vector<int>& lm)
 {
-    int N = el.Nodes();
+    int N = el.NodeSize();
     lm.resize(N*9);
     for (int i=0; i<N; ++i)
     {
         FENode& node = m_pMesh->Node(el.m_node[i]);
-        vector<int>& id = node.m_dofs;
+        std::vector<int>& id = node.m_dofs;
         
         // first the displacement dofs
         lm[6*i  ] = id[m_dofU[0]];
@@ -1011,7 +1022,7 @@ void FEElasticANSShellDomain::UnpackLM(FEElement& el, vector<int>& lm)
 
 //-----------------------------------------------------------------------------
 //! Evaluate contravariant components of Matrix3ds tensor
-void FEElasticANSShellDomain::mat3dsCntMat61(const Matrix3ds s, const Vector3d* Gcnt, matrix& S)
+void FEElasticANSShellDomain::mat3dsCntMat61(const Matrix3ds s, const Vector3d* Gcnt, Matrix& S)
 {
     S.resize(6, 1);
     S(0,0) = Gcnt[0]*(s*Gcnt[0]);
@@ -1026,7 +1037,7 @@ void FEElasticANSShellDomain::mat3dsCntMat61(const Matrix3ds s, const Vector3d* 
 //-----------------------------------------------------------------------------
 //! Evaluate contravariant components of tens4ds tensor
 //! Cijkl = Gj.(Gi.c.Gl).Gk
-void FEElasticANSShellDomain::tens4dsCntMat66(const tens4ds c, const Vector3d* Gcnt, matrix& C)
+void FEElasticANSShellDomain::tens4dsCntMat66(const tens4ds c, const Vector3d* Gcnt, Matrix& C)
 {
     C.resize(6, 6);
     C(0,0) =          Gcnt[0]*(vdotTdotv(Gcnt[0], c, Gcnt[0])*Gcnt[0]);  // i=0, j=0, k=0, l=0
@@ -1056,7 +1067,7 @@ void FEElasticANSShellDomain::tens4dsCntMat66(const tens4ds c, const Vector3d* G
 //-----------------------------------------------------------------------------
 //! Evaluate contravariant components of tens4dm tensor
 //! Cijkl = Gj.(Gi.c.Gl).Gk
-void FEElasticANSShellDomain::tens4dmmCntMat66(const tens4dmm c, const Vector3d* Gcnt, matrix& C)
+void FEElasticANSShellDomain::tens4dmmCntMat66(const tens4dmm c, const Vector3d* Gcnt, Matrix& C)
 {
     C.resize(6, 6);
     C(0,0) =          Gcnt[0]*(vdotTdotv(Gcnt[0], c, Gcnt[0])*Gcnt[0]);  // i=0, j=0, k=0, l=0
@@ -1085,19 +1096,19 @@ void FEElasticANSShellDomain::tens4dmmCntMat66(const tens4dmm c, const Vector3d*
 
 //-----------------------------------------------------------------------------
 //! Evaluate collocation strains for assumed natural strain (ANS) method
-void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vector<double>& E,
-                                                    vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW,
-                                                    matrix& NS, matrix& NN)
+void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, std::vector<double>& E,
+                                                    std::vector< std::vector<Vector3d>>& HU, std::vector< std::vector<Vector3d>>& HW,
+                                                    Matrix& NS, Matrix& NN)
 {
     FETimeInfo& tp = GetFEModel()->GetTime();
     
     // ANS method for 4-node quadrilaterials
-    if (el.Nodes() == 4) {
+    if (el.NodeSize() == 4) {
         Vector3d gcov[3], Gcov[3];
         
         double Mr[FEElement::MAX_NODES], Ms[FEElement::MAX_NODES], M[FEElement::MAX_NODES];
         double r, s, t;
-        int neln = el.Nodes();
+        int neln = el.NodeSize();
         double Nur, Nus, Nut;
         double Nwr, Nws, Nwt;
         
@@ -1107,8 +1118,8 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
         CoBaseVectors(el, r, s, t, gcov, tp.alphaf);
         CoBaseVectors0(el, r, s, t, Gcov);
         double E13A = (gcov[0]*gcov[2] - Gcov[0]*Gcov[2])/2;
-        vector<Vector3d> hu13A(neln);
-        vector<Vector3d> hw13A(neln);
+        std::vector<Vector3d> hu13A(neln);
+        std::vector<Vector3d> hw13A(neln);
         el.shape_fnc(M, r, s);
         el.shape_deriv(Mr, Ms, r, s);
         for (int i=0; i<neln; ++i) {
@@ -1125,8 +1136,8 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
         CoBaseVectors(el, r, s, t, gcov, tp.alphaf);
         CoBaseVectors0(el, r, s, t, Gcov);
         double E23B = (gcov[1]*gcov[2] - Gcov[1]*Gcov[2])/2;
-        vector<Vector3d> hu23B(neln);
-        vector<Vector3d> hw23B(neln);
+        std::vector<Vector3d> hu23B(neln);
+        std::vector<Vector3d> hw23B(neln);
         el.shape_fnc(M, r, s);
         el.shape_deriv(Mr, Ms, r, s);
         for (int i=0; i<neln; ++i) {
@@ -1143,8 +1154,8 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
         CoBaseVectors(el, r, s, t, gcov, tp.alphaf);
         CoBaseVectors0(el, r, s, t, Gcov);
         double E13C = (gcov[0]*gcov[2] - Gcov[0]*Gcov[2])/2;
-        vector<Vector3d> hu13C(neln);
-        vector<Vector3d> hw13C(neln);
+        std::vector<Vector3d> hu13C(neln);
+        std::vector<Vector3d> hw13C(neln);
         el.shape_fnc(M, r, s);
         el.shape_deriv(Mr, Ms, r, s);
         for (int i=0; i<neln; ++i) {
@@ -1161,8 +1172,8 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
         CoBaseVectors(el, r, s, t, gcov, tp.alphaf);
         CoBaseVectors0(el, r, s, t, Gcov);
         double E23D = (gcov[1]*gcov[2] - Gcov[1]*Gcov[2])/2;
-        vector<Vector3d> hu23D(neln);
-        vector<Vector3d> hw23D(neln);
+        std::vector<Vector3d> hu23D(neln);
+        std::vector<Vector3d> hw23D(neln);
         el.shape_fnc(M, r, s);
         el.shape_deriv(Mr, Ms, r, s);
         for (int i=0; i<neln; ++i) {
@@ -1180,8 +1191,8 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
         CoBaseVectors(el, r, s, t, gcov, tp.alphaf);
         CoBaseVectors0(el, r, s, t, Gcov);
         double E33E = (gcov[2]*gcov[2] - Gcov[2]*Gcov[2])/2;
-        vector<Vector3d> hu33E(neln);
-        vector<Vector3d> hw33E(neln);
+        std::vector<Vector3d> hu33E(neln);
+        std::vector<Vector3d> hw33E(neln);
         el.shape_fnc(M, r, s);
         for (int i=0; i<neln; ++i) {
             NN(i,0) = Nut = M[i]/2;
@@ -1195,8 +1206,8 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
         CoBaseVectors(el, r, s, t, gcov, tp.alphaf);
         CoBaseVectors0(el, r, s, t, Gcov);
         double E33F = (gcov[2]*gcov[2] - Gcov[2]*Gcov[2])/2;
-        vector<Vector3d> hu33F(neln);
-        vector<Vector3d> hw33F(neln);
+        std::vector<Vector3d> hu33F(neln);
+        std::vector<Vector3d> hw33F(neln);
         el.shape_fnc(M, r, s);
         for (int i=0; i<neln; ++i) {
             NN(i,2) = Nut = M[i]/2;
@@ -1210,8 +1221,8 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
         CoBaseVectors(el, r, s, t, gcov, tp.alphaf);
         CoBaseVectors0(el, r, s, t, Gcov);
         double E33G = (gcov[2]*gcov[2] - Gcov[2]*Gcov[2])/2;
-        vector<Vector3d> hu33G(neln);
-        vector<Vector3d> hw33G(neln);
+        std::vector<Vector3d> hu33G(neln);
+        std::vector<Vector3d> hw33G(neln);
         el.shape_fnc(M, r, s);
         for (int i=0; i<neln; ++i) {
             NN(i,4) = Nut = M[i]/2;
@@ -1225,8 +1236,8 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
         CoBaseVectors(el, r, s, t, gcov, tp.alphaf);
         CoBaseVectors0(el, r, s, t, Gcov);
         double E33H = (gcov[2]*gcov[2] - Gcov[2]*Gcov[2])/2;
-        vector<Vector3d> hu33H(neln);
-        vector<Vector3d> hw33H(neln);
+        std::vector<Vector3d> hu33H(neln);
+        std::vector<Vector3d> hw33H(neln);
         el.shape_fnc(M, r, s);
         for (int i=0; i<neln; ++i) {
             NN(i,6) = Nut = M[i]/2;
@@ -1238,7 +1249,7 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
         E.resize(8);
         E[0] = E13A; E[1] = E23B; E[2] = E13C; E[3] = E23D;
         E[4] = E33E; E[5] = E33F; E[6] = E33G; E[7] = E33H;
-        HU.resize(8,vector<Vector3d>(neln)); HW.resize(8,vector<Vector3d>(neln));
+        HU.resize(8,std::vector<Vector3d>(neln)); HW.resize(8,std::vector<Vector3d>(neln));
         for (int i=0; i<neln; ++i) {
             HU[0] = hu13A; HU[1] = hu23B; HU[2] = hu13C; HU[3] = hu23D;
             HU[4] = hu33E; HU[5] = hu33F; HU[6] = hu33G; HU[7] = hu33H;
@@ -1251,26 +1262,26 @@ void FEElasticANSShellDomain::CollocationStrainsANS(FEShellElementNew& el, vecto
 //-----------------------------------------------------------------------------
 //! Evaluate assumed natural strain (ANS)
 void FEElasticANSShellDomain::EvaluateANS(FEShellElementNew& el, const int n, const Vector3d* Gcnt,
-                                          Matrix3ds& Ec, vector<matrix>& hu, vector<matrix>& hw,
-                                          vector<double>& E, vector< vector<Vector3d>>& HU, vector< vector<Vector3d>>& HW)
+                                          Matrix3ds& Ec, std::vector<Matrix>& hu, std::vector<Matrix>& hw,
+                                          std::vector<double>& E, std::vector< std::vector<Vector3d>>& HU, std::vector< std::vector<Vector3d>>& HW)
 {
     // ANS method for 4-node quadrilaterials
-    if (el.Nodes() == 4) {
+    if (el.NodeSize() == 4) {
         Vector3d Gcov[3];
-        int neln = el.Nodes();
+        int neln = el.NodeSize();
         
         double E13A = E[0]; double E23B = E[1];
         double E13C = E[2]; double E23D = E[3];
         double E33E = E[4]; double E33F = E[5];
         double E33G = E[6]; double E33H = E[7];
-        vector<Vector3d> hu13A(HU[0]); vector<Vector3d> hu23B(HU[1]);
-        vector<Vector3d> hu13C(HU[2]); vector<Vector3d> hu23D(HU[3]);
-        vector<Vector3d> hu33E(HU[4]); vector<Vector3d> hu33F(HU[5]);
-        vector<Vector3d> hu33G(HU[6]); vector<Vector3d> hu33H(HU[7]);
-        vector<Vector3d> hw13A(HW[0]); vector<Vector3d> hw23B(HW[1]);
-        vector<Vector3d> hw13C(HW[2]); vector<Vector3d> hw23D(HW[3]);
-        vector<Vector3d> hw33E(HW[4]); vector<Vector3d> hw33F(HW[5]);
-        vector<Vector3d> hw33G(HW[6]); vector<Vector3d> hw33H(HW[7]);
+        std::vector<Vector3d> hu13A(HU[0]); std::vector<Vector3d> hu23B(HU[1]);
+        std::vector<Vector3d> hu13C(HU[2]); std::vector<Vector3d> hu23D(HU[3]);
+        std::vector<Vector3d> hu33E(HU[4]); std::vector<Vector3d> hu33F(HU[5]);
+        std::vector<Vector3d> hu33G(HU[6]); std::vector<Vector3d> hu33H(HU[7]);
+        std::vector<Vector3d> hw13A(HW[0]); std::vector<Vector3d> hw23B(HW[1]);
+        std::vector<Vector3d> hw13C(HW[2]); std::vector<Vector3d> hw23D(HW[3]);
+        std::vector<Vector3d> hw33E(HW[4]); std::vector<Vector3d> hw33F(HW[5]);
+        std::vector<Vector3d> hw33G(HW[6]); std::vector<Vector3d> hw33H(HW[7]);
         
         // Evaluate ANS strains
         double r = el.gr(n);
@@ -1279,8 +1290,8 @@ void FEElasticANSShellDomain::EvaluateANS(FEShellElementNew& el, const int n, co
         double E23ANS = ((1-r)*E23D + (1+r)*E23B)/2;
         double E33ANS = ((1-r)*(1-s)*E33E + (1+r)*(1-s)*E33F +
                          (1+r)*(1+s)*E33G + (1-r)*(1+s)*E33H)/4;
-        vector<Vector3d> hu13ANS(neln), hu23ANS(neln), hu33ANS(neln);
-        vector<Vector3d> hw13ANS(neln), hw23ANS(neln), hw33ANS(neln);
+        std::vector<Vector3d> hu13ANS(neln), hu23ANS(neln), hu33ANS(neln);
+        std::vector<Vector3d> hw13ANS(neln), hw23ANS(neln), hw33ANS(neln);
         for (int i=0; i<neln; ++i) {
             hu13ANS[i] = (hu13A[i]*(1-s) + hu13C[i]*(1+s))/2;
             hw13ANS[i] = (hw13A[i]*(1-s) + hw13C[i]*(1+s))/2;
@@ -1313,15 +1324,15 @@ void FEElasticANSShellDomain::EvaluateANS(FEShellElementNew& el, const int n, co
 }
 
 //-----------------------------------------------------------------------------
-//! Evaluate strain E and matrix hu and hw
+//! Evaluate strain E and Matrix hu and hw
 void FEElasticANSShellDomain::EvaluateEh(FEShellElementNew& el, const int n, const Vector3d* Gcnt, Matrix3ds& E,
-                                         vector<matrix>& hu, vector<matrix>& hw, vector<Vector3d>& Nu, vector<Vector3d>& Nw)
+                                         std::vector<Matrix>& hu, std::vector<Matrix>& hw, std::vector<Vector3d>& Nu, std::vector<Vector3d>& Nw)
 {
     FETimeInfo& tp = GetFEModel()->GetTime();
     
     const double* Mr, *Ms, *M;
     Vector3d gcov[3];
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     
     FEMaterialPoint& mp = *(el.GetMaterialPoint(n));
     FEElasticMaterialPoint& pt = *(mp.ExtractData<FEElasticMaterialPoint>());

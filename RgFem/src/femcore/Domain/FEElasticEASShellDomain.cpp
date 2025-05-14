@@ -1,6 +1,6 @@
 #include "FEElasticEASShellDomain.h"
 #include "materials/FEElasticMaterial.h"
-#include "femcore/FEBodyForce.h"
+//#include "femcore/FEBodyForce.h"
 #include "logger/log.h"
 #include "femcore/FEModel.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"

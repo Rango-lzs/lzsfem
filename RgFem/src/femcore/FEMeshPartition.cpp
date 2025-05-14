@@ -1,6 +1,6 @@
 #include "FEMeshPartition.h"
 #include "materials/FEMaterial.h"
-#include "FEDataExport.h"
+//#include "FEDataExport.h"
 #include "FEMesh.h"
 #include "DOFS.h"
 #include <string.h>
@@ -8,7 +8,7 @@
 #include "basicio/DumpStream.h"
 
 //-----------------------------------------------------------------------------
-FEMeshPartition::FEMeshPartition(int nclass, FEModel* fem) : FECoreBase(fem), m_nclass(nclass)
+FEMeshPartition::FEMeshPartition(int nclass, FEModel* fem) : FEObjectBase(fem), m_nclass(nclass)
 {
 	m_pMesh = nullptr;
 	if (fem) m_pMesh = &fem->GetMesh();
@@ -39,7 +39,7 @@ FEElement* FEMeshPartition::FindElementFromID(int nid)
 	for (int i = 0; i<Elements(); ++i)
 	{
 		FEElement& el = ElementRef(i);
-		if (el.GetID() == nid) return &el;
+		if (el.getId() == nid) return &el;
 	}
 
 	return 0;
@@ -48,7 +48,7 @@ FEElement* FEMeshPartition::FindElementFromID(int nid)
 //-----------------------------------------------------------------------------
 void FEMeshPartition::Serialize(DumpStream& ar)
 {
-	FECoreBase::Serialize(ar);
+	FEObjectBase::Serialize(ar);
 	if (ar.IsShallow()) return;
 	ar & m_Node;
 	ar & m_nclass;
@@ -81,7 +81,7 @@ void FEMeshPartition::CopyFrom(FEMeshPartition* pd)
 bool FEMeshPartition::Init()
 {
 	// base class first
-	if (FECoreBase::Init() == false) return false;
+	if (FEObjectBase::Init() == false) return false;
 
 	// make sure that there are elements in this domain
 	if (Elements() == 0) return false;
@@ -91,7 +91,7 @@ bool FEMeshPartition::Init()
 
 	// This array is used to keep tags on each node
 	int NN = mesh.Nodes();
-	vector<int> tag; tag.assign(NN, -1);
+	std::vector<int> tag; tag.assign(NN, -1);
 
 	// let's find all nodes the domain needs
 	int nn = 0;
@@ -99,7 +99,7 @@ bool FEMeshPartition::Init()
 	for (int i = 0; i<NE; ++i)
 	{
 		FEElement& el = ElementRef(i);
-		int ne = el.Nodes();
+		int ne = el.NodeSize();
 		for (int j = 0; j<ne; ++j)
 		{
 			// get the global node number
@@ -145,7 +145,7 @@ void FEMeshPartition::ForEachMaterialPoint(std::function<void(FEMaterialPoint& m
 	for (int i = 0; i < NE; ++i)
 	{
 		FEElement& el = ElementRef(i);
-		int nint = el.GaussPoints();
+		int nint = el.GaussPointSize();
 		for (int n = 0; n < nint; ++n) f(*el.GetMaterialPoint(n));
 	}
 }

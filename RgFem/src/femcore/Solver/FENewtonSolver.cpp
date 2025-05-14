@@ -12,7 +12,10 @@
 #include "femcore/sys.h"
 #include "LinearSolver.h"
 #include "logger/log.h"
-#include "../Callback.h"
+#include "femcore/Callback.h"
+#include "FESolver.h"
+#include "femcore/FEMesh.h"
+#include "femcore/fecore_enum.h"
 
 //-----------------------------------------------------------------------------
 // define the parameter list
@@ -36,10 +39,10 @@ ADD_PARAMETER(m_Rmin, FE_RANGE_GREATER_OR_EQUAL(0.0), "min_residual");
 ADD_PARAMETER(m_Rmax, FE_RANGE_GREATER_OR_EQUAL(0.0), "max_residual");
 END_PARAM_GROUP();
 
-ADD_PROPERTY(m_qnstrategy, "qn_method", FEProperty::Preferred)
-    ->SetDefaultType("BFGS")
-    .SetLongName("Quasi-Newton method");
-ADD_PROPERTY(m_plinsolve, "linear_solver", FEProperty::Optional)->SetDefaultType("pardiso");
+//ADD_PROPERTY(m_qnstrategy, "qn_method", FEProperty::Preferred)
+//    ->SetDefaultType("BFGS")
+//    .SetLongName("Quasi-Newton method");
+//ADD_PROPERTY(m_plinsolve, "linear_solver", FEProperty::Optional)->SetDefaultType("pardiso");
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
@@ -85,7 +88,8 @@ void FENewtonSolver::SetDefaultStrategy(QN_STRATEGY qn)
 {
     GetParameterList();  // This needs to be called to ensure that the parameter and property lists have been setup.
 
-    FEProperty& p = *FindProperty("qn_method");
+    //Rango TODO:
+    /*FEProperty& p = *FindProperty("qn_method");
     switch (qn)
     {
         case QN_BFGS:
@@ -99,7 +103,7 @@ void FENewtonSolver::SetDefaultStrategy(QN_STRATEGY qn)
             break;
         default:
             assert(false);
-    }
+    }*/
 }
 
 //-----------------------------------------------------------------------------
@@ -329,8 +333,8 @@ bool FENewtonSolver::AllocateLinearSystem()
     if (m_plinsolve == 0)
     {
         FEModel* fem = GetFEModel();
-        FECoreKernel& fecore = FECoreKernel::GetInstance();
-        m_plinsolve = fecore.CreateDefaultLinearSolver(fem);
+        //Rango TODO:
+        //m_plinsolve = fecore.CreateDefaultLinearSolver(fem);
         if (m_plinsolve == 0)
         {
             feLogError("Unknown solver type selected\n");
@@ -356,9 +360,9 @@ bool FENewtonSolver::AllocateLinearSystem()
         m_plinsolve->SetPartitions(m_part);
     }
 
-    feLogInfo("Selecting linear solver %s", m_plinsolve->GetTypeStr());
+    //feLogInfo("Selecting linear solver %s", m_plinsolve->GetTypeStr());
 
-    MatType mtype = MatType();
+    MatrixType mtype = MatType();
     SparseMatrix* pS = m_qnstrategy->CreateSparseMatrix(mtype);
     if ((pS == 0) && (m_msymm == REAL_SYMMETRIC))
     {
@@ -407,7 +411,7 @@ bool FENewtonSolver::Init()
     // choose a solution strategy
     if (m_qnstrategy == nullptr)
     {
-        m_qnstrategy = fecore_new<FENewtonStrategy>("BFGS", GetFEModel());
+        m_qnstrategy = RANGO_NEW<FENewtonStrategy>(GetFEModel() ,"BFGS");
         assert(m_qnstrategy);
         if (m_qnstrategy == nullptr)
             return false;
@@ -640,7 +644,7 @@ bool FENewtonSolver::Quasin()
 }
 
 //-----------------------------------------------------------------------------
-bool FENewtonSolver::CheckConvergence(int niter, const vector<double>& ui, double ls)
+bool FENewtonSolver::CheckConvergence(int niter, const std::vector<double>& ui, double ls)
 {
     int vars = (int)m_solutionNorm.size();
 
@@ -729,7 +733,7 @@ bool FENewtonSolver::CheckConvergence(int niter, const vector<double>& ui, doubl
 //! Solve the linear system of equations.
 //! x is the solution vector
 //! R is the right-hand-side vector
-void FENewtonSolver::SolveLinearSystem(vector<double>& x, vector<double>& R)
+void FENewtonSolver::SolveLinearSystem(std::vector<double>& x, std::vector<double>& R)
 {
     // solve the equations
     if (m_plinsolve->BackSolve(x, R) == false)
@@ -757,7 +761,7 @@ void FENewtonSolver::PrepStep()
 
     // apply prescribed velocities
     // we save the prescribed velocity increments in the ui vector
-    vector<double>& ui = m_ui;
+    std::vector<double>& ui = m_ui;
     zero(ui);
     int nbc = fem.BoundaryConditions();
     for (int i = 0; i < nbc; ++i)
@@ -1026,7 +1030,7 @@ void FENewtonSolver::Update(std::vector<double>& ui)
     FEMesh& mesh = fem.GetMesh();
 
     // update nodes
-    vector<double> U(m_Ut.size());
+    std::vector<double> U(m_Ut.size());
     for (size_t i = 0; i < m_Ut.size(); ++i)
         U[i] = ui[i] + m_Ui[i] + m_Ut[i];
 
@@ -1064,9 +1068,10 @@ void FENewtonSolver::Update(std::vector<double>& ui)
         int NE = dom.Elements();
         for (int j = 0; j < NE; ++j)
         {
-            FEElement& el = dom.ElementRef(j);
+            //Rango TODO:
+            /*FEElement& el = dom.ElementRef(j);
             if (el.m_lm >= 0)
-                el.m_val = U[el.m_lm];
+                el.m_val = U[el.m_lm];*/
         }
     }
 
@@ -1079,14 +1084,14 @@ void FENewtonSolver::Update(std::vector<double>& ui)
 //! Updates the current state of the model
 //! NOTE: The ui vector also contains prescribed displacement increments. Also note that this
 //!       only works for a limited set of FEBio features (no rigid bodies or shells!).
-void FENewtonSolver::Update2(const vector<double>& ui)
+void FENewtonSolver::Update2(const std::vector<double>& ui)
 {
     // get the mesh
     FEModel& fem = *GetFEModel();
     FEMesh& mesh = fem.GetMesh();
 
     // total displacements
-    vector<double> U(m_Ut.size());
+    std::vector<double> U(m_Ut.size());
     for (size_t i = 0; i < m_Ut.size(); ++i)
         U[i] = ui[i] + m_Ui[i] + m_Ut[i];
 
@@ -1122,9 +1127,9 @@ void FENewtonSolver::Update2(const vector<double>& ui)
         int NE = dom.Elements();
         for (int j = 0; j < NE; ++j)
         {
-            FEElement& el = dom.ElementRef(j);
+            /*FEElement& el = dom.ElementRef(j);
             if (el.m_lm >= 0)
-                el.m_val = U[el.m_lm];
+                el.m_val = U[el.m_lm];*/
         }
     }
 

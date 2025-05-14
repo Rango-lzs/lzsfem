@@ -6,12 +6,13 @@
 class FENewtonSolver;
 class SparseMatrix;
 class LinearSolver;
+enum MatrixType;
 
 //-----------------------------------------------------------------------------
 //! A Base class for newton-type solution strategies
 class FEM_EXPORT FENewtonStrategy : public FEObjectBase
 {
-    META_CLASS_DECLARE(FENewtonStrategy, FEObjectBase);
+    DECLARE_META_CLASS(FENewtonStrategy, FEObjectBase);
 
 public:
 	FENewtonStrategy(FEModel* fem);
@@ -26,7 +27,7 @@ public:
 
 public:
 	//! initialize the linear system
-	virtual SparseMatrix* CreateSparseMatrix(MatrixType mtype);
+	virtual SparseMatrix* CreateSparseMatrix(const MatrixType& mtype);
 
 	//! Presolve update
 	virtual void PreSolveUpdate() {}

@@ -272,7 +272,7 @@ double FEDomainMap::value(const FEMaterialPoint& pt)
 
 //-----------------------------------------------------------------------------
 //! get the value at a material point
-Vector3d FEDomainMap::valueVector3d(const FEMaterialPoint& pt)
+Vector3d FEDomainMap::valueVec3d(const FEMaterialPoint& pt)
 {
 	// get the element this material point is in
 	FEElement* pe = pt.m_elem;
@@ -355,10 +355,10 @@ Matrix3ds FEDomainMap::valueMat3ds(const FEMaterialPoint& pt)
 		// calculate shape function values
 		double* w = pe->H(pt.m_index);
 		Matrix3ds Qi[FEElement::MAX_NODES];
-		int ne = pe->Nodes();
+		int ne = pe->NodeSize();
 		for (int i = 0; i < ne; ++i)
 		{
-			int nid = pe->m_node[i];
+			int nid = pe->getNodeId(i);
 
 			int lid = m_NLT[nid] - m_imin; 
 			assert((lid >= 0) && (lid < DataCount()));
@@ -367,7 +367,8 @@ Matrix3ds FEDomainMap::valueMat3ds(const FEMaterialPoint& pt)
 		}
 
 		// weighted average
-		Q = weightedAverageStructureTensor(Qi, w, ne);
+		// Rango TODO:
+		//Q = weightedAverageStructureTensor(Qi, w, ne);
 	}
 	else if (m_fmt == FMT_MATPOINTS)
 	{
@@ -412,7 +413,7 @@ bool FEDomainMap::Merge(FEDomainMap& map)
 		// set the new values of the map
 		for (int i = 0; i < set2->Elements(); ++i)
 		{
-			int n = set2->Element(i).Nodes();
+			int n = set2->Element(i).NodeSize();
 			for (int j = 0; j < n; ++j)
 			{
 				double v = map.value<double>(i, j);
@@ -432,7 +433,7 @@ bool FEDomainMap::Merge(FEDomainMap& map)
 		// set the new values of the map
 		for (int i = 0; i < set2->Elements(); ++i)
 		{
-			int n = set2->Element(i).GaussPoints();
+			int n = set2->Element(i).GaussPointSize();
 			for (int j = 0; j < n; ++j)
 			{
 				double v = map.value<double>(i, j);
@@ -488,8 +489,8 @@ void FEDomainMap::Realloc(int newElemSize, int newMaxElemNodes)
 		FEElementSet* set = m_elset;
 		for (int i = 0; i < set->Elements(); ++i)
 		{
-			int n = set->Element(i).Nodes();
-			if (StorageFormat() == FMT_MATPOINTS) n = set->Element(i).GaussPoints();
+			int n = set->Element(i).NodeSize();
+			if (StorageFormat() == FMT_MATPOINTS) n = set->Element(i).GaussPointSize();
 
 			for (int j = 0; j < n; ++j)
 			{
