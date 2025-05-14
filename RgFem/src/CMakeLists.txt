@@ -239,19 +239,19 @@ set(FEMCORE_SOURCES
     femcore/Domain/FEDomainList.cpp
     femcore/Domain/FEDomainMap.cpp
     femcore/Domain/FEDomainParameter.cpp
-    femcore/Domain/FEElasticANSShellDomain.cpp
+    #femcore/Domain/FEElasticANSShellDomain.cpp
     femcore/Domain/FEElasticDomain.cpp
-    femcore/Domain/FEElasticEASShellDomain.cpp
-    femcore/Domain/FEElasticShellDomain.cpp
-    femcore/Domain/FEElasticShellDomainOld.cpp
+    #femcore/Domain/FEElasticEASShellDomain.cpp
+    #femcore/Domain/FEElasticShellDomain.cpp
+    #femcore/Domain/FEElasticShellDomainOld.cpp
     femcore/Domain/FEElasticSolidDomain.cpp
-    femcore/Domain/FEElasticTrussDomain.cpp
-    femcore/Domain/FELinearTrussDomain.cpp
-    femcore/Domain/FEShellDomain.cpp
+    #femcore/Domain/FEElasticTrussDomain.cpp
+    #femcore/Domain/FELinearTrussDomain.cpp
+    #femcore/Domain/FEShellDomain.cpp
     femcore/Domain/FESolidDomain.cpp
     femcore/Domain/FESolidDomainFactory.cpp
-    femcore/Domain/FETrussDomain.cpp
-    femcore/Domain/FESSIShellDomain.h
+    #femcore/Domain/FETrussDomain.cpp
+    #femcore/Domain/FESSIShellDomain.h
     #femcore/DomainDataRecord.cpp
     #femcore/ElementDataRecord.cpp
     #femcore/FE3FieldElasticSolidDomain.cpp
