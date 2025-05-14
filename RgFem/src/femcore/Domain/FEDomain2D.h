@@ -1,5 +1,6 @@
 #pragma once
 #include "FEDomain.h"
+#include "elements/FEElement2d.h"
 
 class FEElement2D;
 

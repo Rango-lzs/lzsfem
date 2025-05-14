@@ -670,7 +670,7 @@ void FEBioMeshDataSection4::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 				quatd Q(A);
 
 				// assign to all material points
-				int ni = el->GaussPoints();
+				int ni = el->GaussPointSize();
 				for (int n=0; n<ni; ++n)
 				{
 					FEMaterialPoint* mp = el->GetMaterialPoint(n);

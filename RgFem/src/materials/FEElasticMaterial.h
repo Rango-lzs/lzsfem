@@ -32,9 +32,8 @@ public:
     virtual double StrongBondSED(FEMaterialPoint& pt) { return StrainEnergyDensity(pt); }
     virtual double WeakBondSED(FEMaterialPoint& pt) { return 0; }
 
-protected:
-//	DECLARE_FECORE_CLASS();
-	FECORE_BASE_CLASS(FEElasticMaterial);
+
+	DECLARE_PARAM_LIST();
 };
 
 //-----------------------------------------------------------------------------

@@ -1,10 +1,11 @@
 #pragma once
 #include "FEElasticDomain.h"
 #include "materials/FESolidMaterial.h"
+#include "femcore/Domain/FESSIShellDomain.h"
 
 //-----------------------------------------------------------------------------
 //! Domain described by 3D shell elements
-class FEBIOMECH_API FEElasticEASShellDomain : public FEElasticDomain
+class FEM_EXPORT FEElasticEASShellDomain : public FESSIShellDomain, public FEElasticDomain
 {
 public:
     FEElasticEASShellDomain(FEModel* pfem);

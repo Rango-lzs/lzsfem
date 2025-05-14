@@ -126,8 +126,8 @@ void FEBioMeshSection4::ParseElementSection(XMLTag& tag, FEBModel::Part* part)
     // get the element spec
     const char* sztype = tag.AttributeValue("type");
     FE_Element_Spec espec = GetBuilder()->ElementSpec(sztype);
-    if (FEElementLibrary::IsValid(espec) == false)
-        throw FEBioImport::InvalidElementType();
+   /* if (FEElementLibrary::IsValid(espec) == false)
+        throw FEBioImport::InvalidElementType();*/
 
     // make sure the domain does not exist yet
     FEBModel::Domain* dom = part->FindDomain(szname);
@@ -312,7 +312,7 @@ void FEBioMeshSection4::ParsePartListSection(XMLTag& tag, FEBModel::Part* part)
     part->AddPartList(ps);
 
     // read the part names
-    std::vector<string> partList;
+    std::vector<std::string> partList;
     tag.value(partList);
     if (partList.empty())
         throw XMLReader::InvalidTag(tag);
@@ -330,7 +330,7 @@ void FEBioMeshSection4::ParsePartListSection(XMLTag& tag, FEBModel::Part* part)
         if (a == nullptr)
             throw XMLReader::InvalidValue(tag);
 
-        const vector<int>& aList = a->ElementList();
+        const std::vector<int>& aList = a->ElementList();
         elemList.insert(elemList.end(), aList.begin(), aList.end());
     }
     es->SetElementList(elemList);

@@ -8,6 +8,8 @@
 #include <math.h>
 #include "femcore/Domain/FESolidDomain.h"
 #include "femcore/FELinearSystem.h"
+#include "../FEException.h"
+#include "femcore/FEMesh.h"
 
 //-----------------------------------------------------------------------------
 FEElasticShellDomainOld::FEElasticShellDomainOld(FEModel* pfem) : FEShellDomainOld(pfem), FEElasticDomain(pfem), m_dofSU(pfem), m_dofSR(pfem), m_dofR(pfem), m_dof(pfem)
@@ -59,21 +61,21 @@ bool FEElasticShellDomainOld::Init()
 	for (int i=0; i<Elements(); ++i)
 	{
 		FEShellElementOld& el = ShellElement(i);
-		int nint = el.GaussPoints();
+		int nint = el.GaussPointSize();
 		for (int n=0; n<nint; ++n)
 		{
 			double J0 = detJ0(el, n);
 			if (J0 <= 0)
 			{
 				feLog("**************************** E R R O R ****************************\n");
-				feLog("Negative jacobian detected at integration point %d of element %d\n", n+1, el.GetID());
+				feLog("Negative jacobian detected at integration point %d of element %d\n", n+1, el.getId());
 				feLog("Jacobian = %lg\n", J0);
 				feLog("Did you use the right node numbering?\n");
 				feLog("Nodes:");
-				for (int l=0; l<el.Nodes(); ++l)
+				for (int l=0; l<el.NodeSize(); ++l)
 				{
 					feLog("%d", el.m_node[l]+1);
-					if (l+1 != el.Nodes()) feLog(","); else feLog("\n");
+					if (l+1 != el.NodeSize()) feLog(","); else feLog("\n");
 				}
 				feLog("*******************************************************************\n\n");
 				bmerr = true;
@@ -115,7 +117,7 @@ void FEElasticShellDomainOld::CoBaseVectors0(FEShellElementOld& el, int n, Vecto
 {
 	int i;
 
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 
 	// current nodal coordinates and directors
 	Vector3d r[FEElement::MAX_NODES], D[FEElement::MAX_NODES];
@@ -213,7 +215,7 @@ void FEElasticShellDomainOld::CoBaseVectors(FEShellElementOld& el, int n, Vector
 {
     int i;
     
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
 
     // current nodal coordinates and directors
     Vector3d r[FEElement::MAX_NODES], D[FEElement::MAX_NODES];
@@ -326,10 +328,10 @@ double FEElasticShellDomainOld::invjact(FEShellElementOld& el, double Ji[3][3], 
 // Calculates the forces due to the stress
 void FEElasticShellDomainOld::InternalForces(FEGlobalVector& R)
 {
-	// element force vector
-	vector<double> fe;
+	// element force std::vector
+	std::vector<double> fe;
 
-	vector<int> lm;
+	std::vector<int> lm;
 
 	int NS = (int)m_Elem.size();
 	for (int i=0; i<NS; ++i)
@@ -337,14 +339,14 @@ void FEElasticShellDomainOld::InternalForces(FEGlobalVector& R)
 		// get the element
 		FEShellElementOld& el = m_Elem[i];
 
-		// create the element force vector and initialize to zero
-		int ndof = 6*el.Nodes();
+		// create the element force std::vector and initialize to zero
+		int ndof = 6*el.NodeSize();
 		fe.assign(ndof, 0);
 
 		// calculate element's internal force
 		ElementInternalForce(el, fe);
 
-		// get the element's LM vector
+		// get the element's LM std::vector
 		UnpackLM(el, lm);
 
 		// assemble the residual
@@ -357,7 +359,7 @@ void FEElasticShellDomainOld::InternalForces(FEGlobalVector& R)
 //! Note that we use a one-point gauss integration rule for the thickness
 //! integration. This will integrate linear functions exactly.
 
-void FEElasticShellDomainOld::ElementInternalForce(FEShellElementOld& el, vector<double>& fe)
+void FEElasticShellDomainOld::ElementInternalForce(FEShellElementOld& el, std::vector<double>& fe)
 {
 	int i, n;
 
@@ -366,8 +368,8 @@ void FEElasticShellDomainOld::ElementInternalForce(FEShellElementOld& el, vector
 
 	const double* Mr, *Ms, *M;
 
-	int nint = el.GaussPoints();
-	int neln = el.Nodes();
+	int nint = el.GaussPointSize();
+	int neln = el.NodeSize();
 
 	double*	gw = el.GaussWeights();
 	double eta;
@@ -384,7 +386,7 @@ void FEElasticShellDomainOld::ElementInternalForce(FEShellElementOld& el, vector
 
 		detJt *= gw[n];
 
-		// get the stress vector for this integration point
+		// get the stress std::vector for this integration point
 		Matrix3ds& s = pt.m_s;
 
 		eta = el.gt(n);
@@ -404,7 +406,7 @@ void FEElasticShellDomainOld::ElementInternalForce(FEShellElementOld& el, vector
 
 			// calculate internal force
 			// the '-' sign is so that the internal forces get subtracted
-			// from the global residual vector
+			// from the global residual std::vector
 			fe[6*i  ] -= fu.x*detJt;
 			fe[6*i+1] -= fu.y*detJt;
 			fe[6*i+2] -= fu.z*detJt;
@@ -419,10 +421,10 @@ void FEElasticShellDomainOld::ElementInternalForce(FEShellElementOld& el, vector
 //-----------------------------------------------------------------------------
 void FEElasticShellDomainOld::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 {
-	// element force vector
-	vector<double> fe;
+	// element force std::vector
+	std::vector<double> fe;
 
-	vector<int> lm;
+	std::vector<int> lm;
 
 	int NS = (int)m_Elem.size();
 	for (int i=0; i<NS; ++i)
@@ -430,14 +432,14 @@ void FEElasticShellDomainOld::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 		// get the element
 		FEShellElementOld& el = m_Elem[i];
 
-		// create the element force vector and initialize to zero
-		int ndof = 6*el.Nodes();
+		// create the element force std::vector and initialize to zero
+		int ndof = 6*el.NodeSize();
 		fe.assign(ndof, 0);
 
 		// apply body forces to shells
 		ElementBodyForce(BF, el, fe);
 
-		// get the element's LM vector
+		// get the element's LM std::vector
 		UnpackLM(el, lm);
 
 		// assemble the residual
@@ -448,7 +450,7 @@ void FEElasticShellDomainOld::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 //-----------------------------------------------------------------------------
 //! Calculates element body forces for shells
 
-void FEElasticShellDomainOld::ElementBodyForce(FEBodyForce& BF, FEShellElementOld& el, vector<double>& fe)
+void FEElasticShellDomainOld::ElementBodyForce(FEBodyForce& BF, FEShellElementOld& el, std::vector<double>& fe)
 {
 	// integration weights
 	double* gw = el.GaussWeights();
@@ -456,8 +458,8 @@ void FEElasticShellDomainOld::ElementBodyForce(FEBodyForce& BF, FEShellElementOl
 	double *M, detJt;
 
 	// loop over integration points
-	int nint = el.GaussPoints();
-	int neln = el.Nodes();
+	int nint = el.GaussPointSize();
+	int neln = el.NodeSize();
 
 	for (int n=0; n<nint; ++n)
 	{
@@ -506,14 +508,14 @@ void FEElasticShellDomainOld::StiffnessMatrix(FELinearSystem& LS)
 
 		// create the element's stiffness matrix
 		FEElementMatrix ke(el);
-		int ndof = 6*el.Nodes();
+		int ndof = 6*el.NodeSize();
 		ke.resize(ndof, ndof);
 
 		// calculate the element stiffness matrix
 		ElementStiffness(iel, ke);
 
-		// get the element's LM vector
-		vector<int> lm;
+		// get the element's LM std::vector
+		std::vector<int> lm;
 		UnpackLM(el, lm);
 		ke.SetIndices(lm);
 
@@ -525,15 +527,15 @@ void FEElasticShellDomainOld::StiffnessMatrix(FELinearSystem& LS)
 //-----------------------------------------------------------------------------
 //! Calculates the shell element stiffness matrix
 
-void FEElasticShellDomainOld::ElementStiffness(int iel, matrix& ke)
+void FEElasticShellDomainOld::ElementStiffness(int iel, Matrix& ke)
 {
 	FEShellElementOld& el = ShellElement(iel);
 
 	int i, i6, j, j6, n;
 
 	// Get the current element's data
-	const int nint = el.GaussPoints();
-	const int neln = el.Nodes();
+	const int nint = el.GaussPointSize();
+	const int neln = el.NodeSize();
 
     const double* Mr, *Ms, *M;
     Vector3d gradM[FEElement::MAX_NODES], gradP[FEElement::MAX_NODES];
@@ -647,7 +649,7 @@ void FEElasticShellDomainOld::ElementStiffness(int iel, matrix& ke)
 //-----------------------------------------------------------------------------
 //! Calculates body forces for shells
 
-void FEElasticShellDomainOld::ElementBodyForce(FEModel& fem, FEShellElementOld& el, vector<double>& fe)
+void FEElasticShellDomainOld::ElementBodyForce(FEModel& fem, FEShellElementOld& el, std::vector<double>& fe)
 {
 	int NF = fem.ModelLoads();
 	for (int nf = 0; nf < NF; ++nf)
@@ -661,8 +663,8 @@ void FEElasticShellDomainOld::ElementBodyForce(FEModel& fem, FEShellElementOld& 
             double *M, detJt;
             
             // loop over integration points
-            int nint = el.GaussPoints();
-            int neln = el.Nodes();
+            int nint = el.GaussPointSize();
+            int neln = el.NodeSize();
             
             for (int n=0; n<nint; ++n)
             {
@@ -712,10 +714,10 @@ void FEElasticShellDomainOld::Update(const FETimeInfo& tp)
 		FEShellElementOld& el = m_Elem[i];
 
 		// get the number of integration points
-		int nint = el.GaussPoints();
+		int nint = el.GaussPointSize();
 
 		// number of nodes
-		int neln = el.Nodes();
+		int neln = el.NodeSize();
 
 		// nodal coordinates
 		for (int j=0; j<neln; ++j)
@@ -763,14 +765,14 @@ void FEElasticShellDomainOld::Update(const FETimeInfo& tp)
 //! to the solid element ordering. This is because for shell elements the
 //! nodes have six degrees of freedom each, where for solids they only
 //! have 3 dofs.
-void FEElasticShellDomainOld::UnpackLM(FEElement& el, vector<int>& lm)
+void FEElasticShellDomainOld::UnpackLM(FEElement& el, std::vector<int>& lm)
 {
-	int N = el.Nodes();
+	int N = el.NodeSize();
 	lm.resize(N*9);
 	for (int i=0; i<N; ++i)
 	{
 		FENode& node = m_pMesh->Node(el.m_node[i]);
-		vector<int>& id = node.m_dofs;
+		std::vector<int>& id = node.m_dofs;
 
 		// first the displacement dofs
 		lm[6*i  ] = id[m_dofSU[0]];

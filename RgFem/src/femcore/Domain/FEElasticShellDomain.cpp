@@ -8,6 +8,9 @@
 #include <math.h>
 #include "femcore/Domain/FESolidDomain.h"
 #include "femcore/FELinearSystem.h"
+#include "../FEException.h"
+#include "../FEMeshPartition.h"
+#include "femcore/FEMesh.h"
 
 
 //-----------------------------------------------------------------------------
@@ -112,7 +115,7 @@ void FEElasticShellDomain::PreSolveUpdate(const FETimeInfo& timeInfo)
     for (size_t i=0; i<m_Elem.size(); ++i)
     {
         FEShellElement& el = m_Elem[i];
-        int n = el.GaussPoints();
+        int n = el.GaussPointSize();
         for (int j=0; j<n; ++j)
         {
             FEMaterialPoint& mp = *el.GetMaterialPoint(j);
@@ -132,21 +135,21 @@ void FEElasticShellDomain::InternalForces(FEGlobalVector& R)
 #pragma omp parallel for shared (NS)
     for (int i=0; i<NS; ++i)
     {
-        // element force vector
-        vector<double> fe;
-        vector<int> lm;
+        // element force std::vector
+        std::vector<double> fe;
+        std::vector<int> lm;
         
         // get the element
         FEShellElement& el = m_Elem[i];
         
-        // create the element force vector and initialize to zero
-        int ndof = 6*el.Nodes();
+        // create the element force std::vector and initialize to zero
+        int ndof = 6*el.NodeSize();
         fe.assign(ndof, 0);
         
         // calculate element's internal force
         ElementInternalForce(el, fe);
         
-        // get the element's LM vector
+        // get the element's LM std::vector
         UnpackLM(el, lm);
         
         // assemble the residual
@@ -159,10 +162,10 @@ void FEElasticShellDomain::InternalForces(FEGlobalVector& R)
 //! Note that we use a one-point gauss integration rule for the thickness
 //! integration. This will integrate linear functions exactly.
 
-void FEElasticShellDomain::ElementInternalForce(FEShellElement& el, vector<double>& fe)
+void FEElasticShellDomain::ElementInternalForce(FEShellElement& el, std::vector<double>& fe)
 {
-	int nint = el.GaussPoints();
-	int neln = el.Nodes();
+	int nint = el.GaussPointSize();
+	int neln = el.NodeSize();
 
 	// repeat for all integration points
 	double* gw = el.GaussWeights();
@@ -180,7 +183,7 @@ void FEElasticShellDomain::ElementInternalForce(FEShellElement& el, vector<doubl
 		else
 			ContraBaseVectors(el, n, gcnt, m_alphaf);
 
-		// get the stress vector for this integration point
+		// get the stress std::vector for this integration point
 		Matrix3ds& s = pt.m_s;
 
 		double eta = el.gt(n);
@@ -199,7 +202,7 @@ void FEElasticShellDomain::ElementInternalForce(FEShellElement& el, vector<doubl
             
             // calculate internal force
 			// the '-' sign is so that the internal forces get subtracted
-			// from the global residual vector
+			// from the global residual std::vector
 			fe[6*i  ] -= fu.x*detJt;
 			fe[6*i+1] -= fu.y*detJt;
 			fe[6*i+2] -= fu.z*detJt;
@@ -218,21 +221,21 @@ void FEElasticShellDomain::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 #pragma omp parallel for
     for (int i=0; i<NS; ++i)
     {
-        // element force vector
-        vector<double> fe;
-        vector<int> lm;
+        // element force std::vector
+        std::vector<double> fe;
+        std::vector<int> lm;
         
         // get the element
         FEShellElement& el = m_Elem[i];
         
-        // create the element force vector and initialize to zero
-        int ndof = 6*el.Nodes();
+        // create the element force std::vector and initialize to zero
+        int ndof = 6*el.NodeSize();
         fe.assign(ndof, 0);
         
         // apply body forces to shells
         ElementBodyForce(BF, el, fe);
         
-        // get the element's LM vector
+        // get the element's LM std::vector
         UnpackLM(el, lm);
         
         // assemble the residual
@@ -243,7 +246,7 @@ void FEElasticShellDomain::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 //-----------------------------------------------------------------------------
 //! Calculates element body forces for shells
 
-void FEElasticShellDomain::ElementBodyForce(FEBodyForce& BF, FEShellElement& el, vector<double>& fe)
+void FEElasticShellDomain::ElementBodyForce(FEBodyForce& BF, FEShellElement& el, std::vector<double>& fe)
 {
     // integration weights
     double* gw = el.GaussWeights();
@@ -251,8 +254,8 @@ void FEElasticShellDomain::ElementBodyForce(FEBodyForce& BF, FEShellElement& el,
     double *M, detJt;
     
     // loop over integration points
-    int nint = el.GaussPoints();
-    int neln = el.Nodes();
+    int nint = el.GaussPointSize();
+    int neln = el.NodeSize();
     
     for (int n=0; n<nint; ++n)
     {
@@ -286,41 +289,41 @@ void FEElasticShellDomain::ElementBodyForce(FEBodyForce& BF, FEShellElement& el,
 
 //-----------------------------------------------------------------------------
 // Calculate inertial forces \todo Why is F no longer needed?
-void FEElasticShellDomain::InertialForces(FEGlobalVector& R, vector<double>& F)
+void FEElasticShellDomain::InertialForces(FEGlobalVector& R, std::vector<double>& F)
 {
     int NE = (int)m_Elem.size();
 #pragma omp parallel for shared (NE)
     for (int i=0; i<NE; ++i)
     {
-        // element force vector
-        vector<double> fe;
-        vector<int> lm;
+        // element force std::vector
+        std::vector<double> fe;
+        std::vector<int> lm;
         
         // get the element
         FEShellElement& el = m_Elem[i];
         
-        // get the element force vector and initialize it to zero
-        int ndof = 6*el.Nodes();
+        // get the element force std::vector and initialize it to zero
+        int ndof = 6*el.NodeSize();
         fe.assign(ndof, 0);
         
-        // calculate internal force vector
+        // calculate internal force std::vector
         ElementInertialForce(el, fe);
         
-        // get the element's LM vector
+        // get the element's LM std::vector
         UnpackLM(el, lm);
         
-        // assemble element 'fe'-vector into global R vector
+        // assemble element 'fe'-std::vector into global R std::vector
         R.Assemble(el.m_node, lm, fe, true);
     }
 }
 
 //-----------------------------------------------------------------------------
-void FEElasticShellDomain::ElementInertialForce(FEShellElement& el, vector<double>& fe)
+void FEElasticShellDomain::ElementInertialForce(FEShellElement& el, std::vector<double>& fe)
 {
-    int nint = el.GaussPoints();
-    int neln = el.Nodes();
+    int nint = el.GaussPointSize();
+    int neln = el.NodeSize();
 
-    // evaluate the element inertial force vector
+    // evaluate the element inertial force std::vector
     for (int n=0; n<nint; ++n)
     {
         FEMaterialPoint& mp = *el.GetMaterialPoint(n);
@@ -349,10 +352,10 @@ void FEElasticShellDomain::ElementInertialForce(FEShellElement& el, vector<doubl
 
 //-----------------------------------------------------------------------------
 //! This function calculates the stiffness due to body forces
-void FEElasticShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShellElement &el, matrix &ke)
+void FEElasticShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShellElement &el, Matrix &ke)
 {
     int i, j, i6, j6;
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     
     // jacobian
     double detJ;
@@ -363,7 +366,7 @@ void FEElasticShellDomain::ElementBodyForceStiffness(FEBodyForce& BF, FEShellEle
     double Mu[FEElement::MAX_NODES], Md[FEElement::MAX_NODES];
     
     // loop over integration points
-    int nint = el.GaussPoints();
+    int nint = el.GaussPointSize();
     for (int n=0; n<nint; ++n)
     {
         FEMaterialPoint& mp = *el.GetMaterialPoint(n);
@@ -422,20 +425,20 @@ void FEElasticShellDomain::StiffnessMatrix(FELinearSystem& LS)
     {
 		FEShellElement& el = m_Elem[iel];
         
-        // create the element's stiffness matrix
+        // create the element's stiffness Matrix
 		FEElementMatrix ke(el);
-		int ndof = 6*el.Nodes();
+		int ndof = 6*el.NodeSize();
         ke.resize(ndof, ndof);
         
-        // calculate the element stiffness matrix
+        // calculate the element stiffness Matrix
         ElementStiffness(iel, ke);
         
-        // get the element's LM vector
-		vector<int> lm;
+        // get the element's LM std::vector
+		std::vector<int> lm;
 		UnpackLM(el, lm);
 		ke.SetIndices(lm);
         
-        // assemble element matrix in global stiffness matrix
+        // assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
     }
 }
@@ -450,21 +453,21 @@ void FEElasticShellDomain::MassMatrix(FELinearSystem& LS, double scale)
     {
 		FEShellElement& el = m_Elem[iel];
         
-        // create the element's stiffness matrix
+        // create the element's stiffness Matrix
 		FEElementMatrix ke(el);
-		int ndof = 6*el.Nodes();
+		int ndof = 6*el.NodeSize();
         ke.resize(ndof, ndof);
         ke.zero();
         
         // calculate inertial stiffness
         ElementMassMatrix(el, ke, scale);
         
-        // get the element's LM vector
-		vector<int> lm;
+        // get the element's LM std::vector
+		std::vector<int> lm;
 		UnpackLM(el, lm);
 		ke.SetIndices(lm);
         
-        // assemble element matrix in global stiffness matrix
+        // assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
     }
 }
@@ -479,42 +482,42 @@ void FEElasticShellDomain::BodyForceStiffness(FELinearSystem& LS, FEBodyForce& b
     {
 		FEShellElement& el = m_Elem[iel];
         
-        // create the element's stiffness matrix
+        // create the element's stiffness Matrix
 		FEElementMatrix ke(el);
-		int ndof = 6*el.Nodes();
+		int ndof = 6*el.NodeSize();
         ke.resize(ndof, ndof);
         ke.zero();
         
         // calculate inertial stiffness
         ElementBodyForceStiffness(bf, el, ke);
         
-        // get the element's LM vector
-		vector<int> lm;
+        // get the element's LM std::vector
+		std::vector<int> lm;
 		UnpackLM(el, lm);
 		ke.SetIndices(lm);
         
-        // assemble element matrix in global stiffness matrix
+        // assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
     }
 }
 
 //-----------------------------------------------------------------------------
-//! Calculates the shell element stiffness matrix
+//! Calculates the shell element stiffness Matrix
 
-void FEElasticShellDomain::ElementStiffness(int iel, matrix& ke)
+void FEElasticShellDomain::ElementStiffness(int iel, Matrix& ke)
 {
     FEShellElement& el = Element(iel);
     
     int i, i6, j, j6, n;
     
     // Get the current element's data
-    const int nint = el.GaussPoints();
-    const int neln = el.Nodes();
+    const int nint = el.GaussPointSize();
+    const int neln = el.NodeSize();
     
     const double* Mr, *Ms, *M;
     Vector3d gradMu[FEElement::MAX_NODES], gradMd[FEElement::MAX_NODES];
     
-    // jacobian matrix determinant
+    // jacobian Matrix determinant
     double detJt;
     
     // weights at gauss points
@@ -523,7 +526,7 @@ void FEElasticShellDomain::ElementStiffness(int iel, matrix& ke)
     
     Vector3d gcnt[3];
     
-    // calculate element stiffness matrix
+    // calculate element stiffness Matrix
     ke.zero();
     for (n=0; n<nint; ++n)
     {
@@ -621,17 +624,17 @@ void FEElasticShellDomain::ElementStiffness(int iel, matrix& ke)
 
 
 //-----------------------------------------------------------------------------
-//! calculates element inertial stiffness matrix
-void FEElasticShellDomain::ElementMassMatrix(FEShellElement& el, matrix& ke, double a)
+//! calculates element inertial stiffness Matrix
+void FEElasticShellDomain::ElementMassMatrix(FEShellElement& el, Matrix& ke, double a)
 {
     // Get the current element's data
-    const int nint = el.GaussPoints();
-    const int neln = el.Nodes();
+    const int nint = el.GaussPointSize();
+    const int neln = el.NodeSize();
     
     // weights at gauss points
     const double *gw = el.GaussWeights();
     
-    // calculate element stiffness matrix
+    // calculate element stiffness Matrix
     for (int n=0; n<nint; ++n)
     {
 		FEMaterialPoint& mp = *el.GetMaterialPoint(n);
@@ -682,7 +685,7 @@ void FEElasticShellDomain::ElementMassMatrix(FEShellElement& el, matrix& ke, dou
 //-----------------------------------------------------------------------------
 //! Calculates body forces for shells
 
-void FEElasticShellDomain::ElementBodyForce(FEModel& fem, FEShellElement& el, vector<double>& fe)
+void FEElasticShellDomain::ElementBodyForce(FEModel& fem, FEShellElement& el, std::vector<double>& fe)
 {
     int NF = fem.ModelLoads();
     for (int nf = 0; nf < NF; ++nf)
@@ -696,8 +699,8 @@ void FEElasticShellDomain::ElementBodyForce(FEModel& fem, FEShellElement& el, ve
             double *M, detJt;
             
             // loop over integration points
-            int nint = el.GaussPoints();
-            int neln = el.Nodes();
+            int nint = el.GaussPointSize();
+            int neln = el.NodeSize();
             
             for (int n=0; n<nint; ++n)
             {
@@ -773,10 +776,10 @@ void FEElasticShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
     FEShellElement& el = m_Elem[iel];
     
     // get the number of integration points
-    int nint = el.GaussPoints();
+    int nint = el.GaussPointSize();
     
     // number of nodes
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     
     const int NELN = FEElement::MAX_NODES;
 	Vector3d r0[NELN], s0[NELN], r[NELN], s[NELN];
@@ -871,14 +874,14 @@ void FEElasticShellDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 //! to the solid element ordering. This is because for shell elements the
 //! nodes have six degrees of freedom each, where for solids they only
 //! have 3 dofs.
-void FEElasticShellDomain::UnpackLM(FEElement& el, vector<int>& lm)
+void FEElasticShellDomain::UnpackLM(FEElement& el, std::vector<int>& lm)
 {
-	int N = el.Nodes();
+	int N = el.NodeSize();
 	lm.resize(N*9);
 	for (int i=0; i<N; ++i)
 	{
 		FENode& node = m_pMesh->Node(el.m_node[i]);
-		vector<int>& id = node.m_dofs;
+		std::vector<int>& id = node.m_dofs;
 
 		// first the displacement dofs
 		lm[6*i  ] = id[m_dofU[0]];

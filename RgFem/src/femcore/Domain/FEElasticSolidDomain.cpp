@@ -1,13 +1,14 @@
 #include "FEElasticSolidDomain.h"
-#include "FEElasticMaterial.h"
-#include "FEBodyForce.h"
-#include "FECore/log.h"
-#include <FECore/FEModel.h>
-#include <FECore/FEAnalysis.h>
-#include <FECore/sys.h>
-#include "FEBioMech.h"
-#include <FECore/FELinearSystem.h>
+#include "materials/FEElasticMaterial.h"
+#include "femcore/FEBodyForce.h"
+#include "logger/log.h"
+#include <femcore/FEModel.h>
+#include "femcore/FEAnalysis/FEAnalysis.h"
+#include "femcore/sys.h"
+#include "femcore/FELinearSystem.h"
 #include "materials/FEElasticMaterialPoint.h"
+#include "../FEException.h"
+#include "../FEMeshPartition.h"
 
 //-----------------------------------------------------------------------------
 //! constructor
@@ -26,12 +27,12 @@ FEElasticSolidDomain::FEElasticSolidDomain(FEModel* pfem) : FESolidDomain(pfem),
 	// TODO: Can this be done in Init, since  there is no error checking
 	if (pfem)
 	{
-		m_dofU.AddVariable(FEBioMech::GetVariableName(FEBioMech::DISPLACEMENT));
+		/*m_dofU.AddVariable(FEBioMech::GetVariableName(FEBioMech::DISPLACEMENT));
 		m_dofR.AddVariable(FEBioMech::GetVariableName(FEBioMech::RIGID_ROTATION));
 		m_dofSU.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_DISPLACEMENT));
 		m_dofV.AddVariable(FEBioMech::GetVariableName(FEBioMech::VELOCTIY));
 		m_dofSV.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_VELOCITY));
-		m_dofSA.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_ACCELERATION));
+		m_dofSA.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_ACCELERATION));*/
 	}
 }
 
@@ -118,7 +119,7 @@ void FEElasticSolidDomain::PreSolveUpdate(const FETimeInfo& timeInfo)
 		FESolidElement& el = m_Elem[i];
 		if (el.isActive())
 		{
-			int n = el.GaussPoints();
+			int n = el.GaussPointSize();
 			for (int j = 0; j < n; ++j)
 			{
 				FEMaterialPoint& mp = *el.GetMaterialPoint(j);
@@ -147,7 +148,7 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 			std::vector<int> lm;
 
 			// get the element force std::vector and initialize it to zero
-			int ndof = 3 * el.Nodes();
+			int ndof = 3 * el.NodeSize();
 			fe.assign(ndof, 0);
 
 			// calculate internal force std::vector
@@ -170,8 +171,8 @@ void FEElasticSolidDomain::ElementInternalForce(FESolidElement& el, std::vector<
 	// jacobian matrix, inverse jacobian matrix and determinants
 	double Ji[3][3];
 
-	int nint = el.GaussPoints();
-	int neln = el.Nodes();
+	int nint = el.GaussPointSize();
+	int neln = el.NodeSize();
 
 	double*	gw = el.GaussWeights();
 
@@ -229,7 +230,7 @@ void FEElasticSolidDomain::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 	// dofs for interface nodes (see UnpackLM). Is that an issue?
 
 	// evaluate the residual contribution
-	LoadVector(R, m_dofU, [=](FEMaterialPoint& mp, int node_a, std::std::vector<double>& fa) {
+	LoadVector(R, m_dofU, [=](FEMaterialPoint& mp, int node_a, std::vector<double>& fa) {
 
 		// evaluate density
 		double density = m_pMat->Density(mp);
@@ -252,7 +253,7 @@ void FEElasticSolidDomain::BodyForce(FEGlobalVector& R, FEBodyForce& BF)
 
 //-----------------------------------------------------------------------------
 //! calculates element's geometrical stiffness component for integration point n
-void FEElasticSolidDomain::ElementGeometricalStiffness(FESolidElement &el, matrix &ke)
+void FEElasticSolidDomain::ElementGeometricalStiffness(FESolidElement &el, Matrix &ke)
 {
 	// spatial derivatives of shape functions
 	Vector3d G[FEElement::MAX_NODES];
@@ -261,8 +262,8 @@ void FEElasticSolidDomain::ElementGeometricalStiffness(FESolidElement &el, matri
 	const double *gw = el.GaussWeights();
 
 	// calculate geometrical element stiffness matrix
-	int neln = el.Nodes();
-	int nint = el.GaussPoints();
+	int neln = el.NodeSize();
+	int nint = el.GaussPointSize();
 	for (int n = 0; n<nint; ++n)
 	{
 		// calculate shape function gradients and jacobian
@@ -290,11 +291,11 @@ void FEElasticSolidDomain::ElementGeometricalStiffness(FESolidElement &el, matri
 //-----------------------------------------------------------------------------
 //! Calculates element material stiffness element matrix
 
-void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, matrix &ke)
+void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, Matrix &ke)
 {
 	// Get the current element's data
-	const int nint = el.GaussPoints();
-	const int neln = el.Nodes();
+	const int nint = el.GaussPointSize();
+	const int neln = el.NodeSize();
 
 	// global derivatives of shape functions
 	Vector3d G[FEElement::MAX_NODES];
@@ -409,7 +410,7 @@ void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& ls)
 			FEElementMatrix ke(elem, lm);
 
 			// create the element's stiffness matrix
-			int ndof = 3 * elem.Nodes();
+			int ndof = 3 * elem.NodeSize();
 			ke.resize(ndof, ndof);
 			ke.zero();
 
@@ -439,7 +440,7 @@ void FEElasticSolidDomain::MassMatrix(FELinearSystem& LS, double scale)
 	// dofs for interface nodes (see UnpackLM). Is that an issue?
 
 	// evaluate body force stiffness
-	LoadStiffness(LS, m_dofU, m_dofU, [=](FEMaterialPoint& mp, int node_a, int node_b, matrix& Kab) {
+	LoadStiffness(LS, m_dofU, m_dofU, [=](FEMaterialPoint& mp, int node_a, int node_b, Matrix& Kab) {
 
 		// density
 		double density = m_pMat->Density(mp);
@@ -470,7 +471,7 @@ void FEElasticSolidDomain::BodyForceStiffness(FELinearSystem& LS, FEBodyForce& b
 	// dofs for interface nodes (see UnpackLM). Is that an issue?
 
 	// evaluate body force stiffness
-	LoadStiffness(LS, m_dofU, m_dofU, [=](FEMaterialPoint& mp, int node_a, int node_b, matrix& Kab) {
+	LoadStiffness(LS, m_dofU, m_dofU, [=](FEMaterialPoint& mp, int node_a, int node_b, Matrix& Kab) {
 
 		// loop over integration points
 		double detJ = mp.m_J0 * m_alphaf;
@@ -496,7 +497,7 @@ void FEElasticSolidDomain::BodyForceStiffness(FELinearSystem& LS, FEBodyForce& b
 //! the upper diagonal matrix due to the symmetry of the element stiffness matrix
 //! The last section of this function fills the rest of the element stiffness matrix.
 
-void FEElasticSolidDomain::ElementStiffness(const FETimeInfo& tp, int iel, matrix& ke)
+void FEElasticSolidDomain::ElementStiffness(const FETimeInfo& tp, int iel, Matrix& ke)
 {
 	FESolidElement& el = Element(iel);
 
@@ -509,7 +510,7 @@ void FEElasticSolidDomain::ElementStiffness(const FETimeInfo& tp, int iel, matri
 	// assign symmetic parts
 	// TODO: Can this be omitted by changing the Assemble routine so that it only
 	// grabs elements from the upper diagonal matrix?
-	int ndof = 3*el.Nodes();
+	int ndof = 3*el.NodeSize();
 	int i, j;
 	for (i=0; i<ndof; ++i)
 		for (j=i+1; j<ndof; ++j)
@@ -557,10 +558,10 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 	FESolidElement& el = m_Elem[iel];
 
 	// get the number of integration points
-	int nint = el.GaussPoints();
+	int nint = el.GaussPointSize();
 
 	// number of nodes
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 
 	// nodal coordinates
     const int NELN = FEElement::MAX_NODES;
@@ -646,7 +647,7 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 //! Unpack the element LM data. 
 void FEElasticSolidDomain::UnpackLM(FEElement& el, std::vector<int>& lm)
 {
-	int N = el.Nodes();
+	int N = el.NodeSize();
 	lm.resize(N*6);
 	for (int i=0; i<N; ++i)
 	{
@@ -697,7 +698,7 @@ void FEElasticSolidDomain::InertialForces(FEGlobalVector& R, std::vector<double>
 			std::vector<int> lm;
 
 			// get the element force std::vector and initialize it to zero
-			int ndof = 3 * el.Nodes();
+			int ndof = 3 * el.NodeSize();
 			fe.assign(ndof, 0);
 
 			// calculate internal force std::vector
@@ -715,8 +716,8 @@ void FEElasticSolidDomain::InertialForces(FEGlobalVector& R, std::vector<double>
 //-----------------------------------------------------------------------------
 void FEElasticSolidDomain::ElementInertialForce(FESolidElement& el, std::vector<double>& fe)
 {
-    int nint = el.GaussPoints();
-    int neln = el.Nodes();
+    int nint = el.GaussPointSize();
+    int neln = el.NodeSize();
     
     double*    gw = el.GaussWeights();
 
@@ -742,9 +743,9 @@ void FEElasticSolidDomain::ElementInertialForce(FESolidElement& el, std::vector<
 
 //=================================================================================================
 
-BEGIN_FECORE_CLASS(FEStandardElasticSolidDomain, FEElasticSolidDomain)
+BEGIN_PARAM_DEFINE(FEStandardElasticSolidDomain, FEElasticSolidDomain)
 	ADD_PARAMETER(m_elemType, "elem_type", FE_PARAM_ATTRIBUTE, "$(solid_element)\0");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 FEStandardElasticSolidDomain::FEStandardElasticSolidDomain(FEModel* fem) : FEElasticSolidDomain(fem)
 {

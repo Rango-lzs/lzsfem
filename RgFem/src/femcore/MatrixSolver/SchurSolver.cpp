@@ -70,8 +70,8 @@ bool BuildDiagonalMassMatrix(FEModel* fem, BlockMatrix* K, CompactSymmMatrix* M,
 			FESolidElement& el = dom.Element(j);
 
 			// Get the current element's data
-			const int nint = el.GaussPoints();
-			const int neln = el.Nodes();
+			const int nint = el.GaussPointSize();
+			const int neln = el.NodeSize();
 			const int ndof = neln;
 
 			// weights at gauss points
@@ -128,7 +128,7 @@ bool BuildMassMatrix(FEModel* fem, BlockMatrix* K, CompactSymmMatrix* M, double 
 		for (int j = 0; j < NE; ++j)
 		{
 			FESolidElement& el = dom.Element(j);
-			int neln = el.Nodes();
+			int neln = el.NodeSize();
 			// get the equation numbers
 			dom.UnpackLM(el, lme);
 
@@ -162,8 +162,8 @@ bool BuildMassMatrix(FEModel* fem, BlockMatrix* K, CompactSymmMatrix* M, double 
 			FESolidElement& el = dom.Element(j);
 
 			// Get the current element's data
-			const int nint = el.GaussPoints();
-			const int neln = el.Nodes();
+			const int nint = el.GaussPointSize();
+			const int neln = el.NodeSize();
 			const int ndof = neln;
 
 			// weights at gauss points

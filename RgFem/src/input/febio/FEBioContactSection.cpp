@@ -121,7 +121,7 @@ bool FEBioContactSection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int nfm
 			else throw XMLReader::InvalidTag(tag);
 		}
 
-		N = el.Nodes();
+		N = el.NodeSize();
 
 		if (nfmt == 0)
 		{

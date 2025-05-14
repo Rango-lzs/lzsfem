@@ -1,5 +1,6 @@
 #pragma once
 
+#include "femcore/FEDomainFatory.h"
 //-----------------------------------------------------------------------------
 class FESolidDomainFactory : public FEDomainFactory
 {

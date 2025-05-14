@@ -157,13 +157,13 @@ public:  // Filed evalulate
     virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) = 0;
     virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) = 0;
 
-  
+    std::vector<NodeId> m_node;      //!< connectivity
 protected:
     //下面的local是指在一个Domain里面的
     ElemId m_id;                     //!< element Id
     ElemId m_loc_id;                 //!< local Id
     MatId m_mat_id;                  //!< material index
-    std::vector<NodeId> m_node;      //!< connectivity
+    
     std::vector<NodeId> m_loc_node;  //!< local connectivity
     FEMeshPartition* m_part;
 

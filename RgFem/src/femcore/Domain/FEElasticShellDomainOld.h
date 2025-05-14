@@ -1,9 +1,9 @@
 
 #pragma once
-#include <FECore/FEShellDomain.h>
-#include <FECore/FEDofList.h>
+#include "femcore/Domain/FEShellDomain.h"
+#include "femcore/FEDofList.h"
 #include "FEElasticDomain.h"
-#include "FESolidMaterial.h"
+#include "materials/FESolidMaterial.h"
 
 //-----------------------------------------------------------------------------
 //! Domain described by 3D shell elements

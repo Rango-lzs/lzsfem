@@ -2,6 +2,7 @@
 #include "FEMesh.h"
 #include "basicio/DumpStream.h"
 #include "FESurface.h"
+#include "FEModel.h"
 
 //-----------------------------------------------------------------------------
 void FEFacetSet::FACET::Serialize(DumpStream& ar)
@@ -11,7 +12,7 @@ void FEFacetSet::FACET::Serialize(DumpStream& ar)
 }
 
 //-----------------------------------------------------------------------------
-FEFacetSet::FEFacetSet(FEModel* fem) : FEItemList(fem)
+FEFacetSet::FEFacetSet(FEModel* fem) : FEItemList(&fem->GetMesh())
 {
 	m_surface = nullptr;
 }
@@ -52,7 +53,7 @@ void FEFacetSet::Create(const FESurface& surf)
 
 		for (int j = 0; j < el.NodeSize(); ++j)
 		{
-			face.node[j] = el.m_node[j];
+			face.node[j] = el.getNodeId(j);
 		}
 	}
 }
@@ -80,7 +81,7 @@ FENodeList FEFacetSet::GetNodeList() const
 {
 	FEMesh* mesh = GetMesh();
 	FENodeList set(mesh);
-	vector<int> tag(mesh->Nodes(), 0);
+	std::vector<int> tag(mesh->Nodes(), 0);
 	for (int i = 0; i<Faces(); ++i)
 	{
 		const FACET& el = m_Face[i];

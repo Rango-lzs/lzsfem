@@ -66,7 +66,7 @@ void FENodeElemList::Create(const FESurface& s)
 	{
 		const FESurfaceElement& el = s.Element(i);
 
-		for (j=0; j<el.Nodes(); ++j)
+		for (j=0; j<el.NodeSize(); ++j)
 		{
 			n = el.m_lnode[j];
 			m_nval[n]++;
@@ -93,7 +93,7 @@ void FENodeElemList::Create(const FESurface& s)
 	{
 		const FESurfaceElement& el = s.Element(i);
 
-		for (j=0; j<el.Nodes(); ++j)
+		for (j=0; j<el.NodeSize(); ++j)
 		{
 			n = el.m_lnode[j];
 			m_eref[m_pn[n] + m_nval[n]] = const_cast<FESurfaceElement*>(&el);
@@ -125,7 +125,7 @@ void FENodeElemList::Create(FEMesh& mesh)
 		for (i=0; i<d.Elements(); ++i)
 		{
 			FEElement& el = d.ElementRef(i);
-			for (j=0; j<el.Nodes(); ++j)
+			for (j=0; j<el.NodeSize(); ++j)
 			{
 				n = el.m_node[j];
 				m_nval[n]++;
@@ -161,7 +161,7 @@ void FENodeElemList::Create(FEMesh& mesh)
             for (i=0; i<d.Elements(); ++i, ++nindex)
             {
                 FEElement& el = d.ElementRef(i);
-                for (j=0; j<el.Nodes(); ++j)
+                for (j=0; j<el.NodeSize(); ++j)
                 {
                     n = el.m_node[j];
                     m_eref[m_pn[n] + m_nval[n]] = &el;
@@ -178,7 +178,7 @@ void FENodeElemList::Create(FEMesh& mesh)
             for (i=0; i<d.Elements(); ++i, ++nindex)
             {
                 FEElement& el = d.ElementRef(i);
-                for (j=0; j<el.Nodes(); ++j)
+                for (j=0; j<el.NodeSize(); ++j)
                 {
                     n = el.m_node[j];
                     m_eref[m_pn[n] + m_nval[n]] = &el;
@@ -212,7 +212,7 @@ void FENodeElemList::Create(FEDomain& dom)
 	for (i=0; i<dom.Elements(); ++i)
 	{
 		FEElement& el = dom.ElementRef(i);
-		for (j=0; j<el.Nodes(); ++j)
+		for (j=0; j<el.NodeSize(); ++j)
 		{
 			n = el.m_node[j];
 			m_nval[n]++;
@@ -238,7 +238,7 @@ void FENodeElemList::Create(FEDomain& dom)
 	for (i=0; i<dom.Elements(); ++i)
 	{
 		FEElement& el = dom.ElementRef(i);
-		for (j=0; j<el.Nodes(); ++j)
+		for (j=0; j<el.NodeSize(); ++j)
 		{
 			n = el.m_node[j];
 			m_eref[m_pn[n] + m_nval[n]] = &el;

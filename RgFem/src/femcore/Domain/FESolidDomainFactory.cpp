@@ -1,26 +1,26 @@
 #include "FESolidDomainFactory.h"
-#include "materials/FERigidMaterial.h"
-#include "FEUncoupledMaterial.h"
+//#include "materials/FERigidMaterial.h"
+//#include "FEUncoupledMaterial.h"
 #include "FEElasticSolidDomain.h"
 #include "FEElasticShellDomain.h"
 #include "FELinearTrussDomain.h"
-#include "FERigidSolidDomain.h"
-#include "FERigidShellDomain.h"
-#include "FERemodelingElasticDomain.h"
-#include "FEUDGHexDomain.h"
-#include "FEUT4Domain.h"
-#include "FE3FieldElasticSolidDomain.h"
-#include "FEDiscreteElasticDomain.h"
-#include "FERemodelingElasticMaterial.h"
-#include "FECore/FEDiscreteMaterial.h"
-#include "FEDiscreteElementMaterial.h"
-#include "FESRIElasticSolidDomain.h"
+#include "femcore/Domain/FERigidSolidDomain.h"
+#include "femcore/Domain/FERigidShellDomain.h"
+#include "femcore/Domain/FERemodelingElasticDomain.h"
+#include "femcore/Domain/FEUDGHexDomain.h"
+#include "femcore/Domain/FEUT4Domain.h"
+#include "femcore/Domain/FE3FieldElasticSolidDomain.h"
+#include "femcore/Domain/FEDiscreteElasticDomain.h"
+#include "materials/FERemodelingElasticMaterial.h"
+#include "materials/FECore/FEDiscreteMaterial.h"
+#include "materials/FEDiscreteElementMaterial.h"
+#include "femcore/Domain/FESRIElasticSolidDomain.h"
 
 //-----------------------------------------------------------------------------
 FEDomain* FESolidDomainFactory::CreateDomain(const FE_Element_Spec& spec, FEMesh* pm, FEMaterial* pmat)
 {
 	FEModel* pfem = pmat->GetFEModel();
-	FE_Element_Class eclass = spec.eclass;
+	ElementCategory eclass = spec.eclass;
 	ElementShape eshape = spec.eshape;
 	ElementType etype = spec.etype;
 
@@ -135,7 +135,7 @@ FEDomain* FESolidDomainFactory::CreateDomain(const FE_Element_Spec& spec, FEMesh
 		if (dynamic_cast<FETrussMaterial*>(pmat))
 			if (eshape == ET_TRUSS2) sztype = "linear-truss";
 
-		if (sztype) pd = fecore_new<FETrussDomain>(sztype, pfem);
+		if (sztype) pd = RANGO_NEW<FETrussDomain>(pfem, sztype);
 	}
 	else if (eclass == FE_ELEM_DISCRETE)
 	{
@@ -151,7 +151,7 @@ FEDomain* FESolidDomainFactory::CreateDomain(const FE_Element_Spec& spec, FEMesh
 			else return 0;
 		}
 
-		if (sztype) pd = fecore_new<FEDiscreteDomain>(sztype, pfem);
+		if (sztype) pd = RANGO_NEW<FEDiscreteDomain>(sztype, pfem);
 	}
 
 	if (pd) pd->SetMaterial(pmat);

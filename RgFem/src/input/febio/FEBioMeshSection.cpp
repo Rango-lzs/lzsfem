@@ -508,7 +508,7 @@ void FEBioMeshDomainsSection::ParseSolidDomainSection(XMLTag& tag)
 		el.SetID(domElement.id);
 
 		// TODO: This assumes one-based indexing of all nodes!
-		int ne = el.Nodes();
+		int ne = el.NodeSize();
 		for (int n = 0; n < ne; ++n) el.m_node[n] = domElement.node[n] - 1;
 	}
 
@@ -616,7 +616,7 @@ void FEBioMeshDomainsSection::ParseShellDomainSection(XMLTag& tag)
 		el.SetID(domElement.id);
 
 		// TODO: This assumes one-based indexing of all nodes!
-		int ne = el.Nodes();
+		int ne = el.NodeSize();
 		for (int n = 0; n < ne; ++n) el.m_node[n] = domElement.node[n] - 1;
 	}
 

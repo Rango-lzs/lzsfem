@@ -609,7 +609,7 @@ FESurface* FEBioImport::ParseSurface(XMLTag& tag, const char* szatt)
     //        else
     //            throw XMLReader::InvalidTag(tag);
 
-    //        N = el.Nodes();
+    //        N = el.NodeSize();
     //        tag.value(nf, N);
     //        for (int j = 0; j < N; ++j)
     //            el.m_node[j] = nf[j] - 1;

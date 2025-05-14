@@ -1964,7 +1964,7 @@ GObject* AbaqusImport::build_part(AbaqusModel::PART* pg)
 			int etype = pe->type;
 			el.SetType(etype);
 			el.m_gid = 0;
-			n = el.Nodes();
+			n = el.NodeSize();
 			en = pe->n;
 			pn = part.m_Node.begin();
 			for (j=0; j<n; ++j) 

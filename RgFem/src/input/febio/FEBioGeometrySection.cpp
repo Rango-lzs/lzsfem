@@ -42,9 +42,9 @@ bool FEBioGeometrySection::ReadElement(XMLTag &tag, FEElement& el, int nid)
 {
 	el.SetID(nid);
 	int n[FEElement::MAX_NODES];
-	int m = tag.value(n, el.Nodes());
-	if (m != el.Nodes()) return false;
-	GetBuilder()->GlobalToLocalID(n, el.Nodes(), el.m_node);
+	int m = tag.value(n, el.NodeSize());
+	if (m != el.NodeSize()) return false;
+	GetBuilder()->GlobalToLocalID(n, el.NodeSize(), el.m_node);
 	return true;
 }
 
@@ -284,7 +284,7 @@ void set_element_fiber(FEElement& el, const Vector3d& v, int ncomp)
 	b.unit();
 	c.unit();
 
-	for (int i = 0; i<el.GaussPoints(); ++i)
+	for (int i = 0; i<el.GaussPointSize(); ++i)
 	{
 		FEMaterialPoint* mp = (ncomp == -1) ? el.GetMaterialPoint(i) : el.GetMaterialPoint(i)->GetPointData(ncomp);
 /*
@@ -313,7 +313,7 @@ void set_element_mat_axis(FEElement& el, const Vector3d& v1, const Vector3d& v2,
 	c.unit();
 
 	// assign to element
-	for (int i = 0; i<el.GaussPoints(); ++i)
+	for (int i = 0; i<el.GaussPointSize(); ++i)
 	{
         FEMaterialPoint* mp = (ncomp == -1) ? el.GetMaterialPoint(i) : el.GetMaterialPoint(i)->GetPointData(ncomp);
 
@@ -363,7 +363,7 @@ void FEBioGeometrySection1x::ParseElementData(FEElement& el, XMLTag& tag)
 	}
 	else
 	{
-		for (int i = 0; i<el.GaussPoints(); ++i)
+		for (int i = 0; i<el.GaussPointSize(); ++i)
 		{
 			FEMaterialPoint* pt = el.GetMaterialPoint(i);
 			// TODO: Material point parameters are no longer supported so I need to reimplement this
@@ -710,7 +710,7 @@ void FEBioGeometrySection2::ParseElementData(FEElement& el, XMLTag& tag)
 	}
 	else
 	{
-		for (int i = 0; i<el.GaussPoints(); ++i)
+		for (int i = 0; i<el.GaussPointSize(); ++i)
 		{
 			FEMaterialPoint* pt = el.GetMaterialPoint(i);
 			// TODO: material point parameters are no longer supported so I need to reimplement this.
@@ -1385,8 +1385,8 @@ void FEBioGeometrySection25::ParseElementSection(XMLTag& tag)
 		// process the element data
 		FEElement& el = dom.ElementRef(i);
 		el.SetID(nid);
-		if (elem.nodes != el.Nodes()) throw XMLReader::InvalidTag(tag);
-		GetBuilder()->GlobalToLocalID(elem.node, el.Nodes(), el.m_node);
+		if (elem.nodes != el.NodeSize()) throw XMLReader::InvalidTag(tag);
+		GetBuilder()->GlobalToLocalID(elem.node, el.NodeSize(), el.m_node);
 	}
 
 	// create the element set

@@ -326,7 +326,7 @@ bool FEModelBuilder::BuildSurface(FESurface& s, FEFacetSet& fs, bool bnodal)
 //		if (si.ntype == 2) el.SetType(FE_LINE2G1);
 //		else return false;
 //
-//		int N = el.Nodes(); assert(N == si.ntype);
+//		int N = el.NodeSize(); assert(N == si.ntype);
 //		for (int j = 0; j<N; ++j) el.m_node[j] = si.node[j];
 //	}
 //

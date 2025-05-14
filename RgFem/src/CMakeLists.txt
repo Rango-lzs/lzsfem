@@ -70,7 +70,7 @@ set(FEMCORE_HEADERS
     femcore/Domain/FESolidDomain.h
     femcore/Domain/FESolidDomainFactory.h
     femcore/Domain/FETrussDomain.h
-    femcore/Doamin/FESSIShellDomain.h
+    femcore/Domain/FESSIShellDomain.h
     #femcore/DomainDataRecord.h
     #femcore/ElementDataRecord.h
     #femcore/FE3FieldElasticSolidDomain.h
@@ -222,6 +222,7 @@ set(FEMCORE_HEADERS
     femcore/FETransform.h
     femcore/FEPrescribedDOF.h
     femcore/FEPrescribedBC.h
+    femcore/FEBodyForce.h
 )
 
 
@@ -250,7 +251,7 @@ set(FEMCORE_SOURCES
     femcore/Domain/FESolidDomain.cpp
     femcore/Domain/FESolidDomainFactory.cpp
     femcore/Domain/FETrussDomain.cpp
-    femcore/Doamin/FESSIShellDomain.h
+    femcore/Domain/FESSIShellDomain.h
     #femcore/DomainDataRecord.cpp
     #femcore/ElementDataRecord.cpp
     #femcore/FE3FieldElasticSolidDomain.cpp
@@ -390,6 +391,7 @@ set(FEMCORE_SOURCES
     femcore/FETransform.cpp
     femcore/FEPrescribedDOF.cpp
     femcore/FEPrescribedBC.cpp
+    femcore/FEBodyForce.cpp
 
 )
 

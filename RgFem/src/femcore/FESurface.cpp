@@ -99,7 +99,7 @@ void FESurface::Create(const FEFacetSet& set)
 		else if (fi.ntype == 10) el.SetType(FE_TRI10G7);
 		else assert(false);
 
-		int N = el.Nodes(); assert(N == fi.ntype);
+		int N = el.NodeSize(); assert(N == fi.ntype);
 		for (int j = 0; j<N; ++j) el.m_node[j] = fi.node[j];
 	}
 
@@ -116,7 +116,7 @@ void FESurface::CreateMaterialPointData()
 	for (int i = 0; i < Elements(); ++i)
 	{
 		FESurfaceElement& el = m_el[i];
-		int nint = el.GaussPoints();
+		int nint = el.GaussPointSize();
 		el.ClearData();
 		for (int n = 0; n < nint; ++n)
 		{
@@ -138,7 +138,7 @@ FENodeList FESurface::GetNodeList()
 	for (int i=0; i<Elements(); ++i)
 	{
 		FESurfaceElement& el = Element(i);
-		int ne = el.Nodes();
+		int ne = el.NodeSize();
 		for (int j=0; j<ne; ++j)
 		{
 			if (tag[el.m_node[j]] == 0)
@@ -186,8 +186,8 @@ FEMaterialPoint* FESurface::CreateMaterialPoint()
 void FESurface::Update(const FETimeInfo& tp)
 {
 	ForEachSurfaceElement([=](FESurfaceElement& el) {
-		int nint = el.GaussPoints();
-		int neln = el.Nodes();
+		int nint = el.GaussPointSize();
+		int neln = el.NodeSize();
 
 		Vector3d rt[FEElement::MAX_NODES];
 		NodalCoordinates(el, rt);
@@ -227,7 +227,7 @@ void FESurface::InitSurface()
 		FESurfaceElement& el = Element(i);
 		el.m_lid = i;
 
-		for (int j = 0; j<el.Nodes(); ++j)
+		for (int j = 0; j<el.NodeSize(); ++j)
 		{
 			// get the global node number
 			int m = el.m_node[j];
@@ -299,8 +299,8 @@ bool FESurface::Init()
 
 		NodalCoordinates(el, re);
 
-		int nint = el.GaussPoints();
-		int neln = el.Nodes();
+		int nint = el.GaussPointSize();
+		int neln = el.NodeSize();
 		for (int n = 0; n < nint; ++n)
 		{
 			FESurfaceMaterialPoint* pt = dynamic_cast<FESurfaceMaterialPoint*>(el.GetMaterialPoint(n));
@@ -362,7 +362,7 @@ FEElement* FESurface::FindElement(FESurfaceElement& el)
 		for (int j=0; j<nfaces; ++j)
 		{
 			nn = pe->GetFace(j, nf);
-			if (nn == el.Nodes())
+			if (nn == el.NodeSize())
 			{
 				switch (nn)
 				{
@@ -411,7 +411,7 @@ void FESurface::FindElements(FESurfaceElement& el)
 			int nn = sel.GetFace(j, nf);
                 
 			int found = 0;
-			if (nn == el.Nodes())
+			if (nn == el.NodeSize())
 			{
                 switch (nn)
                 {
@@ -438,7 +438,7 @@ void FESurface::FindElements(FESurfaceElement& el)
 void FESurface::UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, vector<int>& lm)
 {
 	int dofPerNode = dofList.Size();
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	int ndof = neln*dofPerNode;
 	lm.assign(ndof, -1);
 	for (int j = 0; j < neln; ++j)
@@ -597,7 +597,7 @@ bool project2surf(FESurfaceElement& el, Vector3d* y, Vector3d x, double& r, doub
 	int NMAX = 50, n=0;
 
 	// get number of nodes
-	int ne = el.Nodes();
+	int ne = el.NodeSize();
 
 	// evaulate scalar products
 	double xy[NE];
@@ -687,7 +687,7 @@ Vector3d FESurface::Position(FESurfaceElement& el, double r, double s)
 	FEMesh& mesh = *m_pMesh;
 
 	// number of element nodes
-	int ne = el.Nodes();
+	int ne = el.NodeSize();
 
 	// get the elements nodal positions
 	Vector3d y[FEElement::MAX_NODES];
@@ -715,7 +715,7 @@ Vector3d FESurface::Position(FESurfaceElement &el, int n)
     FEMesh& mesh = *m_pMesh;
     
     // number of element nodes
-    int ne = el.Nodes();
+    int ne = el.NodeSize();
     
     // get the elements nodal positions
     Vector3d y[FEElement::MAX_NODES];
@@ -736,7 +736,7 @@ Vector3d FESurface::Position(FESurfaceElement &el, int n)
 //-----------------------------------------------------------------------------
 void FESurface::NodalCoordinates(FESurfaceElement& el, Vector3d* re)
 {
-	int ne = el.Nodes();
+	int ne = el.NodeSize();
 	if (!m_bshellb) for (int i = 0; i < ne; ++i) re[i] = Node(el.m_lnode[i]).m_rt;
     else for (int i = 0; i < ne; ++i) re[i] = Node(el.m_lnode[i]).st();
 }
@@ -797,7 +797,7 @@ Vector3d FESurface::ProjectToSurface(FESurfaceElement& el, Vector3d x, double& r
 	FEMesh& mesh = *m_pMesh;
 
 	// number of element nodes
-	int ne = el.Nodes();
+	int ne = el.NodeSize();
 
 	// get the elements nodal positions
 	Vector3d y[FEElement::MAX_NODES];
@@ -865,8 +865,8 @@ double FESurface::FaceArea(FESurfaceElement& el)
 	FEMesh& mesh = *m_pMesh;
 
 	// get the number of nodes
-	int nint = el.GaussPoints();
-	int neln = el.Nodes();
+	int nint = el.GaussPointSize();
+	int neln = el.NodeSize();
 
 	// get the initial nodes
 	Vector3d r0[FEElement::MAX_NODES];
@@ -919,8 +919,8 @@ double FESurface::CurrentFaceArea(FESurfaceElement& el)
 	FEMesh& mesh = *m_pMesh;
 
 	// get the number of nodes
-	int nint = el.GaussPoints();
-	int neln = el.Nodes();
+	int nint = el.GaussPointSize();
+	int neln = el.NodeSize();
 
 	// get the initial nodes
 	Vector3d rt[FEElement::MAX_NODES];
@@ -995,7 +995,7 @@ double FESurface::MaxElementSize()
 mat2d FESurface::Metric0(FESurfaceElement& el, double r, double s)
 {
 	// nr of element nodes
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	
 	// element nodes
 	Vector3d r0[FEElement::MAX_NODES];
@@ -1028,7 +1028,7 @@ mat2d FESurface::Metric0(FESurfaceElement& el, double r, double s)
 mat2d FESurface::Metric(FESurfaceElement& el, double r, double s)
 {
 	// nr of element nodes
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	
 	// element nodes
 	Vector3d rt[FEElement::MAX_NODES];
@@ -1061,7 +1061,7 @@ mat2d FESurface::Metric(FESurfaceElement& el, double r, double s)
 mat2d FESurface::Metric(const FESurfaceElement& el, int n) const
 {
     // nr of element nodes
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     
     // element nodes
     Vector3d rt[FEElement::MAX_NODES];
@@ -1092,7 +1092,7 @@ mat2d FESurface::Metric(const FESurfaceElement& el, int n) const
 mat2d FESurface::MetricP(FESurfaceElement& el, int n)
 {
     // nr of element nodes
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     
     // element nodes
     Vector3d rp[FEElement::MAX_NODES];
@@ -1124,7 +1124,7 @@ Vector3d FESurface::Local2Global(FESurfaceElement &el, double r, double s)
 	FEMesh& mesh = *m_pMesh;
 
 	// get the coordinates of the element nodes
-	int ne = el.Nodes();
+	int ne = el.NodeSize();
 	Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (int l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).m_rt;
     else for (int l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).st();
@@ -1146,7 +1146,7 @@ Vector3d FESurface::Local2Global(FESurfaceElement &el, int n)
 
 	// calculate the location
 	Vector3d r(0);
-	int ne = el.Nodes();
+	int ne = el.NodeSize();
     if (!m_bshellb) for (int i=0; i<ne; ++i) r += m.Node(el.m_node[i]).m_rt*H[i];
     else for (int i=0; i<ne; ++i) r += m.Node(el.m_node[i]).st()*H[i];
 
@@ -1162,7 +1162,7 @@ Vector3d FESurface::Local2GlobalP(FESurfaceElement &el, double r, double s)
     FEMesh& mesh = *m_pMesh;
     
     // get the coordinates of the element nodes
-    int ne = el.Nodes();
+    int ne = el.NodeSize();
     Vector3d y[FEElement::MAX_NODES];
     for (int l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).m_rp;
     
@@ -1183,7 +1183,7 @@ Vector3d FESurface::Local2GlobalP(FESurfaceElement &el, int n)
     
     // calculate the location
     Vector3d r;
-    int ne = el.Nodes();
+    int ne = el.NodeSize();
     for (int i=0; i<ne; ++i) r += m.Node(el.m_node[i]).m_rp*H[i];
     
     return r;
@@ -1202,7 +1202,7 @@ Vector3d FESurface::SurfaceNormal(const FESurfaceElement &el, int n) const
 	double* Hs = el.Gs(n);
 
 	// get the coordinates of the element nodes
-	int ne = el.Nodes();
+	int ne = el.NodeSize();
 	Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (int i=0; i<ne; ++i) y[i] = m.Node(el.m_node[i]).m_rt;
     else for (int i=0; i<ne; ++i) y[i] = m.Node(el.m_node[i]).st();
@@ -1233,7 +1233,7 @@ Vector3d FESurface::SurfaceNormal(FESurfaceElement &el, double r, double s) cons
 	FEMesh& mesh = *m_pMesh;
 	
 	// get the coordinates of the element nodes
-	int ne = el.Nodes();
+	int ne = el.NodeSize();
 	Vector3d y[FEElement::MAX_NODES];
     if (!m_bshellb) for (l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).m_rt;
     else for (l=0; l<ne; ++l) y[l] = mesh.Node(el.m_node[l]).st();
@@ -1277,7 +1277,7 @@ void FESurface::UpdateNodeNormals()
     for (int i=0; i<Elements(); ++i)
     {
         FESurfaceElement& el = Element(i);
-        int ne = el.Nodes();
+        int ne = el.NodeSize();
         
         // get the nodal coordinates
         for (int j=0; j<ne; ++j) y[j] = Node(el.m_lnode[j]).m_rt;
@@ -1303,7 +1303,7 @@ void FESurface::UpdateNodeNormals()
 
 bool FESurface::IsInsideElement(FESurfaceElement& el, double r, double s, double tol)
 {
-	int ne = el.Nodes();
+	int ne = el.NodeSize();
 	switch (ne)
 	{
 	case 4:
@@ -1338,7 +1338,7 @@ void FESurface::CoBaseVectors(FESurfaceElement& el, double r, double s, Vector3d
 	FEMesh& m = *m_pMesh;
 
 	// get the nr of nodes
-	int n = el.Nodes();
+	int n = el.NodeSize();
 
 	// get the shape function derivatives
 	double Hr[FEElement::MAX_NODES], Hs[FEElement::MAX_NODES];
@@ -1371,7 +1371,7 @@ void FESurface::CoBaseVectors(const FESurfaceElement& el, int j, Vector3d t[2]) 
 	FEMesh& m = *m_pMesh;
 
 	// get the nr of nodes
-	int n = el.Nodes();
+	int n = el.NodeSize();
 
 	// get the shape function derivatives
 	double* Hr = el.Gr(j);
@@ -1403,7 +1403,7 @@ void FESurface::CoBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2])
     FEMesh& m = *m_pMesh;
     
     // get the nr of nodes
-    int n = el.Nodes();
+    int n = el.NodeSize();
     
     // get the shape function derivatives
     double* Hr = el.Gr(j);
@@ -1427,7 +1427,7 @@ void FESurface::CoBaseVectors0(FESurfaceElement &el, double r, double s, Vector3
 	const int MN = FEElement::MAX_NODES;
 	Vector3d y[MN];
 	double H0[MN], H1[MN];
-	int n = el.Nodes();
+	int n = el.NodeSize();
 	if (!m_bshellb) for (i=0; i<n; ++i) y[i] = m_pMesh->Node(el.m_node[i]).m_r0;
     else for (i=0; i<n; ++i) y[i] = m_pMesh->Node(el.m_node[i]).s0();
 	el.shape_deriv(H0, H1, r, s);
@@ -1491,7 +1491,7 @@ void FESurface::ContraBaseVectors0(FESurfaceElement& el, double r, double s, Vec
 //-----------------------------------------------------------------------------
 double FESurface::jac0(FESurfaceElement &el, int n)
 {
-	const int nseln = el.Nodes();
+	const int nseln = el.NodeSize();
 	Vector3d r0[FEElement::MAX_NODES];
 	if (!m_bshellb) for (int i=0; i<nseln; ++i) r0[i] = GetMesh()->Node(el.m_node[i]).m_r0;
     else for (int i=0; i<nseln; ++i) r0[i] = GetMesh()->Node(el.m_node[i]).s0();
@@ -1515,7 +1515,7 @@ double FESurface::jac0(FESurfaceElement &el, int n)
 //-----------------------------------------------------------------------------
 double FESurface::jac0(const FESurfaceElement &el, int n, Vector3d& nu)
 {
-	const int nseln = el.Nodes();
+	const int nseln = el.NodeSize();
 	Vector3d r0[FEElement::MAX_NODES];
 	if (!m_bshellb) for (int i=0; i<nseln; ++i) r0[i] = GetMesh()->Node(el.m_node[i]).m_r0;
     else for (int i=0; i<nseln; ++i) r0[i] = GetMesh()->Node(el.m_node[i]).s0();
@@ -2182,7 +2182,7 @@ void FESurface::Invert()
 //!
 bool FESurface::Intersect(FESurfaceElement& el, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
-	int N = el.Nodes();
+	int N = el.NodeSize();
 
 	// get the element nodes
 	FEMesh& mesh = *m_pMesh;
@@ -2226,7 +2226,7 @@ void FESurface::Serialize(DumpStream &ar)
 			{
 				FESurfaceElement& el = Element(i);
 				el.SetMeshPartition(this);
-				int nint = el.GaussPoints();
+				int nint = el.GaussPointSize();
 				for (int n = 0; n < nint; ++n)
 				{
 					FESurfaceMaterialPoint* pt = dynamic_cast<FESurfaceMaterialPoint*>(CreateMaterialPoint());
@@ -2256,7 +2256,7 @@ void FESurface::Serialize(DumpStream &ar)
 	for (int i = 0; i < Elements(); ++i)
 	{
 		FESurfaceElement& el = Element(i);
-		int nint = el.GaussPoints();
+		int nint = el.GaussPointSize();
 		for (int n = 0; n < nint; ++n)
 		{
 			FESurfaceMaterialPoint* pt = dynamic_cast<FESurfaceMaterialPoint*>(el.GetMaterialPoint(n));
@@ -2270,7 +2270,7 @@ void FESurface::Serialize(DumpStream &ar)
 void FESurface::GetNodalCoordinates(FESurfaceElement& el, Vector3d* rt)
 {
 	FEMesh& mesh = *GetMesh();
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
     if (!m_bshellb) for (int j = 0; j < neln; ++j) rt[j] = mesh.Node(el.m_node[j]).m_rt;
     else for (int j = 0; j < neln; ++j) rt[j] = mesh.Node(el.m_node[j]).st();
 }
@@ -2279,7 +2279,7 @@ void FESurface::GetNodalCoordinates(FESurfaceElement& el, Vector3d* rt)
 void FESurface::GetReferenceNodalCoordinates(FESurfaceElement& el, Vector3d* r0)
 {
 	FEMesh& mesh = *GetMesh();
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
     if (!m_bshellb) for (int j = 0; j < neln; ++j) r0[j] = mesh.Node(el.m_node[j]).m_r0;
     else for (int j = 0; j < neln; ++j) r0[j] = mesh.Node(el.m_node[j]).s0();
 }
@@ -2288,7 +2288,7 @@ void FESurface::GetReferenceNodalCoordinates(FESurfaceElement& el, Vector3d* r0)
 // Get current coordinates at intermediate configuration
 void FESurface::GetNodalCoordinates(FESurfaceElement& el, double alpha, Vector3d* rt)
 {
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int j = 0; j<neln; ++j) {
 		FENode& node = Node(el.m_lnode[j]);
 		rt[j] = node.m_rt*alpha + node.m_rp*(1.0 - alpha);
@@ -2303,7 +2303,7 @@ double FESurface::Evaluate(FESurfaceMaterialPoint& mp, int dof)
 	double v[FEElement::MAX_NODES];
 
 	FESurfaceElement& el = *mp.SurfaceElement();
-	int neln = el.Nodes();
+	int neln = el.NodeSize();
 	for (int j = 0; j < neln; ++j) v[j] = Node(el.m_lnode[j]).get(dof);
 
 	double s = el.eval(v, mp.m_index);
@@ -2317,7 +2317,7 @@ double FESurface::Evaluate(int nface, int dof)
     double v = 0;
 
     FESurfaceElement& el = Element(nface);
-    int neln = el.Nodes();
+    int neln = el.NodeSize();
     for (int j = 0; j < neln; ++j) v += Node(el.m_lnode[j]).get(dof);
 
     return v/neln;
@@ -2355,7 +2355,7 @@ void FESurface::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool bre
 		// calculate element vector
 		FESurfaceDofShape dof_a;
 		double* w = el.GaussWeights();
-		int nint = el.GaussPoints();
+		int nint = el.GaussPointSize();
 		for (int n = 0; n < nint; ++n)
 		{
 			FESurfaceMaterialPoint& pt = static_cast<FESurfaceMaterialPoint&>(*el.GetMaterialPoint(n));
@@ -2422,7 +2422,7 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 		ke.SetNodes(el.m_node);
 
 		// shape functions
-		int neln = el.Nodes();
+		int neln = el.NodeSize();
 		int nn_a = el.ShapeFunctions(dofPerNode_a);
 		int nn_b = el.ShapeFunctions(dofPerNode_b);
 
@@ -2432,7 +2432,7 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 		ke.resize(ndof_a, ndof_b);
 
 		// calculate element stiffness
-		int nint = el.GaussPoints();
+		int nint = el.GaussPointSize();
 
 		// gauss weights
 		double* w = el.GaussWeights();

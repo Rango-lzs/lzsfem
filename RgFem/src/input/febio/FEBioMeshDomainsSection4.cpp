@@ -206,7 +206,7 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
         FEElement& el = dom->ElementRef(j);
         el.SetID(domElement.id);
 
-        int ne = el.Nodes();
+        int ne = el.NodeSize();
         for (int n = 0; n < ne; ++n)
             el.m_node[n] = m_NLT[domElement.node[n] - m_noff];
     }
@@ -321,7 +321,7 @@ void FEBioMeshDomainsSection4::ParseShellDomainSection(XMLTag& tag)
             FEShellElement& el = shellDomain->Element(j);
             el.SetID(domElement.id);
 
-            int ne = el.Nodes();
+            int ne = el.NodeSize();
             for (int n = 0; n < ne; ++n)
             {
                 el.m_node[n] = m_NLT[domElement.node[n] - m_noff];
@@ -442,7 +442,7 @@ void FEBioMeshDomainsSection4::ParseBeamDomainSection(XMLTag& tag)
         el.SetID(domElement.id);
 
         // TODO: This assumes one-based indexing of all nodes!
-        int ne = el.Nodes();
+        int ne = el.NodeSize();
         for (int n = 0; n < ne; ++n)
             el.m_node[n] = m_NLT[domElement.node[n] - m_noff];
     }

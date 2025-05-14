@@ -159,7 +159,7 @@ bool FEBioConstraintsSection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int
 			else throw XMLReader::InvalidTag(tag);
 		}
 
-		N = el.Nodes();
+		N = el.NodeSize();
 
 		if (nfmt == 0)
 		{

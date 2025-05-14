@@ -27,10 +27,10 @@ SOFTWARE.*/
 
 
 #pragma once
-#include <FECore/FETrussDomain.h>
+#include "femcore/Domain/FETrussDomain.h"
 #include "FEElasticDomain.h"
-#include "FETrussMaterial.h"
-#include <FECore/FEDofList.h>
+//#include "materials/FETrussMaterial.h"
+#include "femcore/FEDofList.h"
 
 //-----------------------------------------------------------------------------
 //! Domain described by 3D truss elements
@@ -53,7 +53,7 @@ public:
 	void PreSolveUpdate(const FETimeInfo& timeInfo) override;
 
 	//! Unpack truss element data
-	void UnpackLM(FEElement& el, vector<int>& lm) override;
+	void UnpackLM(FEElement& el, std::vector<int>& lm) override;
 
 	//! get the material
 	FEMaterial* GetMaterial() override { return m_pMat; }
@@ -79,7 +79,7 @@ public: // overloads from FEElasticDomain
 	void BodyForce(FEGlobalVector& R, FEBodyForce& bf) override { assert(false); }
 
 	//! Calculates inertial forces for dynamic problems
-	void InertialForces(FEGlobalVector& R, vector<double>& F) override { assert(false); }
+	void InertialForces(FEGlobalVector& R, std::vector<double>& F) override { assert(false); }
 
 	//! calculates the global stiffness matrix for this domain
 	void StiffnessMatrix(FELinearSystem& LS) override;
@@ -91,19 +91,19 @@ public: // overloads from FEElasticDomain
 	void BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf) override { assert(false); }
 
 	//! elemental mass matrix
-	void ElementMassMatrix(FETrussElement& el, matrix& ke);
+	void ElementMassMatrix(FETrussElement& el, Matrix& ke);
 
 protected:
 	//! calculates the truss element stiffness matrix
-	void ElementStiffness(int iel, matrix& ke);
+	void ElementStiffness(int iel, Matrix& ke);
 
 	//! Calculates the internal stress vector for solid elements
-	void ElementInternalForces(FETrussElement& el, vector<double>& fe);
+	void ElementInternalForces(FETrussElement& el, std::vector<double>& fe);
 
 protected:
-	FETrussMaterial*	m_pMat;
+	//FETrussMaterial*	m_pMat;
 	double	m_a0;
 
 	FEDofList	m_dofU;
-	DECLARE_FECORE_CLASS();
+	DECLARE_PARAM_LIST();
 };

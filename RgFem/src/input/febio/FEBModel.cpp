@@ -464,7 +464,7 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 				FEElement& el = dom->ElementRef(j);
 				el.SetID(++eid);
 
-				int ne = el.Nodes();
+				int ne = el.NodeSize();
 				for (int n = 0; n < ne; ++n) el.m_node[n] = NLT[domElement.node[n] - noff];
 			}
 
@@ -478,7 +478,7 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 					for (int n = 0; n < ne; ++n)
 					{
 						FEShellElement& el = shellDomain->Element(n);
-						for (int k = 0; k < el.Nodes(); ++k) el.m_h0[k] = h0;
+						for (int k = 0; k < el.NodeSize(); ++k) el.m_h0[k] = h0;
 					}
 				}
 				else

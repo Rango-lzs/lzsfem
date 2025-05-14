@@ -11,6 +11,7 @@
 class FEMesh;
 class FENode;
 class DumpStream;
+class FEModel;
 
 //-----------------------------------------------------------------------------
 //! Defines a node set of the model

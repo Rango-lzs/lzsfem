@@ -1362,7 +1362,7 @@ void FEBioPlotFile::BuildSurfaceTable()
 		for (int i = 0; i < NF; ++i)
 		{
 			FESurfaceElement& el = s.Element(i);
-			if (el.Nodes() > maxNodes) maxNodes = el.Nodes();
+			if (el.NodeSize() > maxNodes) maxNodes = el.NodeSize();
 		}
 
 		Surface surf;
@@ -1851,7 +1851,7 @@ void FEBioPlotFile::WriteSurfaceDataField(FEModel& fem, FEPlotData* pd)
 					for (int n = 0; n < S.Elements(); ++n)
 					{
 						FESurfaceElement& el = S.Element(n);
-						int ne = el.Nodes();
+						int ne = el.NodeSize();
 						for (int j = 0; j < ne; ++j)
 						{
 							for (int k = 0; k < datasize; ++k) b[n * M * datasize + j * datasize + k] = a[m++];

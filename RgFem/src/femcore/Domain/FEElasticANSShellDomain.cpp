@@ -8,8 +8,11 @@
 #include "femcore/Domain/FESolidDomain.h"
 #include "femcore/FELinearSystem.h"
 #include "basicio/DumpStream.h"
-#include "../FENode.h"
-#include "../FEException.h"
+#include "femcore/FENode.h"
+#include "femcore/FEException.h"
+#include "femcore/FEBodyForce.h"
+#include "../FEMeshPartition.h"
+#include "femcore/FEMesh.h"
 
 
 //-----------------------------------------------------------------------------
