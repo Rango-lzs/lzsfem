@@ -185,11 +185,11 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
     dom->SetMatID(mat->GetID() - 1);
 
     // get the part name
-    string partName = part->Name();
+    std::string partName = part->Name();
     if (partName.empty() == false)
         partName += ".";
 
-    string domName = partName + partDomain->Name();
+    std::string domName = partName + partDomain->Name();
     dom->SetName(domName);
 
     // read additional parameters
@@ -297,11 +297,11 @@ void FEBioMeshDomainsSection4::ParseShellDomainSection(XMLTag& tag)
     dom->SetMatID(mat->GetID() - 1);
 
     // get the part name
-    string partName = part->Name();
+    std::string partName = part->Name();
     if (partName.empty() == false)
         partName += ".";
 
-    string domName = partName + partDomain->Name();
+    std::string domName = partName + partDomain->Name();
     dom->SetName(domName);
 
     // read additional parameters
@@ -420,11 +420,11 @@ void FEBioMeshDomainsSection4::ParseBeamDomainSection(XMLTag& tag)
     dom->SetMatID(mat->GetID() - 1);
 
     // get the part name
-    string partName = part->Name();
+    std::string partName = part->Name();
     if (partName.empty() == false)
         partName += ".";
 
-    string domName = partName + partDomain->Name();
+    std::string domName = partName + partDomain->Name();
     dom->SetName(domName);
 
     // read additional parameters

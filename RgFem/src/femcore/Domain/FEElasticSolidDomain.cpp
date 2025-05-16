@@ -9,6 +9,7 @@
 #include "materials/FEElasticMaterialPoint.h"
 #include "../FEException.h"
 #include "../FEMeshPartition.h"
+#include "femcore/FEMesh.h"
 
 //-----------------------------------------------------------------------------
 //! constructor

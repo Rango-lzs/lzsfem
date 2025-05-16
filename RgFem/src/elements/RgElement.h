@@ -107,6 +107,10 @@ public:
         return m_pTraits->m_neln;
     }
 
+    bool isActive() const;
+
+    ElementCategory Class() const;
+
 public: 
 
     //! return the element shape

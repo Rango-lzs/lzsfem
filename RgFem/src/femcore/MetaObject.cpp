@@ -30,7 +30,7 @@ MetaObject* MetaObject::meta_cast(MetaObject* pOther)
 {
     if (!pOther)
         return nullptr;
-    return pOther->isKindOf(MetaObject::staic_meta()) ? static_cast<MetaObject*>(pOther) : nullptr;
+    return pOther->isKindOf(MetaObject::static_meta()) ? static_cast<MetaObject*>(pOther) : nullptr;
 }
 
 

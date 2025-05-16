@@ -261,7 +261,7 @@ bool FEGlobalMatrix::Create(FEMesh& mesh, int nstart, int nend)
 }
 
 //! construct a stiffness Matrix from a surface
-bool FEGlobalMatrix::Create(const FESurface& surf, const std::std::vector<int>& equationIDs)
+bool FEGlobalMatrix::Create(const FESurface& surf, const std::vector<int>& equationIDs)
 {
 	int N = surf.Nodes();
 	if ((int)equationIDs.size() != N) return false;

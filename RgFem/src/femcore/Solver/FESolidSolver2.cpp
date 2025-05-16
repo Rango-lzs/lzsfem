@@ -697,7 +697,7 @@ void FESolidSolver2::PrepStep()
 
     // apply boundary conditions
     // we save the prescribed displacements increments in the ui std::vector
-    std::std::vector<double>& ui = m_ui;   //第i个迭代步的位移增量
+    std::vector<double>& ui = m_ui;   //第i个迭代步的位移增量
     zero(ui);
     int nBC = fem.BoundaryConditions();
     for (int i = 0; i < nBC; ++i)
@@ -767,8 +767,8 @@ void FESolidSolver2::PrepStep()
 // Performs the quasi-newton iterations.
 bool FESolidSolver2::Quasin()
 {
-    std::std::vector<double> u0(m_neq);
-    std::std::vector<double> Rold(m_neq);
+    std::vector<double> u0(m_neq);
+    std::vector<double> Rold(m_neq);
 
     // convergence norms
     double normR1;  // residual norm
@@ -837,7 +837,7 @@ bool FESolidSolver2::Quasin()
         // NOTE: We don't apply the line search directly to m_ui since we need the unscaled search direction for the QN
         // update below
         int neq = (int)m_Ui.size();
-        std::std::vector<double> ui(m_ui);
+        std::vector<double> ui(m_ui);
         for (int i = 0; i < neq; ++i)
             ui[i] *= s;
 

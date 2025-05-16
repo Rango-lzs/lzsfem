@@ -26,7 +26,7 @@ bool LinearSolver::PreProcess()
 }
 
 //-----------------------------------------------------------------------------
-void LinearSolver::SetPartitions(const vector<int>& part)
+void LinearSolver::SetPartitions(const std::vector<int>& part)
 {
 	m_part = part;
 }
@@ -95,7 +95,7 @@ bool LinearSolver::SetSparseMatrix(SparseMatrix* pA)
 
 //-----------------------------------------------------------------------------
 //! convenience function for solving linear systems
-bool LinearSolver::Solve(vector<double>& x, vector<double>& y)
+bool LinearSolver::Solve(std::vector<double>& x, std::vector<double>& y)
 {
 	if (PreProcess() == false) return false;
 	if (Factor() == false) return false;
