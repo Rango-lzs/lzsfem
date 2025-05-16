@@ -1,8 +1,8 @@
 #include "FEModelParam.h"
-#include "MObjBuilder.h"
+//#include "MObjBuilder.h"
 #include "FEDataArray.h"
-#include "DumpStream.h"
-#include "FEConstValueVec3.h"
+#include "basicio/DumpStream.h"
+//#include "FEConstValueVec3.h"
 
 //---------------------------------------------------------------------------------------
 FEModelParam::FEModelParam()
@@ -28,7 +28,7 @@ void FEModelParam::Serialize(DumpStream& ar)
 //---------------------------------------------------------------------------------------
 FEParamDouble::FEParamDouble()
 {
-	m_val = fecore_new<FEScalarValuator>("const", nullptr);
+	m_val = RANGO_NEW<FEScalarValuator>(nullptr, "const");
 }
 
 FEParamDouble::~FEParamDouble()
@@ -46,7 +46,7 @@ FEParamDouble::FEParamDouble(const FEParamDouble& p)
 // set the value
 void FEParamDouble::operator = (double v)
 {
-	FEConstValue* val = fecore_new<FEConstValue>("const", nullptr);
+	FEConstValue* val = RANGO_NEW<FEConstValue>(nullptr,"const");
 	*val->constValue() = v;
 	setValuator(val);
 }
@@ -94,7 +94,7 @@ bool FEParamDouble::Init()
 //---------------------------------------------------------------------------------------
 FEParamVec3::FEParamVec3()
 {
-	m_val = fecore_new<FEVec3dValuator>("vector", nullptr);
+	m_val = RANGO_NEW<FEVec3dValuator>(nullptr, "vector");
 }
 
 FEParamVec3::~FEParamVec3()
@@ -117,7 +117,7 @@ bool FEParamVec3::Init()
 // set the value
 void FEParamVec3::operator = (const Vector3d& v)
 {
-	FEConstValueVec3* val = fecore_new<FEConstValueVec3>("vector", nullptr);
+	FEConstValueVec3* val = RANGO_NEW<FEConstValueVec3>(nullptr,"vector");
 	val->value() = v;
 	setValuator(val);
 }
@@ -152,7 +152,7 @@ void FEParamVec3::Serialize(DumpStream& ar)
 
 FEParamMat3d::FEParamMat3d()
 {
-	m_val = fecore_new<FEMat3dValuator>("const", nullptr);
+	m_val = RANGO_NEW<FEMat3dValuator>(nullptr, "const");
 }
 
 FEParamMat3d::~FEParamMat3d()
@@ -170,7 +170,7 @@ FEParamMat3d::FEParamMat3d(const FEParamMat3d& p)
 // set the value
 void FEParamMat3d::operator = (const Matrix3d& v)
 {
-	FEConstValueMat3d* val = fecore_new<FEConstValueMat3d>("const", nullptr);
+	FEConstValueMat3d* val = RANGO_NEW<FEConstValueMat3d>(nullptr, "const");
 	val->value() = v;
 	setValuator(val);
 }
@@ -210,7 +210,7 @@ void FEParamMat3d::Serialize(DumpStream& ar)
 //==========================================================================
 FEParamMat3ds::FEParamMat3ds()
 {
-	m_val = fecore_new<FEMat3dsValuator>("const", nullptr);
+	m_val = RANGO_NEW<FEMat3dsValuator>(nullptr, "const");
 }
 
 FEParamMat3ds::~FEParamMat3ds()
@@ -228,7 +228,7 @@ FEParamMat3ds::FEParamMat3ds(const FEParamMat3ds& p)
 // set the value
 void FEParamMat3ds::operator = (const Matrix3ds& v)
 {
-	FEConstValueMat3ds* val = fecore_new<FEConstValueMat3ds>("const", nullptr);
+	FEConstValueMat3ds* val = RANGO_NEW<FEConstValueMat3ds>(nullptr, "const");
 	val->value() = v;
 	setValuator(val);
 }

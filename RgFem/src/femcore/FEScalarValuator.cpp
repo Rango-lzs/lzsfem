@@ -239,7 +239,7 @@ double FEMappedValue::operator()(const FEMaterialPoint& pt)
 
 FEScalarValuator* FEMappedValue::copy()
 {
-	FEMappedValue* map = fecore_alloc(FEMappedValue, GetFEModel());
+	FEMappedValue* map = RANGO_NEW<FEMappedValue>(GetFEModel(), "");
 	map->setDataMap(m_val);
 	map->m_scale = m_scale;
 	return map;
@@ -271,7 +271,7 @@ double FENodeMappedValue::operator()(const FEMaterialPoint& pt)
 
 FEScalarValuator* FENodeMappedValue::copy()
 {
-	FENodeMappedValue* map = fecore_alloc(FENodeMappedValue, GetFEModel());
+	FENodeMappedValue* map = RANGO_NEW<FENodeMappedValue>(GetFEModel(),"");
 	map->setDataMap(m_val);
 	return map;
 }

@@ -1,6 +1,8 @@
 #include "FEGlobalVector.h"
 #include "datastructure/Vector3d.h"
 #include "FEModel.h"
+#include "FENode.h"
+#include "femcore/FEMesh.h"
 
 //-----------------------------------------------------------------------------
 FEGlobalVector::FEGlobalVector(FEModel& fem, std::vector<double>& R, std::vector<double>& Fr) : m_fem(fem), m_R(R), m_Fr(Fr)

@@ -32,7 +32,7 @@ void FELinearConstraintManager::CopyFrom(const FELinearConstraintManager& lcm)
 	for (int i=0; i<lcm.LinearConstraints(); ++i)
 	{
         FELinearConstraint* lc = static_cast<FELinearConstraint*>(
-            FELinearConstraint::staic_meta()->create());  // fecore_alloc(FELinearConstraint, m_fem);
+            FELinearConstraint::static_meta()->create());  // fecore_alloc(FELinearConstraint, m_fem);
 		lc->CopyFrom(&(const_cast<FELinearConstraint&>(lcm.LinearConstraint(i))));
 		m_LinC.push_back(lc);
 	}

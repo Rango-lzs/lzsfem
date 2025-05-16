@@ -1,8 +1,7 @@
 
 #include "FEParameterList.h"
-#include "FECoreKernel.h"
-#include "DumpStream.h"
-#include "tens3d.h"
+#include "basicio/DumpStream.h"
+#include "datastructure/tens3d.h"
 #include "FEModelParam.h"
 #include <string>
 #include <assert.h>

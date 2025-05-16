@@ -159,7 +159,7 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 			UnpackLM(el, lm);
 
 			// assemble element 'fe'-std::vector into global R std::vector
-			R.Assemble(el.getElementNodes(), lm, fe);
+			R.Assemble(el.getNodeIds(), lm, fe);
 		}
 	}
 }

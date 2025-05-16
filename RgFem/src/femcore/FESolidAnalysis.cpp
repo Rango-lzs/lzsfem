@@ -1,4 +1,4 @@
-#include "FEAnalysis/FESolidAnalysis.h"
+#include "femcore/FESolidAnalysis.h"
 
 BEGIN_PARAM_DEFINE(FESolidAnalysis, FEAnalysis)
 	// The analysis parameter is already defined in the FEAnalysis base class. 

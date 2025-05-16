@@ -1,39 +1,10 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FESurface.h"
 #include "FEMesh.h"
-#include "FESolidDomain.h"
-#include "FEElemElemList.h"
-#include "DumpStream.h"
-#include "matrix.h"
-#include <FECore/log.h>
+#include "femcore/Domain/FESolidDomain.h"
+#include "elements/FEElemElemList.h"
+#include "basicio/DumpStream.h"
+#include "datastructure/matrix.h"
+#include "logger/log.h"
 
 //-----------------------------------------------------------------------------
 FESurface::FESurface(FEModel* fem) : FEMeshPartition(FE_DOMAIN_SURFACE, fem)
@@ -57,7 +28,7 @@ void FESurface::Create(int nsize, int elemType)
 	for (int i = 0; i < nsize; ++i)
 	{
 		FESurfaceElement& el = m_el[i];
-		el.SetLocalID(i);
+		el.setLocalId(i);
 		el.SetMeshPartition(this);
 		el.m_elem[0] = nullptr;
 		el.m_elem[1] = nullptr;
@@ -65,7 +36,7 @@ void FESurface::Create(int nsize, int elemType)
 
 	if (elemType != -1)
 	{
-		for (int i = 0; i < nsize; ++i) m_el[i].SetType(elemType);
+		for (int i = 0; i < nsize; ++i) m_el[i].setType(elemType);
 		CreateMaterialPointData();
 	}
 }
@@ -90,13 +61,13 @@ void FESurface::Create(const FEFacetSet& set)
 		FESurfaceElement& el = Element(i);
 		const FEFacetSet::FACET& fi = set.Face(i);
 
-		if (fi.ntype == 4) el.SetType(FE_QUAD4G4);
-		else if (fi.ntype == 3) el.SetType(FE_TRI3G1);
-		else if (fi.ntype == 6) el.SetType(FE_TRI6G3);
-		else if (fi.ntype == 7) el.SetType(FE_TRI7G4);
-		else if (fi.ntype == 8) el.SetType(FE_QUAD8G9);
-		else if (fi.ntype == 9) el.SetType(FE_QUAD9G9);
-		else if (fi.ntype == 10) el.SetType(FE_TRI10G7);
+		if (fi.ntype == 4) el.setType(FE_QUAD4G4);
+		else if (fi.ntype == 3) el.setType(FE_TRI3G1);
+		else if (fi.ntype == 6) el.setType(FE_TRI6G3);
+		else if (fi.ntype == 7) el.setType(FE_TRI7G4);
+		else if (fi.ntype == 8) el.setType(FE_QUAD8G9);
+		else if (fi.ntype == 9) el.setType(FE_QUAD9G9);
+		else if (fi.ntype == 10) el.setType(FE_TRI10G7);
 		else assert(false);
 
 		int N = el.NodeSize(); assert(N == fi.ntype);

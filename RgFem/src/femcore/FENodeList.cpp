@@ -1,6 +1,6 @@
 #include "FENodeList.h"
 #include "FEMesh.h"
-#include "DumpStream.h"
+#include "basicio/DumpStream.h"
 
 FENodeList::FENodeList(FEMesh* mesh) : m_mesh(mesh)
 {
