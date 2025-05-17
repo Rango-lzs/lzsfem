@@ -223,6 +223,7 @@ set(FEMCORE_HEADERS
     femcore/FEPrescribedDOF.h
     femcore/FEPrescribedBC.h
     femcore/FEBodyForce.h
+    femcore/FEConstValueVec3.h
 )
 
 
@@ -249,7 +250,7 @@ set(FEMCORE_SOURCES
     #femcore/Domain/FELinearTrussDomain.cpp
     #femcore/Domain/FEShellDomain.cpp
     femcore/Domain/FESolidDomain.cpp
-    femcore/Domain/FESolidDomainFactory.cpp
+    #femcore/Domain/FESolidDomainFactory.cpp
     #femcore/Domain/FETrussDomain.cpp
     #femcore/Domain/FESSIShellDomain.h
     #femcore/DomainDataRecord.cpp
@@ -392,6 +393,7 @@ set(FEMCORE_SOURCES
     femcore/FEPrescribedDOF.cpp
     femcore/FEPrescribedBC.cpp
     femcore/FEBodyForce.cpp
+    femcore/FEConstValueVec3.cpp
 
 )
 

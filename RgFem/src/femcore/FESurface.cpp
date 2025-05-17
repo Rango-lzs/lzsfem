@@ -3,7 +3,7 @@
 #include "femcore/Domain/FESolidDomain.h"
 #include "elements/FEElemElemList.h"
 #include "basicio/DumpStream.h"
-#include "datastructure/matrix.h"
+#include "datastructure/Matrix.h"
 #include "logger/log.h"
 
 //-----------------------------------------------------------------------------
@@ -105,7 +105,7 @@ FENodeList FESurface::GetNodeList()
 	FEMesh* pm = GetMesh();
 	FENodeList nset(pm);
 
-	vector<int> tag(pm->Nodes(), 0);
+	std::vector<int> tag(pm->Nodes(), 0);
 	for (int i=0; i<Elements(); ++i)
 	{
 		FESurfaceElement& el = Element(i);
@@ -188,7 +188,7 @@ void FESurface::InitSurface()
 	FEMesh& mesh = *GetMesh();
 
 	// This array is used to keep tags on each node
-	vector<int> tag; tag.assign(mesh.Nodes(), -1);
+	std::vector<int> tag; tag.assign(mesh.Nodes(), -1);
 
 	// let's find all nodes the surface needs
 	int nn = 0;
@@ -207,7 +207,7 @@ void FESurface::InitSurface()
 			if (tag[m] == -1) tag[m] = nn++;
 
 			// set the local node number
-			el.m_lnode[j] = tag[m];
+			el.m_loc_node[j] = tag[m];
 		}
 	}
 
@@ -306,7 +306,7 @@ bool FESurface::Init()
 	}
 
     // allocate node normals and evaluate them in initial configuration
-    m_nn.assign(Nodes(), Vector3d(0,0,0));
+    m_nn.assign(Nodes, Vector3d(0,0,0));
     UpdateNodeNormals();
     
 	return true;
@@ -365,7 +365,7 @@ void FESurface::FindElements(FESurfaceElement& el)
 	FEMesh& mesh = *GetMesh();
 	FENodeElemList& NEL = mesh.NodeElementList();
 
-	vector<int>& sf = el.m_node;
+	std::vector<int>& sf = el.m_node;
 	int node = el.m_node[0];
 	int nval = NEL.Valence(node);
 	FEElement** ppe = NEL.ElementList(node);
@@ -405,8 +405,8 @@ void FESurface::FindElements(FESurfaceElement& el)
 }
 
 //-----------------------------------------------------------------------------
-//! unpack an LM vector from a dof list
-void FESurface::UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, vector<int>& lm)
+//! unpack an LM std::vector from a dof list
+void FESurface::UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, std::vector<int>& lm)
 {
 	int dofPerNode = dofList.Size();
 	int neln = el.NodeSize();
@@ -414,7 +414,7 @@ void FESurface::UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, v
 	lm.assign(ndof, -1);
 	for (int j = 0; j < neln; ++j)
 	{
-		FENode& node = Node(el.m_lnode[j]);
+		FENode& node = Node(el.m_loc_node[j]);
 		for (int k = 0; k < dofPerNode; ++k)
 		{
 			if (dofList[k] >= 0)
@@ -708,8 +708,8 @@ Vector3d FESurface::Position(FESurfaceElement &el, int n)
 void FESurface::NodalCoordinates(FESurfaceElement& el, Vector3d* re)
 {
 	int ne = el.NodeSize();
-	if (!m_bshellb) for (int i = 0; i < ne; ++i) re[i] = Node(el.m_lnode[i]).m_rt;
-    else for (int i = 0; i < ne; ++i) re[i] = Node(el.m_lnode[i]).st();
+	if (!m_bshellb) for (int i = 0; i < ne; ++i) re[i] = Node(el.m_loc_node[i]).m_rt;
+    else for (int i = 0; i < ne; ++i) re[i] = Node(el.m_loc_node[i]).st();
 }
 
 //-----------------------------------------------------------------------------
@@ -731,24 +731,24 @@ double FESurface::FacePointing(FESurfaceElement& se, FEElement& el)
     // get centroid of element el
     Vector3d c(0,0,0);
     if (sel) {
-        for (int i=0; i<sel->Nodes(); ++i) {
+        for (int i=0; i<sel->NodeSize(); ++i) {
             FENode& node = mesh.Node(sel->m_node[i]);
             c += node.m_rt;
         }
-        c /= sel->Nodes();
+        c /= sel->NodeSize();
     }
     else if (shl) {
-        for (int i=0; i<sel->Nodes(); ++i) {
+        for (int i=0; i<sel->NodeSize(); ++i) {
             FENode& node = mesh.Node(sel->m_node[i]);
             c += node.m_rt;
             c += node.st();
         }
-        c /= (2*sel->Nodes());
+        c /= (2*sel->NodeSize());
     }
     else
         return 0;
     
-    // project vector from centroid to surface point onto surface normal
+    // project std::vector from centroid to surface point onto surface normal
     double d = (sp - c)*sn;
     if (d > 0) return 1.0;
     else if (d < 0) return -1.0;
@@ -946,7 +946,7 @@ double FESurface::MaxElementSize()
 	for (int m=0; m<NS; ++m)
 	{
 		FESurfaceElement& e = Element(m);
-		int n = e.Nodes();
+		int n = e.NodeSize();
 		for (int i=0; i<n; ++i)
 			for (int j=i+1; j<n; ++j)
 			{
@@ -963,7 +963,7 @@ double FESurface::MaxElementSize()
 //! Calculates the metric tensor at the point with surface coordinates (r,s)
 //! \todo Perhaps I should place this function in the element class.
 
-mat2d FESurface::Metric0(FESurfaceElement& el, double r, double s)
+Matrix2d FESurface::Metric0(FESurfaceElement& el, double r, double s)
 {
 	// nr of element nodes
 	int neln = el.NodeSize();
@@ -989,14 +989,14 @@ mat2d FESurface::Metric0(FESurfaceElement& el, double r, double s)
 	}
 	
 	// calculate metric tensor
-	return mat2d(t1*t1, t1*t2, t2*t1, t2*t2);
+	return Matrix2d(t1*t1, t1*t2, t2*t1, t2*t2);
 }
 
 //-----------------------------------------------------------------------------
 //! Calculates the metric tensor at the point with surface coordinates (r,s)
 //! \todo Perhaps I should place this function in the element class.
 
-mat2d FESurface::Metric(FESurfaceElement& el, double r, double s)
+Matrix2d FESurface::Metric(FESurfaceElement& el, double r, double s)
 {
 	// nr of element nodes
 	int neln = el.NodeSize();
@@ -1022,14 +1022,14 @@ mat2d FESurface::Metric(FESurfaceElement& el, double r, double s)
 	}
 	
 	// calculate metric tensor
-	return mat2d(t1*t1, t1*t2, t2*t1, t2*t2);
+	return Matrix2d(t1*t1, t1*t2, t2*t1, t2*t2);
 }
 
 //-----------------------------------------------------------------------------
 //! Calculates the metric tensor at an integration point
 //! \todo Perhaps I should place this function in the element class.
 
-mat2d FESurface::Metric(const FESurfaceElement& el, int n) const
+Matrix2d FESurface::Metric(const FESurfaceElement& el, int n) const
 {
     // nr of element nodes
     int neln = el.NodeSize();
@@ -1053,14 +1053,14 @@ mat2d FESurface::Metric(const FESurfaceElement& el, int n) const
     }
     
     // calculate metric tensor
-    return mat2d(t1*t1, t1*t2, t2*t1, t2*t2);
+    return Matrix2d(t1*t1, t1*t2, t2*t1, t2*t2);
 }
 
 //-----------------------------------------------------------------------------
 //! Calculates the metric tensor at an integration point at previous time
 //! \todo Perhaps I should place this function in the element class.
 
-mat2d FESurface::MetricP(FESurfaceElement& el, int n)
+Matrix2d FESurface::MetricP(FESurfaceElement& el, int n)
 {
     // nr of element nodes
     int neln = el.NodeSize();
@@ -1083,12 +1083,12 @@ mat2d FESurface::MetricP(FESurfaceElement& el, int n)
     }
     
     // calculate metric tensor
-    return mat2d(t1*t1, t1*t2, t2*t1, t2*t2);
+    return Matrix2d(t1*t1, t1*t2, t2*t1, t2*t2);
 }
 
 //-----------------------------------------------------------------------------
 //! Given an element an the natural coordinates of a point in this element, this
-//! function returns the global position vector.
+//! function returns the global position std::vector.
 Vector3d FESurface::Local2Global(FESurfaceElement &el, double r, double s)
 {
 	// get the mesh
@@ -1126,7 +1126,7 @@ Vector3d FESurface::Local2Global(FESurfaceElement &el, int n)
 
 //-----------------------------------------------------------------------------
 //! Given an element an the natural coordinates of a point in this element, this
-//! function returns the global position vector at the previous time.
+//! function returns the global position std::vector at the previous time.
 Vector3d FESurface::Local2GlobalP(FESurfaceElement &el, double r, double s)
 {
     // get the mesh
@@ -1251,7 +1251,7 @@ void FESurface::UpdateNodeNormals()
         int ne = el.NodeSize();
         
         // get the nodal coordinates
-        for (int j=0; j<ne; ++j) y[j] = Node(el.m_lnode[j]).m_rt;
+        for (int j=0; j<ne; ++j) y[j] = Node(el.m_loc_node[j]).m_rt;
         
         // calculate the normals
         for (int j=0; j<ne; ++j)
@@ -1259,7 +1259,7 @@ void FESurface::UpdateNodeNormals()
             int jp1 = (j+1)%ne;
             int jm1 = (j+ne-1)%ne;
             Vector3d n = (y[jp1] - y[j]) ^ (y[jm1] - y[j]);
-            m_nn[el.m_lnode[j]] += n;
+            m_nn[el.m_loc_node[j]] += n;
         }
     }
     
@@ -1415,8 +1415,8 @@ void FESurface::ContraBaseVectors(const FESurfaceElement& el, int j, Vector3d t[
 {
     Vector3d e[2];
     CoBaseVectors(el, j, e);
-    mat2d M = Metric(el, j);
-    mat2d Mi = M.inverse();
+    Matrix2d M = Metric(el, j);
+    Matrix2d Mi = M.inverse();
     
     t[0] = e[0]*Mi[0][0] + e[1]*Mi[0][1];
     t[1] = e[0]*Mi[1][0] + e[1]*Mi[1][1];
@@ -1427,8 +1427,8 @@ void FESurface::ContraBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2])
 {
     Vector3d e[2];
     CoBaseVectorsP(el, j, e);
-    mat2d M = MetricP(el, j);
-    mat2d Mi = M.inverse();
+    Matrix2d M = MetricP(el, j);
+    Matrix2d Mi = M.inverse();
     
     t[0] = e[0]*Mi[0][0] + e[1]*Mi[0][1];
     t[1] = e[0]*Mi[1][0] + e[1]*Mi[1][1];
@@ -1439,8 +1439,8 @@ void FESurface::ContraBaseVectors(FESurfaceElement& el, double r, double s, Vect
 {
 	Vector3d e[2];
 	CoBaseVectors(el, r, s, e);
-	mat2d M = Metric(el, r, s);
-	mat2d Mi = M.inverse();
+	Matrix2d M = Metric(el, r, s);
+	Matrix2d Mi = M.inverse();
 
 	t[0] = e[0]*Mi[0][0] + e[1]*Mi[0][1];
 	t[1] = e[0]*Mi[1][0] + e[1]*Mi[1][1];
@@ -1452,8 +1452,8 @@ void FESurface::ContraBaseVectors0(FESurfaceElement& el, double r, double s, Vec
 {
 	Vector3d e[2];
 	CoBaseVectors0(el, r, s, e);
-	mat2d M = Metric0(el, r, s);
-	mat2d Mi = M.inverse();
+	Matrix2d M = Metric0(el, r, s);
+	Matrix2d Mi = M.inverse();
 
 	t[0] = e[0]*Mi[0][0] + e[1]*Mi[0][1];
 	t[1] = e[0]*Mi[1][0] + e[1]*Mi[1][1];
@@ -1515,7 +1515,7 @@ double FESurface::jac0(const FESurfaceElement &el, int n, Vector3d& nu)
 bool IntersectTri(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
 	Vector3d e[2], E[2];
-	mat2d G;
+	Matrix2d G;
 
 	// create base vectors on triangle
 	e[0] = y[1]-y[0];
@@ -1543,7 +1543,7 @@ bool IntersectTri(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g, 
 		G[1][0] = e[1]*e[0]; G[1][1] = e[1]*e[1];
 
 		// and its inverse
-		mat2d Gi = G.inverse();
+		Matrix2d Gi = G.inverse();
 
 		// build dual basis
 		E[0] = e[0]*Gi[0][0] + e[1]*Gi[0][1];
@@ -1627,7 +1627,7 @@ bool IntersectQuad(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g,
 			F2 = - y[0]*H2[0] - y[1]*H2[1] - y[2]*H2[2] - y[3]*H2[3];
 			F3 = n;
 
-			// set up the tangent matrix
+			// set up the tangent Matrix
 			A[0][0] = F1.x; A[0][1] = F2.x; A[0][2] = F3.x;
 			A[1][0] = F1.y; A[1][1] = F2.y; A[1][2] = F3.y;
 			A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
@@ -1723,7 +1723,7 @@ bool IntersectQuad8(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g
 		F2 = - y[0]*H2[0] - y[1]*H2[1] - y[2]*H2[2] - y[3]*H2[3] - y[4]*H2[4] - y[5]*H2[5] - y[6]*H2[6] - y[7]*H2[7];
 		F3 = n;
 
-		// set up the tangent matrix
+		// set up the tangent Matrix
 		A[0][0] = F1.x; A[0][1] = F2.x; A[0][2] = F3.x;
 		A[1][0] = F1.y; A[1][1] = F2.y; A[1][2] = F3.y;
 		A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
@@ -1822,7 +1822,7 @@ bool IntersectQuad9(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g
 		F2 = - y[0]*H2[0] - y[1]*H2[1] - y[2]*H2[2] - y[3]*H2[3] - y[4]*H2[4] - y[5]*H2[5] - y[6]*H2[6] - y[7]*H2[7] - y[8]*H2[8];
 		F3 = n;
 
-		// set up the tangent matrix
+		// set up the tangent Matrix
 		A[0][0] = F1.x; A[0][1] = F2.x; A[0][2] = F3.x;
 		A[1][0] = F1.y; A[1][1] = F2.y; A[1][2] = F3.y;
 		A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
@@ -1952,7 +1952,7 @@ bool IntersectTri6(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g,
 			F2 = - y[0]*H2[0] - y[1]*H2[1] - y[2]*H2[2] - y[3]*H2[3] - y[4]*H2[4] - y[5]*H2[5];
 			F3 = n;
 			
-			// set up the tangent matrix
+			// set up the tangent Matrix
 			A[0][0] = F1.x; A[0][1] = F2.x; A[0][2] = F3.x;
 			A[1][0] = F1.y; A[1][1] = F2.y; A[1][2] = F3.y;
 			A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
@@ -2085,7 +2085,7 @@ bool IntersectTri7(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g,
 			F2 = - y[0]*H2[0] - y[1]*H2[1] - y[2]*H2[2] - y[3]*H2[3] - y[4]*H2[4] - y[5]*H2[5] - y[6]*H2[6];
 			F3 = n;
 			
-			// set up the tangent matrix
+			// set up the tangent Matrix
 			A[0][0] = F1.x; A[0][1] = F2.x; A[0][2] = F3.x;
 			A[1][0] = F1.y; A[1][1] = F2.y; A[1][2] = F3.y;
 			A[2][0] = F1.z; A[2][1] = F2.z; A[2][2] = F3.z;
@@ -2261,7 +2261,7 @@ void FESurface::GetNodalCoordinates(FESurfaceElement& el, double alpha, Vector3d
 {
 	int neln = el.NodeSize();
 	for (int j = 0; j<neln; ++j) {
-		FENode& node = Node(el.m_lnode[j]);
+		FENode& node = Node(el.m_loc_node[j]);
 		rt[j] = node.m_rt*alpha + node.m_rp*(1.0 - alpha);
         if (m_bshellb) rt[j] -= node.m_dt*alpha + node.m_dp*(1.0 - alpha);
 	}
@@ -2275,7 +2275,7 @@ double FESurface::Evaluate(FESurfaceMaterialPoint& mp, int dof)
 
 	FESurfaceElement& el = *mp.SurfaceElement();
 	int neln = el.NodeSize();
-	for (int j = 0; j < neln; ++j) v[j] = Node(el.m_lnode[j]).get(dof);
+	for (int j = 0; j < neln; ++j) v[j] = Node(el.m_loc_node[j]).get(dof);
 
 	double s = el.eval(v, mp.m_index);
 	return s;
@@ -2289,7 +2289,7 @@ double FESurface::Evaluate(int nface, int dof)
 
     FESurfaceElement& el = Element(nface);
     int neln = el.NodeSize();
-    for (int j = 0; j < neln; ++j) v += Node(el.m_lnode[j]).get(dof);
+    for (int j = 0; j < neln; ++j) v += Node(el.m_loc_node[j]).get(dof);
 
     return v/neln;
 }
@@ -2304,15 +2304,15 @@ void FESurface::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool bre
 	#pragma omp parallel for shared(R, dofList, f)
 	for (int i = 0; i < NE; ++i)
 	{
-		vector<double> fe;
-		vector<int> lm;
+		std::vector<double> fe;
+		std::vector<int> lm;
 		Vector3d re[FEElement::MAX_NODES];
 		std::vector<double> G(dofPerNode, 0.0);
 
 		// get the next element
 		FESurfaceElement& el = Element(i);
 
-		// init the element vector
+		// init the element std::vector
 		int neln = el.ShapeFunctions(order);
 		int ndof = dofPerNode * neln;
 		fe.assign(ndof, 0.0);
@@ -2323,7 +2323,7 @@ void FESurface::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool bre
 		else
 			GetNodalCoordinates(el, re);
 
-		// calculate element vector
+		// calculate element std::vector
 		FESurfaceDofShape dof_a;
 		double* w = el.GaussWeights();
 		int nint = el.GaussPointSize();
@@ -2360,10 +2360,10 @@ void FESurface::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool bre
 			}
 		}
 
-		// get the corresponding LM vector
+		// get the corresponding LM std::vector
 		UnpackLM(el, dofList, lm);
 
-		// Assemble into global vector
+		// Assemble into global std::vector
 		R.Assemble(el.m_node, lm, fe);
 	}
 }
@@ -2381,7 +2381,7 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 
 	Vector3d rt[FEElement::MAX_NODES];
 
-	matrix kab(dofPerNode_a, dofPerNode_b);
+	Matrix kab(dofPerNode_a, dofPerNode_b);
 	FESurfaceDofShape dof_a, dof_b;
 
 	int NE = Elements();
@@ -2397,7 +2397,7 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 		int nn_a = el.ShapeFunctions(dofPerNode_a);
 		int nn_b = el.ShapeFunctions(dofPerNode_b);
 
-		// get the element stiffness matrix
+		// get the element stiffness Matrix
 		int ndof_a = dofPerNode_a * nn_a;
 		int ndof_b = dofPerNode_b * nn_b;
 		ke.resize(ndof_a, ndof_b);
@@ -2450,19 +2450,19 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 					kab.zero();
 					f(pt, dof_a, dof_b, kab);
 
-					// add it to the local element matrix
+					// add it to the local element Matrix
 					ke.adds(dofPerNode_a * i, dofPerNode_b * j, kab, w[n]);
 				}
 			}
 		}
 
-		// get the element's LM vector
+		// get the element's LM std::vector
 		std::vector<int>& lma = ke.RowIndices();
 		std::vector<int>& lmb = ke.ColumnsIndices();
 		UnpackLM(el, dofList_a, lma);
 		UnpackLM(el, dofList_b, lmb);
 
-		// assemble element matrix in global stiffness matrix
+		// assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
 	}
 }

@@ -36,7 +36,7 @@ void FENodeNodeList::Create(FEMesh& mesh)
 	EL.Create(mesh);
 
 	// create the nodal tag array
-	vector<int> tag; tag.assign(NN, 0);
+	std::vector<int> tag; tag.assign(NN, 0);
 
 	// calculate nodal valences
 	m_nval.assign(NN, 0);

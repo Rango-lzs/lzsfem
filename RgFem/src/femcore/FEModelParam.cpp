@@ -2,6 +2,7 @@
 //#include "MObjBuilder.h"
 #include "FEDataArray.h"
 #include "basicio/DumpStream.h"
+#include "FEConstValueVec3.h"
 //#include "FEConstValueVec3.h"
 
 //---------------------------------------------------------------------------------------

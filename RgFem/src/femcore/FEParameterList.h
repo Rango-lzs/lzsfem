@@ -48,7 +48,7 @@ public:
 	FEParam* FindFromData(void* pv);
 
 	//! find a parameter using its name (the safe way)
-	FEParam* FindFromName(const char* sz);
+	FEParam* FindFromName(const std::string& sz);
 
 	//! get a parameter (the dangerous way)
 	FEParam& operator [] (const char* sz) { return *FindFromName(sz); }

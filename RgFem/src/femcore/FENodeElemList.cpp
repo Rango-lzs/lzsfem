@@ -243,8 +243,8 @@ void FENodeElemTree::Create(FESurface* ps, int k)
 	int NE = ps->Elements();
 
 	// temporary arrays
-	vector< vector<int> > nel;
-	vector<int> tag;
+	std::vector< std::vector<int> > nel;
+	std::vector<int> tag;
 	nel.resize(NN);
 	tag.assign(NE, -1);
 
@@ -259,13 +259,13 @@ void FENodeElemTree::Create(FESurface* ps, int k)
 	// build the other levels
 	for (int l=0; l<k; ++l)
 	{
-		vector<int> ns(NN);
+		std::vector<int> ns(NN);
 		for (int i=0; i<NN; ++i) ns[i] = (int) nel[i].size();
 
 		for (int i=0; i<NN; ++i)
 		{
 			int ntag = l*NN + i;
-			vector<int>& NI = nel[i];
+			std::vector<int>& NI = nel[i];
 			int ni = ns[i];
 			for (int j=0; j<ni; ++j) tag[NI[j]] = ntag;
 
@@ -277,7 +277,7 @@ void FENodeElemTree::Create(FESurface* ps, int k)
 				{
 					if (e.m_lnode[n] != i)
 					{
-						vector<int>& NJ = nel[e.m_lnode[n]];
+						std::vector<int>& NJ = nel[e.m_lnode[n]];
 						int nj = ns[e.m_lnode[n]];
 						for (int m=0; m<nj; ++m)
 						{
@@ -297,7 +297,7 @@ void FENodeElemTree::Create(FESurface* ps, int k)
 	m_nel.resize(NN);
 	for (int i=0; i<NN; ++i)
 	{
-		vector<int>& NI = nel[i];
+		std::vector<int>& NI = nel[i];
 		sort(NI.begin(), NI.end());
 		int ni = (int)NI.size();
 		m_nel[i].resize(ni);
