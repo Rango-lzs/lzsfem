@@ -474,7 +474,7 @@ bool FEFileSection::parseEnumParam(FEParam* pp, const char* val)
 	{
 		int classID = atoi(szenums + 14);
 
-		FECoreKernel& fecore = FECoreKernel::GetInstance();
+		/*FECoreKernel& fecore = FECoreKernel::GetInstance();
 		for (int i = 0; i < fecore.FactoryClasses(); ++i)
 		{
 			const FECoreFactory* fac = fecore.GetFactoryClass(i);
@@ -486,7 +486,7 @@ bool FEFileSection::parseEnumParam(FEParam* pp, const char* val)
 					return true;
 				}
 			}
-		}
+		}*/
 		return false;
 	}
 
@@ -932,10 +932,10 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 
 					for (int i = 0; i < pp->dim(); ++i)
 					{
-						FEParamDouble& pi = pp->value<FEParamDouble>(i);
-						FEMathValue* v = fecore_alloc(FEMathValue, GetFEModel());
-						v->setMathString(s[i]);
-						pi.setValuator(v);
+						//FEParamDouble& pi = pp->value<FEParamDouble>(i);
+						///*FEMathValue* v = fecore_alloc(FEMathValue, GetFEModel());
+						//v->setMathString(s[i]);*/
+						//pi.setValuator(v);
 					}
 				}
 				else if (strcmp(sztype, "map") == 0)
@@ -950,7 +950,7 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 						FEParamDouble& pi = pp->value<FEParamDouble>(i);
 
 						// allocate valuator
-						FEScalarValuator* val = fecore_alloc(FEMappedValue, GetFEModel());
+						/*FEScalarValuator* val = fecore_alloc(FEMappedValue, GetFEModel());*/
 
 						// Figure out the item list
 						FEItemList* itemList = nullptr;
@@ -969,7 +969,7 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 						GetBuilder()->AddMappedParameter(pp, pc, s[i].c_str(), i);
 
 						// assign the valuator to the parameter
-						pi.setValuator(val);
+						//pi.setValuator(val);
 					}
 				}
 				else throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
@@ -1000,14 +1000,14 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 					{
                         std::string sval = tag.szvalue();
 
-						FEParamDouble& pi = pp->value<FEParamDouble>(n);
-						FEMathValue* v = fecore_alloc(FEMathValue, GetFEModel());
-						v->setMathString(sval);
-						pi.setValuator(v);
+						//FEParamDouble& pi = pp->value<FEParamDouble>(n);
+      //                  FEMathValue* v = fecore_alloc(FEMathValue, GetFEModel());
+      //                  v->setMathString(sval);
+						//pi.setValuator(v);
 
-						// do the initialization.
-						// TODO: Is this a good place to do this?
-						if (v->Init() == false) throw XMLReader::InvalidTag(tag);
+						//// do the initialization.
+						//// TODO: Is this a good place to do this?
+						//if (v->Init() == false) throw XMLReader::InvalidTag(tag);
 					}
 					else throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 					++tag;
@@ -1057,7 +1057,7 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 
 	// Set the watch flag since the parameter was read in successfully
 	// (This requires that the parameter was declared with a watch variable)
-	pp->SetWatchFlag(true);
+	//pp->SetWatchFlag(true);
 
 	return true;
 }
@@ -1457,8 +1457,8 @@ const char* FEFileImport::GetFilePath() { return m_szpath; }
 // set file version
 void FEFileImport::SetFileVerion(int nversion)
 {
-	FECoreKernel& fecore = FECoreKernel::GetInstance();
-	fecore.SetSpecID(nversion);
+	/*FECoreKernel& fecore = FECoreKernel::GetInstance();
+	fecore.SetSpecID(nversion);*/
 	m_nversion = nversion;
 }
 

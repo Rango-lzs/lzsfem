@@ -39,7 +39,7 @@ void FENodeElemList::Create(const FESurface& s)
 
 		for (j=0; j<el.NodeSize(); ++j)
 		{
-			n = el.m_lnode[j];
+			n = el.m_loc_node[j];
 			m_nval[n]++;
 			nsize++;
 		}
@@ -66,7 +66,7 @@ void FENodeElemList::Create(const FESurface& s)
 
 		for (j=0; j<el.NodeSize(); ++j)
 		{
-			n = el.m_lnode[j];
+			n = el.m_loc_node[j];
 			m_eref[m_pn[n] + m_nval[n]] = const_cast<FESurfaceElement*>(&el);
 			m_iref[m_pn[n] + m_nval[n]] = i;
 			m_nval[n]++;
@@ -252,8 +252,8 @@ void FENodeElemTree::Create(FESurface* ps, int k)
 	for (int i=0; i<NE; ++i)
 	{
 		FESurfaceElement* pe = &ps->Element(i);
-		int ne = pe->Nodes();
-		for (int j=0; j<ne; ++j) nel[pe->m_lnode[j]].push_back(i);
+		int ne = pe->NodeSize();
+		for (int j=0; j<ne; ++j) nel[pe->m_loc_node[j]].push_back(i);
 	}
 
 	// build the other levels
@@ -272,13 +272,13 @@ void FENodeElemTree::Create(FESurface* ps, int k)
 			for (int j=0; j<ni; ++j)
 			{
 				FESurfaceElement& e = ps->Element(NI[j]);
-				int ne = e.Nodes();
+				int ne = e.NodeSize();
 				for (int n=0; n<ne; ++n)
 				{
-					if (e.m_lnode[n] != i)
+					if (e.m_loc_node[n] != i)
 					{
-						std::vector<int>& NJ = nel[e.m_lnode[n]];
-						int nj = ns[e.m_lnode[n]];
+						std::vector<int>& NJ = nel[e.m_loc_node[n]];
+						int nj = ns[e.m_loc_node[n]];
 						for (int m=0; m<nj; ++m)
 						{
 							if (tag[NJ[m]] < ntag) 

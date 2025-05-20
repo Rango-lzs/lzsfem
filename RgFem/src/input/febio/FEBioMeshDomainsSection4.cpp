@@ -145,7 +145,7 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
 
     // --- build the domain ---
     // we'll need the kernel for creating domains
-    FECoreKernel& febio = FECoreKernel::GetInstance();
+    /*FECoreKernel& febio = FECoreKernel::GetInstance();*/
 
     // element count
     int elems = partDomain->Elements();
@@ -158,7 +158,7 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
     if (sztype)
     {
         // if the type attribute is defined, try to allocate the domain class directly.
-        dom = febio.CreateDomainExplicit(FESOLIDDOMAIN_ID, sztype, &fem);
+        /*dom = febio.CreateDomainExplicit(FESOLIDDOMAIN_ID, sztype, &fem);*/
         if (dom == nullptr)
             throw XMLReader::InvalidAttributeValue(tag, sztype);
         dom->SetMaterial(mat);
@@ -167,7 +167,7 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
     {
         // if not, then use "old" logic, which tries to match the domain using the
         // domain factories.
-        dom = febio.CreateDomain(spec, &mesh, mat);
+        /*dom = febio.CreateDomain(spec, &mesh, mat);*/
         if (dom == 0)
             throw XMLReader::InvalidTag(tag);
     }
@@ -204,7 +204,7 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
         const FEBModel::ELEMENT& domElement = partDomain->GetElement(j);
 
         FEElement& el = dom->ElementRef(j);
-        el.SetID(domElement.id);
+        el.setId(domElement.id);
 
         int ne = el.NodeSize();
         for (int n = 0; n < ne; ++n)
@@ -259,7 +259,7 @@ void FEBioMeshDomainsSection4::ParseShellDomainSection(XMLTag& tag)
 
     // --- build the domain ---
     // we'll need the kernel for creating domains
-    FECoreKernel& febio = FECoreKernel::GetInstance();
+    /*FECoreKernel& febio = FECoreKernel::GetInstance();*/
 
     // element count
     int elems = partDomain->Elements();
@@ -272,18 +272,18 @@ void FEBioMeshDomainsSection4::ParseShellDomainSection(XMLTag& tag)
     if (sztype)
     {
         // if the type attribute is defined, try to allocate the domain class directly.
-        dom = febio.CreateDomainExplicit(FESHELLDOMAIN_ID, sztype, &fem);
-        if (dom == nullptr)
-            throw XMLReader::InvalidAttributeValue(tag, sztype);
-        dom->SetMaterial(mat);
+        /* dom = febio.CreateDomainExplicit(FESHELLDOMAIN_ID, sztype, &fem);
+         if (dom == nullptr)
+             throw XMLReader::InvalidAttributeValue(tag, sztype);
+         dom->SetMaterial(mat);*/
     }
     else
     {
         // if not, then use "old" logic, which tries to match the domain using the
         // domain factories.
-        dom = febio.CreateDomain(spec, &mesh, mat);
+        /*dom = febio.CreateDomain(spec, &mesh, mat);
         if (dom == 0)
-            throw XMLReader::InvalidTag(tag);
+            throw XMLReader::InvalidTag(tag);*/
     }
 
     mesh.AddDomain(dom);
@@ -319,7 +319,7 @@ void FEBioMeshDomainsSection4::ParseShellDomainSection(XMLTag& tag)
             const FEBModel::ELEMENT& domElement = partDomain->GetElement(j);
 
             FEShellElement& el = shellDomain->Element(j);
-            el.SetID(domElement.id);
+            el.setId(domElement.id);
 
             int ne = el.NodeSize();
             for (int n = 0; n < ne; ++n)
@@ -380,7 +380,7 @@ void FEBioMeshDomainsSection4::ParseBeamDomainSection(XMLTag& tag)
 
     // --- build the domain ---
     // we'll need the kernel for creating domains
-    FECoreKernel& febio = FECoreKernel::GetInstance();
+   /* FECoreKernel& febio = FECoreKernel::GetInstance();*/
 
     // element count
     int elems = partDomain->Elements();
@@ -393,16 +393,16 @@ void FEBioMeshDomainsSection4::ParseBeamDomainSection(XMLTag& tag)
     if (sztype)
     {
         // if the type attribute is defined, try to allocate the domain class directly.
-        dom = febio.CreateDomainExplicit(FEBEAMDOMAIN_ID, sztype, &fem);
+       /* dom = febio.CreateDomainExplicit(FEBEAMDOMAIN_ID, sztype, &fem);
         if (dom == nullptr)
             throw XMLReader::InvalidAttributeValue(tag, sztype);
-        dom->SetMaterial(mat);
+        dom->SetMaterial(mat);*/
     }
     else
     {
         // if not, then use "old" logic, which tries to match the domain using the
         // domain factories.
-        dom = febio.CreateDomain(spec, &mesh, mat);
+        /*dom = febio.CreateDomain(spec, &mesh, mat);*/
         if (dom == 0)
             throw XMLReader::InvalidTag(tag);
     }
@@ -439,7 +439,7 @@ void FEBioMeshDomainsSection4::ParseBeamDomainSection(XMLTag& tag)
         const FEBModel::ELEMENT& domElement = partDomain->GetElement(j);
 
         FEElement& el = dom->ElementRef(j);
-        el.SetID(domElement.id);
+        el.setId(domElement.id);
 
         // TODO: This assumes one-based indexing of all nodes!
         int ne = el.NodeSize();
