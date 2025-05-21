@@ -1,40 +1,20 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
 #include "PlotFile.h"
 #include "PltArchive.h"
-#include "FECore/FESolidDomain.h"
-#include "FECore/FEShellDomain.h"
-#include "FECore/FEBeamDomain.h"
-#include "FECore/FEDiscreteDomain.h"
-#include "FECore/FEDomain2D.h"
 #include <list>
+#include "datastructure/quatd.h"
+#include "datastructure/Vector3d.h"
+
+class FESolidDomain;
+
+class FEShellDomain;
+
+class FEBeamDomain;
+
+class FEDiscreteDomain;
+
+class FEDomain2D;   
+
 
 //-----------------------------------------------------------------------------
 //! This class implements the facilities to export FE data in the FEBio
@@ -203,7 +183,7 @@ public:
 		unsigned int	m_ntype;	// data type
 		unsigned int	m_nfmt;		// storage format
 		unsigned int	m_arraySize;	// size of arrays (only used by arrays)
-		std::vector<string>	m_arrayNames;	// names of array components (optional)
+		std::vector<std::string>	m_arrayNames;	// names of array components (optional)
 		char			m_szname[STR_SIZE];
 		char			m_szunit[STR_SIZE];
 	};
@@ -222,11 +202,26 @@ public:
 		void Clear();
 
 	public:
-		const list<DICTIONARY_ITEM>& GlobalVariableList  () const { return m_Glob; }
-		const list<DICTIONARY_ITEM>& MaterialVariableList() const { return m_Mat;  }
-		const list<DICTIONARY_ITEM>& NodalVariableList   () const { return m_Node; }
-		const list<DICTIONARY_ITEM>& DomainVariableList  () const { return m_Elem; }
-		const list<DICTIONARY_ITEM>& SurfaceVariableList () const { return m_Face; }
+        const std::list<DICTIONARY_ITEM>& GlobalVariableList() const
+        {
+            return m_Glob;
+        }
+        const std::list<DICTIONARY_ITEM>& MaterialVariableList() const
+        {
+            return m_Mat;
+        }
+        const std::list<DICTIONARY_ITEM>& NodalVariableList() const
+        {
+            return m_Node;
+        }
+        const std::list<DICTIONARY_ITEM>& DomainVariableList() const
+        {
+            return m_Elem;
+        }
+        const std::list<DICTIONARY_ITEM>& SurfaceVariableList() const
+        {
+            return m_Face;
+        }
 
 	protected:
 		bool AddGlobalVariable  (FEPlotData* ps, const char* szname);
@@ -236,11 +231,11 @@ public:
 		bool AddSurfaceVariable (FEPlotData* ps, const char* szname, std::vector<int>& item);
 
 	protected:
-		list<DICTIONARY_ITEM>	m_Glob;		// Global variables
-		list<DICTIONARY_ITEM>	m_Mat;		// Material variables
-		list<DICTIONARY_ITEM>	m_Node;		// Node variables
-		list<DICTIONARY_ITEM>	m_Elem;		// Domain variables
-		list<DICTIONARY_ITEM>	m_Face;		// Surface variables
+        std::list<DICTIONARY_ITEM> m_Glob;  // Global variables
+        std::list<DICTIONARY_ITEM> m_Mat;   // Material variables
+        std::list<DICTIONARY_ITEM> m_Node;  // Node variables
+        std::list<DICTIONARY_ITEM> m_Elem;  // Domain variables
+        std::list<DICTIONARY_ITEM> m_Face;  // Surface variables
 
 		friend class FEBioPlotFile;
 	};
@@ -268,7 +263,7 @@ public:
 
 		std::string	m_name;	// object's name
 
-		list<DICTIONARY_ITEM>	m_data;
+		std::list<DICTIONARY_ITEM>	m_data;
 	};
 
 	class PointObject : public PlotObject
@@ -341,7 +336,7 @@ protected:
 	bool WriteHeader    (FEModel& fem);
 	bool WriteDictionary(FEModel& fem);
 
-	void WriteDicList(list<DICTIONARY_ITEM>& dic);
+	void WriteDicList(std::list<DICTIONARY_ITEM>& dic);
 	void WriteDictionaryItem(DICTIONARY_ITEM& it);
 
 	void WriteNodeSection   (FEMesh& m);
@@ -385,7 +380,7 @@ protected:
 	PltArchive	m_ar;	// the data archive
 	int			m_ncompress;	// compression level
 	int			m_meshesWritten;	// nr of meshes written
-	string		m_softwareString;	// the software string
+	std::string		m_softwareString;	// the software string
 	bool		m_exportUnitsFlag;	// flag that indicates whether to write units
 
 	std::vector<Surface>	m_Surf;
@@ -397,8 +392,6 @@ protected:
 //-----------------------------------------------------------------------------
 class FEPlotObjectData : public FEPlotData
 {
-	FECORE_BASE_CLASS(FEPlotObjectData)
-
 public:
 	FEPlotObjectData(FEModel* fem) : FEPlotData(fem) {}
 

@@ -1,11 +1,11 @@
-#include "log.h"
-#include "FEModel.h"
+#include "logger/log.h"
+#include "femcore/FEModel.h"
 #include <stdarg.h>
 
 void write_log(FEModel* fem, int ntag, const char* szmsg, ...)
 {
 	assert(fem);
-	if (fem->LogBlocked()) return;
+	//if (fem->LogBlocked()) return;
 
 	// get a pointer to the argument list
 	va_list	args;

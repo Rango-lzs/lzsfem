@@ -27,8 +27,8 @@ SOFTWARE.*/
 
 
 #pragma once
-#include "FECore/FEMesh.h"
-#include "FECore/FEPlotData.h"
+#include "femcore/FEMesh.h"
+#include "basicio/FEPlotData.h"
 
 //-----------------------------------------------------------------------------
 class FEModel;

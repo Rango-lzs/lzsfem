@@ -14,6 +14,7 @@ set(HEADERS
     basicio/NodeDataRecord.h
     basicio/ObjectDataRecord.h
     basicio/SurfaceDataRecord.h
+    basicio/FEDataExport.h
 )
 
 set(SOURCES
@@ -32,6 +33,7 @@ set(SOURCES
     basicio/NodeDataRecord.cpp
     basicio/ObjectDataRecord.cpp
     basicio/SurfaceDataRecord.cpp
+    basicio/FEDataExport.cpp
 )
 
 set(BASICIO_SOURCES_

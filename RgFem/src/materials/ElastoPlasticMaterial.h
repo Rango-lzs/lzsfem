@@ -1,10 +1,10 @@
 #ifndef ELASTOPLASTICMATERIAL
 #define ELASTOPLASTICMATERIAL
 
-#include"Material.h"
-#include"../solver/descent/ConjugateGradientDescent.h"
-#include"../solver/LinearIterativeSolver.h"
-#include"../solver/Jacobi.h"
+#include "materials/Material.h"
+#include "../solver/descent/ConjugateGradientDescent.h"
+#include "../solver/LinearIterativeSolver.h"
+#include "../solver/Jacobi.h"
 
 class ElastoPlasticMaterial:public Material
 {

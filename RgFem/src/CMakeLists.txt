@@ -44,6 +44,7 @@ set(BASICIO_SOURCES "")
 add_subdirectory(basicio)
 source_group("basicio" FILES ${BASICIO_SOURCES})
 
+
 # add femcore sources
 set(FEMCORE_HEADERS
     femcore/Callback.h
@@ -642,7 +643,7 @@ source_group("logger" FILES ${LOGGER_HEADERS} ${LOGGER_SOURCES})
 
 #add material sources
 set(MATERIAL_HEADERS
-    materials/ElastoPlasticMaterial.h
+    #materials/ElastoPlasticMaterial.h
     materials/FEElasticMaterial.h
     materials/FEElasticMaterialPoint.h
     materials/FEIsotropicElastic.h
@@ -652,7 +653,7 @@ set(MATERIAL_HEADERS
 )
 
 set(MATERIAL_SOURCES
-    materials/ElastoPlasticMaterial.cpp
+    #materials/ElastoPlasticMaterial.cpp
     materials/FEElasticMaterial.cpp
     materials/FEElasticMaterialPoint.cpp
     materials/FEIsotropicElastic.cpp
