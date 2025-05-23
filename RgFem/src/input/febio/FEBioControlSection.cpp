@@ -28,12 +28,10 @@ SOFTWARE.*/
 
 #include "stdafx.h"
 #include "FEBioControlSection.h"
-#include "FECore/FEAnalysis.h"
-#include "FECore/FEModel.h"
-#include "FECore/FECoreKernel.h"
-#include <FECore/FETimeStepController.h>
-#include <FECore/log.h>
-
+#include "femcore/FEAnalysis/FEAnalysis.h"
+#include "femcore/FEModel.h"
+#include <femcore/FETimeStepController.h>
+#include "logger/log.h"
 //-----------------------------------------------------------------------------
 void FEBioControlSection::Parse(XMLTag& tag)
 {

@@ -1,14 +1,14 @@
 #include "FELinearConstraint.h"
 #include "FEMesh.h"
 #include "FEModel.h"
-#include "DumpStream.h"
-#include "log.h"
+#include "basicio/DumpStream.h"
+#include "logger/log.h"
 
-BEGIN_FECORE_CLASS(FELinearConstraintDOF, FECoreClass)
+BEGIN_PARAM_DEFINE(FELinearConstraintDOF, FECoreClass)
 	ADD_PARAMETER(dof, "dof", 0, "$(dof_list)");
 	ADD_PARAMETER(node, "node");
 	ADD_PARAMETER(val, "value");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 FELinearConstraintDOF::FELinearConstraintDOF(FEModel* fem) : FEObjectBase(fem)
 {
@@ -17,13 +17,13 @@ FELinearConstraintDOF::FELinearConstraintDOF(FEModel* fem) : FEObjectBase(fem)
 }
 
 //=============================================================================
-BEGIN_FECORE_CLASS(FELinearConstraint, FEBoundaryCondition)
+BEGIN_PARAM_DEFINE(FELinearConstraint, FEBoundaryCondition)
 	ADD_PARAMETER(m_parentDof->dof, "dof", 0, "$(dof_list)");
 	ADD_PARAMETER(m_parentDof->node, "node");
 	ADD_PARAMETER(m_off, "offset");
 
-	ADD_PROPERTY(m_childDof, "child_dof");
-END_FECORE_CLASS();
+	//ADD_PROPERTY(m_childDof, "child_dof");
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 FELinearConstraint::FELinearConstraint() : FEBoundaryCondition(nullptr)

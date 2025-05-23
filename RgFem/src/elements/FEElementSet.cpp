@@ -1,7 +1,7 @@
 #include "FEElementSet.h"
 #include "elements/RgElement.h"
 #include "femcore/FEMesh.h"
-#include "femcore/FEDomain.h"
+#include "femcore/Domain/FEDomain.h"
 #include "basicio/DumpStream.h"
 #include "femcore/FEModel.h"
 

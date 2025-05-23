@@ -1,4 +1,10 @@
 #pragma once
+
+#include "femcore/fem_export.h"
+#include <vector>
+
+class FEMesh;
+
 //-----------------------------------------------------------------------------
 //! This class implements an algoritm that calculates a permutation of 
 //! the node numbering in order to obtain a bandwidth reduced stiffness matrix

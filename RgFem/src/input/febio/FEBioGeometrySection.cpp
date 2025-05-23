@@ -28,14 +28,13 @@ SOFTWARE.*/
 
 #include "stdafx.h"
 #include "FEBioGeometrySection.h"
-#include "FECore/FESolidDomain.h"
-#include "FECore/FEShellDomain.h"
-#include "FECore/FETrussDomain.h"
-#include "FECore/FEDomain2D.h"
-#include "FECore/FEModel.h"
-#include "FECore/FEMaterial.h"
-#include "FECore/FECoreKernel.h"
-#include <FECore/FENodeNodeList.h>
+#include "femcore/Domain/FESolidDomain.h"
+#include "femcore/Domain/FEShellDomain.h"
+#include "femcore/Domain/FETrussDomain.h"
+#include "femcore/Domain/FEDomain2D.h"
+#include "femcore/FEModel.h"
+#include "materials/FEMaterial.h"
+#include "femcore/FENodeNodeList.h"
 
 //-----------------------------------------------------------------------------
 bool FEBioGeometrySection::ReadElement(XMLTag &tag, FEElement& el, int nid)

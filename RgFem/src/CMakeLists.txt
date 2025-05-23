@@ -151,7 +151,8 @@ set(FEMCORE_HEADERS
     femcore/Matrix/MatrixOperator.h
     femcore/Matrix/MatrixProfile.h
     femcore/Matrix/SkylineMatrix.h
-    femcore/Matrix/SparseMatrix.h
+    femcore/Matrix/SparseMatrix.h  
+
     femcore/MatrixSolver/AccelerateSparseSolver.h
     femcore/MatrixSolver/BIPNSolver.h
     femcore/MatrixSolver/BiCGStabSolver.h
@@ -196,6 +197,8 @@ set(FEMCORE_HEADERS
     femcore/Solver/LUSolver.h
     femcore/Solver/LinearSolver.h
     femcore/Solver/SkylineSolver.h
+    femcore/Solver/FELevelStructure.h
+
     #femcore/SurfaceDataRecord.h
     femcore/TimeStep/FETimeInfo.h
     femcore/TimeStep/FETimeStepController.h
@@ -225,6 +228,13 @@ set(FEMCORE_HEADERS
     femcore/FEPrescribedBC.h
     femcore/FEBodyForce.h
     femcore/FEConstValueVec3.h
+    femcore/MFunctions.h
+    femcore/MTypes.h
+    femcore/MMath.h
+    femcore/MObj2String.h
+    femcore/MItem.h
+    femcore/MathObject.h
+    femcore/MatrixTools.h
 )
 
 
@@ -328,22 +338,24 @@ set(FEMCORE_SOURCES
     femcore/Matrix/MMatrix.cpp
     femcore/Matrix/MatrixProfile.cpp
     femcore/Matrix/SkylineMatrix.cpp
-    femcore/Matrix/SparseMatrix.cpp    
-    femcore/MatrixSolver/AccelerateSparseSolver.cpp
-    femcore/MatrixSolver/BIPNSolver.cpp
-    femcore/MatrixSolver/BiCGStabSolver.cpp
-    femcore/MatrixSolver/BlockSolver.cpp
-    femcore/MatrixSolver/BoomerAMGSolver.cpp
-    femcore/MatrixSolver/FEASTEigenSolver.cpp
-    femcore/MatrixSolver/FGMRESSolver.cpp
-    femcore/MatrixSolver/HypreGMRESsolver.cpp
-    femcore/MatrixSolver/MKLDSSolver.cpp
-    femcore/MatrixSolver/PardisoProjectSolver.cpp
-    femcore/MatrixSolver/PardisoSolver.cpp
-    femcore/MatrixSolver/RCICGSolver.cpp
-    femcore/MatrixSolver/SchurSolver.cpp
-    femcore/MatrixSolver/StrategySolver.cpp
-    femcore/MatrixSolver/TestSolver.cpp
+    femcore/Matrix/SparseMatrix.cpp  
+    
+    #femcore/MatrixSolver/AccelerateSparseSolver.cpp
+    #femcore/MatrixSolver/BIPNSolver.cpp
+    #femcore/MatrixSolver/BiCGStabSolver.cpp
+    #femcore/MatrixSolver/BlockSolver.cpp
+    #femcore/MatrixSolver/BoomerAMGSolver.cpp
+    #femcore/MatrixSolver/FEASTEigenSolver.cpp
+    #femcore/MatrixSolver/FGMRESSolver.cpp
+    #femcore/MatrixSolver/HypreGMRESsolver.cpp
+    #femcore/MatrixSolver/MKLDSSolver.cpp
+    #femcore/MatrixSolver/PardisoProjectSolver.cpp
+    #femcore/MatrixSolver/PardisoSolver.cpp
+    #femcore/MatrixSolver/RCICGSolver.cpp
+    #femcore/MatrixSolver/SchurSolver.cpp
+    #femcore/MatrixSolver/StrategySolver.cpp
+    #femcore/MatrixSolver/TestSolver.cpp
+
     femcore/MetaObject.cpp
     femcore/MetaObjectDemo.cpp
     #femcore/NLConstraintDataRecord.cpp
@@ -372,6 +384,8 @@ set(FEMCORE_SOURCES
     femcore/Solver/LUSolver.cpp
     femcore/Solver/LinearSolver.cpp
     femcore/Solver/SkylineSolver.cpp
+    femcore/Solver/FELevelStructure.cpp
+
     #femcore/SurfaceDataRecord.cpp
     femcore/TimeStep/FETimeInfo.cpp
     femcore/TimeStep/FETimeStepController.cpp
@@ -395,6 +409,7 @@ set(FEMCORE_SOURCES
     femcore/FEPrescribedBC.cpp
     femcore/FEBodyForce.cpp
     femcore/FEConstValueVec3.cpp
+    femcore/MathObject.cpp
 
 )
 
@@ -409,8 +424,7 @@ source_group("femcore" FILES ${FEMCORE_HEADERS} ${FEMCORE_SOURCES})
 
 # add datastructure sources
 set(DATA_STRUCTURE_HEADERS
-    datastructure/FEBoundingBox.h
-    datastructure/MathObject.h
+    datastructure/FEBoundingBox.h  
     datastructure/MathUtils.h
     datastructure/Matrix2d.h
     datastructure/Matrix3d.h
@@ -438,7 +452,6 @@ set(DATA_STRUCTURE_HEADERS
 )
 
 set(DATA_STRUCTURE_SOURCES
-    datastructure/MathObject.cpp
     datastructure/Matrix3d.cpp
     datastructure/mathalg.cpp
     datastructure/matrix.cpp
@@ -549,14 +562,14 @@ set(INPUT_HEADERS
     input/febio/febioxml_api.h
     input/febio/stdafx.h
     input/febio/xmltool.h
-    input/oofem/abaqus_input_parser.h
-    input/oofem/datareader.h
-    input/oofem/dynamic_data_reader.h
-    input/oofem/dynamic_input_record.h
-    input/oofem/inputrecord.h
-    input/oofem/text_data_reader.h
-    input/oofem/text_input_record.h
-    input/oofem/tokenizer.h
+   #input/oofem/abaqus_input_parser.h
+   #input/oofem/datareader.h
+   #input/oofem/dynamic_data_reader.h
+   #input/oofem/dynamic_input_record.h
+   #input/oofem/inputrecord.h
+   #input/oofem/text_data_reader.h
+   #input/oofem/text_input_record.h
+   #input/oofem/tokenizer.h
 )
 
 set(INPUT_SOURCES
@@ -601,12 +614,12 @@ set(INPUT_SOURCES
     input/febio/FERestartImport.cpp
     input/febio/FileImport.cpp
     input/febio/xmltool.cpp
-    input/oofem/dynamic_data_reader.cpp
-    input/oofem/dynamic_input_record.cpp
-    input/oofem/inputrecord.cpp
-    input/oofem/text_data_reader.cpp
-    input/oofem/text_input_record.cpp
-    input/oofem/tokenizer.cpp
+    #input/oofem/dynamic_data_reader.cpp
+    #input/oofem/dynamic_input_record.cpp
+    #input/oofem/inputrecord.cpp
+    #input/oofem/text_data_reader.cpp
+    #input/oofem/text_input_record.cpp
+    #input/oofem/tokenizer.cpp
 )
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}

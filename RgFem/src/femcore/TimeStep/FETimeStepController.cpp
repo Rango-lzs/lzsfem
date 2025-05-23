@@ -1,13 +1,13 @@
 #include "FETimeStepController.h"
-#include "FELoadCurve.h"
-#include "FEAnalysis.h"
-#include "FEPointFunction.h"
-#include "DumpStream.h"
-#include "FEModel.h"
-#include "log.h"
+#include "femcore/FELoadCurve.h"
+#include "femcore/FEAnalysis/FEAnalysis.h"
+#include "femcore/FEPointFunction.h"
+#include "basicio/DumpStream.h"
+#include "femcore/FEModel.h"
+#include "logger/log.h"
 
 //-----------------------------------------------------------------------------
-BEGIN_PARAM_DEFINE(FETimeStepController, FEParamContainer)
+BEGIN_PARAM_DEFINE(FETimeStepController, FEParamObject)
 	ADD_PARAMETER(m_maxretries, "max_retries")->setLongName("max retries");
 	ADD_PARAMETER(m_iteopt    , "opt_iter")->setLongName("optimal iterations");
 	ADD_PARAMETER(m_dtmin     , "dtmin")->setLongName("min stepsize");
@@ -19,7 +19,7 @@ BEGIN_PARAM_DEFINE(FETimeStepController, FEParamContainer)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FETimeStepController::FETimeStepController(FEModel* fem) : FECoreBase(fem)
+FETimeStepController::FETimeStepController(FEModel* fem) : FEObjectBase(fem)
 {
 	m_step = nullptr; // must be set with SetAnalysis
 	m_nretries = 0;

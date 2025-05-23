@@ -26,27 +26,32 @@ SOFTWARE.*/
 
 
 
-#include "stdafx.h"
-#include "FEBioCodeSection.h"
-#include "femcore/FECallBack.h"
+#pragma once
+#include "femcore/MathObject.h"
+#include <string>
 
-void FEBioCodeSection::Parse(XMLTag& tag)
+// this class converts a MathObject to a string
+class FEM_EXPORT MObj2String
 {
-	++tag;
-	do
-	{
-		if (tag == "callback")
-		{
-			const char* szname = tag.AttributeValue("name");
-			FECallBack* pcb = fecore_new<FECallBack>(szname, GetFEModel());
+public:
+	std::string Convert(const MathObject& o);
 
-			// TODO: The constructor of FECallBack already registered the callback class, so
-			// we don't need to do anything else here. Of course, the question is who
-			// is going to cleanup pcb?
-		}
-		else throw XMLReader::InvalidTag(tag);
-		++tag;
-	}
-	while (!tag.isend());
-}
+protected:
+	std::string Convert(const MItem* pi);
 
+	std::string Constant (const MConstant* pc);
+	std::string Fraction (const MFraction* pc);
+	std::string NamedCt  (const MNamedCt*  pc);
+	std::string Variable (const MVarRef*   pv);
+	std::string OpNeg    (const MNeg*      po);
+	std::string OpAdd    (const MAdd*      po);
+	std::string OpSub    (const MSub*      po);
+	std::string OpMul    (const MMul*      po);
+	std::string OpDiv    (const MDiv*      po);
+	std::string OpPow    (const MPow*      po);
+	std::string OpEqual  (const MEquation* po);
+	std::string OpFnc1D  (const MFunc1D*   po);
+	std::string OpFnc2D  (const MFunc2D*   po);
+	std::string OpFncND  (const MFuncND*   po);
+	std::string OpSFnc   (const MSFuncND*  po);
+};

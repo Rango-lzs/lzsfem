@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "FEM_EXPORT.h"
+#include "femcore/FEM_EXPORT.h"
 
 // This class represents a sparse matrix in the row-compressed format (3-array format)
 class FEM_EXPORT CSRMatrix

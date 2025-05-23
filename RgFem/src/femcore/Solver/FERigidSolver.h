@@ -1,9 +1,9 @@
 #pragma once
 
 #include "femcore/fem_export.h"
-#include "FEBodyForce.h"
-#include <FECore/FETimeInfo.h>
-#include <FECore/FESolver.h>
+#include "femcore/FEBodyForce.h"
+#include "femcore/FETimeInfo.h"
+#include "femcore/Solver/FESolver.h"
 #include <vector>
 
 //-----------------------------------------------------------------------------

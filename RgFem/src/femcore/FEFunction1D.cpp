@@ -78,157 +78,157 @@ bool FEFunction1D::invert(const double f0, double &x)
 }
 
 //=============================================================================
-BEGIN_FECORE_CLASS(FEConstFunction, FEFunction1D)
+BEGIN_PARAM_DEFINE(FEConstFunction, FEFunction1D)
 	ADD_PARAMETER(m_value, "value");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //=============================================================================
-BEGIN_FECORE_CLASS(FELinearFunction, FEFunction1D)
+BEGIN_PARAM_DEFINE(FELinearFunction, FEFunction1D)
 	ADD_PARAMETER(m_slope, "slope");
 	ADD_PARAMETER(m_intercept, "intercept");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //=============================================================================
-BEGIN_FECORE_CLASS(FEStepFunction, FEFunction1D)
+BEGIN_PARAM_DEFINE(FEStepFunction, FEFunction1D)
 	ADD_PARAMETER(m_x0, "x0");
 	ADD_PARAMETER(m_leftVal , "left_val");
 	ADD_PARAMETER(m_rightVal, "right_val");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
-//=============================================================================
-BEGIN_FECORE_CLASS(FEMathFunction, FEFunction1D)
-	ADD_PARAMETER(m_s, "math");
-END_FECORE_CLASS();
-
-FEMathFunction::FEMathFunction(FEModel* fem) : FEFunction1D(fem)
-{
-	m_s = "0";
-}
-
-void FEMathFunction::SetMathString(const std::string& s)
-{
-	m_s = s;
-}
-
-bool FEMathFunction::Init()
-{
-	if (BuildMathExpressions() == false) return false;
-	return FEFunction1D::Init();
-}
-
-bool FEMathFunction::BuildMathExpressions()
-{
-	// process the string
-	m_exp.Clear();
-	if (m_exp.Create(m_s, true) == false) return false;
-
-	// match variables to model parameters.
-	m_var.clear();
-	m_ix = -1;
-	FEModel* fem = GetFEModel();
-	for (int i=0; i<m_exp.Variables(); ++i)
-	{
-		MVariable* v = m_exp.Variable(i);
-		
-		ParamString ps(v->Name().c_str());
-		FEParamValue param = fem->GetParameterValue(ps);
-		if (param.isValid() == false)
-		{
-			// let's assume this is the independent parameter
-			if (m_ix == -1)
-			{
-				// push a dummy param value
-				m_var.push_back(FEParamValue());
-				m_ix = i;
-			}
-			else return false;
-		}
-		else
-		{
-			if (param.type() != FE_PARAM_DOUBLE) return false;
-			m_var.push_back(param);
-		}
-	}
-
-	// copy variables to derived expressions
-	m_dexp.Clear();
-	m_d2exp.Clear();
-	for (int i = 0; i < m_exp.Variables(); ++i)
-	{
-		m_dexp.AddVariable(m_exp.Variable(i)->Name());
-		m_d2exp.AddVariable(m_exp.Variable(i)->Name());
-	}
-
-	// evaluate first derivative
-    if (m_ix != -1) {
-        MITEM mi = MDerive(m_exp.GetExpression(), *m_exp.Variable(m_ix));
-		m_dexp.SetExpression(mi);
-    }
-	else
-		m_dexp.Create("0");
-
-	// evaluate second derivative
-    if (m_ix != -1) {
-        MITEM mi = MDerive(m_dexp.GetExpression(), *m_dexp.Variable(m_ix));
-        m_d2exp.SetExpression(mi);
-    }
-    else
-        m_d2exp.Create("0");
-
-	return true;
-}
-
-void FEMathFunction::Serialize(DumpStream& ar)
-{
-	FEFunction1D::Serialize(ar);
-	if ((ar.IsShallow() == false) && (ar.IsLoading()))
-	{
-		bool b = BuildMathExpressions();
-		assert(b);
-	}
-}
-
-FEFunction1D* FEMathFunction::copy()
-{
-	FEMathFunction* m = new FEMathFunction(GetFEModel());
-	m->m_s = m_s;
-	m->m_ix = m_ix;
-	m->m_var = m_var;
-
-	m->m_exp = m_exp;
-	m->m_dexp = m_dexp;
-    m->m_d2exp = m_d2exp;
-	return m;
-}
-
-void FEMathFunction::evalParams(std::vector<double>& val, double t) const
-{
-	val.resize(m_var.size());
-	for (int i = 0; i < m_var.size(); ++i)
-	{
-		if (i == m_ix) val[i] = t;
-		else val[i] = m_var[i].value<double>();
-	}
-}
-
-double FEMathFunction::value(double t) const
-{
-	vector<double> v;
-	evalParams(v, t);
-	return m_exp.value_s(v);
-}
-
-double FEMathFunction::derive(double t) const
-{
-	vector<double> v;
-	evalParams(v, t);
-	return m_dexp.value_s(v);
-}
-
-double FEMathFunction::deriv2(double t) const
-{
-	vector<double> v;
-	evalParams(v, t);
-	return m_d2exp.value_s(v);
-}
-
+////=============================================================================
+//BEGIN_PARAM_DEFINE(FEMathFunction, FEFunction1D)
+//	ADD_PARAMETER(m_s, "math");
+//END_PARAM_DEFINE();
+//
+//FEMathFunction::FEMathFunction(FEModel* fem) : FEFunction1D(fem)
+//{
+//	m_s = "0";
+//}
+//
+//void FEMathFunction::SetMathString(const std::string& s)
+//{
+//	m_s = s;
+//}
+//
+//bool FEMathFunction::Init()
+//{
+//	if (BuildMathExpressions() == false) return false;
+//	return FEFunction1D::Init();
+//}
+//
+//bool FEMathFunction::BuildMathExpressions()
+//{
+//	// process the string
+//	m_exp.Clear();
+//	if (m_exp.Create(m_s, true) == false) return false;
+//
+//	// match variables to model parameters.
+//	m_var.clear();
+//	m_ix = -1;
+//	FEModel* fem = GetFEModel();
+//	for (int i=0; i<m_exp.Variables(); ++i)
+//	{
+//		MVariable* v = m_exp.Variable(i);
+//		
+//		ParamString ps(v->Name().c_str());
+//		FEParamValue param = fem->GetParameterValue(ps);
+//		if (param.isValid() == false)
+//		{
+//			// let's assume this is the independent parameter
+//			if (m_ix == -1)
+//			{
+//				// push a dummy param value
+//				m_var.push_back(FEParamValue());
+//				m_ix = i;
+//			}
+//			else return false;
+//		}
+//		else
+//		{
+//			if (param.type() != FE_PARAM_DOUBLE) return false;
+//			m_var.push_back(param);
+//		}
+//	}
+//
+//	// copy variables to derived expressions
+//	m_dexp.Clear();
+//	m_d2exp.Clear();
+//	for (int i = 0; i < m_exp.Variables(); ++i)
+//	{
+//		m_dexp.AddVariable(m_exp.Variable(i)->Name());
+//		m_d2exp.AddVariable(m_exp.Variable(i)->Name());
+//	}
+//
+//	// evaluate first derivative
+//    if (m_ix != -1) {
+//        MITEM mi = MDerive(m_exp.GetExpression(), *m_exp.Variable(m_ix));
+//		m_dexp.SetExpression(mi);
+//    }
+//	else
+//		m_dexp.Create("0");
+//
+//	// evaluate second derivative
+//    if (m_ix != -1) {
+//        MITEM mi = MDerive(m_dexp.GetExpression(), *m_dexp.Variable(m_ix));
+//        m_d2exp.SetExpression(mi);
+//    }
+//    else
+//        m_d2exp.Create("0");
+//
+//	return true;
+//}
+//
+//void FEMathFunction::Serialize(DumpStream& ar)
+//{
+//	FEFunction1D::Serialize(ar);
+//	if ((ar.IsShallow() == false) && (ar.IsLoading()))
+//	{
+//		bool b = BuildMathExpressions();
+//		assert(b);
+//	}
+//}
+//
+//FEFunction1D* FEMathFunction::copy()
+//{
+//	FEMathFunction* m = new FEMathFunction(GetFEModel());
+//	m->m_s = m_s;
+//	m->m_ix = m_ix;
+//	m->m_var = m_var;
+//
+//	m->m_exp = m_exp;
+//	m->m_dexp = m_dexp;
+//    m->m_d2exp = m_d2exp;
+//	return m;
+//}
+//
+//void FEMathFunction::evalParams(std::vector<double>& val, double t) const
+//{
+//	val.resize(m_var.size());
+//	for (int i = 0; i < m_var.size(); ++i)
+//	{
+//		if (i == m_ix) val[i] = t;
+//		else val[i] = m_var[i].value<double>();
+//	}
+//}
+//
+//double FEMathFunction::value(double t) const
+//{
+//	vector<double> v;
+//	evalParams(v, t);
+//	return m_exp.value_s(v);
+//}
+//
+//double FEMathFunction::derive(double t) const
+//{
+//	vector<double> v;
+//	evalParams(v, t);
+//	return m_dexp.value_s(v);
+//}
+//
+//double FEMathFunction::deriv2(double t) const
+//{
+//	vector<double> v;
+//	evalParams(v, t);
+//	return m_d2exp.value_s(v);
+//}
+//

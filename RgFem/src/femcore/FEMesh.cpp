@@ -556,7 +556,7 @@ int FEMesh::FindDomainIndex(const std::string& name)
 
 FEDomain* FEMesh::FindDomain(int domId)
 {
-	for (size_t i = 0; i<m_Domain.size(); ++i) if (m_Domain[i]->getId() == domId) return m_Domain[i];
+	for (size_t i = 0; i<m_Domain.size(); ++i) if (m_Domain[i]->GetID() == domId) return m_Domain[i];
 	return 0;
 }
 

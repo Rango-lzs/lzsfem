@@ -1,6 +1,6 @@
 #pragma once
 #include "LinearSolver.h"
-#include "DenseMatrix.h"
+#include "femcore/Matrix/DenseMatrix.h"
 
 //-----------------------------------------------------------------------------
 //! LU decomposition solver

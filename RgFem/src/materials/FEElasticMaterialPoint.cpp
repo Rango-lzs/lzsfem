@@ -1,5 +1,6 @@
 #include "FEElasticMaterialPoint.h"
 #include "datastructure/tens4d.h"
+#include "basicio/DumpStream.h"
 
 //-----------------------------------------------------------------------------
 FEElasticMaterialPoint::FEElasticMaterialPoint(FEMaterialPointData* mp) : FEMaterialPointData(mp)

@@ -9,7 +9,7 @@
 #ifndef inputrecord_h
 #define inputrecord_h
 
-#include "logger.h"
+#include "logger/logger.h"
 
 #include <vector>
 #include <list>
