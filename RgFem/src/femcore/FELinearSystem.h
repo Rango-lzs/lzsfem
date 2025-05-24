@@ -13,7 +13,7 @@ class FEM_EXPORT FELinearSystem
 {
 public:
 	// Constructor
-	// Takes a FEGlobalMatrix class K that will store the actual stiffness matrix
+	// Takes a FEGlobalMatrix class K that will store the actual stiffness Matrix
 	// and a vector F which contains the assembled contribution of the prescribed 
 	// degrees of freedom. The F vector must be added to the "force" vector. The u 
 	// vector contains the nodal values of the prescribed degrees of freedom.
@@ -30,11 +30,11 @@ public:
 
 public:
 	// Assembly routine
-	// This assembles the element stiffness matrix ke into the global matrix.
+	// This assembles the element stiffness Matrix ke into the global Matrix.
 	// The contributions of prescribed degrees of freedom will be stored in m_F
 	virtual void Assemble(const FEElementMatrix& ke);
 
-	// This assembles a matrix to the RHS by pre-multiplying the matrix with the 
+	// This assembles a Matrix to the RHS by pre-multiplying the Matrix with the 
 	// prescribed value array U and then adding it to F
 	void AssembleRHS(std::vector<int>& lm, Matrix& ke, std::vector<double>& U);
 
@@ -44,7 +44,7 @@ public:
 protected:
 	bool					m_bsymm;	//!< symmetry flag
 	FESolver*				m_solver;
-	FEGlobalMatrix&			m_K;	//!< The global stiffness matrix
+	FEGlobalMatrix&			m_K;	//!< The global stiffness Matrix
 	std::vector<double>&	m_F;	//!< Contributions from prescribed degrees of freedom
 	std::vector<double>&	m_u;	//!< the array with prescribed values
 };

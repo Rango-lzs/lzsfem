@@ -28,13 +28,13 @@ SOFTWARE.*/
 
 #pragma once
 #include "CompactMatrix.h"
-#include "FEM_EXPORT.h"
+#include "femcore/fem_export.h"
 
 //=============================================================================
-//! This class stores a sparse matrix in Harwell-Boeing format (i.e. column major, lower triangular compact).
+//! This class stores a sparse Matrix in Harwell-Boeing format (i.e. column major, lower triangular compact).
 
-//! This class also assumes the matrix is symmetric and therefor only stores
-//! the lower triangular matrix
+//! This class also assumes the Matrix is symmetric and therefor only stores
+//! the lower triangular Matrix
 
 class FEM_EXPORT CompactSymmMatrix : public CompactMatrix
 {
@@ -42,22 +42,22 @@ public:
 	//! class constructor
 	CompactSymmMatrix(int offset = 0);
 
-	//! Create the matrix structure from the SparseMatrixProfile.
+	//! Create the Matrix structure from the SparseMatrixProfile.
 	void Create(SparseMatrixProfile& mp) override;
 
-	//! Assemble an element matrix into the global matrix
-	void Assemble(const matrix& ke, const std::vector<int>& lm) override;
+	//! Assemble an element Matrix into the global Matrix
+	void Assemble(const Matrix& ke, const std::vector<int>& lm) override;
 
-	//! assemble a matrix into the sparse matrix
-	void Assemble(const matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override;
+	//! assemble a Matrix into the sparse Matrix
+	void Assemble(const Matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override;
 
-	//! add a matrix item
+	//! add a Matrix item
 	void add(int i, int j, double v) override;
 
-	//! set matrix item
+	//! set Matrix item
 	void set(int i, int j, double v) override;
 
-	//! get a matrix item
+	//! get a Matrix item
 	double get(int i, int j) override;
 
 	// alternative access
@@ -69,10 +69,10 @@ public:
 	//! multiply with vector
 	bool mult_vector(double* x, double* r) override;
 
-	//! see if a matrix element is defined
+	//! see if a Matrix element is defined
 	bool check(int i, int j) override;
 
-	//! is the matrix symmetric or not
+	//! is the Matrix symmetric or not
 	bool isSymmetric() override { return true; }
 
 	//! this is a column based format

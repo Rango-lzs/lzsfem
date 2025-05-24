@@ -1,6 +1,8 @@
 #include "FENewtonStrategy.h"
 #include "FENewtonSolver.h"
 #include "LinearSolver.h"
+#include "../fecore_enum.h"
+#include "basicio/DumpStream.h"
 
 FENewtonStrategy::FENewtonStrategy(FEModel* fem) : FEObjectBase(fem)
 {
@@ -49,7 +51,7 @@ bool FENewtonStrategy::Residual(std::vector<double>& R, bool binit)
 
 void FENewtonStrategy::Serialize(DumpStream& ar)
 {
-	FECoreBase::Serialize(ar);
+	FEObjectBase::Serialize(ar);
 	ar & m_nups;
 	ar & m_pns;
 }

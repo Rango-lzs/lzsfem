@@ -34,7 +34,7 @@ public:
 	int InitEquations(int neq);
 
 	// This is called at the start of each time step
-	void PrepStep(const FETimeInfo& timeInfo, vector<double>& ui);
+	void PrepStep(const FETimeInfo& timeInfo, std::vector<double>& ui);
 
 	// correct stiffness matrix for rigid bodies
 	void RigidStiffness(SparseMatrix& K, std::vector<double>& ui, std::vector<double>& F, const FEElementMatrix& ke, double alpha);
@@ -78,7 +78,7 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-class FEBIOMECH_API FERigidSolverOld : public FERigidSolver
+class FEM_EXPORT FERigidSolverOld : public FERigidSolver
 {
 public:
 	FERigidSolverOld(FEModel* fem) : FERigidSolver(fem) { AllowMixedBCs(true); }
@@ -103,5 +103,5 @@ public:
 	void UpdateIncrements(std::vector<double>& Ui, std::vector<double>& ui, bool emap);
 
 	// update rigid bodies
-	void UpdateRigidBodies(vector<double> &Ui, vector<double>& ui);
+	void UpdateRigidBodies(std::vector<double> &Ui, std::vector<double>& ui);
 };

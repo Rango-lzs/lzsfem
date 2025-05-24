@@ -32,7 +32,7 @@ SOFTWARE.*/
 
 //-----------------------------------------------------------------------------
 // This class implements a solution strategy for solving a linear system that is structured
-// as a 2x2 block matrix. It makes no assumption on the symmetry of the global matrix or its blocks.
+// as a 2x2 block Matrix. It makes no assumption on the symmetry of the global Matrix or its blocks.
 class SchurSolver : public LinearSolver
 {
 public:
@@ -54,7 +54,7 @@ public:
 	//! Preprocess 
 	bool PreProcess() override;
 
-	//! Factor matrix
+	//! Factor Matrix
 	bool Factor() override;
 
 	//! Backsolve the linear system
@@ -63,10 +63,10 @@ public:
 	//! Clean up
 	void Destroy() override;
 
-	//! Create a sparse matrix
+	//! Create a sparse Matrix
 	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
-	//! set the sparse matrix
+	//! set the sparse Matrix
 	bool SetSparseMatrix(SparseMatrix* A) override;
 
 public:
@@ -96,7 +96,7 @@ private:
 	int		m_schurBlock;	//!< which diagonal block to use for Schur solver? (0 = S\A (default), 1 = S\D)
 
 private:
-	BlockMatrix*	m_pK;					//!< block matrix
+	BlockMatrix*	m_pK;					//!< block Matrix
 
 	LinearSolver*	m_Asolver;				//!< solver for solving A block
 	LinearSolver*	m_SchurAsolver;			//!< solver for solving A block inside Schur solver

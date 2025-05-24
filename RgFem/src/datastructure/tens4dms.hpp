@@ -30,7 +30,7 @@ SOFTWARE.*/
 // NOTE: This file is automatically included from tens4d.h
 // Users should not include this file manually!
 
-#include "matrix.h"
+#include "Matrix.h"
 
 inline tens4dms::tens4dms(const double g)
 {
@@ -178,7 +178,7 @@ inline void tens4dms::zero()
 		d[i] = 0;
 }
 
-// extract 9x9 matrix
+// extract 9x9 Matrix
 inline void tens4dms::extract(double D[9][9])
 {
 	D[0][0] = d[0];  D[0][1] = d[1];  D[0][2] = d[3];  D[0][3] = d[6];  D[0][4] = d[10]; D[0][5] = d[15]; D[0][6] = d[21]; D[0][7] = d[28]; D[0][8] = d[36];

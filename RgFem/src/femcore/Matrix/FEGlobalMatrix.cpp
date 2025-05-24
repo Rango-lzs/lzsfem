@@ -277,7 +277,7 @@ bool FEGlobalMatrix::Create(const FESurface& surf, const std::vector<int>& equat
 		const FESurfaceElement& el = surf.Element(i);
 		std::vector<int> elm(el.NodeSize(), -1);
 		for (int j = 0; j<el.NodeSize(); ++j)
-			elm[j] = equationIDs[el.m_lnode[j]];
+			elm[j] = equationIDs[el.m_loc_node[j]];
 		build_add(elm);
 	}
 	build_end();

@@ -1,11 +1,11 @@
 
 #include <assert.h>
-#include "vector.h"
-#include "FEMesh.h"
-#include "FEDofList.h"
+#include "vector_operator.h"
+#include "femcore/FEMesh.h"
+#include "femcore/FEDofList.h"
 #include <algorithm>
 
-double operator*(const vector<double>& a, const vector<double>& b)
+double operator*(const std::vector<double>& a, const std::vector<double>& b)
 {
 	double sum_p = 0, sum_n = 0;
 	for (size_t i = 0; i < a.size(); i++)
@@ -16,84 +16,84 @@ double operator*(const vector<double>& a, const vector<double>& b)
 	return sum_p + sum_n;
 }
 
-vector<double> operator - (vector<double>& a, vector<double>& b)
+std::vector<double> operator - (std::vector<double>& a, std::vector<double>& b)
 {
-	vector<double> c(a);
+	std::vector<double> c(a);
 	int n = (int) c.size();
 	for (int i=0; i<n; ++i) c[i] -= b[i];
 	return c;
 }
 
-void operator += (vector<double>& a, const vector<double>& b)
+void operator += (std::vector<double>& a, const std::vector<double>& b)
 {
 	assert(a.size() == b.size());
 	for (size_t i = 0; i < a.size(); ++i) a[i] += b[i];
 }
 
-void operator -= (vector<double>& a, const vector<double>& b)
+void operator -= (std::vector<double>& a, const std::vector<double>& b)
 {
 	assert(a.size() == b.size());
 	for (size_t i = 0; i < a.size(); ++i) a[i] -= b[i];
 }
 
-void operator *= (vector<double>& a, double b)
+void operator *= (std::vector<double>& a, double b)
 {
 	for (size_t i=0; i<a.size(); ++i) a[i] *= b;
 }
 
-void vcopys(vector<double>& a, const vector<double>& b, double s)
+void vcopys(std::vector<double>& a, const std::vector<double>& b, double s)
 {
 	assert(a.size() == b.size());
 	for (size_t i=0; i<a.size(); ++i) a[i] = b[i]*s;
 }
 
-void vadds(vector<double>& a, const vector<double>& b, double s)
+void vadds(std::vector<double>& a, const std::vector<double>& b, double s)
 {
 	assert(a.size() == b.size());
 	for (size_t i = 0; i<a.size(); ++i) a[i] += b[i] * s;
 }
 
-void vsubs(vector<double>& a, const vector<double>& b, double s)
+void vsubs(std::vector<double>& a, const std::vector<double>& b, double s)
 {
 	assert(a.size() == b.size());
 	for (size_t i = 0; i<a.size(); ++i) a[i] -= b[i] * s;
 }
 
-void vscale(vector<double>& a, const vector<double>& s)
+void vscale(std::vector<double>& a, const std::vector<double>& s)
 {
 	assert(a.size() == s.size());
 	for (size_t i = 0; i<a.size(); ++i) a[i] *= s[i];
 }
 
-void vsub(vector<double>& a, const vector<double>& l, const vector<double>& r)
+void vsub(std::vector<double>& a, const std::vector<double>& l, const std::vector<double>& r)
 {
 	assert((a.size()==l.size())&&(a.size()==r.size()));
 	for (size_t i=0; i<a.size(); ++i) a[i] = l[i] - r[i];
 }
 
-vector<double> operator + (const vector<double>& a, const vector<double>& b)
+std::vector<double> operator + (const std::vector<double>& a, const std::vector<double>& b)
 {
 	assert(a.size() == b.size());
-	vector<double> s(a);
+	std::vector<double> s(a);
 	for (size_t i = 0; i < s.size(); ++i) s[i] += b[i];
 	return s;
 }
 
-vector<double> operator*(const vector<double>& a, double g)
+std::vector<double> operator*(const std::vector<double>& a, double g)
 {
-	vector<double> s(a.size());
+	std::vector<double> s(a.size());
 	for (size_t i = 0; i < s.size(); ++i) s[i] = a[i]*g;
 	return s;
 }
 
-vector<double> FEM_EXPORT operator - (const vector<double>& a)
+std::vector<double> FEM_EXPORT operator - (const std::vector<double>& a)
 {
-	vector<double> s(a.size());
+	std::vector<double> s(a.size());
 	for (size_t i = 0; i < s.size(); ++i) s[i] = -a[i];
 	return s;
 }
 
-void gather(vector<double>& v, FEMesh& mesh, int ndof)
+void gather(std::vector<double>& v, FEMesh& mesh, int ndof)
 {
 	const int NN = mesh.Nodes();
 	for (int i=0; i<NN; ++i)
@@ -103,7 +103,7 @@ void gather(vector<double>& v, FEMesh& mesh, int ndof)
 	}
 }
 
-void gather(vector<double>& v, FEMesh& mesh, const vector<int>& dof)
+void gather(std::vector<double>& v, FEMesh& mesh, const std::vector<int>& dof)
 {
 	const int NN = mesh.Nodes();
 	const int NDOF = (const int) dof.size();
@@ -118,7 +118,7 @@ void gather(vector<double>& v, FEMesh& mesh, const vector<int>& dof)
 	}
 }
 
-void scatter(vector<double>& v, FEMesh& mesh, int ndof)
+void scatter(std::vector<double>& v, FEMesh& mesh, int ndof)
 {
 	const int NN = mesh.Nodes();
 	for (int i=0; i<NN; ++i)
@@ -129,7 +129,7 @@ void scatter(vector<double>& v, FEMesh& mesh, int ndof)
 	}
 }
 
-void scatter3(vector<double>& v, FEMesh& mesh, int ndof1, int ndof2, int ndof3)
+void scatter3(std::vector<double>& v, FEMesh& mesh, int ndof1, int ndof2, int ndof3)
 {
 	const int NN = mesh.Nodes();
 #pragma omp parallel for 
@@ -143,7 +143,7 @@ void scatter3(vector<double>& v, FEMesh& mesh, int ndof1, int ndof2, int ndof3)
 	}
 }
 
-void scatter(vector<double>& v, FEMesh& mesh, const FEDofList& dofs)
+void scatter(std::vector<double>& v, FEMesh& mesh, const FEDofList& dofs)
 {
 	const int NN = mesh.Nodes();
 	for (int i = 0; i<NN; ++i)
@@ -156,14 +156,14 @@ void scatter(vector<double>& v, FEMesh& mesh, const FEDofList& dofs)
 	}
 }
 
-double l2_norm(const vector<double>& v)
+double l2_norm(const std::vector<double>& v)
 {
 	double s = 0.0;
 	for (auto vi : v) s += vi*vi;
 	return sqrt(s);
 }
 
-double l2_sqrnorm(const vector<double>& v)
+double l2_sqrnorm(const std::vector<double>& v)
 {
 	double s = 0.0;
 	for (auto vi : v) s += vi*vi;

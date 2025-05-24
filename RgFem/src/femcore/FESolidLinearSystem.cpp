@@ -1,5 +1,5 @@
 #include "FESolidLinearSystem.h"
-#include "femcore/Solver/FESolidSolver.h"
+#include "femcore/Solver/FESolidSolver2.h"
 #include "femcore/FELinearConstraintManager.h"
 #include "femcore/FEModel.h"
 
@@ -11,7 +11,7 @@ FESolidLinearSystem::FESolidLinearSystem(FESolver* solver, FERigidSolver* rigidS
 	m_stiffnessScale = 1.0;
 }
 
-// scale factor for stiffness matrix
+// scale factor for stiffness Matrix
 void FESolidLinearSystem::StiffnessAssemblyScaleFactor(double a)
 {
 	m_stiffnessScale = a;
@@ -21,7 +21,7 @@ void FESolidLinearSystem::Assemble(const FEElementMatrix& ke)
 {
 	// Rigid joints require a different assembly approach in that we can do 
 	// a direct assembly as defined by the base class. 
-	// Currently, we assume that if the node list of the element matrix is not
+	// Currently, we assume that if the node list of the element Matrix is not
 	// defined, then we are dealing with rigid joints.
 	if (ke.Nodes().empty())
 	{
@@ -29,7 +29,7 @@ void FESolidLinearSystem::Assemble(const FEElementMatrix& ke)
 	}
 	else
 	{
-		// assemble into global stiffness matrix
+		// assemble into global stiffness Matrix
 		if (m_stiffnessScale == 1.0)
 		{
 			m_K.Assemble(ke);
@@ -53,11 +53,11 @@ void FESolidLinearSystem::Assemble(const FEElementMatrix& ke)
 			LCM.AssembleStiffness(m_K, m_F, m_u, ke.Nodes(), ke.RowIndices(), ke.ColumnsIndices(), ke);
 		}
 
-		// adjust stiffness matrix for prescribed degrees of freedom
+		// adjust stiffness Matrix for prescribed degrees of freedom
 		// NOTE: I had to comment this if statement out since otherwise
 		//       poroelastic DOF's that are set as free-draining in the
 		//       sliding2 contact code are skipt and zeroes will appear
-		//       on the diagonal of the stiffness matrix.
+		//       on the diagonal of the stiffness Matrix.
 		//	if (m_fem.m_DC.size() > 0)
 		{
 			SparseMatrix& K = m_K;
@@ -101,7 +101,7 @@ void FESolidLinearSystem::Assemble(const FEElementMatrix& ke)
 
 
 
-		// adjust stiffness matrix for prescribed degrees of freedom
+		// adjust stiffness Matrix for prescribed degrees of freedom
 		{
 			SparseMatrix& K = m_K;
 

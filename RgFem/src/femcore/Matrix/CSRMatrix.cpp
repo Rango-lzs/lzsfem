@@ -5,13 +5,13 @@ CSRMatrix::CSRMatrix() : m_nr(0), m_nc(0), m_offset(0)
 {
 }
 
-// create a matrix of given size
+// create a Matrix of given size
 CSRMatrix::CSRMatrix(int rows, int cols, int noffset) : m_nr(rows), m_nc(cols), m_offset(noffset)
 {
 	m_rowIndex.resize(rows+1, m_offset);
 }
 
-// Create matrix
+// Create Matrix
 void CSRMatrix::create(int nr, int nc, int noffset)
 {
 	m_nr = nr;
@@ -121,7 +121,7 @@ double CSRMatrix::operator () (int i, int j) const
 	return 0.0;
 }
 
-// see if a matrix entry was allocated
+// see if a Matrix entry was allocated
 bool CSRMatrix::isAlloc(int i, int j) const
 {
 	assert((i >= 0) && (i < m_nr));

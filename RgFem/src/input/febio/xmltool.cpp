@@ -1,4 +1,7 @@
 #include "xmltool.h"
+#include "femcore/FEParam.h"
+#include "femcore/FEParameterList.h"
+#include "femcore/FEObjectBase.h"
 
 
 int enumValue(const char* val, const char* szenum);
@@ -16,7 +19,7 @@ bool parseEnumParam(FEParam* pp, const char* val)
 	{
 		int classID = atoi(ch + 14);
 
-		FECoreKernel& fecore = FECoreKernel::GetInstance();
+		/*FECoreKernel& fecore = FECoreKernel::GetInstance();
 		for (int i = 0, n = 0; i < fecore.FactoryClasses(); ++i)
 		{
 			const FECoreFactory* fac = fecore.GetFactoryClass(i);
@@ -29,7 +32,7 @@ bool parseEnumParam(FEParam* pp, const char* val)
 				}
 				n++;
 			}
-		}
+		}*/
 		return false;
 	}
 
@@ -86,8 +89,8 @@ bool fexml::readParameter(XMLTag& tag, FEParameterList& paramList, const char* p
 	{
 		switch (pp->type())
 		{
-		case FE_PARAM_INT   : { vector<int> d(pp->dim()); tag.value(&d[0], pp->dim()); } break;
-		case FE_PARAM_DOUBLE: { vector<double> d(pp->dim()); tag.value(&d[0], pp->dim()); } break;
+		case FE_PARAM_INT   : { std::vector<int> d(pp->dim()); tag.value(&d[0], pp->dim()); } break;
+		case FE_PARAM_DOUBLE: { std::vector<double> d(pp->dim()); tag.value(&d[0], pp->dim()); } break;
         default: break;
 		}
 	}
@@ -96,7 +99,7 @@ bool fexml::readParameter(XMLTag& tag, FEParameterList& paramList, const char* p
 }
 
 //-----------------------------------------------------------------------------
-void fexml::readList(XMLTag& tag, vector<int>& l)
+void fexml::readList(XMLTag& tag, std::vector<int>& l)
 {
 	// make sure the list is empty
 	l.clear();
@@ -129,7 +132,7 @@ void fexml::readList(XMLTag& tag, vector<int>& l)
 	while (ch != 0);
 }
 
-bool fexml::readParameterList(XMLTag& tag, FECoreBase* pc)
+bool fexml::readParameterList(XMLTag& tag, FEObjectBase* pc)
 {
 	// make sure this tag has children
 	if (tag.isleaf()) return true;
@@ -146,7 +149,7 @@ bool fexml::readParameterList(XMLTag& tag, FECoreBase* pc)
 	return true;
 }
 
-bool fexml::readParameter(XMLTag& tag, FECoreBase* pc)
+bool fexml::readParameter(XMLTag& tag, FEObjectBase* pc)
 {
 	FEParameterList& PL = pc->GetParameterList();
 	if (readParameter(tag, PL) == false)
@@ -154,73 +157,74 @@ bool fexml::readParameter(XMLTag& tag, FECoreBase* pc)
 		// see if this is a property
 		// if we get here, the parameter is not found.
 		// See if the parameter container has defined a property of this name
-		int n = pc->FindPropertyIndex(tag.Name());
-		if (n >= 0)
-		{
-			FEProperty* prop = pc->PropertyClass(n);
-			const char* sztype = tag.AttributeValue("type");
+		//int n = pc->FindPropertyIndex(tag.Name());
+		//if (n >= 0)
+		//{
+		//	FEProperty* prop = pc->PropertyClass(n);
+		//	const char* sztype = tag.AttributeValue("type");
 
-			// try to allocate the class
-			FECoreBase* pp = fecore_new<FECoreBase>(prop->GetSuperClassID(), sztype, pc->GetFEModel());
-			if (pp == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
+		//	// try to allocate the class
+		//	FEObjectBase* pp = fecore_new<FEObjectBase>(prop->GetSuperClassID(), sztype, pc->GetFEModel());
+		//	if (pp == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
-			prop->SetProperty(pp);
+		//	prop->SetProperty(pp);
 
-			// read the property data
-			readParameterList(tag, pp);
-		}
-		else throw XMLReader::InvalidTag(tag);
+		//	// read the property data
+		//	readParameterList(tag, pp);
+		//}
+		//else throw XMLReader::InvalidTag(tag);
 	}
 
 	return true;
 }
 
-void readClassVariable(XMLTag& tag, FEClassDescriptor::ClassVariable* vars)
-{
-	if (tag.isleaf()) return;
-
-	++tag;
-	do {
-		if (tag.isleaf())
-		{
-			const char* szname = tag.Name();
-
-			// see if the type attribute is defined
-			const char* sztype = tag.AttributeValue("type", true);
-			if (sztype)
-			{
-				FEClassDescriptor::ClassVariable* child = new FEClassDescriptor::ClassVariable(szname, sztype);
-				vars->AddVariable(child);
-			}
-			else
-			{
-				const char* szval = tag.szvalue();
-				FEClassDescriptor::SimpleVariable* var = new FEClassDescriptor::SimpleVariable(szname, szval);
-				vars->AddVariable(var);
-			}
-		}
-		else
-		{
-			const char* szname = tag.Name();
-			const char* sztype = tag.AttributeValue("type");
-
-			FEClassDescriptor::ClassVariable* child = new FEClassDescriptor::ClassVariable(szname, sztype);
-			vars->AddVariable(child);
-			readClassVariable(tag, child);
-		}
-		++tag;
-	}
-	while (!tag.isend());
-}
+//void readClassVariable(XMLTag& tag, FEClassDescriptor::ClassVariable* vars)
+//{
+//	if (tag.isleaf()) return;
+//
+//	++tag;
+//	do {
+//		if (tag.isleaf())
+//		{
+//			const char* szname = tag.Name();
+//
+//			// see if the type attribute is defined
+//			const char* sztype = tag.AttributeValue("type", true);
+//			if (sztype)
+//			{
+//				FEClassDescriptor::ClassVariable* child = new FEClassDescriptor::ClassVariable(szname, sztype);
+//				vars->AddVariable(child);
+//			}
+//			else
+//			{
+//				const char* szval = tag.szvalue();
+//				FEClassDescriptor::SimpleVariable* var = new FEClassDescriptor::SimpleVariable(szname, szval);
+//				vars->AddVariable(var);
+//			}
+//		}
+//		else
+//		{
+//			const char* szname = tag.Name();
+//			const char* sztype = tag.AttributeValue("type");
+//
+//			FEClassDescriptor::ClassVariable* child = new FEClassDescriptor::ClassVariable(szname, sztype);
+//			vars->AddVariable(child);
+//			readClassVariable(tag, child);
+//		}
+//		++tag;
+//	}
+//	while (!tag.isend());
+//}
 
 // create a class descriptor from the current tag
 FEClassDescriptor* fexml::readParameterList(XMLTag& tag)
 {
-	const char* sztype = tag.AttributeValue("type");
-	FEClassDescriptor* cd = new FEClassDescriptor(sztype);
+    /*const char* sztype = tag.AttributeValue("type");
+    FEClassDescriptor* cd = new FEClassDescriptor(sztype);
 
-	FEClassDescriptor::ClassVariable* root = cd->Root();
-	readClassVariable(tag, root);
+    FEClassDescriptor::ClassVariable* root = cd->Root();
+    readClassVariable(tag, root);
 
-	return cd;
+    return cd;*/
+	return nullptr;
 }

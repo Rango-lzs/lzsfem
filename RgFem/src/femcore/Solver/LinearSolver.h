@@ -19,8 +19,8 @@ struct  LinearSolverStats
 //! are derived from this class and must implement the abstract virtual methods.
 
 //! This class assumes that a linear system is solved in two steps. First, the Factor()
-//! method factorizes the matrix, and then BackSolve() solves the system for a given 
-//! right hand side vector using the previously factored matrix. 
+//! method factorizes the Matrix, and then BackSolve() solves the system for a given 
+//! right hand side vector using the previously factored Matrix. 
 
 class FEM_EXPORT LinearSolver : public FEObjectBase
 {
@@ -37,18 +37,18 @@ public:
 
 public:
 
-	//! create a sparse matrix that can be used with this solver (must be overridden)
+	//! create a sparse Matrix that can be used with this solver (must be overridden)
 	virtual SparseMatrix* CreateSparseMatrix(MatrixType ntype) = 0;
 
-	//! Set the sparse matrix
+	//! Set the sparse Matrix
 	virtual bool SetSparseMatrix(SparseMatrix* pA);
 
 	//! Perform any preprocessing
-	//! This is called after the structure of the stiffness matrix was determined. 
-	//! At this point, we know the size of the matrix and its sparsity pattern.
+	//! This is called after the structure of the stiffness Matrix was determined. 
+	//! At this point, we know the size of the Matrix and its sparsity pattern.
 	virtual bool PreProcess();
 
-	//! Factor the matrix (must be overridden)
+	//! Factor the Matrix (must be overridden)
 	//! Iterative solvers can use this function for creating a pre-conditioner.
 	virtual bool Factor() = 0;
 
@@ -62,7 +62,7 @@ public:
 	virtual bool mult_vector(double* x, double* y);
 
 	//! Used by block solvers do determine the block partition
-	//! The partition is where the global matrix will be divided into blocks
+	//! The partition is where the global Matrix will be divided into blocks
 	void SetPartitions(const std::vector<int>& part);
 	void SetPartitions(int npart0, int npart1);
 

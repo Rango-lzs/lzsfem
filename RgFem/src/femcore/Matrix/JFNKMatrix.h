@@ -32,7 +32,7 @@ SOFTWARE.*/
 class FENewtonSolver;
 
 //-----------------------------------------------------------------------------
-// This is a class that just mimics a sparse matrix.
+// This is a class that just mimics a sparse Matrix.
 // It is only used by the JFNK strategy. 
 // The only function it implements is the mult_vector.
 class FEM_EXPORT JFNKMatrix : public SparseMatrix
@@ -46,31 +46,31 @@ public:
 public:
 	JFNKMatrix(FENewtonSolver* pns, SparseMatrix* K = 0);
 
-	//! override multiply with vector (Does not use sparse matrix m_K)
+	//! override multiply with vector (Does not use sparse Matrix m_K)
 	bool mult_vector(double* x, double* r) override;
 
 	//! set the reference residual
 	void SetReferenceResidual(std::vector<double>& R0);
 
-	//! set matrix policy
+	//! set Matrix policy
 	void SetPolicy(MultiplyPolicy p);
 
 	//! set the forward difference epsilon
 	void SetEpsilon(double eps);
 
-public: // these functions use the actual sparse matrix m_K
+public: // these functions use the actual sparse Matrix m_K
 
-	//! set all matrix elements to zero
+	//! set all Matrix elements to zero
 	void Zero() override { m_K->Zero(); }
 
-	//! Create a sparse matrix from a sparse-matrix profile
+	//! Create a sparse Matrix from a sparse-Matrix profile
 	void Create(SparseMatrixProfile& MP) override;
 
-	//! assemble a matrix into the sparse matrix
-	void Assemble(const matrix& ke, const std::vector<int>& lm) override { m_K->Assemble(ke, lm); }
+	//! assemble a Matrix into the sparse Matrix
+	void Assemble(const Matrix& ke, const std::vector<int>& lm) override { m_K->Assemble(ke, lm); }
 
-	//! assemble a matrix into the sparse matrix
-	void Assemble(const matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override { m_K->Assemble(ke, lmi, lmj); }
+	//! assemble a Matrix into the sparse Matrix
+	void Assemble(const Matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override { m_K->Assemble(ke, lmi, lmj); }
 
 	//! check if an entry was allocated
 	bool check(int i, int j) override { return m_K->check(i, j); }
@@ -99,7 +99,7 @@ public: // these functions use the actual sparse matrix m_K
 private:
 	bool			m_bauto_eps;	// calculate epsilon automatically
 	double			m_eps;		// forward difference epsilon
-	SparseMatrix*	m_K;		// the actual sparse matrix (This is only used as a preconditioner and can be null)
+	SparseMatrix*	m_K;		// the actual sparse Matrix (This is only used as a preconditioner and can be null)
 	FENewtonSolver*	m_pns;
 	std::vector<double>	m_v, m_R;
 

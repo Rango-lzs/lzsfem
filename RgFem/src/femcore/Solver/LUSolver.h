@@ -20,22 +20,22 @@ public:
 	//! Pre-process data
 	bool PreProcess() override;
 
-	//! Factor matrix
+	//! Factor Matrix
 	bool Factor() override;
 
-	//! solve using factored matrix
+	//! solve using factored Matrix
 	bool BackSolve(double* x, double* b) override;
 
 	//! Clean-up
 	void Destroy() override;
 
-	//! Create a sparse matrix
+	//! Create a sparse Matrix
 	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
-	//! Set the matrix
-	void SetMatrix(FECore::DenseMatrix* pA);
+	//! Set the Matrix
+	void SetMatrix(DenseMatrix* pA);
 
 protected:
 	std::vector<int>		indx;	//!< indices
-	FECore::DenseMatrix*	m_pA;	//!< sparse matrix
+	DenseMatrix*	m_pA;	//!< sparse Matrix
 };

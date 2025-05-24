@@ -1770,7 +1770,7 @@ double FESolidDomain::detJt(FESolidElement &el, int n)
     double* Gsn = el.Gs(n);
     double* Gtn = el.Gt(n);
     
-    // jacobian matrix
+    // jacobian Matrix
     double J[3][3] = {0};
 	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
@@ -1809,7 +1809,7 @@ double FESolidDomain::detJt(FESolidElement &el, int n, const double alpha)
     double* Gsn = el.Gs(n);
     double* Gtn = el.Gt(n);
     
-    // jacobian matrix
+    // jacobian Matrix
 	int neln = el.NodeSize();
 	double J[3][3] = { 0 };
     for (int i=0; i<neln; ++i)
@@ -1848,7 +1848,7 @@ double FESolidDomain::detJ0(FESolidElement &el, int n)
     double* Gsn = el.Gs(n);
     double* Gtn = el.Gt(n);
     
-    // jacobian matrix
+    // jacobian Matrix
     double J[3][3] = {0};
 	int neln = el.NodeSize();
 	for (int i = 0; i<neln; ++i)
@@ -2420,7 +2420,7 @@ double FESolidDomain::Volume(FESolidElement& el)
 		double* Gsn = el.Gs(n);
 		double* Gtn = el.Gt(n);
 
-		// jacobian matrix
+		// jacobian Matrix
 		double J[3][3] = { 0 };
 		for (int i = 0; i<neln; ++i)
 		{
@@ -2467,7 +2467,7 @@ double FESolidDomain::CurrentVolume(FESolidElement& el)
         double* Gsn = el.Gs(n);
         double* Gtn = el.Gt(n);
 
-        // jacobian matrix
+        // jacobian Matrix
         double J[3][3] = { 0 };
         for (int i = 0; i < neln; ++i)
         {
@@ -2601,7 +2601,7 @@ void FESolidDomain::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a
 		// calculate nodal normal tractions
 		int neln = el.NodeSize();
 
-		// get the element stiffness matrix
+		// get the element stiffness Matrix
 		ke.SetNodes(el.getNodeIds());
 		int ndof_a = dofPerNode_a * neln;
 		int ndof_b = dofPerNode_b * neln;
@@ -2651,7 +2651,7 @@ void FESolidDomain::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a
 				lmb[dofPerNode_b*j + k] = ID[dofList_b[k]];
 		}
 
-		// assemble element matrix in global stiffness matrix
+		// assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
 	}
 }

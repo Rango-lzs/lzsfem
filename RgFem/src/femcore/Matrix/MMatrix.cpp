@@ -176,7 +176,7 @@ MItem* matrix_trace(const MMatrix& A)
 //-----------------------------------------------------------------------------
 MItem* matrix_determinant(const MMatrix& A)
 {
-	// make sure the matrix is square
+	// make sure the Matrix is square
 	if (A.rows() != A.columns()) throw InvalidOperation();
 
 	if (A.rows() == 1) return A(0,0)->copy();
@@ -229,15 +229,15 @@ MMatrix* matrix_identity(int n)
 }
 
 //-----------------------------------------------------------------------------
-//! Calculate the inverse of a matrix
+//! Calculate the inverse of a Matrix
 MItem* matrix_inverse(const MMatrix& m)
 {
-	// make sure it is a square matrix
+	// make sure it is a square Matrix
 	int nrows = m.rows();
 	int ncols = m.columns();
 	if (nrows != ncols) throw InvalidOperation();
 
-	// calculate the inverse, but we can only handle matrix up to order 3 for now
+	// calculate the inverse, but we can only handle Matrix up to order 3 for now
 	if (nrows == 1)
 	{
 		MMatrix* pmi = new MMatrix;

@@ -105,13 +105,13 @@ public:  // Quasi-Newton methods
     FELineSearch* GetLineSearch();
 
 public:
-    //! return the stiffness matrix
+    //! return the stiffness Matrix
     FEGlobalMatrix* GetStiffnessMatrix() override;
 
-    //! reform the stiffness matrix
+    //! reform the stiffness Matrix
     bool ReformStiffness();
 
-    //! recalculates the shape of the stiffness matrix
+    //! recalculates the shape of the stiffness Matrix
     bool CreateStiffness(bool breset);
 
     //! get the RHS
@@ -144,10 +144,10 @@ public:
     //! This is called from SolveStep.
     virtual bool Quasin();
 
-    //! calculates the global stiffness matrix (needs to be overwritten by derived classes)
+    //! calculates the global stiffness Matrix (needs to be overwritten by derived classes)
     virtual bool StiffnessMatrix();
 
-    //! this is the new method for building the stiffness matrix
+    //! this is the new method for building the stiffness Matrix
     virtual bool StiffnessMatrix(FELinearSystem& LS);
 
     //! calculates the global residual vector (needs to be overwritten by derived classes)
@@ -186,7 +186,7 @@ public:
 
     // solver parameters
     int m_maxref;           //!< max nr of reformations per time step
-    int m_force_partition;  //!< Force a partition of the global matrix (e.g. for testing with BIPN solver)
+    int m_force_partition;  //!< Force a partition of the global Matrix (e.g. for testing with BIPN solver)
     double m_Rtol;          //!< residual convergence norm
     double m_Etol;          //!< energy convergence norm
     double m_Rmin;          //!< min residual value
@@ -209,10 +209,10 @@ public:
 
     // linear solver data
     LinearSolver* m_plinsolve;  //!< the linear solver
-    FEGlobalMatrix* m_pK;       //!< global stiffness matrix
+    FEGlobalMatrix* m_pK;       //!< global stiffness Matrix
     bool m_breshape;            //!< Matrix reshape flag
     bool
-        m_persistMatrix;  //!< Don't delete stiffness matrix until necessary (if true, K is deleted at end of time step)
+        m_persistMatrix;  //!< Don't delete stiffness Matrix until necessary (if true, K is deleted at end of time step)
 
     // data used by Quasin
     std::vector<double> m_R0;  //!< residual at iteration i-1

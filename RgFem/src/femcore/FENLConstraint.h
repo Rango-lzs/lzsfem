@@ -14,7 +14,7 @@ class FELinearSystem;
 //-----------------------------------------------------------------------------
 //! Base class for nonlinear constraints enforced using an augmented Lagrangian method.
 
-//! The constraint must provide a residual (force) contribution, its stiffness matrix,
+//! The constraint must provide a residual (force) contribution, its stiffness Matrix,
 //! and an augmentation function.
 //!
 class FEM_EXPORT FENLConstraint : public FEStepComponent
@@ -37,13 +37,13 @@ public:
 	// The LoadVector function evaluates the "forces" that contribute to the residual of the system
 	virtual void LoadVector(FEGlobalVector& R, const FETimeInfo& tp) = 0;
 
-	// Evaluates the contriubtion to the stiffness matrix
+	// Evaluates the contriubtion to the stiffness Matrix
 	virtual void StiffnessMatrix(FELinearSystem& LS, const FETimeInfo& tp) = 0;
 
 	// Performs an augmentation step
 	virtual bool Augment(int naug, const FETimeInfo& tp) { return true; }
 
-	// Build the matrix profile
+	// Build the Matrix profile
 	virtual void BuildMatrixProfile(FEGlobalMatrix& M) = 0;
 
 	// reset the state data

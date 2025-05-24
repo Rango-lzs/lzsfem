@@ -1,4 +1,5 @@
 #include "FEStepComponent.h"
+#include "basicio/DumpStream.h"
 
 FEStepComponent::FEStepComponent(FEModel* fem) : FEModelComponent(fem)
 {

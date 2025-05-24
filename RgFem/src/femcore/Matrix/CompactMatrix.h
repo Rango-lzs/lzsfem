@@ -31,7 +31,7 @@ SOFTWARE.*/
 #include "CSRMatrix.h"
 
 //=============================================================================
-//! This class stores a sparse matrix in Harwell-Boeing format.
+//! This class stores a sparse Matrix in Harwell-Boeing format.
 
 //! This is the base class for the symmetric and unsymmetric classes
 
@@ -44,30 +44,30 @@ public:
 	//! destructor
 	virtual ~CompactMatrix();
 
-	//! zero matrix elements
+	//! zero Matrix elements
 	void Zero() override;
 
 	//! Clear 
 	void Clear() override;
 
 public:
-	//! Pointer to matrix values
+	//! Pointer to Matrix values
 	double* Values  () override { return m_pd;   }
 
-	//! Pointer to matrix indices
+	//! Pointer to Matrix indices
 	int*    Indices() override { return m_pindices; }
 
-	//! pointer to matrix row pointers
+	//! pointer to Matrix row pointers
 	int*    Pointers() override { return m_ppointers; }
 
 	//! return the index offset (is 0 or 1)
 	int     Offset() const override { return m_offset; }
 
 public:
-	//! Create the matrix
+	//! Create the Matrix
 	void alloc(int nr, int nc, int nz, double* pv, int *pi, int* pp, bool bdel = true);
 
-	//! is the matrix symmetric or not
+	//! is the Matrix symmetric or not
 	virtual bool isSymmetric() = 0;
 
 	//! is this a row-based format or not
@@ -80,11 +80,11 @@ public:
 	//! calculate the one norm
 	virtual double oneNorm() const = 0;
 
-	//! calculate bandwidth of matrix
+	//! calculate bandwidth of Matrix
 	int bandWidth();
 
 protected:
-	double*	m_pd;			//!< matrix values
+	double*	m_pd;			//!< Matrix values
 	int*	m_pindices;		//!< indices
 	int*	m_ppointers;	//!< pointers
 	int		m_offset;		//!< adjust array indices for fortran arrays

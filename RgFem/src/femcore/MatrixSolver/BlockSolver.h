@@ -53,7 +53,7 @@ public:
 	//! Preprocess 
 	bool PreProcess() override;
 
-	//! Factor matrix
+	//! Factor Matrix
 	bool Factor() override;
 
 	//! Backsolve the linear system
@@ -62,10 +62,10 @@ public:
 	//! Clean up
 	void Destroy() override;
 
-	//! Create a sparse matrix
+	//! Create a sparse Matrix
 	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
-	//! set the sparse matrix
+	//! set the sparse Matrix
 	bool SetSparseMatrix(SparseMatrix* m) override;
 
 	// return whether the iterative solver has a preconditioner or not

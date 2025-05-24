@@ -19,7 +19,7 @@ void SparseMatrix::Clear()
 	m_nsize = 0;
 }
 
-//! scale matrix
+//! scale Matrix
 void SparseMatrix::scale(const vector<double>& L, const vector<double>& R)
 {
 	assert(false);

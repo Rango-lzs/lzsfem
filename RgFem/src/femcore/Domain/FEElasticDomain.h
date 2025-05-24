@@ -26,13 +26,13 @@ public:
 
 
 
-	//! Calculate global stiffness matrix (only contribution from internal force derivative)
-	//! \todo maybe I should rename this the InternalStiffness matrix?
+	//! Calculate global stiffness Matrix (only contribution from internal force derivative)
+	//! \todo maybe I should rename this the InternalStiffness Matrix?
 	virtual void StiffnessMatrix   (FELinearSystem& LS) = 0;
 
 	//! Calculate stiffness contribution of body forces
 	virtual void BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf) = 0;
 
-	//! calculate the mass matrix (for dynamic problems)
+	//! calculate the mass Matrix (for dynamic problems)
 	virtual void MassMatrix(FELinearSystem& LS, double scale) = 0;
 };

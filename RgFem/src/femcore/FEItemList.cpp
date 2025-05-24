@@ -2,7 +2,7 @@
 #include "basicio/DumpStream.h"
 #include "FEModel.h"
 
-FEItemList::FEItemList(FEMesh* mesh)// : FECoreBase(fem)
+FEItemList::FEItemList(FEMesh* mesh)// : FEObjectBase(fem)
 {
 	m_mesh = mesh;
 }

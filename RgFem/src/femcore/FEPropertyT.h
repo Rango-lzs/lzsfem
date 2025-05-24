@@ -44,16 +44,16 @@ public:
 	}
 
 	bool IsArray() const override { return false; }
-	bool IsType(FECoreBase* pc) const override { return (dynamic_cast<T*>(pc) != nullptr); }
-	void SetProperty(FECoreBase* pc) override 
+	bool IsType(FEObjectBase* pc) const override { return (dynamic_cast<T*>(pc) != nullptr); }
+	void SetProperty(FEObjectBase* pc) override 
 	{ 
 		*m_pc = dynamic_cast<T*>(pc);
 		pc->SetParent(GetParent());
 	}
 	int size() const override { return ((*m_pc) == 0 ? 0 : 1); }
 
-	FECoreBase* get(int i) override { return *m_pc; }
-	FECoreBase* get(const char* szname) override
+	FEObjectBase* get(int i) override { return *m_pc; }
+	FEObjectBase* get(const char* szname) override
 	{
 		if ((*m_pc)->GetName() == std::string(szname))
 			return *m_pc;
@@ -61,7 +61,7 @@ public:
 			return 0;
 	}
 
-	FECoreBase* getFromID(int nid) override
+	FEObjectBase* getFromID(int nid) override
 	{
 		if (m_pc && (*m_pc) && ((*m_pc)->GetID() == nid)) return *m_pc; else return 0;
 	}
@@ -99,8 +99,8 @@ public:
 	}
 
 	bool IsArray() const override { return false; }
-	bool IsType(FECoreBase* pc) const override { return (dynamic_cast<T*>(pc) != nullptr); }
-	void SetProperty(FECoreBase* pc) override
+	bool IsType(FEObjectBase* pc) const override { return (dynamic_cast<T*>(pc) != nullptr); }
+	void SetProperty(FEObjectBase* pc) override
 	{
 		assert(m_pc == nullptr);
 		m_pc = dynamic_cast<T*>(pc);
@@ -108,8 +108,8 @@ public:
 	}
 	int size() const override { return (m_pc == 0 ? 0 : 1); }
 
-	FECoreBase* get(int i) override { return m_pc; }
-	FECoreBase* get(const char* szname) override
+	FEObjectBase* get(int i) override { return m_pc; }
+	FEObjectBase* get(const char* szname) override
 	{
 		if (m_pc->GetName() == std::string(szname))
 			return m_pc;
@@ -117,7 +117,7 @@ public:
 			return 0;
 	}
 
-	FECoreBase* getFromID(int nid) override
+	FEObjectBase* getFromID(int nid) override
 	{
 		if (m_pc && (m_pc->GetID() == nid)) return m_pc; else return nullptr;
 	}
@@ -159,16 +159,16 @@ public:
 	const T* operator [] (int i) const { return (*m_pmp)[i]; }
 
 	virtual bool IsArray() const { return true; }
-	virtual bool IsType(FECoreBase* pc) const { return (dynamic_cast<T*>(pc) != 0); }
-	virtual void SetProperty(FECoreBase* pc) {
+	virtual bool IsType(FEObjectBase* pc) const { return (dynamic_cast<T*>(pc) != 0); }
+	virtual void SetProperty(FEObjectBase* pc) {
 		T* pt = dynamic_cast<T*>(pc); assert(pt != nullptr);
 		m_pmp->push_back(pt); 
 		pt->SetParent(GetParent());
 	}
 	virtual int size() const { return (int)m_pmp->size(); }
-	virtual FECoreBase* get(int i) { return (*m_pmp)[i]; }
+	virtual FEObjectBase* get(int i) { return (*m_pmp)[i]; }
 
-	virtual FECoreBase* get(const char* szname)
+	virtual FEObjectBase* get(const char* szname)
 	{ 
 		std::string name(szname);
 		for (int i=0; i<(int) m_pmp->size(); ++i)
@@ -179,7 +179,7 @@ public:
 		return 0;
 	}
 
-	virtual FECoreBase* getFromID(int nid)
+	virtual FEObjectBase* getFromID(int nid)
 	{
 		for (int i = 0; i<(int)m_pmp->size(); ++i)
 		{
@@ -189,7 +189,7 @@ public:
 		return 0;
 	}
 
-	void AddProperty(FECoreBase* pc) { 
+	void AddProperty(FEObjectBase* pc) { 
 		m_pmp->push_back(dynamic_cast<T*>(pc)); 
 		pc->SetParent(GetParent());
 	}

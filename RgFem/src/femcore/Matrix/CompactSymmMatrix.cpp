@@ -69,7 +69,7 @@ bool CompactSymmMatrix::mult_vector(double* x, double* r)
 //-----------------------------------------------------------------------------
 void CompactSymmMatrix::Create(SparseMatrixProfile& mp)
 {
-	// TODO: we should probably enforce that the matrix is square
+	// TODO: we should probably enforce that the Matrix is square
 	int nr = mp.Rows();
 	int nc = mp.Columns();
 	assert(nr==nc);
@@ -99,7 +99,7 @@ void CompactSymmMatrix::Create(SparseMatrixProfile& mp)
 		}
 	}
 
-	// allocate indices which store row index for each matrix element
+	// allocate indices which store row index for each Matrix element
 	int* pindices = new int[nsize];
 	int m = 0;
 	for (int i = 0; i <= nc; ++i)
@@ -142,7 +142,7 @@ void CompactSymmMatrix::Create(SparseMatrixProfile& mp)
 	// create the values array
 	double* pvalues = new double[nsize];
 
-	// create the stiffness matrix
+	// create the stiffness Matrix
 	CompactMatrix::alloc(nr, nc, nsize, pvalues, pindices, pointers);
 }
 
@@ -151,10 +151,10 @@ void CompactSymmMatrix::Create(SparseMatrixProfile& mp)
 void qsort(int n, const int* arr, int* indx);
 
 //-----------------------------------------------------------------------------
-//! This function assembles the local stiffness matrix
-//! into the global stiffness matrix which is in compact column storage
+//! This function assembles the local stiffness Matrix
+//! into the global stiffness Matrix which is in compact column storage
 //!
-void CompactSymmMatrix::Assemble(const matrix& ke, const vector<int>& LM)
+void CompactSymmMatrix::Assemble(const Matrix& ke, const vector<int>& LM)
 {
 	// get the number of degrees of freedom
 	const int N = ke.rows();
@@ -202,7 +202,7 @@ void CompactSymmMatrix::Assemble(const matrix& ke, const vector<int>& LM)
 
 
 //-----------------------------------------------------------------------------
-void CompactSymmMatrix::Assemble(const matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
+void CompactSymmMatrix::Assemble(const Matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
 {
 	const int N = ke.rows();
 	const int M = ke.columns();
@@ -219,7 +219,7 @@ void CompactSymmMatrix::Assemble(const matrix& ke, const vector<int>& LMi, const
 		{
 			int J = LMj[j];
 
-			// only add values to lower-diagonal part of stiffness matrix
+			// only add values to lower-diagonal part of stiffness Matrix
 			if ((I >= J) && (J >= 0))
 			{
 				double* pv = values + (pointers[J] - m_offset);
@@ -238,7 +238,7 @@ void CompactSymmMatrix::Assemble(const matrix& ke, const vector<int>& LMi, const
 }
 
 //-----------------------------------------------------------------------------
-//! add a matrix item
+//! add a Matrix item
 void CompactSymmMatrix::add(int i, int j, double v)
 {
 	// only add to lower triangular part
@@ -281,7 +281,7 @@ void CompactSymmMatrix::add(int i, int j, double v)
 }
 
 //-----------------------------------------------------------------------------
-//! check fo a matrix item
+//! check fo a Matrix item
 bool CompactSymmMatrix::check(int i, int j)
 {
 	// only the lower-triangular part is stored, so swap indices if necessary
@@ -305,7 +305,7 @@ bool CompactSymmMatrix::check(int i, int j)
 
 
 //-----------------------------------------------------------------------------
-//! set matrix item
+//! set Matrix item
 void CompactSymmMatrix::set(int i, int j, double v)
 {
 	if (j <= i)
@@ -328,7 +328,7 @@ void CompactSymmMatrix::set(int i, int j, double v)
 }
 
 //-----------------------------------------------------------------------------
-//! get a matrix item
+//! get a Matrix item
 double CompactSymmMatrix::get(int i, int j)
 {
 	// only the lower-triangular part is stored, so swap indices if necessary
@@ -350,7 +350,7 @@ double CompactSymmMatrix::get(int i, int j)
 //-----------------------------------------------------------------------------
 double CompactSymmMatrix::infNorm() const
 {
-	// get the matrix size
+	// get the Matrix size
 	const int N = Rows();
 
 	// keep track of row sums
@@ -388,7 +388,7 @@ double CompactSymmMatrix::infNorm() const
 //-----------------------------------------------------------------------------
 double CompactSymmMatrix::oneNorm() const
 {
-	// get the matrix size
+	// get the Matrix size
 	const int NR = Rows();
 	const int NC = Columns();
 
@@ -427,7 +427,7 @@ double CompactSymmMatrix::oneNorm() const
 //-----------------------------------------------------------------------------
 void CompactSymmMatrix::scale(const vector<double>& L, const vector<double>& R)
 {
-	// get the matrix size
+	// get the Matrix size
 	const int N = Columns();
 
 	// loop over all columns

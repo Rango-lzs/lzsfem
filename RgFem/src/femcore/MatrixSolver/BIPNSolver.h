@@ -70,16 +70,16 @@ public:
 	// allocate storage
 	bool PreProcess() override;
 
-	//! Factor the matrix (for iterative solvers, this can be used for creating pre-conditioner)
+	//! Factor the Matrix (for iterative solvers, this can be used for creating pre-conditioner)
 	bool Factor() override;
 
 	//! Calculate the solution of RHS b and store solution in x
 	bool BackSolve(double* x, double* y) override;
 
-	//! Return a sparse matrix compatible with this solver
+	//! Return a sparse Matrix compatible with this solver
 	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
-	// set the sparse matrix
+	// set the sparse Matrix
 	bool SetSparseMatrix(SparseMatrix* A) override;
 
 private:
@@ -87,7 +87,7 @@ private:
 	int gmressolve(SparseMatrix* K, LinearSolver* PC, vector<double>& x, vector<double>& b);
 
 private:
-	BlockMatrix*	m_A;		//!< the block matrix
+	BlockMatrix*	m_A;		//!< the block Matrix
 	FGMRESSolver*	m_Asolver;	//!< the solver for the A - block
 	LinearSolver*	m_PS;		//!< Schur complement preconditioner
 

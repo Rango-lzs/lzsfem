@@ -33,7 +33,7 @@ SOFTWARE.*/
 
 namespace NumCore
 {
-	// write a matrix to file
+	// write a Matrix to file
 	// mode:
 	// - 0 = binary mode
 	// - 1 = text mode
@@ -42,13 +42,13 @@ namespace NumCore
 	// write a vector to file
 	NUMCORE_API bool write_vector(const std::vector<double>& a, const char* szfile, int mode = 0);
 
-	// read compact matrix (binary mode only)
+	// read compact Matrix (binary mode only)
 	NUMCORE_API CompactMatrix* read_hb(const char* szfile);
 
 	// read vector<double> from file
 	NUMCORE_API bool read_vector(std::vector<double>& a, const char* szfile);
 
-	// calculate inf-norm of inverse matrix (only works with CRSSparsMatrix(1))
+	// calculate inf-norm of inverse Matrix (only works with CRSSparsMatrix(1))
 	NUMCORE_API double inverse_infnorm(CompactMatrix* A);
 
 	// calculate condition number of a CRSSparseMatrix(1) (Very expensive!)
@@ -63,7 +63,7 @@ namespace NumCore
 	// inf-norm of a vector
 	NUMCORE_API double infNorm(const std::vector<double>& x);
 
-	// print matrix sparsity pattern to svn file
+	// print Matrix sparsity pattern to svn file
 	NUMCORE_API void print_svg(CompactMatrix* m, std::ostream &out, int i0 = 0, int j0 = 0, int i1 = -1, int j1 = -1);
 
 } // namespace NumCore

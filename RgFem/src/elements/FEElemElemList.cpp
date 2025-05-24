@@ -1,9 +1,9 @@
 
 #include "FEElemElemList.h"
-#include "FENodeElemList.h"
-#include "FESolidDomain.h"
-#include "FESurface.h"
-#include "FEMesh.h"
+#include "femcore/FENodeElemList.h"
+#include "femcore/Domain/FESolidDomain.h"
+#include "femcore/FESurface.h"
+#include "femcore/FEMesh.h"
 
 //-----------------------------------------------------------------------------
 FEElemElemList::FEElemElemList(void)

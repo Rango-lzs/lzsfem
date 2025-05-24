@@ -12,7 +12,7 @@ class tens4d;
 //-----------------------------------------------------------------------------
 //! Class for 4th order tensors with major and minor symmetries (i.e., super-symmetry)
 
-// Due to the major symmetry we can store this tensor as a 6x6 matrix.
+// Due to the major symmetry we can store this tensor as a 6x6 Matrix.
 // The tensor is stored in column major order:
 //
 //     / 0   1   3   6   10   15  \   / C0000  C0011  C0022  C0001  C0012  C0002 \
@@ -22,7 +22,7 @@ class tens4d;
 //     |                 14   19  |   |                             C1212  C1202 |
 //     \                      20  /   \                                    C0202 /
 //
-// Note that due to the major symmetry we only store the upper triangular matrix of this tensor
+// Note that due to the major symmetry we only store the upper triangular Matrix of this tensor
 //
 
 class tens4ds
@@ -73,7 +73,7 @@ public:
 	// initialize to zero
 	void zero();
 
-	// extract 6x6 matrix
+	// extract 6x6 Matrix
 	void extract(double d[6][6]);
 
 	// calculates the inverse
@@ -113,8 +113,8 @@ inline tens4ds operator * (const double g, const tens4ds& a) { return a*g; }
 //-----------------------------------------------------------------------------
 //! Class for 4th order tensors with major symmetry only
 
-// Due to the lack of minor symmetry, we have to store additional components of this tensor as a 9x9 matrix.
-// Major symmetry ensures that this storage matrix is symmetric about its main diagonal.
+// Due to the lack of minor symmetry, we have to store additional components of this tensor as a 9x9 Matrix.
+// Major symmetry ensures that this storage Matrix is symmetric about its main diagonal.
 // The tensor is stored in column major order:
 //
 //     / 0   1   3   6   10   15  21   28   36  \
@@ -166,7 +166,7 @@ public:
 	// initialize to zero
 	void zero();
 
-	// extract 9x9 matrix
+	// extract 9x9 Matrix
 	void extract(double d[9][9]);
 
 	// compute the super-symmetric (major and minor symmetric) component of the tensor
@@ -189,7 +189,7 @@ tens4dms dyad1ms(const Matrix3ds& a, const Matrix3ds& b);
 //-----------------------------------------------------------------------------
 //! Class for 4th order tensors with both minor symmetries
 
-// We store components of this tensor as a 6x6 matrix.
+// We store components of this tensor as a 6x6 Matrix.
 // The tensor is stored in column major order:
 //
 //       00  11  22   01   12   20    |
@@ -252,7 +252,7 @@ public:
     // initialize to zero
     void zero();
 
-    // extract 9x9 matrix
+    // extract 9x9 Matrix
     void extract(double d[6][6]);
 
     // compute the super-symmetric (major and minor symmetric) component of the tensor
@@ -290,7 +290,7 @@ Matrix3d vdotTdotv(const Vector3d& a, const tens4dmm& T, const Vector3d& b);
 //-----------------------------------------------------------------------------
 //! Class for 4th order tensors without symmetry
 
-// We store components of this tensor as a 9x9 matrix.
+// We store components of this tensor as a 9x9 Matrix.
 // The tensor is stored in column major order:
 //
 //       00  11  22   01   12   20   10   21   02    |
@@ -363,7 +363,7 @@ public:
     // initialize to zero
     void zero();
 
-    // extract 9x9 matrix
+    // extract 9x9 Matrix
     void extract(double d[9][9]);
 
     // compute the super-symmetric (major and minor symmetric) component of the tensor

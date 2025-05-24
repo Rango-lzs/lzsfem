@@ -1,7 +1,10 @@
 #pragma once
+#include "femcore/fem_export.h"
 #include "input/XML/XMLReader.h"
 
 class FEClassDescriptor;
+class FEObjectBase;
+class FEParameterList;
 
 //This namespace defines some helper functions that facilitate processing the FEBio xml formatted files.
 namespace fexml

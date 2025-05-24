@@ -1,5 +1,6 @@
 #include "FEProperty.h"
 #include "basicio/DumpStream.h"
+#include "FEObjectBase.h"
 //-----------------------------------------------------------------------------
 FEProperty::FEProperty(SUPER_CLASS_ID superClassID) : m_szname(nullptr), m_className(nullptr), m_szlongname(nullptr), m_szdefaultType(nullptr), m_flags(0), m_superClassID(superClassID) {}
 
@@ -43,7 +44,7 @@ FEProperty& FEProperty::SetDefaultType(const char* szdefType)
 }
 
 //-----------------------------------------------------------------------------
-void FEProperty::Write(DumpStream& ar, FECoreBase* pc)
+void FEProperty::Write(DumpStream& ar, FEObjectBase* pc)
 {
 	int nflag = (pc == 0 ? 0 : 1);
 	ar << nflag;
@@ -57,10 +58,10 @@ void FEProperty::Write(DumpStream& ar, FECoreBase* pc)
 }
 
 //-----------------------------------------------------------------------------
-FECoreBase* FEProperty::Read(DumpStream& ar)
+FEObjectBase* FEProperty::Read(DumpStream& ar)
 {
 	int nflag = 0;
-	FECoreBase* pm = 0;
+	FEObjectBase* pm = 0;
 	ar >> nflag;
 	if (nflag)
 	{
@@ -68,8 +69,8 @@ FECoreBase* FEProperty::Read(DumpStream& ar)
 		int ntype = FEINVALID_ID;
 		ar >> sz;
 		ar >> ntype;
-		pm = fecore_new<FECoreBase>(ntype, sz, &ar.GetFEModel());
-		pm->SetParent(GetParent());
+		pm = RANGO_NEW<FEObjectBase>(&ar.GetFEModel(), sz);
+		pm->SetOwner(GetParent());
 		pm->Serialize(ar);
 
 		// TODO: Do I really need to do this here?

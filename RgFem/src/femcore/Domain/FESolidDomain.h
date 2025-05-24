@@ -87,26 +87,26 @@ public:
     //! Calculate GradJ at integration point n at prev time
     tens3dls Gradbp(FESolidElement& el, int n);
     
-    //! calculate inverse jacobian matrix w.r.t. reference frame
+    //! calculate inverse jacobian Matrix w.r.t. reference frame
     double invjac0(const FESolidElement& el, double J[3][3], int n);
     
-    //! calculate inverse jacobian matrix w.r.t. reference frame
+    //! calculate inverse jacobian Matrix w.r.t. reference frame
     double invjac0(const FESolidElement& el, double J[3][3], double r, double s, double t);
     
-    //! calculate inverse jacobian matrix w.r.t. reference frame
+    //! calculate inverse jacobian Matrix w.r.t. reference frame
     double invjac0(const FESolidElement& el, double r, double s, double t, Matrix3d& J);
     
-    //! calculate inverse jacobian matrix w.r.t. current frame
+    //! calculate inverse jacobian Matrix w.r.t. current frame
     double invjact(FESolidElement& el, double J[3][3], int n);
 	double invjact(FESolidElement& el, double J[3][3], int n, const Vector3d* r);
 
-    //! calculate inverse jacobian matrix w.r.t. reference frame
+    //! calculate inverse jacobian Matrix w.r.t. reference frame
     double invjact(FESolidElement& el, double J[3][3], double r, double s, double t);
     
-    //! calculate inverse jacobian matrix w.r.t. intermediate frame
+    //! calculate inverse jacobian Matrix w.r.t. intermediate frame
     double invjact(FESolidElement& el, double J[3][3], int n, const double alpha);
     
-    //! calculate inverse jacobian matrix w.r.t. previous time
+    //! calculate inverse jacobian Matrix w.r.t. previous time
     double invjactp(FESolidElement& el, double J[3][3], int n);
     
     //! calculate gradient of function at integration points
@@ -249,12 +249,12 @@ public:
 		FEVolumeVectorIntegrand f	// the actual integrand function
 	);
 
-	//! Evaluate the stiffness matrix of a load
+	//! Evaluate the stiffness Matrix of a load
 	virtual void LoadStiffness(
 		FELinearSystem& LS,			// The solver does the assembling
 		const FEDofList& dofList_a,	// The degree of freedom list of node a
 		const FEDofList& dofList_b,	// The degree of freedom list of node b
-		FEVolumeMatrixIntegrand f	// the matrix function to evaluate
+		FEVolumeMatrixIntegrand f	// the Matrix function to evaluate
 	);
 
 protected:

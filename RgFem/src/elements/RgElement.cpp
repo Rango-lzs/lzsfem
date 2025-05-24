@@ -104,7 +104,7 @@ void FEElement::SetTraits(FEElementTraits* ptraits)
 {
 	m_pTraits = ptraits;
 	m_node.resize(NodeSize());
-	//m_lnode.resize(NodeSize());
+	//m_loc_node.resize(NodeSize());
 	m_state.Create(GaussPointSize());
 }
 
@@ -119,7 +119,7 @@ void FEElement::Serialize(DumpStream& ar)
 		ar << type;
 		/*ar << m_nID << m_lid << m_mat;
 		ar << m_node;
-		ar << m_lnode;
+		ar << m_loc_node;
 		ar << m_lm << m_val;
 		ar << m_status;*/
 	}
@@ -129,7 +129,7 @@ void FEElement::Serialize(DumpStream& ar)
 		ar >> ntype; setType(ntype);
         /*ar >> m_nID >> m_lid >> m_mat;
         ar >> m_node;
-        ar >> m_lnode;
+        ar >> m_loc_node;
         ar >> m_lm >> m_val;
         ar >> m_status;*/
 	}
@@ -321,7 +321,7 @@ void FEElement::SetMaterialPointData(FEMaterialPoint* pmp, int n)
 //	m_nID = el.m_nID;
 //	m_lid = el.m_lid;
 //	m_node = el.m_node;
-//	m_lnode = el.m_lnode;
+//	m_loc_node = el.m_loc_node;
 //	m_lm = el.m_lm;
 //	m_val = el.m_val;
 //}
@@ -336,7 +336,7 @@ void FEElement::SetMaterialPointData(FEMaterialPoint* pmp, int n)
 //	m_nID = el.m_nID;
 //	m_lid = el.m_lid;
 //	m_node = el.m_node;
-//	m_lnode = el.m_lnode;
+//	m_loc_node = el.m_loc_node;
 //	m_lm = el.m_lm;
 //	m_val = el.m_val;
 //
@@ -362,7 +362,7 @@ void FEElement::SetMaterialPointData(FEMaterialPoint* pmp, int n)
 //	m_nID = el.m_nID;
 //	m_lid = el.m_lid;
 //	m_node = el.m_node;
-//	m_lnode = el.m_lnode;
+//	m_loc_node = el.m_loc_node;
 //	m_lm = el.m_lm;
 //	m_val = el.m_val;
 //}
@@ -380,7 +380,7 @@ void FEElement::SetMaterialPointData(FEMaterialPoint* pmp, int n)
 //	m_nID = el.m_nID;
 //	m_lid = el.m_lid;
 //	m_node = el.m_node;
-//	m_lnode = el.m_lnode;
+//	m_loc_node = el.m_loc_node;
 //	m_lm = el.m_lm;
 //	m_val = el.m_val;
 //
@@ -392,5 +392,5 @@ void FEElement::SetMaterialPointData(FEMaterialPoint* pmp, int n)
 //	// we don't allocate state data for surface elements
 //	m_pTraits = pt;
 //	m_node.resize(Nodes());
-//	m_lnode.resize(Nodes());
+//	m_loc_node.resize(Nodes());
 //}

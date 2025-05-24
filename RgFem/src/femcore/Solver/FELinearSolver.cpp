@@ -7,12 +7,15 @@
 #include "femcore/FELinearSystem.h"
 #include "femcore/FEBoundaryCondition.h"
 #include "femcore/FEGlobalVector.h"
-#include "femcoe/Domain/FEDomain.h"
-#include "FENodalLoad.h"
-#include "FESurfaceLoad.h"
-#include "FEBodyLoad.h"
-#include "DumpStream.h"
-#include "FELinearConstraintManager.h"
+#include "femcore/Domain/FEDomain.h"
+#include "femcore/FENodalLoad.h"
+#include "femcore/FESurfaceLoad.h"
+#include "femcore/FEBodyLoad.h"
+#include "basicio/DumpStream.h"
+#include "femcore/FELinearConstraintManager.h"
+#include "../FEMesh.h"
+#include "../FEException.h"
+#include "femcore/Callback.h"
 
 //-----------------------------------------------------------------------------
 //! constructor
@@ -59,15 +62,16 @@ bool FELinearSolver::Init()
 	if (FESolver::Init() == false) return false;
 
 	// Now that we have determined the equation numbers we can continue
-	// with creating the stiffness matrix. First we select the linear solver
-	// The stiffness matrix is created in CreateStiffness
+	// with creating the stiffness Matrix. First we select the linear solver
+	// The stiffness Matrix is created in CreateStiffness
 	// Note that if a particular solver was requested in the input file
 	// then the solver might already be allocated. That's way we need to check it.
 	if (m_pls == 0)
 	{
 		FEModel* fem = GetFEModel();
-		FECoreKernel& fecore = FECoreKernel::GetInstance();
-		m_pls = fecore.CreateDefaultLinearSolver(fem);
+		//Rango TODO
+        /*FECoreKernel& fecore = FECoreKernel::GetInstance();
+        m_pls = fecore.CreateDefaultLinearSolver(fem);*/
 		if (m_pls == 0)
 		{
 			feLogError("Unknown solver type selected\n");
@@ -80,13 +84,13 @@ bool FELinearSolver::Init()
 		}
 	}
 
-	// allocate storage for the sparse matrix that will hold the stiffness matrix data
-	// we let the solver allocate the correct type of matrix format
-	MatType mtype = MatType();
+	// allocate storage for the sparse Matrix that will hold the stiffness Matrix data
+	// we let the solver allocate the correct type of Matrix format
+	MatrixType mtype = MatType();
 	SparseMatrix* pS = m_pls->CreateSparseMatrix(mtype);
 	if ((pS == 0) && (m_msymm == REAL_SYMMETRIC))
 	{
-		// oh, oh, something went wrong. It's probably because the user requested a symmetric matrix for a 
+		// oh, oh, something went wrong. It's probably because the user requested a symmetric Matrix for a 
 		// solver that wants a non-symmetric. If so, let's force a non-symmetric format.
 		pS = m_pls->CreateSparseMatrix(REAL_UNSYMMETRIC);
 
@@ -94,30 +98,30 @@ bool FELinearSolver::Init()
 		{
 			// Problem solved! Let's inform the user.
 			m_msymm = REAL_UNSYMMETRIC;
-			feLogWarning("The matrix format was changed to non-symmetric since the selected linear solver does not support a symmetric format. \n");
+			feLogWarning("The Matrix format was changed to non-symmetric since the selected linear solver does not support a symmetric format. \n");
 		}
 	}
 
 	if (pS == 0)
 	{
-		feLogError("The selected linear solver does not support the requested matrix format.\nPlease select a different linear solver.\n");
+		feLogError("The selected linear solver does not support the requested Matrix format.\nPlease select a different linear solver.\n");
 		return false;
 	}
 
-	// clean up the stiffness matrix if we have one
+	// clean up the stiffness Matrix if we have one
 	if (m_pK) delete m_pK; m_pK = 0;
 
-	// Create the stiffness matrix.
-	// Note that this does not construct the stiffness matrix. This
+	// Create the stiffness Matrix.
+	// Note that this does not construct the stiffness Matrix. This
 	// is done later in the StiffnessMatrix routine.
 	m_pK = new FEGlobalMatrix(pS);
 	if (m_pK == 0)
 	{
-		feLogError("Failed allocating stiffness matrix\n\n");
+		feLogError("Failed allocating stiffness Matrix\n\n");
 		return false;
 	}
 
-	// Set the matrix formation flag
+	// Set the Matrix formation flag
 	m_breform = true;
 
 	// get number of equations
@@ -134,7 +138,7 @@ bool FELinearSolver::Init()
 //! Solve an analysis step
 bool FELinearSolver::SolveStep()
 {
-	// Make sure we have a linear solver and a stiffness matrix
+	// Make sure we have a linear solver and a stiffness Matrix
 	if (m_pls == 0) return false;
 	if (m_pK == 0) return false;
 
@@ -147,7 +151,7 @@ bool FELinearSolver::SolveStep()
 	FEModel& fem = *GetFEModel();
 
 	// Set up the prescribed dof std::vector
-	// The stiffness matrix assembler uses this to update the RHS std::vector
+	// The stiffness Matrix assembler uses this to update the RHS std::vector
 	// for prescribed dofs.
 	zero(m_u);
 	int nbc = fem.BoundaryConditions();
@@ -170,7 +174,7 @@ bool FELinearSolver::SolveStep()
 	// increase RHS counter
 	m_nrhs++;
 
-	// build the stiffness matrix
+	// build the stiffness Matrix
 	ReformStiffness();
 
 	// solve the equations
@@ -202,14 +206,14 @@ bool FELinearSolver::SolveStep()
 //-----------------------------------------------------------------------------
 bool FELinearSolver::ReformStiffness()
 {
-	// recalculate the shape of the stiffness matrix if necessary
+	// recalculate the shape of the stiffness Matrix if necessary
 	if (m_breform)
 	{
 		TRACK_TIME(TimerID::Timer_Reform);
 
 		if (!CreateStiffness()) return false;
 		
-		// since it's not likely that the matrix form changes
+		// since it's not likely that the Matrix form changes
 		// in a linear analysis, we don't recalculate the form
 		m_breform = false;
 	}
@@ -217,7 +221,7 @@ bool FELinearSolver::ReformStiffness()
 	// Make sure it is all set to zero
 	m_pK->Zero();
 
-	// calculate the stiffness matrix
+	// calculate the stiffness Matrix
 	// (This is done by the derived class)
 	{
 		TRACK_TIME(TimerID::Timer_Stiffness);
@@ -230,7 +234,7 @@ bool FELinearSolver::ReformStiffness()
 		fem.DoCallback(CB_MATRIX_REFORM);
 	}
 
-	// factorize the stiffness matrix
+	// factorize the stiffness Matrix
 	{
 		TRACK_TIME(TimerID::Timer_LinSolve);
 		m_pls->Factor();
@@ -249,14 +253,14 @@ bool FELinearSolver::CreateStiffness()
 	// clean up the solver
 	if (m_pK->NonZeroes()) m_pls->Destroy();
 
-	// clean up the stiffness matrix
+	// clean up the stiffness Matrix
 	m_pK->Clear();
 
-	// create the stiffness matrix
-	feLog("===== reforming stiffness matrix:\n");
+	// create the stiffness Matrix
+	feLog("===== reforming stiffness Matrix:\n");
 	if (m_pK->Create(GetFEModel(), m_neq, true) == false) 
 	{
-		feLogError("An error occured while building the stiffness matrix\n\n");
+		feLogError("An error occured while building the stiffness Matrix\n\n");
 		return false;
 	}
 	else
@@ -265,7 +269,7 @@ bool FELinearSolver::CreateStiffness()
 		int neq = m_pK->Rows();
 		int nnz = m_pK->NonZeroes();
 		feLog("\tNr of equations ........................... : %d\n", neq);
-		feLog("\tNr of nonzeroes in stiffness matrix ....... : %d\n", nnz);
+		feLog("\tNr of nonzeroes in stiffness Matrix ....... : %d\n", nnz);
 	}
 
 	// Do the preprocessing of the solver
@@ -300,7 +304,7 @@ void FELinearSolver::Serialize(DumpStream& ar)
 
 	if (ar.IsSaving() == false)
 	{
-		// We need to rebuild the stiffness matrix at some point.
+		// We need to rebuild the stiffness Matrix at some point.
 		// Currently this is done during Activation, but we don't
 		// call FEAnalysis::Activate after restart so for now,
 		// I'll just do it here.
@@ -329,7 +333,7 @@ void FELinearSolver::ForceVector(FEGlobalVector& R)
 }
 
 //-----------------------------------------------------------------------------
-//! Evaluate the stiffness matrix
+//! Evaluate the stiffness Matrix
 bool FELinearSolver::StiffnessMatrix(FELinearSystem& K) 
 { 
 	return false; 

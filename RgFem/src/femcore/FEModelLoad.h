@@ -8,7 +8,7 @@ class FELinearSystem;
 
 //-----------------------------------------------------------------------------
 //! This class is the base class for all classes that affect the state of the model
-//! and contribute directly to the residual and the global stiffness matrix. This
+//! and contribute directly to the residual and the global stiffness Matrix. This
 //! includes most boundary loads, body loads, contact, etc.
 class FEM_EXPORT FEModelLoad : public FEStepComponent
 {
@@ -29,7 +29,7 @@ public:
     //! evaluate the contribution to the external load vector
     virtual void LoadVector(FEGlobalVector& R) = 0;
 
-    //! evaluate the contribution to the global stiffness matrix
+    //! evaluate the contribution to the global stiffness Matrix
     virtual void StiffnessMatrix(FELinearSystem& LS) = 0;
 
 protected:

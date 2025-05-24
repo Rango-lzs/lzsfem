@@ -93,7 +93,7 @@ void FECoreDebugger::Print(const char* szformat, ...)
 	if (m_fp == nullptr)
 	{
 		char fileName[256] = { 0 };
-		sprintf(fileName, "febio_%d.%d.%d_debug.log", FE_SDK_MAJOR_VERSION, FE_SDK_SUB_VERSION, FE_SDK_SUBSUB_VERSION);
+		//sprintf(fileName, "febio_%d.%d.%d_debug.log", FE_SDK_MAJOR_VERSION, FE_SDK_SUB_VERSION, FE_SDK_SUBSUB_VERSION);
 		m_fp = fopen(fileName, "wt"); assert(m_fp);
 	}
 
@@ -108,9 +108,9 @@ void FECoreDebugger::Print(const char* szformat, ...)
 	}
 }
 
-template <> void fecore_print_T<matrix>(matrix* pd)
+template <> void fecore_print_T<Matrix>(Matrix* pd)
 {
-	matrix& m = *pd;
+	Matrix& m = *pd;
 	int nr = m.rows();
 	int nc = m.columns();
 	for (int i=0; i<nr; ++i)
@@ -143,9 +143,9 @@ template <> void fecore_print_T<Matrix3ds>(Matrix3ds* pd)
 	}
 }
 
-template <> void fecore_print_T<mat3da>(mat3da* pd)
+template <> void fecore_print_T<Matrix3da>(Matrix3da* pd)
 {
-	mat3da& m = *pd;
+	Matrix3da& m = *pd;
 	for (int i=0; i<3; ++i)
 	{
 		for (int j=0; j<3; ++j) cout << m(i,j) << " ";
@@ -153,9 +153,9 @@ template <> void fecore_print_T<mat3da>(mat3da* pd)
 	}
 }
 
-template <> void fecore_print_T<mat3dd>(mat3dd* pd)
+template <> void fecore_print_T<Matrix3dd>(Matrix3dd* pd)
 {
-	mat3dd& m = *pd;
+	Matrix3dd& m = *pd;
 	for (int i=0; i<3; ++i)
 	{
 		for (int j=0; j<3; ++j) cout << m(i,j) << " ";

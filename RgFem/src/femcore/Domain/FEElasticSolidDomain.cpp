@@ -169,7 +169,7 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 //B*sigma
 void FEElasticSolidDomain::ElementInternalForce(FESolidElement& el, std::vector<double>& fe)
 {
-	// jacobian matrix, inverse jacobian matrix and determinants
+	// jacobian Matrix, inverse jacobian Matrix and determinants
 	double Ji[3][3];
 
 	int nint = el.GaussPointSize();
@@ -262,7 +262,7 @@ void FEElasticSolidDomain::ElementGeometricalStiffness(FESolidElement &el, Matri
 	// weights at gauss points
 	const double *gw = el.GaussWeights();
 
-	// calculate geometrical element stiffness matrix
+	// calculate geometrical element stiffness Matrix
 	int neln = el.NodeSize();
 	int nint = el.GaussPointSize();
 	for (int n = 0; n<nint; ++n)
@@ -290,7 +290,7 @@ void FEElasticSolidDomain::ElementGeometricalStiffness(FESolidElement &el, Matri
 }
 
 //-----------------------------------------------------------------------------
-//! Calculates element material stiffness element matrix
+//! Calculates element material stiffness element Matrix
 
 void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, Matrix &ke)
 {
@@ -304,10 +304,10 @@ void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, Matrix &
 	double Gxi, Gyi, Gzi;
 	double Gxj, Gyj, Gzj;
 
-	// The 'D' matrix
-	double D[6][6] = {0};	// The 'D' matrix
+	// The 'D' Matrix
+	double D[6][6] = {0};	// The 'D' Matrix
 
-	// The 'D*BL' matrix
+	// The 'D*BL' Matrix
 	double DBL[6][3];
 
 	// jacobian
@@ -316,7 +316,7 @@ void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, Matrix &
 	// weights at gauss points
 	const double *gw = el.GaussWeights();
 
-	// calculate element stiffness matrix
+	// calculate element stiffness Matrix
 	for (int n=0; n<nint; ++n)
 	{
 		// calculate jacobian and shape function gradients
@@ -328,7 +328,7 @@ void FEElasticSolidDomain::ElementMaterialStiffness(FESolidElement &el, Matrix &
 		// NOTE: deformation gradient and determinant have already been evaluated in the stress routine
 		FEMaterialPoint& mp = *el.GetMaterialPoint(n);
 
-		// get the 'D' matrix
+		// get the 'D' Matrix
 //		tens4ds C = m_pMat->Tangent(mp);
         tens4dmm C = (m_secant_tangent ? m_pMat->SecantTangent(mp) : m_pMat->SolidTangent(mp));
 		C.extract(D);
@@ -407,10 +407,10 @@ void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& ls)
 			std::vector<int> lm;
 			UnpackLM(elem, lm);
 
-			// element stiffness matrix
+			// element stiffness Matrix
 			FEElementMatrix ke(elem, lm);
 
-			// create the element's stiffness matrix
+			// create the element's stiffness Matrix
 			int ndof = 3 * elem.NodeSize();
 			ke.resize(ndof, ndof);
 			ke.zero();
@@ -423,12 +423,12 @@ void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& ls)
 
 /*			// assign symmetic parts
 			// TODO: Can this be omitted by changing the Assemble routine so that it only
-			// grabs elements from the upper diagonal matrix?
+			// grabs elements from the upper diagonal Matrix?
 			for (int i = 0; i < ndof; ++i)
 				for (int j = i + 1; j < ndof; ++j)
 					ke[j][i] = ke[i][j];
 */
-			// assemble element matrix in global stiffness matrix
+			// assemble element Matrix in global stiffness Matrix
 			ls.Assemble(ke);
 		}
 	}
@@ -492,11 +492,11 @@ void FEElasticSolidDomain::BodyForceStiffness(FELinearSystem& LS, FEBodyForce& b
 }
 
 //-----------------------------------------------------------------------------
-//! This function calculates the element stiffness matrix. It calls the material
+//! This function calculates the element stiffness Matrix. It calls the material
 //! stiffness function, the geometrical stiffness function and, if necessary, the
 //! dilatational stiffness function. Note that these three functions only calculate
-//! the upper diagonal matrix due to the symmetry of the element stiffness matrix
-//! The last section of this function fills the rest of the element stiffness matrix.
+//! the upper diagonal Matrix due to the symmetry of the element stiffness Matrix
+//! The last section of this function fills the rest of the element stiffness Matrix.
 
 void FEElasticSolidDomain::ElementStiffness(const FETimeInfo& tp, int iel, Matrix& ke)
 {
@@ -510,7 +510,7 @@ void FEElasticSolidDomain::ElementStiffness(const FETimeInfo& tp, int iel, Matri
 
 	// assign symmetic parts
 	// TODO: Can this be omitted by changing the Assemble routine so that it only
-	// grabs elements from the upper diagonal matrix?
+	// grabs elements from the upper diagonal Matrix?
 	int ndof = 3*el.NodeSize();
 	int i, j;
 	for (i=0; i<ndof; ++i)
@@ -575,7 +575,7 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
 		for (int j = 0; j<neln; ++j)
 		{
 			FENode& node = m_pMesh->Node(el.m_node[j]);
-			v[j] = node.get_Vector3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1 - m_alphaf);
+			v[j] = node.get_vec3d(m_dofV[0], m_dofV[1], m_dofV[2])*m_alphaf + node.m_vp*(1 - m_alphaf);
 			a[j] = node.m_at*m_alpham + node.m_ap*(1 - m_alpham);
 		}
 	}

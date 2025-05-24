@@ -56,7 +56,9 @@ public:
 	void UnpackLM(FEElement& el, std::vector<int>& lm) override;
 
 	//! get the material
-	FEMaterial* GetMaterial() override { return m_pMat; }
+	FEMaterial* GetMaterial() override {
+		return  nullptr;//m_pMat
+		 }
 
 	//! set the material
 	void SetMaterial(FEMaterial* pmat) override;
@@ -81,20 +83,20 @@ public: // overloads from FEElasticDomain
 	//! Calculates inertial forces for dynamic problems
 	void InertialForces(FEGlobalVector& R, std::vector<double>& F) override { assert(false); }
 
-	//! calculates the global stiffness matrix for this domain
+	//! calculates the global stiffness Matrix for this domain
 	void StiffnessMatrix(FELinearSystem& LS) override;
 
-	//! intertial stiffness matrix
+	//! intertial stiffness Matrix
 	void MassMatrix(FELinearSystem& LS, double scale) override;
 
-	//! body force stiffness matrix \todo implement this
+	//! body force stiffness Matrix \todo implement this
 	void BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf) override { assert(false); }
 
-	//! elemental mass matrix
+	//! elemental mass Matrix
 	void ElementMassMatrix(FETrussElement& el, Matrix& ke);
 
 protected:
-	//! calculates the truss element stiffness matrix
+	//! calculates the truss element stiffness Matrix
 	void ElementStiffness(int iel, Matrix& ke);
 
 	//! Calculates the internal stress vector for solid elements

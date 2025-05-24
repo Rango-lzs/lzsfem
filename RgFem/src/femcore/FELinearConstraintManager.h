@@ -22,7 +22,7 @@ public:
 	// serialize linear constraints
 	void Serialize(DumpStream& ar);
 
-	// build the matrix profile
+	// build the Matrix profile
 	void BuildMatrixProfile(FEGlobalMatrix& G);
 
 	// add the linear constraint
@@ -50,7 +50,7 @@ public:
 	// assemble element residual into global residual
 	void AssembleResidual(std::vector<double>& R, std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe);
 
-	// assemble element matrix into (reduced) global matrix
+	// assemble element Matrix into (reduced) global Matrix
 	void AssembleStiffness(FEGlobalMatrix& K, std::vector<double>& R, std::vector<double>& ui, const std::vector<int>& en, const std::vector<int>& lmi, const std::vector<int>& lmj, const Matrix& ke);
 
 	// called before the first reformation for each time step

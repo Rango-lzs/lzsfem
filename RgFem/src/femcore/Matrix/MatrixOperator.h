@@ -29,7 +29,7 @@ SOFTWARE.*/
 #pragma once
 #include "FEM_EXPORT.h"
 
-// abstract base class for matrix operators, i.e. a class that can calculate a matrix-vector product
+// abstract base class for Matrix operators, i.e. a class that can calculate a Matrix-vector product
 class FEM_EXPORT MatrixOperator
 {
 public:

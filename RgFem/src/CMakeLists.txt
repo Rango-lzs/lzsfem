@@ -122,8 +122,8 @@ set(FEMCORE_HEADERS
     femcore/FEParameterList.h
     femcore/FEPlotDataStore.h
     femcore/FEPointFunction.h
-    femcore/FEProperty.h
-    femcore/FEPropertyT.h
+    #femcore/FEProperty.h
+    #femcore/FEPropertyT.h
     femcore/FERgModel.h
     femcore/FEScalarValuator.h
     femcore/FESolidAnalysis.h
@@ -134,7 +134,7 @@ set(FEMCORE_HEADERS
     femcore/FESurfacePair.h
     femcore/FESurfacePairConstraint.h
     femcore/FESurfacePairConstraintNL.h
-    femcore/FESurfaceToSurfaceMap.h
+    #femcore/FESurfaceToSurfaceMap.h
     femcore/FETimeInfo.h
     femcore/FEValuator.h
     femcore/FEVec3dValuator.h
@@ -235,6 +235,7 @@ set(FEMCORE_HEADERS
     femcore/MItem.h
     femcore/MathObject.h
     femcore/MatrixTools.h
+    femcore/BSpline.h
 )
 
 
@@ -311,7 +312,7 @@ set(FEMCORE_SOURCES
     femcore/FEParameterList.cpp
     femcore/FEPlotDataStore.cpp
     femcore/FEPointFunction.cpp
-    femcore/FEProperty.cpp
+    #femcore/FEProperty.cpp
     femcore/FERgModel.cpp
     femcore/FEScalarValuator.cpp
     femcore/FESolidAnalysis.cpp
@@ -323,7 +324,7 @@ set(FEMCORE_SOURCES
     femcore/FESurfacePair.cpp
     femcore/FESurfacePairConstraint.cpp
     femcore/FESurfacePairConstraintNL.cpp
-    femcore/FESurfaceToSurfaceMap.cpp
+    #femcore/FESurfaceToSurfaceMap.cpp
     femcore/FETimeInfo.cpp
     femcore/FEVec3dValuator.cpp
     femcore/FSPath.cpp
@@ -410,6 +411,7 @@ set(FEMCORE_SOURCES
     femcore/FEBodyForce.cpp
     femcore/FEConstValueVec3.cpp
     femcore/MathObject.cpp
+    femcore/BSpline.cpp
 
 )
 
@@ -434,7 +436,7 @@ set(DATA_STRUCTURE_HEADERS
     datastructure/Vector2d.h
     datastructure/Vector3d.h
     datastructure/mathalg.h
-    datastructure/matrix.h
+    datastructure/Matrix.h
     datastructure/quatd.h
     datastructure/tens3d.h
     datastructure/tens3d.hpp
@@ -454,7 +456,7 @@ set(DATA_STRUCTURE_HEADERS
 set(DATA_STRUCTURE_SOURCES
     datastructure/Matrix3d.cpp
     datastructure/mathalg.cpp
-    datastructure/matrix.cpp
+    datastructure/Matrix.cpp
     datastructure/quatd.cpp
     datastructure/tens3d.cpp
     datastructure/tens4d.cpp
@@ -521,10 +523,10 @@ source_group("elements" FILES ${ELEMENT_HEADERS} ${ELEMENT_SOURCES})
 set(INPUT_HEADERS
     input/XML/XMLReader.h
     input/XML/XMLWriter.h
-    input/abaqus/AbaqusExport.h
-    input/abaqus/AbaqusImport.h
-    input/abaqus/AbaqusModel.h
-    input/abaqus/AbaqusParser.h
+    #input/abaqus/AbaqusExport.h
+    #input/abaqus/AbaqusImport.h
+    #input/abaqus/AbaqusModel.h
+    #input/abaqus/AbaqusParser.h
     input/febio/FEBModel.h
     input/febio/FEBioBoundarySection.h
     input/febio/FEBioBoundarySection3.h
@@ -534,7 +536,7 @@ set(INPUT_HEADERS
     input/febio/FEBioControlSection.h
     input/febio/FEBioControlSection4.h
     input/febio/FEBioDiscreteSection.h
-    input/febio/FEBioGeometrySection.h
+    #input/febio/FEBioGeometrySection.h
     input/febio/FEBioGlobalsSection.h
     input/febio/FEBioImport.h
     input/febio/FEBioIncludeSection.h
@@ -575,9 +577,9 @@ set(INPUT_HEADERS
 set(INPUT_SOURCES
     input/XML/XMLReader.cpp
     input/XML/XMLWriter.cpp
-    input/abaqus/AbaqusExport.cpp
-    input/abaqus/AbaqusImport.cpp
-    input/abaqus/AbaqusModel.cpp
+    #input/abaqus/AbaqusExport.cpp
+    #input/abaqus/AbaqusImport.cpp
+    #input/abaqus/AbaqusModel.cpp
     input/febio/FEBModel.cpp
     input/febio/FEBioBoundarySection.cpp
     input/febio/FEBioBoundarySection3.cpp
@@ -587,7 +589,7 @@ set(INPUT_SOURCES
     input/febio/FEBioControlSection.cpp
     input/febio/FEBioControlSection4.cpp
     input/febio/FEBioDiscreteSection.cpp
-    input/febio/FEBioGeometrySection.cpp
+    #input/febio/FEBioGeometrySection.cpp
     input/febio/FEBioGlobalsSection.cpp
     input/febio/FEBioImport.cpp
     input/febio/FEBioIncludeSection.cpp
@@ -633,9 +635,9 @@ set(LOGGER_HEADERS
     logger/LogFileStream.h
     logger/LogStream.h
     logger/Logfile.h
-    logger/error.h
+    #logger/error.h
     logger/log.h
-    logger/logger.h
+    #logger/logger.h
     logger/verbose.h
 )
 
@@ -643,9 +645,9 @@ set(LOGGER_SOURCES
     logger/LogFileStream.cpp
     logger/LogStream.cpp
     logger/Logfile.cpp
-    logger/error.cpp
+    #logger/error.cpp
     logger/log.cpp
-    logger/logger.cpp
+    #logger/logger.cpp
 )
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}

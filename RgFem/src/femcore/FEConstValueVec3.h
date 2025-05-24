@@ -73,7 +73,7 @@ public:
 
 private:
 	std::string			m_expr;
-	FEMathExpression	m_math[3];
+	//FEMathExpression	m_math[3];
 
 	DECLARE_PARAM_LIST();
 };

@@ -15,6 +15,7 @@
 #include "FENodeDataMap.h"
 #include "basicio/DumpStream.h"
 #include <algorithm>
+#include "Domain/FEDomain.h"
 
 //-----------------------------------------------------------------------------
 FEDataMap* CreateDataMap(int mapType)

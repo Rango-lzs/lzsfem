@@ -25,7 +25,7 @@ FEElement2D& FEElement2D::operator=(const FEElement2D& el)
      m_nID = el.m_nID;
      m_lid = el.m_lid;
      m_node = el.m_node;
-     m_lnode = el.m_lnode;
+     m_loc_node = el.m_loc_node;
      m_lm = el.m_lm;
      m_val = el.m_val;*/
 

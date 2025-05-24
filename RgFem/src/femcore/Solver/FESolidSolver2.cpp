@@ -1,22 +1,21 @@
 #include "FESolidSolver2.h"
 
-#include "FE3FieldElasticShellDomain.h"
-#include "FE3FieldElasticSolidDomain.h"
-#include "FEBioMech.h"
-#include "FEBodyForce.h"
-#include "FEContactInterface.h"
-#include "FEElasticANSShellDomain.h"
-#include "FEElasticEASShellDomain.h"
-#include "FELinearTrussDomain.h"
+#include "femcore/Domain/FE3FieldElasticShellDomain.h"
+#include "femcore/Domain/FE3FieldElasticSolidDomain.h"
+#include "femcore/FEBodyForce.h"
+//#include "femcore/FEContactInterface.h"
+#include "femcore/Domain/FEElasticANSShellDomain.h"
+#include "femcore/Domain/FEElasticEASShellDomain.h"
+#include "femcore/Domain/FELinearTrussDomain.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
-#include "FEResidualVector.h"
-#include "FERigidConnector.h"
-#include "FESlidingElasticInterface.h"
-#include "FESolidAnalysis.h"
-#include "FESolidLinearSystem.h"
-#include "FESSIShellDomain.h"
-#include "FETrussMaterial.h"
-#include "FEUncoupledMaterial.h"
+#include "femcore/FEResidualVector.h"
+//#include "femcore/FERigidConnector.h"
+//#include "femcore/FESlidingElasticInterface.h"
+#include "femcore/FESolidAnalysis.h"
+#include "femcore/FESolidLinearSystem.h"
+#include "femcore/Domain/FESSIShellDomain.h"
+//#include "materials/FETrussMaterial.h"
+//#include "FEUncoupledMaterial.h"
 #include "logger/log.h"
 
 #include <femcore/DOFS.h>
@@ -36,6 +35,8 @@
 #include "../Domain/FEElasticDomain.h"
 #include "femcore/FESolidAnalysis.h"
 #include "femcore/FEResidualVector.h"
+#include "femcore/FENLConstraint.h"
+#include "femcore/FESurfacePairConstraint.h"
 
 //-----------------------------------------------------------------------------
 // define the parameter list
@@ -98,13 +99,13 @@ FESolidSolver2::FESolidSolver2(FEModel* pfem)
     // TODO: Can this be done in Init, since there is no error checking
     if (pfem)
     {
-        m_dofU.AddVariable(FEBioMech::GetVariableName(FEBioMech::DISPLACEMENT));
+       /* m_dofU.AddVariable(FEBioMech::GetVariableName(FEBioMech::DISPLACEMENT));
         m_dofSQ.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_ROTATION));
         m_dofRQ.AddVariable(FEBioMech::GetVariableName(FEBioMech::RIGID_ROTATION));
         m_dofV.AddVariable(FEBioMech::GetVariableName(FEBioMech::VELOCTIY));
         m_dofSU.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_DISPLACEMENT));
         m_dofSV.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_VELOCITY));
-        m_dofSA.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_ACCELERATION));
+        m_dofSA.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_ACCELERATION));*/
     }
 }
 
@@ -132,13 +133,13 @@ void FESolidSolver2::SolverWarnings()
         for (int i = 0; i < fem.NonlinearConstraints(); ++i)
         {
             FENLConstraint* plc = fem.NonlinearConstraint(i);
-            FERigidConnector* prc = dynamic_cast<FERigidConnector*>(plc);
+            /*FERigidConnector* prc = dynamic_cast<FERigidConnector*>(plc);
             if (prc)
             {
-                feLogWarning("Rigid connectors require non-symmetric stiffness matrix.\nSet symmetric_stiffness flag "
+                feLogWarning("Rigid connectors require non-symmetric stiffness Matrix.\nSet symmetric_stiffness flag "
                              "to 0 in Control section.");
                 break;
-            }
+            }*/
         }
 
         // Generate warning if sliding-elastic contact is used with symmetric stiffness
@@ -147,14 +148,14 @@ void FESolidSolver2::SolverWarnings()
             // loop over all contact interfaces
             for (int i = 0; i < fem.SurfacePairConstraints(); ++i)
             {
-                FEContactInterface* pci = dynamic_cast<FEContactInterface*>(fem.SurfacePairConstraint(i));
+                /*FEContactInterface* pci = dynamic_cast<FEContactInterface*>(fem.SurfacePairConstraint(i));
                 FESlidingElasticInterface* pbw = dynamic_cast<FESlidingElasticInterface*>(pci);
                 if (pbw)
                 {
                     feLogWarning("The sliding-elastic contact algorithm runs better with a non-symmetric stiffness "
-                                 "matrix.\nYou may set symmetric_stiffness flag to 0 in Control section.");
+                                 "Matrix.\nYou may set symmetric_stiffness flag to 0 in Control section.");
                     break;
-                }
+                }*/
             }
         }
     }
@@ -317,45 +318,45 @@ bool FESolidSolver2::InitEquations()
 
 
 //-----------------------------------------------------------------------------
-bool FESolidSolver2::InitEquations2()
-{
-    // First call the base class.
-    // This will initialize all equation numbers, except the rigid body equation numbers
-    if (FENewtonSolver::InitEquations2() == false)
-        return false;
-
-    // store the number of equations we currently have
-    m_nreq = m_neq;
-
-    // Next, we assign equation numbers to the rigid body degrees of freedom
-    int neq = m_rigidSolver.InitEquations(m_neq);
-    if (neq == -1)
-        return false;
-    else
-        m_neq = neq;
-
-    // Next, we add any Lagrange Multipliers
-    FEModel& fem = *GetFEModel();
-    for (int i = 0; i < fem.NonlinearConstraints(); ++i)
-    {
-        FENLConstraint* lmc = fem.NonlinearConstraint(i);
-        if (lmc->IsActive())
-        {
-            m_neq += lmc->InitEquations(m_neq);
-        }
-    }
-    for (int i = 0; i < fem.SurfacePairConstraints(); ++i)
-    {
-        FESurfacePairConstraint* spc = fem.SurfacePairConstraint(i);
-        if (spc->IsActive())
-        {
-            m_neq += spc->InitEquations(m_neq);
-        }
-    }
-
-    // All initialization is done
-    return true;
-}
+//bool FESolidSolver2::InitEquations()
+//{
+//    // First call the base class.
+//    // This will initialize all equation numbers, except the rigid body equation numbers
+//    if (FENewtonSolver::InitEquations() == false)
+//        return false;
+//
+//    // store the number of equations we currently have
+//    m_nreq = m_neq;
+//
+//    // Next, we assign equation numbers to the rigid body degrees of freedom
+//    int neq = m_rigidSolver.InitEquations(m_neq);
+//    if (neq == -1)
+//        return false;
+//    else
+//        m_neq = neq;
+//
+//    // Next, we add any Lagrange Multipliers
+//    FEModel& fem = *GetFEModel();
+//    for (int i = 0; i < fem.NonlinearConstraints(); ++i)
+//    {
+//        FENLConstraint* lmc = fem.NonlinearConstraint(i);
+//        if (lmc->IsActive())
+//        {
+//            m_neq += lmc->InitEquations(m_neq);
+//        }
+//    }
+//    for (int i = 0; i < fem.SurfacePairConstraints(); ++i)
+//    {
+//        FESurfacePairConstraint* spc = fem.SurfacePairConstraint(i);
+//        if (spc->IsActive())
+//        {
+//            m_neq += spc->InitEquations(m_neq);
+//        }
+//    }
+//
+//    // All initialization is done
+//    return true;
+//}
 
 //-----------------------------------------------------------------------------
 //! Update the kinematics of the model, such as nodal positions, velocities,
@@ -883,7 +884,7 @@ bool FESolidSolver2::Quasin()
         feLog(" Nonlinear solution status: time= %lg\n", curTime.currentTime);
         feLog("\tstiffness updates             = %d\n", m_qnstrategy->m_nups);
         feLog("\tright hand side evaluations   = %d\n", m_nrhs);
-        feLog("\tstiffness matrix reformations = %d\n", m_nref);
+        feLog("\tstiffness Matrix reformations = %d\n", m_nref);
         if (m_lineSearch->m_LStol > 0)
             feLog("\tstep from line search         = %lf\n", s);
         feLog("\tconvergence norms :     INITIAL         CURRENT         REQUIRED\n");
@@ -915,13 +916,13 @@ bool FESolidSolver2::Quasin()
             if (s < m_lineSearch->m_LSmin)
             {
                 // check for zero linestep size
-                feLogWarning("Zero linestep size. Stiffness matrix will now be reformed");
+                feLogWarning("Zero linestep size. Stiffness Matrix will now be reformed");
                 QNForceReform(true);
             }
             else if ((normE1 > normEm) && m_bdivreform)
             {
                 // check for diverging
-                feLogWarning("Problem is diverging. Stiffness matrix will now be reformed");
+                feLogWarning("Problem is diverging. Stiffness Matrix will now be reformed");
                 normEm = normE1;
                 normEi = normE1;
                 normRi = normR1;
@@ -1114,7 +1115,7 @@ void FESolidSolver2::DoArcLength()
 }
 
 //-----------------------------------------------------------------------------
-//! Calculates global stiffness matrix.
+//! Calculates global stiffness Matrix.
 
 bool FESolidSolver2::StiffnessMatrix()
 {
@@ -1128,7 +1129,7 @@ bool FESolidSolver2::StiffnessMatrix()
     // setup the linear system
     FESolidLinearSystem ls(this, &m_rigidSolver, *m_pK, m_Fd, m_ui, (m_msymm == REAL_SYMMETRIC), m_alpha, m_nreq);
 
-    // calculate the stiffness matrix for each domain
+    // calculate the stiffness Matrix for each domain
     for (int i = 0; i < mesh.Domains(); ++i)
     {
         if (mesh.Domain(i).IsActive())
@@ -1138,7 +1139,7 @@ bool FESolidSolver2::StiffnessMatrix()
         }
     }
 
-    // calculate the body force stiffness matrix for each non-rigid domain
+    // calculate the body force stiffness Matrix for each non-rigid domain
     for (int j = 0; j < fem.ModelLoads(); ++j)
     {
         FEModelLoad* pml = fem.ModelLoad(j);
@@ -1148,7 +1149,7 @@ bool FESolidSolver2::StiffnessMatrix()
 
     // TODO: add body force stiffness for rigid bodies
 
-    // Add mass matrix for dynamic problems
+    // Add mass Matrix for dynamic problems
     FEAnalysis* pstep = fem.GetCurrentStep();
     if (pstep->m_nanalysis == FESolidAnalysis::DYNAMIC)
     {
@@ -1172,7 +1173,7 @@ bool FESolidSolver2::StiffnessMatrix()
 
     // calculate stiffness matrices for surface loads
     // for arclength method we need to apply the scale factor to all the
-    // external forces stiffness matrix.
+    // external forces stiffness Matrix.
     if (m_arcLength > 0)
         ls.StiffnessAssemblyScaleFactor(m_al_lam);
     /*	int nsl = fem.SurfaceLoads();
@@ -1212,7 +1213,7 @@ void FESolidSolver2::NonLinearConstraintStiffness(FELinearSystem& LS, const FETi
 }
 
 //-----------------------------------------------------------------------------
-//! This function calculates the contact stiffness matrix
+//! This function calculates the contact stiffness Matrix
 
 void FESolidSolver2::ContactStiffness(FELinearSystem& LS)
 {
@@ -1220,9 +1221,9 @@ void FESolidSolver2::ContactStiffness(FELinearSystem& LS)
     const FETimeInfo& tp = fem.GetTime();
     for (int i = 0; i < fem.SurfacePairConstraints(); ++i)
     {
-        FEContactInterface* pci = dynamic_cast<FEContactInterface*>(fem.SurfacePairConstraint(i));
+        /*FEContactInterface* pci = dynamic_cast<FEContactInterface*>(fem.SurfacePairConstraint(i));
         if (pci->IsActive())
-            pci->StiffnessMatrix(LS, tp);
+            pci->StiffnessMatrix(LS, tp);*/
     }
 }
 
@@ -1234,9 +1235,9 @@ void FESolidSolver2::ContactForces(FEGlobalVector& R)
     const FETimeInfo& tp = fem.GetTime();
     for (int i = 0; i < fem.SurfacePairConstraints(); ++i)
     {
-        FEContactInterface* pci = dynamic_cast<FEContactInterface*>(fem.SurfacePairConstraint(i));
+        /*FEContactInterface* pci = dynamic_cast<FEContactInterface*>(fem.SurfacePairConstraint(i));
         if (pci->IsActive())
-            pci->LoadVector(R, tp);
+            pci->LoadVector(R, tp);*/
     }
 }
 

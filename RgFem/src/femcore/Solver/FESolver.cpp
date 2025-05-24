@@ -98,7 +98,7 @@ int FESolver::MatrixSymmetryFlag() const
 }
 
 //-----------------------------------------------------------------------------
-//! get matrix type
+//! get Matrix type
 MatrixType FESolver::MatType() const
 {
     return static_cast<MatrixType>(m_msymm);
@@ -199,7 +199,7 @@ int FESolver::GetActiveDofMap(std::vector<int>& activeDofMap)
 }
 
 //-----------------------------------------------------------------------------
-//! build the matrix profile
+//! build the Matrix profile
 void FESolver::BuildMatrixProfile(FEGlobalMatrix& G, bool breset)
 {
     FEModel& fem = *GetFEModel();
@@ -207,7 +207,7 @@ void FESolver::BuildMatrixProfile(FEGlobalMatrix& G, bool breset)
     DOFS& fedofs = fem.GetDOFS();
     int MAX_NDOFS = fedofs.GetTotalDOFS();
 
-    // when reset is true we build the entire matrix profile
+    // when reset is true we build the entire Matrix profile
     // (otherwise we only build the "dynamic" profile)
     if (breset)
     {

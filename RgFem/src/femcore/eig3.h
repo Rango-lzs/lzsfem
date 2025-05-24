@@ -24,58 +24,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
+
+
 #pragma once
-#include <FECore/LinearSolver.h>
-
-// This class implements a linear solver that can switch between linear solvers
-class StrategySolver : public LinearSolver
-{
-	// the persist strategy determines when to switch back from solver2 to solver1
-	// after solver1 fails. 
-	// DONT_PERSIST (0) = switch back immediately.
-	// PERSIST          = switch back on the next Destroy()
-	// PERSIST_FOREVER  = switch to solver2 permanently
-	enum PersistStrategy
-	{
-		DONT_PERSIST,
-		PERSIST,
-		PERSIST_FOREVER
-	};
-
-public:
-	StrategySolver(FEModel* fem);
-
-	~StrategySolver();
-
-public:
-	//! Preprocess 
-	bool PreProcess() override;
-
-	//! Factor Matrix
-	bool Factor() override;
-
-	//! Backsolve the linear system
-	bool BackSolve(double* x, double* b) override;
-
-	//! Clean up
-	void Destroy() override;
-
-	//! Create a sparse Matrix
-	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
-
-	//! set the sparse Matrix
-	bool SetSparseMatrix(SparseMatrix* A) override;
-
-private:
-	int				m_strategy;
-	double			m_ctol;
-
-	bool			m_print_cn;	// print the condition number
-	LinearSolver*	m_solver1;	// the primary solver
-	LinearSolver*	m_solver2;	// the seoncdary solver
-	LinearSolver*	m_activeSolver;
-
-	SparseMatrix*	m_pA;
-
-	DECLARE_FECORE_CLASS();
-};
+// Symmetric matrix A => eigenvectors in columns of V, corresponding eigenvalues in d.
+void eigen_decomposition(double A[3][3], double V[3][3], double d[3]);

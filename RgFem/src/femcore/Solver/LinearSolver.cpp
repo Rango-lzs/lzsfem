@@ -1,7 +1,7 @@
 #include "LinearSolver.h"
 
 //-----------------------------------------------------------------------------
-LinearSolver::LinearSolver(FEModel* fem) : FECoreBase(fem)
+LinearSolver::LinearSolver(FEModel* fem) : FEObjectBase(fem)
 {
 	ResetStats();
 }

@@ -74,9 +74,9 @@ public:
 		void DoArcLength();
 	//}
 
-	//{ --- Stiffness matrix routines ---
+	//{ --- Stiffness Matrix routines ---
 
-		//! calculates the global stiffness matrix
+		//! calculates the global stiffness Matrix
 		virtual bool StiffnessMatrix() override;
 
 		//! contact stiffness

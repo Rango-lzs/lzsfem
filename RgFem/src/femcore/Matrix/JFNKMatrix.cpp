@@ -37,7 +37,8 @@ JFNKMatrix::JFNKMatrix(FENewtonSolver* pns, SparseMatrix* K) : m_pns(pns), m_K(K
 	}
 
 	// Add element dofs
-	for (int i = 0; i < mesh.Domains(); ++i)
+	//Rango TODO
+	/*for (int i = 0; i < mesh.Domains(); ++i)
 	{
 		FEDomain& dom = mesh.Domain(i);
 		int NEL = dom.Elements();
@@ -46,13 +47,13 @@ JFNKMatrix::JFNKMatrix(FENewtonSolver* pns, SparseMatrix* K) : m_pns(pns), m_K(K
 			FEElement& elj = dom.ElementRef(j);
 			if (elj.m_lm >= 0) m_freeDofs.push_back(elj.m_lm);
 		}
-	}
+	}*/
 
 	// make sure it all matches
 	assert(m_freeDofs.size() + m_prescribedDofs.size() == m_pns->m_neq);
 }
 
-//! set matrix policy
+//! set Matrix policy
 void JFNKMatrix::SetPolicy(MultiplyPolicy p)
 {
 	m_policy = p;
@@ -64,7 +65,7 @@ void JFNKMatrix::SetEpsilon(double eps)
 	m_eps = eps;
 }
 
-//! Create a sparse matrix from a sparse-matrix profile
+//! Create a sparse Matrix from a sparse-Matrix profile
 void JFNKMatrix::Create(SparseMatrixProfile& MP) 
 { 
 	m_K->Create(MP); 
@@ -112,7 +113,7 @@ bool JFNKMatrix::mult_vector(double* x, double* r)
 	double eps = m_eps;
 	if (m_bauto_eps)
 	{
-		vector<double> u;
+		std::vector<double> u;
 		m_pns->GetSolutionVector(u);
 
 		assert(neq == Rows());

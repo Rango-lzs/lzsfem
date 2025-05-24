@@ -1,4 +1,4 @@
-#include "DenseMatrix.h"
+#include "femcore/Matrix/DenseMatrix.h"
 using namespace std;
 
 //-----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ void DenseMatrix::Create(SparseMatrixProfile& mp)
 }
 
 //-----------------------------------------------------------------------------
-// Creat a dense matrix of size N x N
+// Creat a dense Matrix of size N x N
 void DenseMatrix::Create(int rows, int cols)
 {
 	if ((rows != m_nrow) || (cols != m_ncol))
@@ -57,10 +57,10 @@ void DenseMatrix::Create(int rows, int cols)
 }
 
 //-----------------------------------------------------------------------------
-//! This function assembles the local stiffness matrix
-//! into the global stiffness matrix which is in dense format
+//! This function assembles the local stiffness Matrix
+//! into the global stiffness Matrix which is in dense format
 //!
-void DenseMatrix::Assemble(const matrix& ke, const vector<int>& lm)
+void DenseMatrix::Assemble(const Matrix& ke, const vector<int>& lm)
 {
 	int I, J;
 	const int N = ke.rows();
@@ -79,7 +79,7 @@ void DenseMatrix::Assemble(const matrix& ke, const vector<int>& lm)
 }
 
 //-----------------------------------------------------------------------------
-void DenseMatrix::Assemble(const matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
+void DenseMatrix::Assemble(const Matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
 {
 	int I, J;
 

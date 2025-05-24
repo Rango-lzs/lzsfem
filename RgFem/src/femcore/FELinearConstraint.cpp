@@ -84,7 +84,7 @@ void FELinearConstraint::CopyFrom(FEBoundaryCondition* pbc)
 	}
 	m_off = LC.m_off;
 	int n = (int)LC.m_childDof.size();
-	vector<FELinearConstraintDOF*>::const_iterator it = LC.m_childDof.begin();
+	std::vector<FELinearConstraintDOF*>::const_iterator it = LC.m_childDof.begin();
 	for (int i = 0; i < n; ++i, ++it)
 	{
 		FELinearConstraintDOF* d = new FELinearConstraintDOF(GetFEModel());
@@ -236,7 +236,7 @@ void FELinearConstraint::Serialize(DumpStream& ar)
 		m_parentDof->Serialize(ar);
 		int n = (int)m_childDof.size();
 		ar << n;
-		vector<FELinearConstraintDOF*>::iterator it = m_childDof.begin();
+		std::vector<FELinearConstraintDOF*>::iterator it = m_childDof.begin();
 		for (int i = 0; i < n; ++i, ++it) (*it)->Serialize(ar);
 	}
 	else

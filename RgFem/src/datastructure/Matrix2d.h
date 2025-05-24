@@ -38,7 +38,7 @@ public: // arithmetic operations
 			d[1][0]*m.d[0][1]+d[1][1]*m.d[1][1]); 
 	}
 
-public:	// matrix operations
+public:	// Matrix operations
 	Matrix2d inverse() const
 	{
 		double Di = 1/(d[0][0]*d[1][1] - d[0][1]*d[1][0]);
@@ -65,7 +65,7 @@ protected:
 	double	d[2][2];
 };
 
-// matrix-vector operations
+// Matrix-vector operations
 inline Vector2d operator * (Matrix2d& m, Vector2d& a) { return Vector2d(m[0][0]*a[0]+m[0][1]*a[1], m[1][0]*a[0]+m[1][1]*a[1]); }
 
 // dyadic product

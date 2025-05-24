@@ -234,7 +234,7 @@ Matrix3d FEMat3dCylindricalMap::operator () (const FEMaterialPoint& mp)
 	Vector3d e3 = (e1 ^ d); e3.unit();
 	Vector3d e2 = e3 ^ e1;
 
-	// setup rotation matrix
+	// setup rotation Matrix
 	Matrix3d Q;
 	Q[0][0] = e1.x; Q[0][1] = e2.x; Q[0][2] = e3.x;
 	Q[1][0] = e1.y; Q[1][1] = e2.y; Q[1][2] = e3.y;
@@ -329,7 +329,7 @@ Matrix3d FEMat3dPolarMap::operator () (const FEMaterialPoint& mp)
 	Vector3d e3 = (e1 ^ d); e3.unit();
 	Vector3d e2 = e3 ^ e1;
 
-	// setup rotation matrix
+	// setup rotation Matrix
 	Matrix3d Q;
 	Q[0][0] = e1.x; Q[0][1] = e2.x; Q[0][2] = e3.x;
 	Q[1][0] = e1.y; Q[1][1] = e2.y; Q[1][2] = e3.y;

@@ -52,7 +52,7 @@ private:
 //	};
 //
 //public:
-//	bool Init(const std::string& expr, FECoreBase* pc = nullptr);
+//	bool Init(const std::string& expr, FEObjectBase* pc = nullptr);
 //
 //	void operator = (const FEMathExpression& me);
 //
@@ -76,14 +76,14 @@ private:
 //
 //	void setMathString(const std::string& s);
 //
-//	bool create(FECoreBase* pc = 0);
+//	bool create(FEObjectBase* pc = 0);
 //
 //	void Serialize(DumpStream& ar) override;
 //
 //private:
 //	std::string			m_expr;
 //	FEMathExpression	m_math;
-//	FECoreBase*			m_parent;
+//	FEObjectBase*			m_parent;
 //
 //	DECLARE_FECORE_CLASS();
 //};

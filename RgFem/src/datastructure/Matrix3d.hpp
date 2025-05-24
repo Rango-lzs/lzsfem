@@ -118,7 +118,7 @@ inline Matrix3dd& Matrix3dd::operator *= (const Matrix3dd& m) { d[0] *= m.d[0]; 
 inline Matrix3dd& Matrix3dd::operator *= (double a) { d[0] *= a; d[1] *= a; d[2] *= a; return (*this); }
 inline Matrix3dd& Matrix3dd::operator /= (double a) { a = 1./a; d[0] *= a; d[1] *= a; d[2] *= a; return (*this); }
 
-// matrix-vector multiplication
+// Matrix-vector multiplication
 inline Vector3d Matrix3dd::operator * (const Vector3d& r) const { return Vector3d(r.x*d[0], r.y*d[1], r.z*d[2]); }
 
 // trace
@@ -128,7 +128,7 @@ inline double Matrix3dd::tr() const { return d[0]+d[1]+d[2]; }
 inline double Matrix3dd::det() const { return d[0]*d[1]*d[2]; }
 
 //-----------------------------------------------------------------------------
-// class Matrix3ds : this class describes a symmetric 3D matrix of doubles
+// class Matrix3ds : this class describes a symmetric 3D Matrix of doubles
 //-----------------------------------------------------------------------------
 
 // constructor
@@ -375,7 +375,7 @@ inline Matrix3ds& Matrix3ds::operator -= (const Matrix3dd& d)
 	return (*this);
 }
 
-// matrix-vector multiplication
+// Matrix-vector multiplication
 inline Vector3d Matrix3ds::operator* (const Vector3d& r) const
 {
 	return Vector3d(
@@ -497,7 +497,7 @@ inline double Matrix3ds::effective_norm() const
 }
 
 //-----------------------------------------------------------------------------
-// class Matrix3da : anti-symmetric 3D matrix of doubles
+// class Matrix3da : anti-symmetric 3D Matrix of doubles
 //-----------------------------------------------------------------------------
 
 // constructors
@@ -506,7 +506,7 @@ inline Matrix3da::Matrix3da(double xy, double yz, double xz)
 	d[0] = xy; d[1] = yz; d[2] = xz;
 }
 
-// calculates the antisymmetric matrix from a vector such that for any b,
+// calculates the antisymmetric Matrix from a vector such that for any b,
 // A.b = a x b where A = Matrix3da(a).
 inline Matrix3da::Matrix3da(const Vector3d& a)
 {
@@ -545,7 +545,7 @@ inline Matrix3da Matrix3da::transpose() const
 	return Matrix3da(-d[0], -d[1], -d[2]);
 }
 
-// matrix multiplication
+// Matrix multiplication
 inline Matrix3d Matrix3da::operator * (const Matrix3d& m)
 {
 	return Matrix3d(
@@ -582,7 +582,7 @@ inline Vector3d Matrix3da::operator * (const Vector3d& a)
 }
 
 //-----------------------------------------------------------------------------
-// class Matrix3d : general 3D matrix of doubles
+// class Matrix3d : general 3D Matrix of doubles
 //-----------------------------------------------------------------------------
 
 // constructors
@@ -912,7 +912,7 @@ inline Matrix3d& Matrix3d::operator *= (const Matrix3ds& m)
 }
 
 
-// matrix-vector multiplication
+// Matrix-vector multiplication
 inline Vector3d Matrix3d::operator * (const Vector3d& r) const
 {
 	return Vector3d(d[0][0]*r.x+d[0][1]*r.y+d[0][2]*r.z,
@@ -939,7 +939,7 @@ inline void Matrix3d::unit()
 	d[1][2] = d[2][1] = 0;
 }
 
-// zero the matrix
+// zero the Matrix
 inline void Matrix3d::zero()
 {
 	d[0][0] = d[0][1] = d[0][2] = 0;
@@ -947,19 +947,19 @@ inline void Matrix3d::zero()
 	d[2][0] = d[2][1] = d[2][2] = 0;
 }
 
-// return a column vector from the matrix
+// return a column vector from the Matrix
 inline Vector3d Matrix3d::col(int j) const
 {
 	return Vector3d(d[0][j], d[1][j], d[2][j]);
 }
 
-// return a row vector from the matrix
+// return a row vector from the Matrix
 inline Vector3d Matrix3d::row(int j) const
 {
 	return Vector3d(d[j][0], d[j][1], d[j][2]);
 }
 
-// set the column of the matrix
+// set the column of the Matrix
 inline void Matrix3d::setCol(int i, const Vector3d& a)
 {
 	d[0][i] = a.x;
@@ -967,7 +967,7 @@ inline void Matrix3d::setCol(int i, const Vector3d& a)
 	d[2][i] = a.z;
 }
 
-// set the row of the matrix
+// set the row of the Matrix
 inline void Matrix3d::setRow(int i, const Vector3d& a)
 {
 	d[i][0] = a.x;
@@ -975,7 +975,7 @@ inline void Matrix3d::setRow(int i, const Vector3d& a)
 	d[i][2] = a.z;
 }
 
-// return the symmetric matrix 0.5*(A+A^T)
+// return the symmetric Matrix 0.5*(A+A^T)
 inline Matrix3ds Matrix3d::sym() const
 {
 	return Matrix3ds(
@@ -987,7 +987,7 @@ inline Matrix3ds Matrix3d::sym() const
 		0.5*(d[0][2]+d[2][0]));
 }
 
-// return the anti-symmetric matrix 0.5*(A - A^T)
+// return the anti-symmetric Matrix 0.5*(A - A^T)
 inline Matrix3da Matrix3d::skew() const
 {
 	return Matrix3da(
@@ -996,7 +996,7 @@ inline Matrix3da Matrix3d::skew() const
 		0.5*(d[0][2] - d[2][0]));
 }
 
-// return the inverse matrix
+// return the inverse Matrix
 inline Matrix3d Matrix3d::inverse() const
 {
 	double D = det();
@@ -1014,7 +1014,7 @@ inline Matrix3d Matrix3d::inverse() const
 				 D*(d[0][0]*d[1][1] - d[0][1]*d[1][0]));
 }
 
-// return the inverse matrix
+// return the inverse Matrix
 inline bool Matrix3d::invert()
 {
     double D = det();
@@ -1044,7 +1044,7 @@ inline bool Matrix3d::invert()
     return true;
 }
 
-// return the transpose matrix
+// return the transpose Matrix
 inline Matrix3d Matrix3d::transpose() const
 {
 	return Matrix3d(d[0][0], d[1][0], d[2][0],
@@ -1052,7 +1052,7 @@ inline Matrix3d Matrix3d::transpose() const
 				 d[0][2], d[1][2], d[2][2]);
 }
 
-// return the transposed inverse matrix
+// return the transposed inverse Matrix
 inline Matrix3d Matrix3d::transinv() const
 {
 	double D = det();
@@ -1070,7 +1070,7 @@ inline Matrix3d Matrix3d::transinv() const
 				 D*(d[0][0]*d[1][1] - d[0][1]*d[1][0])); // zz
 }
 
-// calculate the skew symmetric matrix from a vector
+// calculate the skew symmetric Matrix from a vector
 inline void Matrix3d::skew(const Vector3d& v)
 {
 	d[0][0] =    0; d[0][1] = -v.z; d[0][2] =  v.y;
@@ -1095,7 +1095,7 @@ inline double Matrix3d::dotdot(const Matrix3d& T) const
 }
 
 
-// return the inverse matrix
+// return the inverse Matrix
 inline bool Matrix3f::invert()
 {
 	float D = d[0][0] * (d[1][1] * d[2][2] - d[1][2] * d[2][1])

@@ -109,7 +109,7 @@ bool FEMeshPartition::Init()
 			if (tag[m] == -1) tag[m] = nn++;
 
 			// set the local node number
-			el.m_lnode[j] = tag[m];
+			el.m_loc_node[j] = tag[m];
 		}
 	}
 

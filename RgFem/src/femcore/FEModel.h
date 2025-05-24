@@ -62,7 +62,7 @@ public:
 	bool InitBCs();
 	bool InitMesh();
 
-	//! Build the matrix profile for this model
+	//! Build the Matrix profile for this model
 	/**
 	 * @~English
 	 * @brief brief-description-about-BuildMatrixProfile .

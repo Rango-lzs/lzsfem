@@ -119,7 +119,7 @@ public: LinearSolverFailed() : FEException("Linear solver failed to find solutio
 };
 
 class FEM_EXPORT FactorizationError : public FEException{
-public: FactorizationError() : FEException("Fatal error in factorization of stiffness matrix. Aborting run.") {}
+public: FactorizationError() : FEException("Fatal error in factorization of stiffness Matrix. Aborting run.") {}
 };
 
 class FEM_EXPORT NegativeJacobianDetected : public FEException {

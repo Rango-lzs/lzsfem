@@ -1,39 +1,10 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
 #pragma once
 #include "SparseMatrix.h"
-#include "FEM_EXPORT.h"
 
 //=============================================================================
-//! Implements a sparse matrix using the skyline storage
+//! Implements a sparse Matrix using the skyline storage
 
-//! This class implements a symmetric sparse matrix where only the values
+//! This class implements a symmetric sparse Matrix where only the values
 //! below the skyline are stored.
 
 class FEM_EXPORT SkylineMatrix : public SparseMatrix
@@ -50,10 +21,10 @@ public: // from SparseMatrix
 
 	void Create(SparseMatrixProfile& mp) override;
 
-	void Assemble(const matrix& ke, const std::vector<int>& lm) override;
+	void Assemble(const Matrix& ke, const std::vector<int>& lm) override;
 
-	//! assemble a matrix into the sparse matrix
-	void Assemble(const matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override;
+	//! assemble a Matrix into the sparse Matrix
+	void Assemble(const Matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override;
 
 	void add(int i, int j, double v) override;
 
@@ -73,6 +44,6 @@ protected:
 	void Create(double* pv, int* pp, int N);
 
 protected:
-	double*	m_pd;			//!< matrix values
+	double*	m_pd;			//!< Matrix values
 	int*	m_ppointers;	//!< arrays of indices to diagonal elements
 };

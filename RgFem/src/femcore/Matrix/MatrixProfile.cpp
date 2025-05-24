@@ -127,7 +127,7 @@ void SparseMatrixProfile::ColumnProfile::insertRow(int row)
 //-----------------------------------------------------------------------------
 //! MatrixProfile constructor. Takes the nr of equations as input argument.
 //! If n is larger than zero a default profile is constructor for a diagonal
-//! matrix.
+//! Matrix.
 SparseMatrixProfile::SparseMatrixProfile(int nrow, int ncol)
 {
 	m_nrow = nrow;
@@ -177,12 +177,12 @@ SparseMatrixProfile& SparseMatrixProfile::operator =(const SparseMatrixProfile& 
 }
 
 //-----------------------------------------------------------------------------
-//! Create the profile of a diagonal matrix
+//! Create the profile of a diagonal Matrix
 void SparseMatrixProfile::CreateDiagonal()
 {
 	int n = min(m_nrow, m_ncol);
 
-	// initialize the profile to a diagonal matrix
+	// initialize the profile to a diagonal Matrix
 	for (int i = 0; i<n; ++i)
 	{
 		ColumnProfile& a = m_prof[i];
@@ -198,12 +198,12 @@ void SparseMatrixProfile::Clear()
 
 //-----------------------------------------------------------------------------
 //! Updates the profile. The LM array contains a list of elements that contribute
-//! to the sparse matrix. Each "element" defines a set of degrees of freedom that
+//! to the sparse Matrix. Each "element" defines a set of degrees of freedom that
 //! are somehow connected. Each pair of dofs that are connected contributes to
-//! the global stiffness matrix and therefor also to the matrix profile.
+//! the global stiffness Matrix and therefor also to the Matrix profile.
 void SparseMatrixProfile::UpdateProfile(vector< vector<int> >& LM, int M)
 {
-	// get the dimensions of the matrix
+	// get the dimensions of the Matrix
 	int nr = m_nrow;
 	int nc = m_ncol;
 
@@ -291,7 +291,7 @@ void SparseMatrixProfile::Insert(int i, int j)
 }
 
 //-----------------------------------------------------------------------------
-// extract the matrix profile of a block
+// extract the Matrix profile of a block
 SparseMatrixProfile SparseMatrixProfile::GetBlockProfile(int nrow0, int ncol0, int nrow1, int ncol1) const
 {
 	int nrows = nrow1 - nrow0 + 1;

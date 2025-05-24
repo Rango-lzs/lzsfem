@@ -35,7 +35,7 @@ public:
 	virtual void CopyFrom(FESurfacePairConstraint* pci) {}
 
 public:
-	// Build the matrix profile
+	// Build the Matrix profile
 	virtual void BuildMatrixProfile(FEGlobalMatrix& M) = 0;
 
 	// reset the state data

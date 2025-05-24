@@ -45,7 +45,7 @@ public:
 
 protected:
 	CompactMatrix* m_pA;
-	int				m_mtype; // matrix type
+	int				m_mtype; // Matrix type
 
 	// Matrix data
 	int m_n, m_nnz, m_nrhs;

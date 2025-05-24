@@ -57,7 +57,7 @@ typedef std::function<void(FESurfaceMaterialPoint& mp, const FESurfaceDofShape& 
 
 typedef std::function<void(FESurfaceMaterialPoint& mp, const FESurfaceDofShape& node_a, const FESurfaceDofShape& node_b,
                            Matrix& val)>
-    FESurfaceMatrixrixIntegrand;
+    FESurfaceMatrixIntegrand;
 
 //-----------------------------------------------------------------------------
 //! Surface mesh
@@ -317,7 +317,7 @@ public:
     virtual void LoadStiffness(FELinearSystem& LS,            // The linear system does the assembling
                                const FEDofList& dofList_a,    // The degree of freedom list of node a
                                const FEDofList& dofList_b,    // The degree of freedom list of node b
-                               FESurfaceMatrixrixIntegrand f  // the Matrixrix function to evaluate
+                               FESurfaceMatrixIntegrand f  // the Matrixrix function to evaluate
     );
 
 public:

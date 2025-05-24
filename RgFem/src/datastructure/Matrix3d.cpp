@@ -10,14 +10,14 @@ void Matrix3ds::eigen(double l[3], Vector3d r[3]) const
 	double sm, tresh, g, h, t, c, tau, s, th;
 	int i, j, k;
 
-	// copy the matrix components since we will be overwriting them
+	// copy the Matrix components since we will be overwriting them
 	double a[3][3] = {
 			{m[XX], m[XY], m[XZ]},
 			{m[XY], m[YY], m[YZ]}, 
 			{m[XZ], m[YZ], m[ZZ]}
 	};
 
-	// the v matrix contains the eigen vectors
+	// the v Matrix contains the eigen vectors
 	// intialize to identity
 	double v[3][3] = {
 		{ 1, 0, 0 },
@@ -145,7 +145,7 @@ void Matrix3ds::exact_eigen(double l[3]) const
 
 //-----------------------------------------------------------------------------
 // Calculate the eigenvalues and eigenvectors of A using the method of
-// Connelly Barnes ( http://barnesc.blogspot.com/2007/02/eigenvectors-of-3x3-symmetric-matrix.html )
+// Connelly Barnes ( http://barnesc.blogspot.com/2007/02/eigenvectors-of-3x3-symmetric-Matrix.html )
 void Matrix3ds::eigen2(double l[3], Vector3d r[3]) const
 {
     double A[3][3] = {xx(), xy(), xz(), xy(), yy(), yz(), xz(), yz(), zz()};

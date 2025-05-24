@@ -614,7 +614,7 @@ bool NonlinearRegression(const std::vector<std::pair<double, double> >& data, st
 	if (f == 0) return false;
 
 	std::vector<double> R(m, 0.0), da(m, 0.0);
-	matrix K(m, m); K.zero();
+	Matrix K(m, m); K.zero();
 
 	const double absTol = 1e-15;
 	const double relTol = 1e-3;

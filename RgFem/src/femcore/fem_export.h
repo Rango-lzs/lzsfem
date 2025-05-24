@@ -2,6 +2,8 @@
 #ifndef _FEM_EXPORT_H
 #define _FEM_EXPORT_H
 
+#define FEM_MODULE
+
 #ifdef FEM_STATIC_DEFINE
 #  define FEM_EXPORT
 #  define FEM_NO_EXPORT

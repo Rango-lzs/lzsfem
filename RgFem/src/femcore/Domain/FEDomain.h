@@ -43,7 +43,7 @@ public:
 	//! Unpack the LM data for an element of this domain
 	virtual void UnpackLM(FEElement& el, std::vector<int>& lm);
 
-	//! build the matrix profile
+	//! build the Matrix profile
 	virtual void BuildMatrixProfile(FEGlobalMatrix& M);
 
 	//! Activate the domain

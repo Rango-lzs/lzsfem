@@ -8,14 +8,14 @@ LUSolver::LUSolver(FEModel* fem) : LinearSolver(fem), m_pA(nullptr)
 }
 
 //-----------------------------------------------------------------------------
-//! Create a sparse matrix
+//! Create a sparse Matrix
 SparseMatrix* LUSolver::CreateSparseMatrix(MatrixType ntype)
 { 
-	return (m_pA = new FECore::DenseMatrix()); 
+	return (m_pA = new DenseMatrix()); 
 }
 
 //-----------------------------------------------------------------------------
-void LUSolver::SetMatrix(FECore::DenseMatrix* pA) 
+void LUSolver::SetMatrix(DenseMatrix* pA) 
 { 
 	m_pA = pA; 
 }
@@ -30,23 +30,23 @@ bool LUSolver::PreProcess()
 //-----------------------------------------------------------------------------
 bool LUSolver::Factor()
 {
-	FECore::DenseMatrix& a = *m_pA;
+	DenseMatrix& a = *m_pA;
 
 	const double TINY = 1.0e-20;
 	int i, imax, j, k;
 	double big, dum, sum, temp;
 
 	int n = a.Rows();
-	// create index vector
+	// create index std::vector
 	indx.resize(n);
 
-	vector<double> vv(n);
+	std::vector<double> vv(n);
 	for (i=0; i<n; ++i)
 	{
 		big = 0;
 		for (j=0; j<n; ++j)
 			if ((temp=fabs(a(i,j))) > big) big = temp;
-		if (big == 0) return false; // singular matrix
+		if (big == 0) return false; // singular Matrix
 		vv[i] = 1.0 / big;
 	}
 
@@ -98,7 +98,7 @@ bool LUSolver::Factor()
 //-----------------------------------------------------------------------------
 bool LUSolver::BackSolve(double* x, double* b)
 {
-	FECore::DenseMatrix& a = *m_pA;
+	 DenseMatrix& a = *m_pA;
 
 	int n = a.Rows();
 	for (int i=0; i<n; i++) x[i] = b[i];

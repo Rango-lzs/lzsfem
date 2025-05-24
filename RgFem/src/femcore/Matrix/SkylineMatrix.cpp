@@ -58,23 +58,23 @@ void SkylineMatrix::Create(SparseMatrixProfile& mp)
 		pointers[i] = pointers[i-1] + n;
 	}
 
-	// allocate stiffness matrix
+	// allocate stiffness Matrix
 	double* values = new double[pointers[neq]];
 	if (values==0)
 	{
 		double falloc = (double) sizeof(double) * (double) (pointers[neq]);
 	}
 
-	// create the matrix
+	// create the Matrix
 	Create(values, pointers, neq);
 }
 
 
 //-----------------------------------------------------------------------------
-//! This function assembles the local stiffness matrix
-//! into the global stiffness matrix which is in skyline format
+//! This function assembles the local stiffness Matrix
+//! into the global stiffness Matrix which is in skyline format
 //!
-void SkylineMatrix::Assemble(const matrix& ke, const vector<int>& LM)
+void SkylineMatrix::Assemble(const Matrix& ke, const vector<int>& LM)
 {
 	int i, j, I, J;
 
@@ -93,7 +93,7 @@ void SkylineMatrix::Assemble(const matrix& ke, const vector<int>& LM)
 			{
 				J = LM[j];
 
-				// only add values to upper-diagonal part of stiffness matrix
+				// only add values to upper-diagonal part of stiffness Matrix
 				if (J>=I)
 				{
 					#pragma omp atomic
@@ -106,7 +106,7 @@ void SkylineMatrix::Assemble(const matrix& ke, const vector<int>& LM)
 
 
 //-----------------------------------------------------------------------------
-void SkylineMatrix::Assemble(const matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
+void SkylineMatrix::Assemble(const Matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
 {
 	int i, j, I, J;
 
@@ -126,7 +126,7 @@ void SkylineMatrix::Assemble(const matrix& ke, const vector<int>& LMi, const vec
 			{
 				J = LMj[j];
 
-				// only add values to upper-diagonal part of stiffness matrix
+				// only add values to upper-diagonal part of stiffness Matrix
 				if (J>=I)
 				{
 					#pragma omp atomic

@@ -24,14 +24,14 @@ Matrix3ds FEIsotropicElastic::Stress(FEMaterialPoint& mp)
 	double lam = Ji*(v*E/((1+v)*(1-2*v)));
 	double mu  = Ji*(0.5*E/(1+v));
 
-	// calculate left Cauchy-Green tensor (ie. b-matrix)
+	// calculate left Cauchy-Green tensor (ie. b-Matrix)
 	Matrix3ds b = pt.LeftCauchyGreen();
 
 	// calculate trace of Green-Lagrance strain tensor
 	double trE = 0.5*(b.tr()-3);
 
-	// calculate square of b-matrix
-	// (we commented out the matrix components we do not need)
+	// calculate square of b-Matrix
+	// (we commented out the Matrix components we do not need)
 	Matrix3ds b2 = b.sqr();
 
 	// calculate stress
@@ -56,7 +56,7 @@ tens4ds FEIsotropicElastic::Tangent(FEMaterialPoint& mp)
 	double lam = Ji*(v*E/((1+v)*(1-2*v)));
 	double mu  = Ji*(0.5*E/(1+v));
 
-	// left cauchy-green matrix (i.e. the 'b' matrix)
+	// left cauchy-green Matrix (i.e. the 'b' Matrix)
 	Matrix3ds b = pt.LeftCauchyGreen();
 
 	return dyad1s(b)*lam + dyad4s(b)*(2.0*mu);

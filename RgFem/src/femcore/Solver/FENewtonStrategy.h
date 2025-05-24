@@ -32,13 +32,13 @@ public:
 	//! Presolve update
 	virtual void PreSolveUpdate() {}
 
-	//! perform a Newton udpate (returning false will force a matrix reformations)
+	//! perform a Newton udpate (returning false will force a Matrix reformations)
 	virtual bool Update(double s, std::vector<double>& ui, std::vector<double>& R0, std::vector<double>& R1) = 0;
 
 	//! solve the equations
 	virtual void SolveEquations(std::vector<double>& x, std::vector<double>& b) = 0;
 
-	//! reform the stiffness matrix
+	//! reform the stiffness Matrix
 	virtual bool ReformStiffness();
 
 	//! calculate the residual

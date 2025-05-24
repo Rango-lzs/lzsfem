@@ -182,10 +182,10 @@ double FESurfaceMap::value(const FEMaterialPoint& pt)
 					// get shape functions
 					double* H = pe->H(pt.m_index);
 
-					int ne = pe->Nodes();
+					int ne = pe->NodeSize();
 					for (int i = 0; i < ne; ++i)
 					{
-						double vi = value<double>(pe->m_lnode[i], 0);
+						double vi = value<double>(pe->m_loc_node[i], 0);
 						v += vi * H[i];
 					}
 				}
@@ -193,7 +193,7 @@ double FESurfaceMap::value(const FEMaterialPoint& pt)
 				{
 					// element node
 					int n = pt.m_index - 0x10000;
-					v = value<double>(pe->m_lnode[n], 0);
+					v = value<double>(pe->m_loc_node[n], 0);
 				}
 				return v;
 			}
@@ -215,14 +215,14 @@ double FESurfaceMap::value(const FEMaterialPoint& pt)
 		//	assert(pe->GetMeshPartition() == m_dom);
 
 			// get its local ID
-			int lid = pe->GetLocalID();
+			int lid = pe->getLocalId();
 
 			// get shape functions
 			if (pt.m_index < 0x10000)
 			{
 				double* H = pe->H(pt.m_index);
 
-				int ne = pe->Nodes();
+				int ne = pe->NodeSize();
 				for (int i = 0; i < ne; ++i)
 				{
 					double vi = value<double>(lid, i);
@@ -254,13 +254,13 @@ Vector3d FESurfaceMap::valueVec3d(const FEMaterialPoint& pt)
 	//	assert(pe->GetMeshPartition() == m_dom);
 
 	// get its local ID
-	int lid = pe->GetLocalID();
+	int lid = pe->getLocalId();
 
 	// get shape functions
 	double* H = pe->H(pt.m_index);
 
 	Vector3d v(0,0,0);
-	int ne = pe->Nodes();
+	int ne = pe->NodeSize();
 	for (int i = 0; i < ne; ++i)
 	{
 		Vector3d vi = value<Vector3d>(lid, i);
@@ -282,13 +282,13 @@ Matrix3d FESurfaceMap::valueMat3d(const FEMaterialPoint& pt)
 	//	assert(pe->GetMeshPartition() == m_dom);
 
 	// get its local ID
-	int lid = pe->GetLocalID();
+	int lid = pe->getLocalId();
 
 	// get shape functions
 	double* H = pe->H(pt.m_index);
 
 	Matrix3d v; v.zero();
-	int ne = pe->Nodes();
+	int ne = pe->NodeSize();
 	for (int i = 0; i < ne; ++i)
 	{
 		Matrix3d vi = value<Matrix3d>(lid, i);
@@ -311,13 +311,13 @@ Matrix3ds FESurfaceMap::valueMat3ds(const FEMaterialPoint& pt)
 	//	assert(pe->GetMeshPartition() == m_dom);
 
 	// get its local ID
-	int lid = pe->GetLocalID();
+	int lid = pe->getLocalId();
 
 	// get shape functions
 	double* H = pe->H(pt.m_index);
 
 	Matrix3ds v; v.zero();
-	int ne = pe->Nodes();
+	int ne = pe->NodeSize();
 	for (int i = 0; i < ne; ++i)
 	{
 		Matrix3ds vi = value<Matrix3ds>(lid, i);

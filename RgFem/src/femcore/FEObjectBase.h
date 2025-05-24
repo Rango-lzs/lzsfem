@@ -35,6 +35,8 @@ public:
     void SetName(const std::string& name);
     const std::string& GetName() const;
 
+    virtual std::string GetTypeStr();
+
     void SetID(int id);
     int GetID() const;
 

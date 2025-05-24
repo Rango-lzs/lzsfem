@@ -49,10 +49,10 @@ namespace Rango
 	// run an FEBioModel
 	FEM_EXPORT int RunModel(FeModel& fem, CmdOptions* ops);
 
-	// write a matrix to file
+	// write a Matrix to file
 	FEM_EXPORT bool write_hb(CompactMatrix& K, const char* szfile, int mode = 0);
 
-	// print matrix sparsity pattern to svn file
+	// print Matrix sparsity pattern to svn file
 	FEM_EXPORT void print_svg(CompactMatrix* m, std::ostream &out, int i0 = 0, int j0 = 0, int i1 = -1, int j1 = -1);
 
 	// write a vector to file

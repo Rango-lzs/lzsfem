@@ -113,6 +113,13 @@ public:
     //! Finds an element from a given ID
     FEElement* FindElementFromID(int nid);
 
+    FENodeElemList& NodeElementList()
+    {
+        if (m_NEL.Size() != m_Node.size())
+            m_NEL.Create(*this);
+        return m_NEL;
+    }
+
     //! See if all elements are of a particular shape
     bool IsType(ElementShape eshape);
 

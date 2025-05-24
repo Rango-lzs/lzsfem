@@ -4,12 +4,12 @@
 #include "fecore_enum.h"
 
 //-----------------------------------------------------------------------------
-class FECoreBase;
+class FEObjectBase;
 class DumpStream;
 
 //-----------------------------------------------------------------------------
 //! A property of a class reflects a member variable of the class that is a 
-//! pointer to a FECoreBase derived class. 
+//! pointer to a FEObjectBase derived class. 
 class FEM_EXPORT FEProperty
 {
 public:
@@ -80,22 +80,22 @@ public: // these functions have to be implemented by derived classes
 	virtual bool IsArray() const = 0;
 
 	//! see if the pc parameter is of the correct type for this property
-	virtual bool IsType(FECoreBase* pc) const = 0;
+	virtual bool IsType(FEObjectBase* pc) const = 0;
 
 	//! set the property
-	virtual void SetProperty(FECoreBase* pc) = 0;
+	virtual void SetProperty(FEObjectBase* pc) = 0;
 
 	//! return the size of the property
 	virtual int size() const = 0;
 
 	//! return a specific property by index
-	virtual FECoreBase* get(int i) = 0;
+	virtual FEObjectBase* get(int i) = 0;
 
 	//! return a specific property by name
-	virtual FECoreBase* get(const char* szname) = 0;
+	virtual FEObjectBase* get(const char* szname) = 0;
 
 	//! return a specific property by ID
-	virtual FECoreBase* getFromID(int nid) = 0;
+	virtual FEObjectBase* getFromID(int nid) = 0;
 
 	//! serialize property data
 	virtual void Serialize(DumpStream& ar) = 0;
@@ -107,10 +107,10 @@ public: // these functions have to be implemented by derived classes
 	virtual bool Validate() = 0;
 
 	//! Get the parent of this property
-	FECoreBase* GetParent() { return m_pParent; }
+	FEObjectBase* GetParent() { return m_pParent; }
 
 	//! Set the parent of this property
-	virtual void SetParent(FECoreBase* parent) { m_pParent = parent; }
+	virtual void SetParent(FEObjectBase* parent) { m_pParent = parent; }
 
 	//! Get the class ID
 	SUPER_CLASS_ID GetSuperClassID() const { return m_superClassID; }
@@ -120,14 +120,14 @@ public:
 
 protected:
 	//! some helper functions for reading, writing properties
-	void Write(DumpStream& ar, FECoreBase* pc);
-	FECoreBase* Read(DumpStream& ar);
+	void Write(DumpStream& ar, FEObjectBase* pc);
+	FEObjectBase* Read(DumpStream& ar);
 
 protected:
 	// This class should not be created directly
 	FEProperty(SUPER_CLASS_ID classID);
 
 protected:
-	FECoreBase*		m_pParent;		//!< pointer to the parent class (i.e. the class that defines this property)
+	FEObjectBase*		m_pParent;		//!< pointer to the parent class (i.e. the class that defines this property)
 	SUPER_CLASS_ID	m_superClassID;	//!< The super class ID
 };

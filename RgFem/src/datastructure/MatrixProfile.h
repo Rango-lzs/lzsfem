@@ -30,12 +30,12 @@ SOFTWARE.*/
 #include "vector.h"
 
 //-----------------------------------------------------------------------------
-//! This class stores the profile of a sparse matrix. A profile is defined by the
-//! column and row indices of the non-zero elements of a matrix. 
+//! This class stores the profile of a sparse Matrix. A profile is defined by the
+//! column and row indices of the non-zero elements of a Matrix. 
 //! These elements are stored in a condensed format.
 //! This means that for each column, an array of pairs is stored where each pair
 //! identifies the start and end row index of the nonzero elements in that column.
-//! The matrix profile is used to build the sparse matrix structure 
+//! The Matrix profile is used to build the sparse Matrix structure 
 //! in an efficient way.
 
 class FEM_EXPORT SparseMatrixProfile
@@ -102,10 +102,10 @@ public:
 	//! assignment operator
 	SparseMatrixProfile& operator = (const SparseMatrixProfile& mp);
 
-	//! Create the profile of a diagonal matrix
+	//! Create the profile of a diagonal Matrix
 	void CreateDiagonal();
 
-	//! clears the matrix profile
+	//! clears the Matrix profile
 	void Clear();
 
 	//! updates the profile for an array of elements
@@ -127,6 +127,6 @@ public:
 	SparseMatrixProfile GetBlockProfile(int nrow0, int ncol0, int nrow1, int ncol1) const;
 
 private:
-	int	m_nrow, m_ncol;				//!< dimensions of matrix
+	int	m_nrow, m_ncol;				//!< dimensions of Matrix
 	std::vector<ColumnProfile>	m_prof;	//!< the actual profile in condensed format
 };

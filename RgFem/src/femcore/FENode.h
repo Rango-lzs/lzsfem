@@ -137,11 +137,11 @@ public:
     {
         m_val_t[n] -= v;
     }
-    Vector3d get_Vector3d(int i, int j, int k) const
+    Vector3d get_vec3d(int i, int j, int k) const
     {
         return Vector3d(m_val_t[i], m_val_t[j], m_val_t[k]);
     }
-    void set_Vector3d(int i, int j, int k, const Vector3d& v)
+    void set_vec3d(int i, int j, int k, const Vector3d& v)
     {
         m_val_t[i] = v.x;
         m_val_t[j] = v.y;
@@ -154,7 +154,7 @@ public:
     {
         return m_val_p[n];
     }
-    Vector3d get_Vector3d_prev(int i, int j, int k) const
+    Vector3d get_vec3d_prev(int i, int j, int k) const
     {
         return Vector3d(m_val_p[i], m_val_p[j], m_val_p[k]);
     }

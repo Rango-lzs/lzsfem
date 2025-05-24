@@ -149,14 +149,14 @@ void CRSSparseMatrix::Create(SparseMatrixProfile& mp)
 	// create the values array
 	double* pvalues = new double[nsize];
 
-	// create the stiffness matrix
+	// create the stiffness Matrix
 	CompactMatrix::alloc(nr, nc, nsize, pvalues, pindices, pointers);
 
-	// calculate and print matrix bandwidth
+	// calculate and print Matrix bandwidth
 //	feLog("\tMatrix bandwidth .......................... : %d\n", bandWidth());
 }
 
-void CRSSparseMatrix::Assemble(const matrix& ke, const vector<int>& LM)
+void CRSSparseMatrix::Assemble(const Matrix& ke, const vector<int>& LM)
 {
 	// get the number of degrees of freedom
 	const int N = ke.rows();
@@ -204,7 +204,7 @@ void CRSSparseMatrix::Assemble(const matrix& ke, const vector<int>& LM)
 }
 
 //-----------------------------------------------------------------------------
-void CRSSparseMatrix::Assemble(const matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
+void CRSSparseMatrix::Assemble(const Matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
 {
 	int I, J;
 
@@ -321,7 +321,7 @@ double CRSSparseMatrix::diag(int i)
 //-----------------------------------------------------------------------------
 bool CRSSparseMatrix::mult_vector(double* x, double* r)
 {
-	// get the matrix size
+	// get the Matrix size
 	const int N = Rows();
 
 	// loop over all rows
@@ -344,7 +344,7 @@ bool CRSSparseMatrix::mult_vector(double* x, double* r)
 //! calculate the abs row sum 
 double CRSSparseMatrix::infNorm() const
 {
-	// get the matrix size
+	// get the Matrix size
 	const int N = Rows();
 
 	double norm = 0.0;
@@ -366,7 +366,7 @@ double CRSSparseMatrix::infNorm() const
 //! calculate the one norm
 double CRSSparseMatrix::oneNorm() const
 {
-	// get the matrix size
+	// get the Matrix size
 	const int NR = Rows();
 	const int NC = Columns();
 
@@ -392,7 +392,7 @@ double CRSSparseMatrix::oneNorm() const
 	return rmax;
 }
 
-//! make the matrix a unit matrix (retains sparsity pattern)
+//! make the Matrix a unit Matrix (retains sparsity pattern)
 void CRSSparseMatrix::makeUnit()
 {
 	// loop over all rows
@@ -433,10 +433,10 @@ void CRSSparseMatrix::scale(const vector<double>& L, const vector<double>& R)
 	}
 }
 
-//! extract a block of this matrix
+//! extract a block of this Matrix
 void CRSSparseMatrix::get(int i0, int j0, int nr, int nc, CSRMatrix& M)
 {
-	// create the matrix
+	// create the Matrix
 	M.create(nr, nc, m_offset);
 
 	vector<double>& val = M.values();
@@ -565,12 +565,12 @@ void CCSSparseMatrix::Create(SparseMatrixProfile& mp)
 	// create the values array
 	double* pvalues = new double[nsize];
 
-	// create the stiffness matrix
+	// create the stiffness Matrix
 	CompactMatrix::alloc(nr, nc, nsize, pvalues, pindices, pointers);
 }
 
 //-----------------------------------------------------------------------------
-void CCSSparseMatrix::Assemble(const matrix& ke, const vector<int>& LM)
+void CCSSparseMatrix::Assemble(const Matrix& ke, const vector<int>& LM)
 {
 	// get the number of degrees of freedom
 	const int N = ke.rows();
@@ -614,7 +614,7 @@ void CCSSparseMatrix::Assemble(const matrix& ke, const vector<int>& LM)
 }
 
 //-----------------------------------------------------------------------------
-void CCSSparseMatrix::Assemble(const matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
+void CCSSparseMatrix::Assemble(const Matrix& ke, const vector<int>& LMi, const vector<int>& LMj)
 {
 	int I, J;
 
@@ -730,7 +730,7 @@ double CCSSparseMatrix::diag(int i)
 //-----------------------------------------------------------------------------
 bool CCSSparseMatrix::mult_vector(double* x, double* r)
 {
-	// get the matrix size
+	// get the Matrix size
 	const int N = Rows();
 	const int M = Columns();
 
@@ -753,7 +753,7 @@ bool CCSSparseMatrix::mult_vector(double* x, double* r)
 //! calculate the inf norm
 double CCSSparseMatrix::infNorm() const
 {
-	// get the matrix size
+	// get the Matrix size
 	const int NR = Rows();
 	const int NC = Columns();
 
@@ -789,7 +789,7 @@ double CCSSparseMatrix::infNorm() const
 //! calculate the one norm
 double CCSSparseMatrix::oneNorm() const
 {
-	// get the matrix size
+	// get the Matrix size
 	const int NR = Rows();
 	const int NC = Columns();
 
@@ -819,7 +819,7 @@ double CCSSparseMatrix::oneNorm() const
 //-----------------------------------------------------------------------------
 void CCSSparseMatrix::scale(const vector<double>& L, const vector<double>& R)
 {
-	// get the matrix size
+	// get the Matrix size
 	const int N = Columns();
 
 	// loop over all columns
@@ -837,7 +837,7 @@ void CCSSparseMatrix::scale(const vector<double>& L, const vector<double>& R)
 }
 
 //-----------------------------------------------------------------------------
-//! Create a copy of the matrix (does not copy values)
+//! Create a copy of the Matrix (does not copy values)
 CRSSparseMatrix* CRSSparseMatrix::Copy(int offset)
 {
 	CRSSparseMatrix* A = new CRSSparseMatrix(offset);
@@ -868,7 +868,7 @@ CRSSparseMatrix* CRSSparseMatrix::Copy(int offset)
 }
 
 //-----------------------------------------------------------------------------
-//! Copy the values from another matrix
+//! Copy the values from another Matrix
 void CRSSparseMatrix::CopyValues(CompactMatrix* A)
 {
 	assert(NonZeroes() == A->NonZeroes());

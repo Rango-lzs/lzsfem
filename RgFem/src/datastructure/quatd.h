@@ -257,7 +257,7 @@ public:
 		r[2] = w*qz + z*qw + x*qy - y*qx;
 	}
 
-	//! Convert a quaternion to a rotation matrix
+	//! Convert a quaternion to a rotation Matrix
 	Matrix3d RotationMatrix() const
 	{
 		return Matrix3d(
@@ -296,13 +296,13 @@ inline quatd operator * (const double a, const quatd& q)
 }
 
 // TODO: What Euler convention do these functions assume?
-// convert euler-angles to a rotation matrix
+// convert euler-angles to a rotation Matrix
 // l[0] = psi   (x-rotation)
 // l[1] = theta (y-rotation)
 // l[2] = phi   (z-rotation)
 FEM_EXPORT Matrix3d euler2rot(double l[3]);
 
-// convert a rotation matrix to euler angles
+// convert a rotation Matrix to euler angles
 // l[0] = psi   (x-rotation)
 // l[1] = theta (y-rotation)
 // l[2] = phi   (z-rotation)

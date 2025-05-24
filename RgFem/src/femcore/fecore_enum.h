@@ -136,7 +136,7 @@ enum FEDataType {
 
 
 //-----------------------------------------------------------------------------
-//! Different matrix types. This is used when requesting a sparse matrix format
+//! Different Matrix types. This is used when requesting a sparse Matrix format
 //! from a linear solver. 
 //! \sa LinearSolver::CreateSparseMatrix.
 enum MatrixType {

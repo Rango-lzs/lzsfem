@@ -57,7 +57,7 @@ public:
 protected:
 
 	CompactMatrix*	m_pA;
-	int				m_mtype; // matrix type
+	int				m_mtype; // Matrix type
 
 	// Pardiso control parameters
 	int m_iparm[64];

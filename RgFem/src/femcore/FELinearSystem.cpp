@@ -3,7 +3,7 @@
 #include "FEModel.h"
 
 //-----------------------------------------------------------------------------
-FELinearSystem::FELinearSystem(FESolver* solver, FEGlobalMatrix& K, vector<double>& F, vector<double>& u, bool bsymm) : m_K(K), m_F(F), m_u(u), m_solver(solver)
+FELinearSystem::FELinearSystem(FESolver* solver, FEGlobalMatrix& K, std::vector<double>& F, std::vector<double>& u, bool bsymm) : m_K(K), m_F(F), m_u(u), m_solver(solver)
 {
 	m_bsymm = bsymm;
 }
@@ -29,7 +29,7 @@ FESolver* FELinearSystem::GetSolver()
 }
 
 //-----------------------------------------------------------------------------
-//! assemble global stiffness matrix
+//! assemble global stiffness Matrix
 void FELinearSystem::Assemble(const FEElementMatrix& ke)
 {
 	if ((ke.rows() == 0) || (ke.columns() == 0)) return;
@@ -43,8 +43,8 @@ void FELinearSystem::Assemble(const FEElementMatrix& ke)
 	int neq = m_K.Rows();
 
 	// loop over columns
-	const vector<int>& lmi = ke.RowIndices();
-	const vector<int>& lmj = ke.ColumnsIndices();
+	const std::vector<int>& lmi = ke.RowIndices();
+	const std::vector<int>& lmj = ke.ColumnsIndices();
 	for (int j = 0; j<N; ++j)
 	{
 		int J = -lmj[j] - 2;
@@ -75,14 +75,14 @@ void FELinearSystem::Assemble(const FEElementMatrix& ke)
 	FELinearConstraintManager& LCM = fem->GetLinearConstraintManager();
 	if (LCM.LinearConstraints())
 	{
-		const vector<int>& en = ke.Nodes();
+		const std::vector<int>& en = ke.Nodes();
 		LCM.AssembleStiffness(m_K, m_F, m_u, en, lmi, lmj, ke);
 	}
 	} // omp critical
 }
 
 //-----------------------------------------------------------------------------
-void FELinearSystem::AssembleRHS(vector<int>& lm, matrix& ke, vector<double>& U)
+void FELinearSystem::AssembleRHS(std::vector<int>& lm, Matrix& ke, std::vector<double>& U)
 {
 	int ne = (int)lm.size();
 	for (int j = 0; j<ne; ++j)
@@ -101,7 +101,7 @@ void FELinearSystem::AssembleRHS(vector<int>& lm, matrix& ke, vector<double>& U)
 }
 
 //-----------------------------------------------------------------------------
-void FELinearSystem::AssembleRHS(vector<int>& lm, vector<double>& fe)
+void FELinearSystem::AssembleRHS(std::vector<int>& lm, std::vector<double>& fe)
 {
 	const int n = (int)lm.size();
 	for (int i = 0; i<n; ++i)

@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #pragma once
 #include <vector>
-#include "FEM_EXPORT.h"
+#include "femcore/fem_export.h"
 
 //-----------------------------------------------------------------------------
 class FEMesh;

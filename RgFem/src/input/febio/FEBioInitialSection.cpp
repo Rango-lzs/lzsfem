@@ -28,11 +28,11 @@ SOFTWARE.*/
 
 #include "stdafx.h"
 #include "FEBioInitialSection.h"
-#include "FECore/FEModel.h"
-#include "FECore/DOFS.h"
-#include <FECore/FEInitialCondition.h>
-#include <FECore/FECoreKernel.h>
-#include <FECore/FEMaterial.h>
+#include "femcore/FEModel.h"
+#include "femcore/DOFS.h"
+#include "femcore/FEInitialCondition.h"
+
+#include "materials/FEMaterial.h"
 
 //-----------------------------------------------------------------------------
 void FEBioInitialSection::Parse(XMLTag& tag)

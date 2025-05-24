@@ -5,6 +5,7 @@
 #include "basicio/DumpStream.h"
 #include "femcore/FEModel.h"
 #include "logger/log.h"
+#include "datastructure/MathUtils.h"
 
 //-----------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FETimeStepController, FEParamObject)
@@ -310,7 +311,7 @@ double FETimeStepController::CheckMustPoints(double t, double dt)
 //! serialize
 void FETimeStepController::Serialize(DumpStream& ar)
 {
-	FECoreBase::Serialize(ar);
+	FEObjectBase::Serialize(ar);
 	ar & m_nretries;
 	ar & m_nmplc;
 	ar & m_nmust;

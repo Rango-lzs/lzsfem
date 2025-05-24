@@ -47,7 +47,7 @@ protected:
 
 //-----------------------------------------------------------------------------
 // base class for Math items
-// a math item can be a constant, a variable, a matrix, an operator or a function
+// a math item can be a constant, a variable, a Matrix, an operator or a function
 class MItem
 {
 public:

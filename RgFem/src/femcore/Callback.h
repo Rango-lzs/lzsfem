@@ -18,9 +18,9 @@ class FEModel;
 #define CB_UPDATE_TIME		0x00000020		//!< Call when time is updated and right before time step is solved (in FEAnalysis::Solve)
 #define CB_AUGMENT			0x00000040		//!< The model is entering augmentations (called before Augment)
 #define CB_STEP_SOLVED		0x00000080		//!< The step was solved
-#define CB_MATRIX_REFORM	0x00000100		//!< stiffness matrix was reformed
+#define CB_MATRIX_REFORM	0x00000100		//!< stiffness Matrix was reformed
 #define CB_REMESH			0x00000200		//!< Called after remesh
-#define CB_PRE_MATRIX_SOLVE	0x00000400		//!< Called right before matrix solve
+#define CB_PRE_MATRIX_SOLVE	0x00000400		//!< Called right before Matrix solve
 #define CB_RESET            0x00000800		//!< Called after FEModel::Reset
 #define CB_MODEL_UPDATE		0x00001000		//!< Called at the end of FEModel::Update
 #define CB_TIMESTEP_SOLVED	0x00002000		//!< Called at FEAnalysis::SolveTimeStep after the solver returns.

@@ -26,7 +26,7 @@ SOFTWARE.*/
 
 #pragma once
 #include <FECore/SparseMatrix.h>
-#include <FECore/matrix.h>
+#include <FECore/Matrix.h>
 #include <FECore/EigenSolver.h>
 
 class FEASTEigenSolver : public EigenSolver
@@ -36,7 +36,7 @@ public:
 
 	bool Init() override;
 
-	bool EigenSolve(SparseMatrix* A, SparseMatrix* B, vector<double>& eigenValues, matrix& eigenVectors) override;
+	bool EigenSolve(SparseMatrix* A, SparseMatrix* B, vector<double>& eigenValues, Matrix& eigenVectors) override;
 
 private:
 	int	m_fpm[128];

@@ -1,6 +1,7 @@
 #include "FEDofList.h"
 #include "FEModel.h"
 #include "basicio/DumpStream.h"
+#include "DOFS.h"
 
 FEDofList::FEDofList(FEModel* fem)
 {

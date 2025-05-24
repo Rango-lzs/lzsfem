@@ -1,5 +1,5 @@
-#include "FESurface.h"
-#include "FEMesh.h"
+#include "femcore/FESurface.h"
+#include "femcore/FEMesh.h"
 #include "femcore/Domain/FESolidDomain.h"
 #include "elements/FEElemElemList.h"
 #include "basicio/DumpStream.h"
@@ -306,7 +306,7 @@ bool FESurface::Init()
 	}
 
     // allocate node normals and evaluate them in initial configuration
-    m_nn.assign(Nodes, Vector3d(0,0,0));
+    m_nn.assign(Nodes(), Vector3d(0, 0, 0));
     UpdateNodeNormals();
     
 	return true;

@@ -64,7 +64,7 @@ void CompactMatrix::alloc(int nr, int nc, int nz, double* pv, int* pi, int* pp, 
 }
 
 //-----------------------------------------------------------------------------
-//! calculate bandwidth of matrix
+//! calculate bandwidth of Matrix
 int CompactMatrix::bandWidth()
 {
 	int NR = Rows();

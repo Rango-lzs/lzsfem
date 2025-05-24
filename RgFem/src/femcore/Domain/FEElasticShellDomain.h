@@ -85,7 +85,7 @@ public: // overrides from FEElasticDomain
     // update the element stress
     void UpdateElementStress(int iel, const FETimeInfo& tp);
 
-	//! calculates the global stiffness matrix for this domain
+	//! calculates the global stiffness Matrix for this domain
 	void StiffnessMatrix(FELinearSystem& LS) override;
 
 	// inertial stiffness
@@ -98,13 +98,13 @@ public:
 
 	// --- S T I F F N E S S --- 
 
-	//! calculates the shell element stiffness matrix
+	//! calculates the shell element stiffness Matrix
 	void ElementStiffness(int iel, Matrix& ke);
 
-    //! calculates the solid element mass matrix
+    //! calculates the solid element mass Matrix
     void ElementMassMatrix(FEShellElement& el, Matrix& ke, double a);
     
-    //! calculates the stiffness matrix due to body forces
+    //! calculates the stiffness Matrix due to body forces
     void ElementBodyForceStiffness(FEBodyForce& bf, FEShellElement& el, Matrix& ke);
     
 	// --- R E S I D U A L ---

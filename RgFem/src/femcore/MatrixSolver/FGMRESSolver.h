@@ -39,7 +39,7 @@ public:
 	//! do any pre-processing (allocates temp storage)
 	bool PreProcess() override;
 
-	//! Factor the matrix
+	//! Factor the Matrix
 	bool Factor() override;
 
 	//! Calculate the solution of RHS b and store solution in x
@@ -48,10 +48,10 @@ public:
 	//! Clean up
 	void Destroy() override;
 
-	//! Return a sparse matrix compatible with this solver
+	//! Return a sparse Matrix compatible with this solver
 	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
-	//! Set the sparse matrix
+	//! Set the sparse Matrix
 	bool SetSparseMatrix(SparseMatrix* pA) override;
 
 	//! Set max nr of iterations
@@ -118,7 +118,7 @@ private:
 	bool	m_do_jacobi;
 
 private:
-	SparseMatrix*	m_pA;		//!< the sparse matrix format
+	SparseMatrix*	m_pA;		//!< the sparse Matrix format
 	Preconditioner*	m_P;		//!< the left preconditioner
 	Preconditioner*	m_R;		//!< the right preconditioner
 	vector<double>	m_tmp;

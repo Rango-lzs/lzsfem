@@ -32,22 +32,21 @@ SOFTWARE.*/
 #include <iostream>
 #include <typeinfo>
 #include <stdlib.h>
-#include "matrix.h"
-#include "Matrix3d.h"
-#include "Vector3d.h"
-#include "tens4d.h"
-#include "FEM_EXPORT.h"
+#include "datastructure/Matrix.h"
+#include "datastructure/Matrix3d.h"
+#include "datastructure/Vector3d.h"
+#include "datastructure/tens4d.h"
 
 // This file defines template constructions that are used by the FECore debugger.
 // Don't use anything in here or include this file directly. 
 // Instead include fecore_debug.h and use the user functions and macros defined there.
 
 template <typename T> void fecore_print_T(T* pd) { std::cout << (*pd); }
-template <> void fecore_print_T<matrix>(matrix* pd);
+template <> void fecore_print_T<Matrix>(Matrix* pd);
 template <> void fecore_print_T<Matrix3d>(Matrix3d* pd);
 template <> void fecore_print_T<Matrix3ds>(Matrix3ds* pd);
-template <> void fecore_print_T<mat3da>(mat3da* pd);
-template <> void fecore_print_T<mat3dd>(mat3dd* pd);
+template <> void fecore_print_T<Matrix3da>(Matrix3da* pd);
+template <> void fecore_print_T<Matrix3dd>(Matrix3dd* pd);
 template <> void fecore_print_T<Vector3d>(Vector3d* pd);
 template <> void fecore_print_T<tens4ds>(tens4ds* pd);
 template <> void fecore_print_T<std::vector<double> >(std::vector<double>* pv);

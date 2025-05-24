@@ -10,7 +10,7 @@ SkylineSolver::SkylineSolver(FEModel* fem) : LinearSolver(fem), m_pA(0)
 }
 
 //-----------------------------------------------------------------------------
-//! Create a sparse matrix
+//! Create a sparse Matrix
 SparseMatrix* SkylineSolver::CreateSparseMatrix(MatrixType ntype)
 { 
 	return (m_pA = (ntype == REAL_SYMMETRIC? new SkylineMatrix() : 0)); 

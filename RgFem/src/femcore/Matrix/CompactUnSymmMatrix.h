@@ -28,7 +28,7 @@ SOFTWARE.*/
 
 #pragma once
 #include "CompactMatrix.h"
-#include "FEM_EXPORT.h"
+#include "femcore/fem_export.h"
 
 struct MatrixItem
 {
@@ -37,7 +37,7 @@ struct MatrixItem
 };
 
 //=============================================================================
-//! This class stores a general, sparse matrix in Compact Row Storage format
+//! This class stores a general, sparse Matrix in Compact Row Storage format
 class FEM_EXPORT CRSSparseMatrix : public CompactMatrix
 {
 public:
@@ -64,22 +64,22 @@ public:
 	//! copy constructor
 	CRSSparseMatrix(const CRSSparseMatrix& A);
 
-	//! Create the matrix structure from the SparseMatrixProfile
+	//! Create the Matrix structure from the SparseMatrixProfile
 	void Create(SparseMatrixProfile& mp) override;
 
-	//! Assemble the element matrix into the global matrix
-	void Assemble(const matrix& ke, const std::vector<int>& lm) override;
+	//! Assemble the element Matrix into the global Matrix
+	void Assemble(const Matrix& ke, const std::vector<int>& lm) override;
 
-	//! assemble a matrix into the sparse matrix
-	void Assemble(const matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override;
+	//! assemble a Matrix into the sparse Matrix
+	void Assemble(const Matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override;
 
-	//! add a value to the matrix item
+	//! add a value to the Matrix item
 	void add(int i, int j, double v) override;
 
-	//! set the matrix item
+	//! set the Matrix item
 	void set(int i, int j, double v) override;
 
-	//! get a matrix item
+	//! get a Matrix item
 	double get(int i, int j) override;
 
 	//! return the diagonal value
@@ -88,17 +88,17 @@ public:
 	//! multiply with vector
 	bool mult_vector(double* x, double* r) override;
 
-	//! see if a matrix element is defined
+	//! see if a Matrix element is defined
 	bool check(int i, int j) override;
 
-	// scale matrix 
+	// scale Matrix 
 	void scale(double s);
 	void scale(const std::vector<double>& L, const std::vector<double>& R) override;
 
-	//! extract a block of this matrix
+	//! extract a block of this Matrix
 	void get(int i0, int j0, int nr, int nc, CSRMatrix& M);
 
-	//! is the matrix symmetric or not
+	//! is the Matrix symmetric or not
 	bool isSymmetric() override { return false; }
 
 	//! is this a row-based format or not
@@ -110,13 +110,13 @@ public:
 	//! calculate the one norm
 	double oneNorm() const override;
 
-	//! make the matrix a unit matrix (retains sparsity pattern)
+	//! make the Matrix a unit Matrix (retains sparsity pattern)
 	void makeUnit();
 
-	//! Create a copy of the matrix (does not copy values)
+	//! Create a copy of the Matrix (does not copy values)
 	CRSSparseMatrix* Copy(int offset);
 
-	//! Copy the values from another matrix
+	//! Copy the values from another Matrix
 	void CopyValues(CompactMatrix* A);
 
 	//! convert to another format (currently only offset can be changed)
@@ -124,7 +124,7 @@ public:
 };
 
 //=============================================================================
-//! This class stores a sparse matrix in Compact Column Storage format
+//! This class stores a sparse Matrix in Compact Column Storage format
 
 class FEM_EXPORT CCSSparseMatrix : public CompactMatrix
 {
@@ -135,22 +135,22 @@ public:
 	//! copy constructor
 	CCSSparseMatrix(const CCSSparseMatrix& A);
 
-	//! Create the matrix structure from the SparseMatrixProfile
+	//! Create the Matrix structure from the SparseMatrixProfile
 	void Create(SparseMatrixProfile& mp) override;
 
-	//! Assemble the element matrix into the global matrix
-	void Assemble(const matrix& ke, const std::vector<int>& lm) override;
+	//! Assemble the element Matrix into the global Matrix
+	void Assemble(const Matrix& ke, const std::vector<int>& lm) override;
 
-	//! assemble a matrix into the sparse matrix
-	void Assemble(const matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override;
+	//! assemble a Matrix into the sparse Matrix
+	void Assemble(const Matrix& ke, const std::vector<int>& lmi, const std::vector<int>& lmj) override;
 
-	//! add a value to the matrix item
+	//! add a value to the Matrix item
 	void add(int i, int j, double v) override;
 
-	//! set the matrix item
+	//! set the Matrix item
 	void set(int i, int j, double v) override;
 
-	//! get a matrix item
+	//! get a Matrix item
 	double get(int i, int j) override;
 
 	//! return the diagonal value
@@ -159,10 +159,10 @@ public:
 	//! multiply with vector
 	bool mult_vector(double* x, double* r) override;
 
-	//! see if a matrix element is defined
+	//! see if a Matrix element is defined
 	bool check(int i, int j) override;
 
-	//! is the matrix symmetric or not
+	//! is the Matrix symmetric or not
 	bool isSymmetric() override { return false; }
 
 	//! is this a row-based format or not

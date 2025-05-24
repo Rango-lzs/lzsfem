@@ -1,14 +1,14 @@
 #include "FEResidualVector.h"
-#include "FERigidBody.h"
-#include "FECore/DOFS.h"
-#include "FEMechModel.h"
-#include <FECore/FELinearConstraintManager.h>
-#include <FECore/FEAnalysis.h>
-#include "FESolidSolver2.h"
+//#include "femcore/FERigidBody.h"
+#include "femcore/DOFS.h"
+#include <femcore/FELinearConstraintManager.h>
+#include "femcore/FEAnalysis/FEAnalysis.h"
+#include "femcore/Solver/FESolidSolver2.h"
+#include "FEGlobalVector.h"
 using namespace std;
 
 //-----------------------------------------------------------------------------
-FEResidualVector::FEResidualVector(FEModel& fem, vector<double>& R, vector<double>& Fr) : FEGlobalVector(fem, R, Fr)
+FEResidualVector::FEResidualVector(FEModel& fem, std::vector<double>& R, std::vector<double>& Fr) : FEGlobalVector(fem, R, Fr)
 {
 }
 
@@ -18,10 +18,10 @@ FEResidualVector::~FEResidualVector()
 }
 
 //-----------------------------------------------------------------------------
-void FEResidualVector::Assemble(vector<int>& en, vector<int>& elm, vector<double>& fe, bool bdom)
+void FEResidualVector::Assemble(std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe, bool bdom)
 {
     
-    vector<double>& R = m_R;
+    std::vector<double>& R = m_R;
     
     int i, I, n;
     
@@ -135,7 +135,7 @@ void FEResidualVector::Assemble(vector<int>& en, vector<int>& elm, vector<double
 							 n = lm[5]; if (n >= 0) R[n] += d.x*F.y-d.y*F.x; RB.m_Mr.z -= d.x*F.y-d.y*F.x;
 							 }
 							 */
-							 // add to global force vector
+							 // add to global force std::vector
 							n = lm[0];
 							if (n >= 0)
 							{
@@ -169,7 +169,7 @@ void FEResidualVector::Assemble(vector<int>& en, vector<int>& elm, vector<double
     }
 }
 
-//! Assemble into this global vector
+//! Assemble into this global std::vector
 void FEResidualVector::Assemble(int node_id, int dof, double f)
 {
 	// get the mesh
@@ -180,7 +180,7 @@ void FEResidualVector::Assemble(int node_id, int dof, double f)
 	FENode& node = mesh.Node(node_id);
 	int n = node.m_ID[dof];
 
-	// assemble into global vector
+	// assemble into global std::vector
 	if (n >= 0) {
 #pragma omp atomic
 		m_R[n] += f;

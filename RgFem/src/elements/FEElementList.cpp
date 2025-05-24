@@ -1,7 +1,7 @@
 
 #include "FEElementList.h"
-#include "FEMesh.h"
-#include "FEDomain.h"
+#include "femcore/FEMesh.h"
+#include "femcore/DOmain/FEDomain.h"
 
 FEElement& FEElementList::iterator::operator*()
 { 

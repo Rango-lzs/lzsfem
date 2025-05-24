@@ -1,5 +1,6 @@
 #pragma once
-#include "FEElementShape.h"
+#include "elements/FEElementShape.h"
+#include "../RgElemTypeDefine.h"
 
 //=============================================================================
 // Base class for defining element shape classes for (3D) solid elements

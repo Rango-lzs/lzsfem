@@ -45,7 +45,7 @@ public: // these functions need to be implemented by the derived class
 	//! Evaluate the right-hand side "force" vector
 	virtual void ForceVector(FEGlobalVector& R);
 
-	//! Evaluate the stiffness matrix
+	//! Evaluate the stiffness Matrix
 	virtual bool StiffnessMatrix(FELinearSystem& K);
 
 	//! Update the model state
@@ -53,13 +53,13 @@ public: // these functions need to be implemented by the derived class
 
 protected: // some helper functions
 
-	//! Reform the stiffness matrix
+	//! Reform the stiffness Matrix
 	bool ReformStiffness();
 
-	//! Create and evaluate the stiffness matrix
+	//! Create and evaluate the stiffness Matrix
 	bool CreateStiffness();
 
-	//! get the stiffness matrix
+	//! get the stiffness Matrix
 	FEGlobalMatrix* GetStiffnessMatrix() override;
 
 	//! get the RHS
@@ -71,8 +71,8 @@ protected:
 
 private:
 	LinearSolver*		m_pls;		//!< The linear equation solver
-	FEGlobalMatrix*		m_pK;		//!< The global stiffness matrix
+	FEGlobalMatrix*		m_pK;		//!< The global stiffness Matrix
 
 	std::vector<int>		m_dof;	//!< list of active degrees of freedom
-	bool			m_breform;	//!< matrix reformation flag
+	bool			m_breform;	//!< Matrix reformation flag
 };

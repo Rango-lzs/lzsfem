@@ -1,5 +1,5 @@
 #pragma once
-#include "datastructure/matrix.h"
+#include "datastructure/Matrix.h"
 #include "datastructure/vector_operator.h"
 #include "femcore/FEDofList.h"
 #include "femcore/FEObjectBase.h"
@@ -114,7 +114,7 @@ public:
     //! Get the size of a partition
     int GetPartitionSize(int partition);
 
-    //! get the current stiffness matrix
+    //! get the current stiffness Matrix
     virtual FEGlobalMatrix* GetStiffnessMatrix() = 0;
 
     //! get the current load vector
@@ -126,10 +126,10 @@ public:
     //! Matrix symmetry flag
     int MatrixSymmetryFlag() const;
 
-    //! get matrix type
+    //! get Matrix type
     MatrixType MatType() const;
 
-    //! build the matrix profile
+    //! build the Matrix profile
     virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);
 
     // see if the dofs in the dof list are active in this solver
@@ -150,7 +150,7 @@ public:
 
 public:                         // TODO Move these parameters elsewhere
     bool m_bwopt;               //!< bandwidth optimization flag
-    int m_msymm;                //!< matrix symmetry flag for linear solver allocation
+    int m_msymm;                //!< Matrix symmetry flag for linear solver allocation
     int m_eq_scheme;            //!< equation number scheme (used in InitEquations)
     int m_eq_order;             //!< normal or reverse ordering
     int m_neq;                  //!< number of equations

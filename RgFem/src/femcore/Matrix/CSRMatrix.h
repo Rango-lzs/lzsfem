@@ -2,20 +2,20 @@
 #include <vector>
 #include "femcore/FEM_EXPORT.h"
 
-// This class represents a sparse matrix in the row-compressed format (3-array format)
+// This class represents a sparse Matrix in the row-compressed format (3-array format)
 class FEM_EXPORT CSRMatrix
 {
 public:
 	// default constructor
 	CSRMatrix();
 
-	// create a matrix of given size
+	// create a Matrix of given size
 	CSRMatrix(int rows, int cols, int noffset = 0);
 
 	// copy constructor
 	CSRMatrix(const CSRMatrix& A);
 
-	// Create matrix
+	// Create Matrix
 	void create(int nr, int nc, int noffset = 0);
 
 	// assignment operator
@@ -36,11 +36,11 @@ public:
 	// get a value
 	double operator () (int i, int j) const;
 
-	// see if a matrix entry was allocated
+	// see if a Matrix entry was allocated
 	bool isAlloc(int i, int j) const;
 
 public:
-	// matrix-vector multiplication: A.x = r
+	// Matrix-vector multiplication: A.x = r
 	void multv(const std::vector<double>& x, std::vector<double>& r);
 	void multv(const double* x, double* r);
 
@@ -55,5 +55,5 @@ private:
 	int		m_offset;	// offset (0 or 1)
 	std::vector<int>	m_rowIndex;		// start of row in columns array
 	std::vector<int>	m_columns;		// columns of non-zero entries
-	std::vector<double>	m_values;		// values of matrix
+	std::vector<double>	m_values;		// values of Matrix
 };

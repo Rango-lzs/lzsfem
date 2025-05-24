@@ -50,16 +50,16 @@ public:
 	// allocate storage
 	bool PreProcess() override;
 
-	//! Factor the matrix (for iterative solvers, this can be used for creating pre-conditioner)
+	//! Factor the Matrix (for iterative solvers, this can be used for creating pre-conditioner)
 	bool Factor() override;
 
 	//! Calculate the solution of RHS b and store solution in x
 	bool BackSolve(double* x, double* b) override;
 
-	//! Return a sparse matrix compatible with this solver
+	//! Return a sparse Matrix compatible with this solver
 	SparseMatrix* CreateSparseMatrix(MatrixType ntype) override;
 
-	//! set the sparse matrix
+	//! set the sparse Matrix
 	bool SetSparseMatrix(SparseMatrix* A) override;
 
 	//! clean up

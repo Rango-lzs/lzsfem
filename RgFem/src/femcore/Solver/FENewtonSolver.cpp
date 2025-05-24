@@ -158,10 +158,10 @@ void FENewtonSolver::CheckZeroDiagonal(bool bcheck, double ztol)
 }
 
 //-----------------------------------------------------------------------------
-//! Reforms a stiffness matrix and factorizes it
+//! Reforms a stiffness Matrix and factorizes it
 bool FENewtonSolver::ReformStiffness()
 {
-    feLog("Reforming stiffness matrix: reformation #%d\n\n", m_nref + 1);
+    feLog("Reforming stiffness Matrix: reformation #%d\n\n", m_nref + 1);
 
     // first, let's make sure we have not reached the max nr of reformations allowed
     if (m_nref >= m_maxref)
@@ -169,10 +169,10 @@ bool FENewtonSolver::ReformStiffness()
 
     FEModel& fem = *GetFEModel();
 
-    // recalculate the shape of the stiffness matrix if necessary
+    // recalculate the shape of the stiffness Matrix if necessary
     if (m_breshape)
     {
-        // reshape the stiffness matrix
+        // reshape the stiffness Matrix
         if (!CreateStiffness(m_niter == 0))
             return false;
 
@@ -180,24 +180,24 @@ bool FENewtonSolver::ReformStiffness()
         m_breshape = (((fem.SurfacePairConstraints() > 0) || (fem.NonlinearConstraints() > 0)) ? true : false);
     }
 
-    // calculate the global stiffness matrix
+    // calculate the global stiffness Matrix
     bool bRet = false;
     {
         TRACK_TIME(TimerID::Timer_Stiffness);
 
-        // zero the stiffness matrix
+        // zero the stiffness Matrix
         m_pK->Zero();
 
         // Zero the rhs adjustment vector
         zero(m_Fd);
 
-        // calculate the global stiffness matrix
+        // calculate the global stiffness Matrix
         bRet = StiffnessMatrix();
 
         // check for zero diagonals,对角元素不能有0
         if (m_bzero_diagonal)
         {
-            // get the stiffness matrix
+            // get the stiffness Matrix
             SparseMatrix& K = *m_pK;
             std::vector<int> zd;
             int neq = K.Rows();
@@ -215,13 +215,13 @@ bool FENewtonSolver::ReformStiffness()
         }
     }
 
-    // if the stiffness matrix was evaluated successfully,
+    // if the stiffness Matrix was evaluated successfully,
     // we factor it.
     if (bRet)
     {
         {
             TRACK_TIME(TimerID::Timer_LinSolve);
-            // factorize the stiffness matrix
+            // factorize the stiffness Matrix
             if (m_plinsolve->Factor() == false)
             {
                 throw FactorizationError();
@@ -261,7 +261,7 @@ std::vector<double> FENewtonSolver::GetSolutionVector() const
 }
 
 //-----------------------------------------------------------------------------
-//!  Creates the global stiffness matrix
+//!  Creates the global stiffness Matrix
 //! \todo Can we move this to the FEGlobalMatrix::Create function?
 bool FENewtonSolver::CreateStiffness(bool breset)
 {
@@ -270,14 +270,14 @@ bool FENewtonSolver::CreateStiffness(bool breset)
         // clean up the solver
         m_plinsolve->Destroy();
 
-        // clean up the stiffness matrix
+        // clean up the stiffness Matrix
         m_pK->Clear();
 
-        // create the stiffness matrix
-        feLog("===== reforming stiffness matrix:\n");
+        // create the stiffness Matrix
+        feLog("===== reforming stiffness Matrix:\n");
         if (m_pK->Create(GetFEModel(), m_neq, breset) == false)
         {
-            feLogError("An error occured while building the stiffness matrix\n\n");
+            feLogError("An error occured while building the stiffness Matrix\n\n");
             return false;
         }
         else
@@ -286,7 +286,7 @@ bool FENewtonSolver::CreateStiffness(bool breset)
             int neq = m_pK->Rows();
             int nnz = m_pK->NonZeroes();
             feLog("\tNr of equations ........................... : %d\n", neq);
-            feLog("\tNr of nonzeroes in stiffness matrix ....... : %d\n", nnz);
+            feLog("\tNr of nonzeroes in stiffness Matrix ....... : %d\n", nnz);
 
             int parts = m_plinsolve->Partitions();
             if (parts > 1)
@@ -326,8 +326,8 @@ LinearSolver* FENewtonSolver::GetLinearSolver()
 bool FENewtonSolver::AllocateLinearSystem()
 {
     // Now that we have determined the equation numbers we can continue
-    // with creating the stiffness matrix. First we select the linear solver
-    // The stiffness matrix is created in CreateStiffness
+    // with creating the stiffness Matrix. First we select the linear solver
+    // The stiffness Matrix is created in CreateStiffness
     // Note that if a particular solver was requested in the input file
     // then the solver might already be allocated. That's way we need to check it.
     if (m_plinsolve == 0)
@@ -344,7 +344,7 @@ bool FENewtonSolver::AllocateLinearSystem()
 
     if (m_part.empty() || (m_part.size() == 1))
     {
-        // Set the partitioning of the global matrix
+        // Set the partitioning of the global Matrix
         // This is only used for debugging block solvers for problems that
         // usually don't generate a block structure
         if (m_force_partition > 0)
@@ -366,7 +366,7 @@ bool FENewtonSolver::AllocateLinearSystem()
     SparseMatrix* pS = m_qnstrategy->CreateSparseMatrix(mtype);
     if ((pS == 0) && (m_msymm == REAL_SYMMETRIC))
     {
-        // oh, oh, something went wrong. It's probably because the user requested a symmetric matrix for a
+        // oh, oh, something went wrong. It's probably because the user requested a symmetric Matrix for a
         // solver that wants a non-symmetric. If so, let's force a non-symmetric format.
         pS = m_qnstrategy->CreateSparseMatrix(REAL_UNSYMMETRIC);
 
@@ -374,31 +374,31 @@ bool FENewtonSolver::AllocateLinearSystem()
         {
             // Problem solved! Let's inform the user.
             m_msymm = REAL_UNSYMMETRIC;
-            feLogWarning("The matrix format was changed to non-symmetric since the selected linear solver does not "
+            feLogWarning("The Matrix format was changed to non-symmetric since the selected linear solver does not "
                          "support a symmetric format.");
         }
     }
 
-    // if the sparse matrix is still zero, we have a problem
+    // if the sparse Matrix is still zero, we have a problem
     if (pS == 0)
     {
-        feLogError("The selected linear solver does not support the requested matrix format.\nPlease select a "
+        feLogError("The selected linear solver does not support the requested Matrix format.\nPlease select a "
                    "different linear solver.");
         return false;
     }
 
-    // clean up the stiffness matrix if we have one
+    // clean up the stiffness Matrix if we have one
     if (m_pK)
         delete m_pK;
     m_pK = 0;
 
-    // Create the stiffness matrix.
-    // Note that this does not construct the stiffness matrix. This
+    // Create the stiffness Matrix.
+    // Note that this does not construct the stiffness Matrix. This
     // is done later in the CreateStiffness routine.
     m_pK = new FEGlobalMatrix(pS);
     if (m_pK == 0)
     {
-        feLogError("Failed allocating stiffness matrix.");
+        feLogError("Failed allocating stiffness Matrix.");
         return false;
     }
 
@@ -428,8 +428,8 @@ bool FENewtonSolver::Init()
     m_Ut.assign(m_neq, 0);
     m_Fd.assign(m_neq, 0);
 
-    // allocate storage for the sparse matrix that will hold the stiffness matrix data
-    // we let the linear solver allocate the correct type of matrix format
+    // allocate storage for the sparse Matrix that will hold the stiffness Matrix data
+    // we let the linear solver allocate the correct type of Matrix format
     if (AllocateLinearSystem() == false)
         return false;
 
@@ -437,7 +437,7 @@ bool FENewtonSolver::Init()
     if (FESolver::Init() == false)
         return false;
 
-    // set the create stiffness matrix flag
+    // set the create stiffness Matrix flag
     m_breshape = true;
 
     return true;
@@ -530,13 +530,13 @@ bool FENewtonSolver::SolveStep()
         feLog("    number of reformations : %d\n", m_nref);
     }
 
-    // if we don't want to hold on to the stiffness matrix, let's clean it up
+    // if we don't want to hold on to the stiffness Matrix, let's clean it up
     if (m_persistMatrix == false)
     {
         // clean up the solver
         m_plinsolve->Destroy();
 
-        // clean up the stiffness matrix
+        // clean up the stiffness Matrix
         m_pK->Clear();
 
         // make sure we recreate it in the next time step
@@ -583,7 +583,7 @@ bool FENewtonSolver::Quasin()
         feLog(" Nonlinear solution status: time= %lg\n", tp.currentTime);
         feLog("\tstiffness updates             = %d\n", m_qnstrategy->m_nups);
         feLog("\tright hand side evaluations   = %d\n", m_nrhs);
-        feLog("\tstiffness matrix reformations = %d\n", m_nref);
+        feLog("\tstiffness Matrix reformations = %d\n", m_nref);
         if (m_lineSearch->m_LStol > 0)
             feLog("\tstep from line search         = %lf\n", ls);
 
@@ -596,13 +596,13 @@ bool FENewtonSolver::Quasin()
             if (ls < m_lineSearch->m_LSmin)
             {
                 // check for zero linestep size
-                feLogWarning("Zero linestep size. Stiffness matrix will now be reformed");
+                feLogWarning("Zero linestep size. Stiffness Matrix will now be reformed");
                 QNForceReform(true);
             }
             else if ((m_energyNorm.norm > m_energyNorm.maxnorm) && m_bdivreform)
             {
                 // check for diverging
-                feLogWarning("Problem is diverging. Stiffness matrix will now be reformed");
+                feLogWarning("Problem is diverging. Stiffness Matrix will now be reformed");
                 m_energyNorm.maxnorm = m_energyNorm.norm;
                 m_energyNorm.norm0 = m_energyNorm.norm;
                 m_residuNorm.norm0 = m_residuNorm.norm;
@@ -745,7 +745,7 @@ void FENewtonSolver::SolveLinearSystem(std::vector<double>& x, std::vector<doubl
 //! This is called when the time step failed.
 void FENewtonSolver::Rewind()
 {
-    // reset the forceReform flag so that we reform the stiffness matrix
+    // reset the forceReform flag so that we reform the stiffness Matrix
     m_bforceReform = true;
 }
 
@@ -802,7 +802,7 @@ bool FENewtonSolver::QNInit()
     m_qnstrategy->PreSolveUpdate(); //好像啥也不干
 
     // do the reform
-    // NOTE: It is important for JFNK that the matrix is reformed before the
+    // NOTE: It is important for JFNK that the Matrix is reformed before the
     //       residual is evaluated, so do not switch these two calculations!
     if (bReform)
     {
@@ -944,7 +944,7 @@ bool FENewtonSolver::QNUpdate()
         TRACK_TIME(TimerID::Timer_QNUpdate);
         if (m_qnstrategy->Update(m_ls, m_ui, m_R0, m_R1) == false)
         {
-            // the qn update failed. Force matrix reformations
+            // the qn update failed. Force Matrix reformations
             breform = true;
         }
     }
@@ -958,7 +958,7 @@ bool FENewtonSolver::QNUpdate()
     // reform stiffness matrices if necessary
     if (breform && m_bdoreforms)
     {
-        // reform the matrix
+        // reform the Matrix
         if (m_qnstrategy->ReformStiffness() == false)
             return false;
     }
@@ -1006,7 +1006,7 @@ bool FENewtonSolver::DoAugmentations()
 
         m_qnstrategy->PreSolveUpdate();
 
-        // reform the matrix if we are using full-Newton or
+        // reform the Matrix if we are using full-Newton or
         // force reform after augmentations
         if ((m_qnstrategy->m_maxups == 0) || (m_breformAugment))
         {
@@ -1146,13 +1146,13 @@ void FENewtonSolver::UpdateModel()
 }
 
 //-----------------------------------------------------------------------------
-//! calculates the global stiffness matrix (needs to be overwritten by derived classes)
+//! calculates the global stiffness Matrix (needs to be overwritten by derived classes)
 bool FENewtonSolver::StiffnessMatrix()
 {
     // setup the linear system
     FELinearSystem ls(this, *m_pK, m_Fd, m_ui, (m_msymm == REAL_SYMMETRIC));
 
-    // build the stiffness matrix
+    // build the stiffness Matrix
     return StiffnessMatrix(ls);
 }
 

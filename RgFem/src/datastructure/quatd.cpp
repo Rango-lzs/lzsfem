@@ -103,7 +103,7 @@ void quatd::GetEuler(double& X, double& Y, double& Z) const
 }
 
 //-----------------------------------------------------------------------------
-// convert euler angles to a rotation matrix
+// convert euler angles to a rotation Matrix
 // l[0] = psi   (x-rotation)
 // l[1] = theta (y-rotation)
 // l[2] = phi   (z-rotation)
@@ -119,7 +119,7 @@ Matrix3d euler2rot(double l[3])
 }
 
 //-----------------------------------------------------------------------------
-// convert a rotation matrix to euler angles
+// convert a rotation Matrix to euler angles
 // l[0] = psi   (x-rotation)
 // l[1] = theta (y-rotation)
 // l[2] = phi   (z-rotation)

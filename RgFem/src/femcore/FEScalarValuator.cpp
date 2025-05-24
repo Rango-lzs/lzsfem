@@ -6,7 +6,7 @@
 #include "logger/log.h"
 
 ////=============================================================================
-//bool FEMathExpression::Init(const std::string& expr, FECoreBase* pc)
+//bool FEMathExpression::Init(const std::string& expr, FEObjectBase* pc)
 //{
 //	Clear();
 //
@@ -167,7 +167,7 @@
 //	}
 //}
 //
-//bool FEMathValue::create(FECoreBase* pc)
+//bool FEMathValue::create(FEObjectBase* pc)
 //{
 //	// see if this is already initialized
 //	if (m_math.Variables() > 0) return true;
@@ -254,24 +254,24 @@ void FEMappedValue::Serialize(DumpStream& dmp)
 
 //---------------------------------------------------------------------------------------
 
-FENodeMappedValue::FENodeMappedValue(FEModel* fem) : FEScalarValuator(fem), m_val(nullptr)
-{
-
-}
-
-void FENodeMappedValue::setDataMap(FENodeDataMap* val)
-{
-	m_val = val;
-}
-
-double FENodeMappedValue::operator()(const FEMaterialPoint& pt)
-{
-	return m_val->getValue(pt.m_index);
-}
-
-FEScalarValuator* FENodeMappedValue::copy()
-{
-	FENodeMappedValue* map = RANGO_NEW<FENodeMappedValue>(GetFEModel(),"");
-	map->setDataMap(m_val);
-	return map;
-}
+//FENodeMappedValue::FENodeMappedValue(FEModel* fem) : FEScalarValuator(fem), m_val(nullptr)
+//{
+//
+//}
+//
+//void FENodeMappedValue::setDataMap(FENodeDataMap* val)
+//{
+//	m_val = val;
+//}
+//
+//double FENodeMappedValue::operator()(const FEMaterialPoint& pt)
+//{
+//	return m_val->getValue(pt.m_index);
+//}
+//
+//FEScalarValuator* FENodeMappedValue::copy()
+//{
+//	FENodeMappedValue* map = RANGO_NEW<FENodeMappedValue>(GetFEModel(),"");
+//	map->setDataMap(m_val);
+//	return map;
+//}

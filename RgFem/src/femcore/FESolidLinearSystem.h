@@ -10,11 +10,11 @@ public:
 	FESolidLinearSystem(FESolver* solver, FERigidSolver* rigidSolver, FEGlobalMatrix& K, std::vector<double>& F, std::vector<double>& u, bool bsymm, double alpha, int nreq);
 
 	// Assembly routine
-	// This assembles the element stiffness matrix ke into the global matrix.
+	// This assembles the element stiffness Matrix ke into the global Matrix.
 	// The contributions of prescribed degrees of freedom will be stored in m_F
 	void Assemble(const FEElementMatrix& ke) override;
 
-	// scale factor for stiffness matrix
+	// scale factor for stiffness Matrix
 	void StiffnessAssemblyScaleFactor(double a);
 
 private:
