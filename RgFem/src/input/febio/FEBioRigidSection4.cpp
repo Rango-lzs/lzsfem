@@ -25,13 +25,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 #include "stdafx.h"
 #include "FEBioRigidSection4.h"
-#include <FECore/FEModel.h>
-#include <FECore/FECoreKernel.h>
-#include <FECore/FEModelComponent.h>
-#include <FECore/FEModelLoad.h>
-#include <FECore/FENLConstraint.h>
-#include <FECore/FEBoundaryCondition.h>
-#include <FECore/FEInitialCondition.h>
+#include "femcore/FEModel.h"
+#include "femcore/FEModelComponent.h"
+#include "femcore/FEModelLoad.h"
+#include "femcore/FENLConstraint.h"
+#include "femcore/FEBoundaryCondition.h"
+#include "femcore/FEInitialCondition.h"
 
 void FEBioRigidSection4::Parse(XMLTag& tag)
 {
@@ -60,7 +59,7 @@ void FEBioRigidSection4::ParseRigidBC(XMLTag& tag)
 	// get the type
 	const char* sztype = tag.AttributeValue("type");
 
-	FEBoundaryCondition* bc = fecore_new<FEBoundaryCondition>(sztype, fem);
+	FEBoundaryCondition* bc = RANGO_NEW<FEBoundaryCondition>(fem, sztype);
 	if (szname) bc->SetName(szname);
 
 	GetBuilder()->AddRigidComponent(bc);
@@ -77,7 +76,7 @@ void FEBioRigidSection4::ParseRigidIC(XMLTag& tag)
 	// get the type
 	const char* sztype = tag.AttributeValue("type");
 
-	FEInitialCondition* ic = fecore_new<FEInitialCondition>(sztype, fem);
+	FEInitialCondition* ic = RANGO_NEW<FEInitialCondition>(fem, sztype);
 	if (szname) ic->SetName(szname);
 
 	GetBuilder()->AddRigidComponent(ic);
@@ -92,7 +91,7 @@ void FEBioRigidSection4::ParseRigidLoad(XMLTag& tag)
 	// get the type
 	const char* sztype = tag.AttributeValue("type");
 
-	FEModelLoad* ml = fecore_new<FEModelLoad>(sztype, GetFEModel());
+	FEModelLoad* ml = RANGO_NEW<FEModelLoad>(GetFEModel(), sztype);
 	if (szname) ml->SetName(szname);
 
 	GetBuilder()->AddRigidComponent(ml);
@@ -103,7 +102,7 @@ void FEBioRigidSection4::ParseRigidConnector(XMLTag& tag)
 {
 	const char* sztype = tag.AttributeValue("type");
 
-	FENLConstraint* plc = fecore_new<FENLConstraint>(sztype, GetFEModel());
+	FENLConstraint* plc = RANGO_NEW<FENLConstraint>(GetFEModel(), sztype);
 	if (plc == 0) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
 	const char* szname = tag.AttributeValue("name", true);

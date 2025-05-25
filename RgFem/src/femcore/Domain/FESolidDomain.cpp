@@ -31,7 +31,7 @@ bool FESolidDomain::Create(int nsize, FE_Element_Spec espec)
     m_Elem.resize(nsize);
 	for (int i = 0; i < nsize; ++i)
 	{
-		FESolidElement& el = m_Elem[i];
+		FESolidElement& el = *m_Elem[i];
 		el.setLocalId(i);
 		el.SetMeshPartition(this);
 	}
@@ -60,11 +60,11 @@ int FESolidDomain::Elements() const { return (int)m_Elem.size(); }
 void FESolidDomain::ForEachSolidElement(std::function<void(FESolidElement& el)> f)
 {
 	int NE = Elements();
-	for (int i = 0; i < NE; ++i) f(m_Elem[i]);
+	for (int i = 0; i < NE; ++i) f(*m_Elem[i]);
 }
 
 //-----------------------------------------------------------------------------
-FESolidElement& FESolidDomain::Element(int n) { return m_Elem[n]; }
+FESolidElement& FESolidDomain::Element(int n) { return *m_Elem[n]; }
 
 //-----------------------------------------------------------------------------
 void FESolidDomain::CopyFrom(FEMeshPartition* pd)

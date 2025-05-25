@@ -30,7 +30,7 @@ SOFTWARE.*/
 #include "FEBioControlSection.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
 #include "femcore/FEModel.h"
-#include <femcore/FETimeStepController.h>
+#include <femcore/TimeStep/FETimeStepController.h>
 #include "logger/log.h"
 //-----------------------------------------------------------------------------
 void FEBioControlSection::Parse(XMLTag& tag)
@@ -46,7 +46,7 @@ void FEBioControlSection::Parse(XMLTag& tag)
 	FESolver* psolver = pstep->GetFESolver();
 	if (psolver == 0) 
 	{
-		string m = GetBuilder()->GetModuleName();
+		std::string m = GetBuilder()->GetModuleName();
 		throw FEBioImport::FailedAllocatingSolver(m.c_str());
 	}
 
@@ -100,7 +100,7 @@ bool FEBioControlSection::ParseCommonParams(XMLTag& tag)
 		{
 			if (tag == "time_stepper")
 			{
-				if (pstep->m_timeController == nullptr) pstep->m_timeController = fecore_alloc(FETimeStepController, &fem);
+				if (pstep->m_timeController == nullptr) pstep->m_timeController = RANGO_NEW<FETimeStepController>(& fem,"");
 				FETimeStepController& tc = *pstep->m_timeController;
 				FEParameterList& pl = tc.GetParameterList();
 				ReadParameterList(tag, pl);
@@ -283,7 +283,7 @@ void FEStepControlSection::Parse(XMLTag& tag)
 	FESolver* psolver = pstep->GetFESolver();
 	if (psolver == 0)
 	{
-		string m = GetBuilder()->GetModuleName();
+		std::string m = GetBuilder()->GetModuleName();
 		throw FEBioImport::FailedAllocatingSolver(m.c_str());
 	}
 
@@ -335,7 +335,7 @@ bool FEStepControlSection::ParseCommonParams(XMLTag& tag)
 		{
 			if (tag == "time_stepper")
 			{
-				if (pstep->m_timeController == nullptr) pstep->m_timeController = fecore_alloc(FETimeStepController, &fem);
+				if (pstep->m_timeController == nullptr) pstep->m_timeController = RANGO_NEW<FETimeStepController> ( & fem,"");
 				FETimeStepController& tc = *pstep->m_timeController;
 				FEParameterList& pl = tc.GetParameterList();
 				ReadParameterList(tag, pl);

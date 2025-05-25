@@ -8,8 +8,8 @@ Matrix3ds Log(const Matrix3ds& p, const Matrix3ds& X)
 	// evaluate eigen-decomposition of p
 	p.eigen(l, u);
 	Matrix3d U(u[0], u[1], u[2]);
-	mat3dd L(l[0], l[1], l[2]);
-	mat3dd rootL(sqrt(l[0]), sqrt(l[1]), sqrt(l[2]));
+	Matrix3dd L(l[0], l[1], l[2]);
+	Matrix3dd rootL(sqrt(l[0]), sqrt(l[1]), sqrt(l[2]));
 
 	Matrix3d G = U * rootL;
 	Matrix3d Gi = G.inverse();
@@ -21,7 +21,7 @@ Matrix3ds Log(const Matrix3ds& p, const Matrix3ds& X)
 
 	Matrix3d GV = G * V;
 
-	mat3dd logS(log(s[0]), log(s[1]), log(s[2]));
+	Matrix3dd logS(log(s[0]), log(s[1]), log(s[2]));
 
 	Matrix3d LogX = (GV)*logS*(GV.transpose());
 
@@ -36,8 +36,8 @@ Matrix3ds Exp(const Matrix3ds& p, const Matrix3ds& X)
 	// evaluate eigen-decomposition of p
 	p.eigen(l, u);
 	Matrix3d U(u[0], u[1], u[2]);
-	mat3dd L(l[0], l[1], l[2]);
-	mat3dd rootL(sqrt(l[0]), sqrt(l[1]), sqrt(l[2]));
+	Matrix3dd L(l[0], l[1], l[2]);
+	Matrix3dd rootL(sqrt(l[0]), sqrt(l[1]), sqrt(l[2]));
 
 	Matrix3d G = U * rootL;
 	Matrix3d Gi = G.inverse();
@@ -49,7 +49,7 @@ Matrix3ds Exp(const Matrix3ds& p, const Matrix3ds& X)
 
 	Matrix3d GV = G * V;
 
-	mat3dd expS(exp(s[0]), exp(s[1]), exp(s[2]));
+	Matrix3dd expS(exp(s[0]), exp(s[1]), exp(s[2]));
 
 	Matrix3d ExpX = (GV)*expS*(GV.transpose());
 

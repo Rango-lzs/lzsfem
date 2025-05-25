@@ -8,6 +8,7 @@ class FEM_EXPORT FEStepComponent : public FEModelComponent
 {
 public:
     FEStepComponent(FEModel* fem);
+    FEStepComponent();
 
     //-----------------------------------------------------------------------------------
     //! This function checks if the component is active in the current step.

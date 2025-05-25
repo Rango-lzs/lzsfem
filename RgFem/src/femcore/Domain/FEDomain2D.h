@@ -76,5 +76,5 @@ public:
     Vector2d gradivec(FEElement2D& el, Vector2d* fn, int n);
     
 protected:
-    std::vector<FEElement2D>	m_Elem;	//!< array of elements
+    std::vector<FEElement2D*>	m_Elem;	//!< array of elements
 };

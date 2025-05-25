@@ -10,13 +10,13 @@ bool FEDomain2D::Create(int nelems, FE_Element_Spec espec)
 	m_Elem.resize(nelems);
 	for (int i = 0; i < nelems; ++i)
 	{
-		FEElement2D& el = m_Elem[i];
+		FEElement2D& el = *m_Elem[i];
 		el.setLocalId(i);
 		el.SetMeshPartition(this);
 	}
 
 	if (espec.etype != FE_ELEM_INVALID_TYPE) 
-		for (int i=0; i<nelems; ++i) m_Elem[i].setType(espec.etype);
+		for (int i=0; i<nelems; ++i) m_Elem[i]->setType(espec.etype);
 
 	return true;
 }
@@ -31,20 +31,20 @@ int FEDomain2D::Elements() const
 //! element access
 FEElement2D& FEDomain2D::Element(int n)
 {
-    return m_Elem[n];
+    return *m_Elem[n];
 }
 FEElement& FEDomain2D::ElementRef(int n)
 {
-    return m_Elem[n];
+    return *m_Elem[n];
 }
 const FEElement& FEDomain2D::ElementRef(int n) const
 {
-    return m_Elem[n];
+    return *m_Elem[n];
 }
 
 int FEDomain2D::GetElementType()
 {
-    return m_Elem[0].elementType();
+    return m_Elem[0]->elementType();
 }
 
 //-----------------------------------------------------------------------------

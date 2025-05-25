@@ -26,7 +26,7 @@ void FENewtonStrategy::SetNewtonSolver(FENewtonSolver* solver)
 }
 
 //! initialize the linear system
-SparseMatrix* FENewtonStrategy::CreateSparseMatrix(MatrixType mtype)
+SparseMatrix* FENewtonStrategy::CreateSparseMatrix(const MatrixType& mtype)
 {
 	if (m_pns == 0) return 0;
 

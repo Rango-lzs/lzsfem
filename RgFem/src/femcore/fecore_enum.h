@@ -129,7 +129,7 @@ enum FEDataType {
 	FE_INVALID_TYPE,
 	FE_DOUBLE,
 	FE_VEC2D,
-	FE_Vector3d,
+	FE_VEC3D,
 	FE_MAT3D,
 	FE_MAT3DS
 };

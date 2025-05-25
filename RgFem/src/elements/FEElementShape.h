@@ -1,5 +1,6 @@
 #pragma once
 #include "femcore/fecore_enum.h"
+#include "RgElemTypeDefine.h"
 
 //=============================================================================
 // Base class for defining element shape classes.

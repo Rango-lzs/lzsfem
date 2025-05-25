@@ -1,7 +1,8 @@
 #include "FEBioContactSection.h"
-#include "femcore/FEAugLagLinearConstraint.h"
+//#include "femcore/FEAugLagLinearConstraint.h"
 #include "femcore/FENodalBC.h"
 #include "femcore/FEModel.h"
+#include "femcore/FEMesh.h"
 
 //-----------------------------------------------------------------------------
 FEBioContactSection::MissingPrimarySurface::MissingPrimarySurface()
@@ -26,49 +27,49 @@ void FEBioContactSection::ParseLinearConstraint(XMLTag& tag)
 	// make sure there is a constraint defined
 	if (tag.isleaf()) return;
 
-	// create a new linear constraint manager
-	FELinearConstraintSet* pLCS = dynamic_cast<FELinearConstraintSet*>(fecore_new<FENLConstraint>("linear constraint", GetFEModel()));
-	fem.AddNonlinearConstraint(pLCS);
+	//// create a new linear constraint manager
+	//FELinearConstraintSet* pLCS = dynamic_cast<FELinearConstraintSet*>(fecore_new<FENLConstraint>("linear constraint", GetFEModel()));
+	//fem.AddNonlinearConstraint(pLCS);
 
 	// read the linear constraints
 	++tag;
 	do
 	{
-		if (tag == "linear_constraint")
-		{
-			FEAugLagLinearConstraint* pLC = fecore_alloc(FEAugLagLinearConstraint, &fem);
+		//if (tag == "linear_constraint")
+		//{
+		//	FEAugLagLinearConstraint* pLC = fecore_alloc(FEAugLagLinearConstraint, &fem);
 
-			++tag;
-			do
-			{
-				int node, bc;
-				double val;
-				if (tag == "node")
-				{
-					tag.value(val);
-					
-					const char* szid = tag.AttributeValue("id");
-					node = atoi(szid);
+		//	++tag;
+		//	do
+		//	{
+		//		int node, bc;
+		//		double val;
+		//		if (tag == "node")
+		//		{
+		//			tag.value(val);
+		//			
+		//			const char* szid = tag.AttributeValue("id");
+		//			node = atoi(szid);
 
-					const char* szbc = tag.AttributeValue("bc");
-                    int ndof = dofs.GetDOF(szbc);
-                    if (ndof >= 0) bc = ndof;
-					else throw XMLReader::InvalidAttributeValue(tag, "bc", szbc);
+		//			const char* szbc = tag.AttributeValue("bc");
+  //                  int ndof = dofs.GetDOF(szbc);
+  //                  if (ndof >= 0) bc = ndof;
+		//			else throw XMLReader::InvalidAttributeValue(tag, "bc", szbc);
 
-					pLC->AddDOF(node, bc, val);
-				}
-				else throw XMLReader::InvalidTag(tag);
-				++tag;
-			}
-			while (!tag.isend());
+		//			pLC->AddDOF(node, bc, val);
+		//		}
+		//		else throw XMLReader::InvalidTag(tag);
+		//		++tag;
+		//	}
+		//	while (!tag.isend());
 
-			// add the linear constraint to the system
-			pLCS->add(pLC);
-		}
-		else if (ReadParameter(tag, pLCS) == false)
-		{
-			throw XMLReader::InvalidTag(tag);
-		}
+		//	// add the linear constraint to the system
+		//	pLCS->add(pLC);
+		//}
+		//else if (ReadParameter(tag, pLCS) == false)
+		//{
+		//	throw XMLReader::InvalidTag(tag);
+		//}
 		++tag;
 	}
 	while (!tag.isend());
@@ -102,22 +103,22 @@ bool FEBioContactSection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int nfm
 		// set the element type/integration rule
 		if (bnodal)
 		{
-			if      (tag == "quad4") el.SetType(FE_QUAD4NI);
-			else if (tag == "tri3" ) el.SetType(FE_TRI3NI );
-			else if (tag == "tri6" ) el.SetType(FE_TRI6NI );
-            else if (tag == "quad8" ) el.SetType(FE_QUAD8NI);
-            else if (tag == "quad9" ) el.SetType(FE_QUAD9NI);
+			if      (tag == "quad4") el.setType(FE_QUAD4NI);
+			else if (tag == "tri3" ) el.setType(FE_TRI3NI );
+			else if (tag == "tri6" ) el.setType(FE_TRI6NI );
+            else if (tag == "quad8" ) el.setType(FE_QUAD8NI);
+            else if (tag == "quad9" ) el.setType(FE_QUAD9NI);
 			else throw XMLReader::InvalidTag(tag);
 		}
 		else
 		{
-			if      (tag == "quad4") el.SetType(FE_QUAD4G4);
-			else if (tag == "tri3" ) el.SetType(feb->m_ntri3);
-			else if (tag == "tri6" ) el.SetType(feb->m_ntri6);
-			else if (tag == "tri7" ) el.SetType(feb->m_ntri7);
-			else if (tag == "tri10") el.SetType(feb->m_ntri10);
-			else if (tag == "quad8") el.SetType(FE_QUAD8G9);
-			else if (tag == "quad9") el.SetType(FE_QUAD9G9);
+			if      (tag == "quad4") el.setType(FE_QUAD4G4);
+			else if (tag == "tri3" ) el.setType(feb->m_ntri3);
+			else if (tag == "tri6" ) el.setType(feb->m_ntri6);
+			else if (tag == "tri7" ) el.setType(feb->m_ntri7);
+			else if (tag == "tri10") el.setType(feb->m_ntri10);
+			else if (tag == "quad8") el.setType(FE_QUAD8G9);
+			else if (tag == "quad9") el.setType(FE_QUAD9G9);
 			else throw XMLReader::InvalidTag(tag);
 		}
 
@@ -174,12 +175,12 @@ void FEBioContactSection4::Parse(XMLTag& tag)
 			// get the contact type
 			const char* sztype = tag.AttributeValue("type");
 
-			// Try to create a contact interface using the FEBio kernel. 
-			FESurfacePairConstraint* pci = fecore_new<FESurfacePairConstraint>(sztype, &fem);
-			if (pci == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
+			//// Try to create a contact interface using the FEBio kernel. 
+			//FESurfacePairConstraint* pci = fecore_new<FESurfacePairConstraint>(sztype, &fem);
+			//if (pci == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
-			GetBuilder()->AddContactInterface(pci);
-			ParseContactInterface(tag, pci);
+			/*GetBuilder()->AddContactInterface(pci);
+			ParseContactInterface(tag, pci);*/
 		}
 
 		++tag;
@@ -192,21 +193,21 @@ void FEBioContactSection4::ParseContactInterface(XMLTag& tag, FESurfacePairConst
 	FEModel& fem = *GetFEModel();
 	FEMesh& m = fem.GetMesh();
 
-	// get the surface pair
-	const char* szpair = tag.AttributeValue("surface_pair");
-	FESurfacePair* surfacePair = m.FindSurfacePair(szpair);
-	if (surfacePair == 0) throw XMLReader::InvalidAttributeValue(tag, "surface_pair", szpair);
+	//// get the surface pair
+	//const char* szpair = tag.AttributeValue("surface_pair");
+	//FESurfacePair* surfacePair = m.FindSurfacePair(szpair);
+	//if (surfacePair == 0) throw XMLReader::InvalidAttributeValue(tag, "surface_pair", szpair);
 
-	// build the surfaces
-	if (GetBuilder()->BuildSurface(*pci->GetSecondarySurface(), *surfacePair->GetSecondarySurface(), pci->UseNodalIntegration()) == false) throw XMLReader::InvalidAttributeValue(tag, "surface_pair", szpair);
-	if (GetBuilder()->BuildSurface(*pci->GetPrimarySurface(), *surfacePair->GetPrimarySurface(), pci->UseNodalIntegration()) == false) throw XMLReader::InvalidAttributeValue(tag, "surface_pair", szpair);
+	//// build the surfaces
+	//if (GetBuilder()->BuildSurface(*pci->GetSecondarySurface(), *surfacePair->GetSecondarySurface(), pci->UseNodalIntegration()) == false) throw XMLReader::InvalidAttributeValue(tag, "surface_pair", szpair);
+	//if (GetBuilder()->BuildSurface(*pci->GetPrimarySurface(), *surfacePair->GetPrimarySurface(), pci->UseNodalIntegration()) == false) throw XMLReader::InvalidAttributeValue(tag, "surface_pair", szpair);
 
-	// get the parameter list
-	ReadParameterList(tag, pci);
+	//// get the parameter list
+	//ReadParameterList(tag, pci);
 
-	// Make sure we have both surfaces
-	FESurface* pss = pci->GetPrimarySurface(); if ((pss == 0) || (pss->Elements() == 0)) throw MissingPrimarySurface();
-	m.AddSurface(pss);
-	FESurface* pms = pci->GetSecondarySurface(); if ((pms == 0) || (pms->Elements() == 0)) throw MissingSecondarySurface();
-	m.AddSurface(pms);
+	//// Make sure we have both surfaces
+	//FESurface* pss = pci->GetPrimarySurface(); if ((pss == 0) || (pss->Elements() == 0)) throw MissingPrimarySurface();
+	//m.AddSurface(pss);
+	//FESurface* pms = pci->GetSecondarySurface(); if ((pms == 0) || (pms->Elements() == 0)) throw MissingSecondarySurface();
+	//m.AddSurface(pms);
 }

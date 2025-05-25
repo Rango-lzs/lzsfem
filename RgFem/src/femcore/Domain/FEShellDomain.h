@@ -64,18 +64,18 @@ public:
 	int Elements() const override { return (int)m_Elem.size(); }
 
 	//! element access
-	FEShellElement& Element(int n) override { return m_Elem[n]; }
-	FEElement& ElementRef(int n) override { return m_Elem[n]; }
-	const FEElement& ElementRef(int n) const override { return m_Elem[n]; }
+	FEShellElement& Element(int n) override { return *m_Elem[n]; }
+	FEElement& ElementRef(int n) override { return *m_Elem[n]; }
+	const FEElement& ElementRef(int n) const override { return *m_Elem[n]; }
 
-	FEShellElementOld& ShellElement(int i) { return m_Elem[i]; }
+	FEShellElementOld& ShellElement(int i) { return *m_Elem[i]; }
 
 	double Volume(FEShellElement& el) override;
 
 	void InitShells() override;
 
 protected:
-	std::vector<FEShellElementOld>	m_Elem;	//!< array of elements
+	std::vector<FEShellElementOld*>	m_Elem;	//!< array of elements
 };
 
 //-----------------------------------------------------------------------------
@@ -93,11 +93,11 @@ public:
 	int Elements() const override { return (int)m_Elem.size(); }
 
 	//! element access
-	FEShellElement& Element(int n) override { return m_Elem[n]; }
-	FEElement& ElementRef(int n) override { return m_Elem[n]; }
-	const FEElement& ElementRef(int n) const override { return m_Elem[n]; }
+	FEShellElement& Element(int n) override { return *m_Elem[n]; }
+	FEElement& ElementRef(int n) override { return *m_Elem[n]; }
+	const FEElement& ElementRef(int n) const override { return *m_Elem[n]; }
 
-	FEShellElementNew& ShellElement(int i) { return m_Elem[i]; }
+	FEShellElementNew& ShellElement(int i) { return *m_Elem[i]; }
 
 	double Volume(FEShellElement& el) override;
 
@@ -109,7 +109,7 @@ protected:
 	double	m_h0;
 
 protected:
-	std::vector<FEShellElementNew>	m_Elem;	//!< array of elements
+	std::vector<FEShellElementNew*>	m_Elem;	//!< array of elements
 
 	DECLARE_PARAM_LIST();
 };

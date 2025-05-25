@@ -52,7 +52,7 @@ void FEBioInitialSection::Parse(XMLTag& tag)
 	{
 		if (tag == "velocity")
 		{
-			FENodalIC* pic = fecore_new<FENodalIC>("velocity", &fem);
+			FENodalIC* pic = RANGO_NEW<FENodalIC>(&fem, "velocity");
 
 			// add it to the model
 			GetBuilder()->AddInitialCondition(pic);
@@ -89,7 +89,7 @@ void FEBioInitialSection::Parse(XMLTag& tag)
 		else if (tag == "ic")
 		{
 			const char* sztype = tag.AttributeValue("type");
-			FEInitialCondition* pic = fecore_new<FEInitialCondition>(sztype, &fem);
+			FEInitialCondition* pic = RANGO_NEW<FEInitialCondition>(&fem, sztype);
 
 			if (tag.isleaf() == false)
 			{
@@ -136,7 +136,7 @@ void FEBioInitialSection::Parse(XMLTag& tag)
 			if (ndof == -1) throw XMLReader::InvalidTag(tag);
 
 			// allocate initial condition
-			FEInitialDOF* pic = dynamic_cast<FEInitialDOF*>(fecore_new<FEInitialCondition>("init_dof", &fem));
+			FEInitialDOF* pic = dynamic_cast<FEInitialDOF*>(RANGO_NEW<FEInitialCondition>(&fem, "init_dof"));
 			pic->SetDOF(ndof);
 
 			// add it to the model
@@ -204,7 +204,7 @@ void FEBioInitialSection25::Parse(XMLTag& tag)
 			if (pns == 0) throw XMLReader::InvalidTag(tag);
 
 			// allocate initial condition
-			FEInitialDOF* pic = dynamic_cast<FEInitialDOF*>(fecore_new<FEInitialCondition>("init_dof", &fem));
+			FEInitialDOF* pic = dynamic_cast<FEInitialDOF*>(RANGO_NEW<FEInitialCondition>(&fem, "init_dof"));
 			pic->SetDOF(ndof);
 			pic->SetNodeSet(pns);
 
@@ -217,7 +217,7 @@ void FEBioInitialSection25::Parse(XMLTag& tag)
 		else if (tag == "ic")
 		{
 			const char* sztype = tag.AttributeValue("type");
-			FEInitialCondition* pic = fecore_new<FEInitialCondition>(sztype, &fem);
+			FEInitialCondition* pic = RANGO_NEW<FEInitialCondition>(&fem, sztype);
 
 			FENodalIC* nic = dynamic_cast<FENodalIC*>(pic);
 			if (nic)
@@ -252,7 +252,7 @@ void FEBioInitialSection25::Parse(XMLTag& tag)
 					value(tag, v);
 
 					// create the initial condition
-					FEStepComponent* pic = fecore_new_class<FEInitialCondition>("FERigidBodyVelocity", &fem);
+					FEStepComponent* pic = RANGO_NEW<FEInitialCondition>(&fem, "FERigidBodyVelocity");
 					pic->SetParameter("rb", nmat);
 					pic->SetParameter("value", v);
 
@@ -266,7 +266,7 @@ void FEBioInitialSection25::Parse(XMLTag& tag)
 					value(tag, w);
 
 					// create the initial condition
-					FEStepComponent* pic = fecore_new_class<FEInitialCondition>("FERigidBodyAngularVelocity", &fem);
+					FEStepComponent* pic = RANGO_NEW<FEInitialCondition>(&fem, "FERigidBodyAngularVelocity");
 					pic->SetParameter("rb", nmat);
 					pic->SetParameter("value", w);
 

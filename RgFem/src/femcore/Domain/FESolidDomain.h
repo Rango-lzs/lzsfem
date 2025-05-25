@@ -43,12 +43,12 @@ public:
 
     //! element access
 	FESolidElement& Element(int n);
-    FEElement& ElementRef(int n) override { return m_Elem[n]; }
-	const FEElement& ElementRef(int n) const override { return m_Elem[n]; }
+    FEElement& ElementRef(int n) override { return *m_Elem[n]; }
+	const FEElement& ElementRef(int n) const override { return *m_Elem[n]; }
 
-    ElementType GetElementType() const { return m_Elem[0].elementType(); }
+    ElementType GetElementType() const { return m_Elem[0]->elementType(); }
     
-    int GetElementShape() const { return m_Elem[0].ShapeFunctions(-1); }
+    int GetElementShape() const { return m_Elem[0]->ShapeFunctions(-1); }
 
 	FE_Element_Spec GetElementSpec() const;
     
@@ -258,7 +258,7 @@ public:
 	);
 
 protected:
-    std::vector<FESolidElement>	m_Elem;		//!< array of elements
+    std::vector<FESolidElement*>	m_Elem;		//!< array of elements
 	FE_Element_Spec			m_elemSpec;	//!< the element spec
 
 	FEDofList	m_dofU;

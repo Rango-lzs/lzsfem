@@ -1,42 +1,13 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEBioMeshSection.h"
-#include <FECore/FESolidDomain.h>
-#include <FECore/FEShellDomain.h>
-#include <FECore/FETrussDomain.h>
-#include <FECore/FEDomain2D.h>
-#include <FECore/FEModel.h>
-#include <FECore/FEMaterial.h>
-#include <FECore/FECoreKernel.h>
-#include <FECore/FENodeNodeList.h>
+#include "femcore/Domain/FESolidDomain.h"
+#include "femcore/Domain/FEShellDomain.h"
+#include "femcore/Domain/FETrussDomain.h"
+#include "femcore/Domain/FEDomain2D.h"
+#include "femcore/FEModel.h"
+#include "materials/FEMaterial.h"
+#include "femcore/FENodeNodeList.h"
 #include <sstream>
+#include "femcore/Domain/FEDomain.h"
 
 //-----------------------------------------------------------------------------
 FEBioMeshSection::FEBioMeshSection(FEBioImport* pim) : FEBioFileSection(pim) {}
@@ -91,8 +62,8 @@ void FEBioMeshSection::ParseNodeSection(XMLTag& tag, FEBModel::Part* part)
 
 	// allocate node
 
-	vector<FEBModel::NODE> node; node.reserve(10000);
-	vector<int> nodeList; nodeList.reserve(10000);
+	std::vector<FEBModel::NODE> node; node.reserve(10000);
+	std::vector<int> nodeList; nodeList.reserve(10000);
 
 	// read nodal coordinates
 	++tag;
@@ -142,7 +113,7 @@ void FEBioMeshSection::ParseElementSection(XMLTag& tag, FEBModel::Part* part)
 	FEBModel::Domain* dom = part->FindDomain(szname);
 	if (dom)
 	{
-		stringstream ss;
+		std::stringstream ss;
 		ss << "Duplicate part name found : " << szname;
 		throw std::runtime_error(ss.str());
 	}
@@ -163,7 +134,7 @@ void FEBioMeshSection::ParseElementSection(XMLTag& tag, FEBModel::Part* part)
 	}
 
 	dom->Reserve(10000);
-	vector<int> elemList; elemList.reserve(10000);
+	std::vector<int> elemList; elemList.reserve(10000);
 
 	// read element data
 	++tag;
@@ -203,7 +174,7 @@ void FEBioMeshSection::ParseNodeSetSection(XMLTag& tag, FEBModel::Part* part)
 	part->AddNodeSet(set);
 
 	int nodes = tag.children();
-	vector<int> nodeList(nodes);
+	std::vector<int> nodeList(nodes);
 
 	++tag;
 	for (int i = 0; i < nodes; ++i)
@@ -287,7 +258,7 @@ void FEBioMeshSection::ParseElementSetSection(XMLTag& tag, FEBModel::Part* part)
 	part->AddElementSet(ps);
 
 	// read elements
-	vector<int> elemList;
+	std::vector<int> elemList;
 	++tag;
 	do
 	{
@@ -466,7 +437,7 @@ void FEBioMeshDomainsSection::ParseSolidDomainSection(XMLTag& tag)
 
 	// --- build the domain --- 
 	// we'll need the kernel for creating domains
-	FECoreKernel& febio = FECoreKernel::GetInstance();
+	/*FECoreKernel& febio = FECoreKernel::GetInstance();*/
 
 	// element count
 	int elems = partDomain->Elements();
@@ -475,10 +446,11 @@ void FEBioMeshDomainsSection::ParseSolidDomainSection(XMLTag& tag)
 	FE_Element_Spec spec = partDomain->ElementSpec();
 
 	// create the domain
-	FEDomain* dom = febio.CreateDomain(spec, &mesh, mat);
-	if (dom == 0) throw XMLReader::InvalidTag(tag);
+	FEDomain* dom = nullptr;//febio.CreateDomain(spec, &mesh, mat);
+    if (dom == 0)
+        throw XMLReader::InvalidTag(tag);
 
-	mesh.AddDomain(dom);
+    mesh.AddDomain(dom);
 
 	// TODO: Should the domain parameters be read in before
 	//       the domain is created? For UT4 domains, this is necessary
@@ -493,10 +465,10 @@ void FEBioMeshDomainsSection::ParseSolidDomainSection(XMLTag& tag)
 	dom->SetMatID(mat->GetID() - 1);
 
 	// get the part name
-	string partName = part->Name();
+	std::string partName = part->Name();
 	if (partName.empty() == false) partName += ".";
 
-	string domName = partName + partDomain->Name();
+	std::string domName = partName + partDomain->Name();
 	dom->SetName(domName);
 
 	// process element data
@@ -505,7 +477,7 @@ void FEBioMeshDomainsSection::ParseSolidDomainSection(XMLTag& tag)
 		const FEBModel::ELEMENT& domElement = partDomain->GetElement(j);
 
 		FEElement& el = dom->ElementRef(j);
-		el.SetID(domElement.id);
+		el.setId(domElement.id);
 
 		// TODO: This assumes one-based indexing of all nodes!
 		int ne = el.NodeSize();
@@ -578,7 +550,7 @@ void FEBioMeshDomainsSection::ParseShellDomainSection(XMLTag& tag)
 
 	// --- build the domain --- 
 	// we'll need the kernel for creating domains
-	FECoreKernel& febio = FECoreKernel::GetInstance();
+	//FECoreKernel& febio = FECoreKernel::GetInstance();
 
 	// element count
 	int elems = partDomain->Elements();
@@ -587,7 +559,7 @@ void FEBioMeshDomainsSection::ParseShellDomainSection(XMLTag& tag)
 	FE_Element_Spec spec = partDomain->ElementSpec();
 
 	// create the domain
-	FEDomain* dom = febio.CreateDomain(spec, &mesh, mat);
+	FEDomain* dom = nullptr;//febio.CreateDomain(spec, &mesh, mat);
 	if (dom == 0) throw XMLReader::InvalidTag(tag);
 
 	mesh.AddDomain(dom);
@@ -601,10 +573,10 @@ void FEBioMeshDomainsSection::ParseShellDomainSection(XMLTag& tag)
 	dom->SetMatID(mat->GetID() - 1);
 
 	// get the part name
-	string partName = part->Name();
+	std::string partName = part->Name();
 	if (partName.empty() == false) partName += ".";
 
-	string domName = partName + partDomain->Name();
+	std::string domName = partName + partDomain->Name();
 	dom->SetName(domName);
 
 	// process element data
@@ -613,7 +585,7 @@ void FEBioMeshDomainsSection::ParseShellDomainSection(XMLTag& tag)
 		const FEBModel::ELEMENT& domElement = partDomain->GetElement(j);
 
 		FEElement& el = dom->ElementRef(j);
-		el.SetID(domElement.id);
+		el.setId(domElement.id);
 
 		// TODO: This assumes one-based indexing of all nodes!
 		int ne = el.NodeSize();

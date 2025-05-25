@@ -1,39 +1,9 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEBioRigidSection.h"
-#include <FECore/FEModel.h>
-#include <FECore/FECoreKernel.h>
-#include <FECore/FEModelComponent.h>
-#include <FECore/FEModelLoad.h>
-#include <FECore/FENLConstraint.h>
-#include <FECore/FEBoundaryCondition.h>
+#include "femcore/FEModel.h"
+#include "femcore/FEModelComponent.h"
+#include "femcore/FEModelLoad.h"
+#include "femcore/FENLConstraint.h"
+#include "femcore/FEBoundaryCondition.h"
 
 void FEBioRigidSection::Parse(XMLTag& tag)
 {
@@ -61,20 +31,20 @@ void FEBioRigidSection::ParseRigidBC(XMLTag& tag)
 	if (strcmp(sztype, "fix") == 0)
 	{
 		// create the fixed dof
-		FEBoundaryCondition* pBC = fecore_new_class<FEBoundaryCondition>("FERigidFixedBCOld", fem);
+		FEBoundaryCondition* pBC = RANGO_NEW<FEBoundaryCondition>(fem,"FERigidFixedBCOld");
 		feb.AddRigidComponent(pBC);
 		ReadParameterList(tag, pBC);
 	}
 	else if (strcmp(sztype, "prescribe") == 0)
 	{
 		// create the rigid displacement constraint
-		FEBoundaryCondition* pDC = fecore_new_class<FEBoundaryCondition>("FERigidPrescribedOld", fem);
+		FEBoundaryCondition* pDC = RANGO_NEW<FEBoundaryCondition>(fem, "FERigidPrescribedOld");
 		feb.AddRigidComponent(pDC);
 		ReadParameterList(tag, pDC);
 	}
 	else if (strcmp(sztype, "force") == 0)
 	{
-		string name;
+		std::string name;
 		const char* szname = tag.AttributeValue("name", true);
 		if (szname) name = szname;
 
@@ -122,7 +92,7 @@ void FEBioRigidSection::ParseRigidBC(XMLTag& tag)
 		FEModelLoad* pFC = nullptr;
 		if (bc < 3)
 		{
-			pFC = fecore_new_class<FEModelLoad>("FERigidBodyForce", fem);
+			pFC = RANGO_NEW<FEModelLoad>(fem, "FERigidBodyForce");
 			pFC->SetParameter("load_type", ntype);
 			pFC->SetParameter("rb", rb);
 			pFC->SetParameter("dof", bc);
@@ -131,7 +101,7 @@ void FEBioRigidSection::ParseRigidBC(XMLTag& tag)
 		}
 		else
 		{
-			pFC = fecore_new_class<FEModelLoad>("FERigidBodyMoment", fem);
+			pFC = RANGO_NEW<FEModelLoad>(fem,"FERigidBodyMoment");
 			pFC->SetParameter("rb", rb);
 			pFC->SetParameter("dof", bc - 3);
 			pFC->SetParameter("value", val);
@@ -154,32 +124,32 @@ void FEBioRigidSection::ParseRigidBC(XMLTag& tag)
 	}
 	else if (strcmp(sztype, "initial_rigid_velocity") == 0)
 	{
-		FEBoundaryCondition* pic = fecore_new_class<FEBoundaryCondition>("FERigidBodyVelocity", fem);
+		FEBoundaryCondition* pic = RANGO_NEW<FEBoundaryCondition>(fem, "FERigidBodyVelocity");
 		feb.AddRigidComponent(pic);
 		ReadParameterList(tag, pic);
 	}
 	else if (strcmp(sztype, "initial_rigid_angular_velocity") == 0)
 	{
-		FEBoundaryCondition* pic = fecore_new_class<FEBoundaryCondition>("FERigidBodyAngularVelocity", fem);
+		FEBoundaryCondition* pic = RANGO_NEW<FEBoundaryCondition>(fem, "FERigidBodyAngularVelocity");
 		feb.AddRigidComponent(pic);
 		ReadParameterList(tag, pic);
 	}
     else if (strcmp(sztype, "follower force") == 0)
     {
-        FEModelLoad* rc = fecore_new_class<FEModelLoad>("FERigidFollowerForce", fem);
+        FEModelLoad* rc = RANGO_NEW<FEModelLoad>(fem,"FERigidFollowerForce");
         feb.AddModelLoad(rc);
         ReadParameterList(tag, rc);
     }
     else if (strcmp(sztype, "follower moment") == 0)
     {
-		FEModelLoad* rc = fecore_new_class<FEModelLoad>("FERigidFollowerMoment", fem);
+		FEModelLoad* rc = RANGO_NEW<FEModelLoad>(fem,"FERigidFollowerMoment");
         feb.AddModelLoad(rc);
         ReadParameterList(tag, rc);
     }
 	else
 	{
 		// create the rigid constraint
-		FEBoundaryCondition* pBC = fecore_new<FEBoundaryCondition>(sztype, fem);
+		FEBoundaryCondition* pBC = RANGO_NEW<FEBoundaryCondition>(fem, sztype);
 		if (pBC == nullptr)  throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 		feb.AddRigidComponent(pBC);
 		ReadParameterList(tag, pBC);
@@ -190,7 +160,7 @@ void FEBioRigidSection::ParseRigidConnector(XMLTag& tag)
 {
 	const char* sztype = tag.AttributeValue("type");
 
-	FENLConstraint* plc = fecore_new<FENLConstraint>(sztype, GetFEModel());
+	FENLConstraint* plc = RANGO_NEW<FENLConstraint>(GetFEModel(), sztype);
 	if (plc == 0) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
 	const char* szname = tag.AttributeValue("name", true);

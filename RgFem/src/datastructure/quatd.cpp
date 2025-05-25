@@ -1,5 +1,6 @@
 #include "quatd.h"
 #include <math.h>
+#include "MathUtils.h"
 
 //-----------------------------------------------------------------------------
 //! Spherical linear interpolation between two quaternions.

@@ -4,7 +4,7 @@
 #include "basicio/DumpStream.h"
 #include "logger/log.h"
 
-BEGIN_PARAM_DEFINE(FELinearConstraintDOF, FECoreClass)
+BEGIN_PARAM_DEFINE(FELinearConstraintDOF, FEObjectBase)
 	ADD_PARAMETER(dof, "dof", 0, "$(dof_list)");
 	ADD_PARAMETER(node, "node");
 	ADD_PARAMETER(val, "value");
@@ -213,7 +213,7 @@ void FELinearConstraint::Activate()
 
 	// we need the parent node to be fixed so that no equation is allocated
 	FENode& node = mesh.Node(m_parentDof->node);
-	node.set_bc(m_parentDof->dof, DOF_FIXED);
+	node.setDofState(m_parentDof->dof, DOF_FIXED);
 }
 
 //-----------------------------------------------------------------------------
@@ -223,7 +223,7 @@ void FELinearConstraint::Deactivate()
 	FEMesh& mesh = GetFEModel()->GetMesh();
 
 	FENode& node = mesh.Node(m_parentDof->node);
-	node.set_bc(m_parentDof->dof, DOF_OPEN);
+	node.setDofState(m_parentDof->dof, DOF_OPEN);
 }
 
 //-----------------------------------------------------------------------------

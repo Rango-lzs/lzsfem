@@ -117,7 +117,7 @@ void FEElasticSolidDomain::PreSolveUpdate(const FETimeInfo& timeInfo)
 #pragma omp parallel for
 	for (int i=0; i<Elements(); ++i)
 	{
-		FESolidElement& el = m_Elem[i];
+		FESolidElement& el = *m_Elem[i];
 		if (el.isActive())
 		{
 			int n = el.GaussPointSize();
@@ -141,7 +141,7 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 	for (int i=0; i<NE; ++i)
 	{
 		// get the element
-		FESolidElement& el = m_Elem[i];
+		FESolidElement& el = *m_Elem[i];
 
 		if (1/*el.isActive()*/) {  //Element需要有isActive的标识吗？
 			// element force std::vector
@@ -159,7 +159,8 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 			UnpackLM(el, lm);
 
 			// assemble element 'fe'-std::vector into global R std::vector
-			R.Assemble(el.getNodeIds(), lm, fe);
+			// Rango TODO:
+			//R.Assemble(el.getNodeIds(), lm, fe);
 		}
 	}
 }
@@ -399,7 +400,7 @@ void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& ls)
 	#pragma omp parallel for shared (NE)
 	for (int iel=0; iel<NE; ++iel)
 	{
-		FESolidElement& elem = m_Elem[iel];
+		FESolidElement& elem = *m_Elem[iel];
 
 		if (elem.isActive()) {
 
@@ -556,7 +557,7 @@ void FEElasticSolidDomain::UpdateElementStress(int iel, const FETimeInfo& tp)
     double dt =tp.timeIncrement;
     
 	// get the solid element
-	FESolidElement& el = m_Elem[iel];
+	FESolidElement& el = *m_Elem[iel];
 
 	// get the number of integration points
 	int nint = el.GaussPointSize();
@@ -691,7 +692,7 @@ void FEElasticSolidDomain::InertialForces(FEGlobalVector& R, std::vector<double>
 	for (int i=0; i<NE; ++i)
     {
 		// get the element
-		FESolidElement& el = m_Elem[i];
+		FESolidElement& el = *m_Elem[i];
 
 		if (el.isActive()) {
 			// element force std::vector

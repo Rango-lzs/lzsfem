@@ -28,7 +28,6 @@ SOFTWARE.*/
 
 #include "stdafx.h"
 #include "FEBioMeshAdaptorSection.h"
-#include <FECore/FEMeshAdaptor.h>
 
 void FEBioMeshAdaptorSection::Parse(XMLTag& tag)
 {
@@ -52,7 +51,7 @@ void FEBioMeshAdaptorSection::ParseMeshAdaptor(XMLTag& tag)
 
 	FEModel* fem = GetFEModel();
 
-	FEMeshAdaptor* meshAdaptor = fecore_new<FEMeshAdaptor>(sztype, fem);
+	/*FEMeshAdaptor* meshAdaptor = fecore_new<FEMeshAdaptor>(sztype, fem);
 	if (meshAdaptor == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
 	// get the optional element set
@@ -68,6 +67,7 @@ void FEBioMeshAdaptorSection::ParseMeshAdaptor(XMLTag& tag)
 
 	fem->AddMeshAdaptor(meshAdaptor);
 	GetBuilder()->AddComponent(meshAdaptor);
+	
 
-	ReadParameterList(tag, meshAdaptor);
+	ReadParameterList(tag, meshAdaptor);*/
 }

@@ -72,7 +72,7 @@ public:
 
     void setLocalId(int lid);
     int getLocalId() const;
-    const std::vector<NodeId>& getNodeIds();
+    const std::vector<NodeId>& getNodeIds() const;
 
     virtual ElementType elementType() const = 0;
     
@@ -114,6 +114,9 @@ public:
     bool HasNode(int i) const;
 
     bool HasNodes(int* node, int size) const;
+
+    //! clear material point data
+    void ClearData();
 
 public: 
 

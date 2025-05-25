@@ -1,5 +1,6 @@
 #include "femcore/FENLConstraint.h"
 
+DEFINE_META_CLASS(FENLConstraint, FEStepComponent,"");
 //-----------------------------------------------------------------------------
 FENLConstraint::FENLConstraint(FEModel* pfem) : FEStepComponent(pfem)
 {

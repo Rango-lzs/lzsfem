@@ -233,8 +233,8 @@ void MSimpleExpression::fixVariableRefs(MItem* pi)
 // Create a simple expression object from a string
 bool MSimpleExpression::Create(const std::string& expr, bool autoVars)
 {
-	MObjBuilder mob;
+	/*MObjBuilder mob;
 	mob.setAutoVars(autoVars);
-	if (mob.Create(this, expr, false) == false) return false;
+	if (mob.Create(this, expr, false) == false) return false;*/
 	return true;
 }

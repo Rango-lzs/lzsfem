@@ -41,8 +41,8 @@ void FESolidLinearSystem::Assemble(const FEElementMatrix& ke)
 			m_K.Assemble(kes);
 		}
 
-		// get the vector that stores the prescribed BC values
-		vector<double>& ui = m_u;
+		// get the std::vector that stores the prescribed BC values
+		std::vector<double>& ui = m_u;
 
 		// adjust for linear constraints
 		FEModel* fem = m_solver->GetFEModel();
@@ -65,8 +65,8 @@ void FESolidLinearSystem::Assemble(const FEElementMatrix& ke)
 			int N = ke.rows();
 
 			// loop over columns
-			const vector<int>& elmi = ke.RowIndices();
-			const vector<int>& elmj = ke.ColumnsIndices();
+			const std::vector<int>& elmi = ke.RowIndices();
+			const std::vector<int>& elmj = ke.ColumnsIndices();
 			for (int j = 0; j < N; ++j)
 			{
 				int J = -elmj[j] - 2;
@@ -101,36 +101,36 @@ void FESolidLinearSystem::Assemble(const FEElementMatrix& ke)
 
 
 
-		// adjust stiffness Matrix for prescribed degrees of freedom
-		{
-			SparseMatrix& K = m_K;
+		//// adjust stiffness Matrix for prescribed degrees of freedom
+		//{
+		//	SparseMatrix& K = m_K;
 
-			int N = ke.rows();
+		//	int N = ke.rows();
 
-			// loop over columns
-			const vector<int>& elmi = ke.RowIndices();
-			const vector<int>& elmj = ke.ColumnsIndices();
-			for (int j = 0; j < N; ++j)
-			{
-				int J = -elmj[j] - 2;
-				if ((J >= 0) && (J < m_nreq))
-				{
-					// dof j is a prescribed degree of freedom
+		//	// loop over columns
+		//	const std::vector<int>& elmi = ke.RowIndices();
+		//	const std::vector<int>& elmj = ke.ColumnsIndices();
+		//	for (int j = 0; j < N; ++j)
+		//	{
+		//		int J = -elmj[j] - 2;
+		//		if ((J >= 0) && (J < m_nreq))
+		//		{
+		//			// dof j is a prescribed degree of freedom
 
-					// loop over rows
-					for (int i = 0; i < N; ++i)
-					{
-						int I = elmi[i];
-						if (I >= 0)
-						{
-							// dof i is not a prescribed degree of freedom
-							#pragma omp atomic
-							m_F[I] -= ke[i][j] * ui[J];
-						}
-					}
+		//			// loop over rows
+		//			for (int i = 0; i < N; ++i)
+		//			{
+		//				int I = elmi[i];
+		//				if (I >= 0)
+		//				{
+		//					// dof i is not a prescribed degree of freedom
+		//					#pragma omp atomic
+		//					m_F[I] -= ke[i][j] * ui[J];
+		//				}
+		//			}
 
-					// set the diagonal element of K to 1
-					K.set(J, J, 1);
-				}
-			}
-		}
+		//			// set the diagonal element of K to 1
+		//			K.set(J, J, 1);
+		//		}
+		//	}
+		//}

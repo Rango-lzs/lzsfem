@@ -1,32 +1,5 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
- listed below.
- 
- See Copyright-FEBio.txt for details.
- 
- Copyright (c) 2020 University of Utah, The Trustees of Columbia University in
- the City of New York, and others.
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.*/
-#include "stdafx.h"
-
 #include "BSpline.h"
-#include "Matrix.h"
+#include "datastructure/Matrix.h"
 #include <limits>
 
 //--------------------------------------------------------------------------------
@@ -74,7 +47,7 @@ void BSpline::operator = (const BSpline& bs)
 
 //--------------------------------------------------------------------------------
 // initialize B-spline, using p as control points
-bool BSpline::init(int korder, const std::vector<vec2d>& p)
+bool BSpline::init(int korder, const std::vector<Vector2d>& p)
 {
     int ncoef = (int)p.size();
 	if (ncoef < 2) return false;
@@ -231,7 +204,7 @@ std::vector<double> BSpline::blending_functions(double x) const
 
 //--------------------------------------------------------------------------------
 // fit a B-spline of order korder, with ncoef coefficients, to the points p
-bool BSpline::fit(int korder, int ncoef, const std::vector<vec2d>& p)
+bool BSpline::fit(int korder, int ncoef, const std::vector<Vector2d>& p)
 {
     // check for valid spline order
     if (korder <1) return false;
@@ -245,7 +218,7 @@ bool BSpline::fit(int korder, int ncoef, const std::vector<vec2d>& p)
     if (ncoef == np) binit = init(korder, p);
     // otherwise, generate breakpoints uniformly over range of x
     else {
-        std::vector<vec2d> q(ncoef,vec2d(0, 0));
+        std::vector<Vector2d> q(ncoef,Vector2d(0, 0));
         double dx = (p[np-1].x() - p[0].x())/(ncoef-1);
         for (int i=0; i<ncoef; ++i)
             q[i].x() = p[0].x() + i*dx;
@@ -277,7 +250,7 @@ bool BSpline::fit(int korder, int ncoef, const std::vector<vec2d>& p)
 
 //--------------------------------------------------------------------------------
 // use given points as interpolation points
-bool BSpline::init_interpolation(int korder, const std::vector<vec2d>& p)
+bool BSpline::init_interpolation(int korder, const std::vector<Vector2d>& p)
 {
     int ncoef = (int)p.size();
     return fit(korder, ncoef, p);
@@ -285,7 +258,7 @@ bool BSpline::init_interpolation(int korder, const std::vector<vec2d>& p)
 
 //--------------------------------------------------------------------------------
 // perform spline approximation over points p, using ncoef coefficients
-bool BSpline::init_approximation(int korder, int ncoef, const std::vector<vec2d>& p)
+bool BSpline::init_approximation(int korder, int ncoef, const std::vector<Vector2d>& p)
 {
     return fit(korder, ncoef, p);
 }

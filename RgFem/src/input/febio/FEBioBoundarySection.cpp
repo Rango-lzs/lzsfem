@@ -12,6 +12,7 @@
 #include"logger/log.h"
 #include"femcore/FEModelLoad.h"
 #include"femcore/FEInitialCondition.h"
+#include "femcore/FENLConstraint.h"
 
 //---------------------------------------------------------------------------------
 void FEBioBoundarySection::BuildNodeSetMap()
@@ -582,51 +583,51 @@ void FEBioBoundarySection::ParseContactSection(XMLTag& tag)
 		// make sure there is a constraint defined
 		if (tag.isleaf()) return;
 
-		// create a new linear constraint manager
-        FELinearConstraintSet* pLCS =
-            dynamic_cast<FELinearConstraintSet*>(RANGO_NEW<FENLConstraint>(GetFEModel() ,szt ));
-		fem.AddNonlinearConstraint(pLCS);
+		//// create a new linear constraint manager
+  //      FELinearConstraintSet* pLCS =
+  //          dynamic_cast<FELinearConstraintSet*>(RANGO_NEW<FENLConstraint>(GetFEModel() ,szt ));
+		//fem.AddNonlinearConstraint(pLCS);
 
 		// read the linear constraints
 		++tag;
 		do
 		{
-			if (tag == "linear_constraint")
-			{
-                FEAugLagLinearConstraint* pLC = RANGO_NEW<FEAugLagLinearConstraint>(&fem, "");
+			//if (tag == "linear_constraint")
+			//{
+   //             FEAugLagLinearConstraint* pLC = RANGO_NEW<FEAugLagLinearConstraint>(&fem, "");
 
-				++tag;
-				do
-				{
-					int node, bc;
-					double val;
-					if (tag == "node")
-					{
-						tag.value(val);
+			//	++tag;
+			//	do
+			//	{
+			//		int node, bc;
+			//		double val;
+			//		if (tag == "node")
+			//		{
+			//			tag.value(val);
 
-						const char* szid = tag.AttributeValue("id");
-						node = atoi(szid);
+			//			const char* szid = tag.AttributeValue("id");
+			//			node = atoi(szid);
 
-						const char* szbc = tag.AttributeValue("bc");
-						if      (strcmp(szbc, "x") == 0) bc = 0;
-						else if (strcmp(szbc, "y") == 0) bc = 1;
-						else if (strcmp(szbc, "z") == 0) bc = 2;
-						else throw XMLReader::InvalidAttributeValue(tag, "bc", szbc);
+			//			const char* szbc = tag.AttributeValue("bc");
+			//			if      (strcmp(szbc, "x") == 0) bc = 0;
+			//			else if (strcmp(szbc, "y") == 0) bc = 1;
+			//			else if (strcmp(szbc, "z") == 0) bc = 2;
+			//			else throw XMLReader::InvalidAttributeValue(tag, "bc", szbc);
 
-						pLC->AddDOF(node, bc, val);
-					}
-					else throw XMLReader::InvalidTag(tag);
-					++tag;
-				}
-				while (!tag.isend());
+			//			pLC->AddDOF(node, bc, val);
+			//		}
+			//		else throw XMLReader::InvalidTag(tag);
+			//		++tag;
+			//	}
+			//	while (!tag.isend());
 
-				// add the linear constraint to the system
-				pLCS->add(pLC);
-			}
-			else if (ReadParameter(tag, pLCS) == false)
-			{
-				throw XMLReader::InvalidTag(tag);
-			}
+			//	// add the linear constraint to the system
+			//	pLCS->add(pLC);
+			//}
+			//else if (ReadParameter(tag, pLCS) == false)
+			//{
+			//	throw XMLReader::InvalidTag(tag);
+			//}
 			++tag;
 		}
 		while (!tag.isend());
@@ -651,7 +652,7 @@ void FEBioBoundarySection::ParseContactSection(XMLTag& tag)
             FENLConstraint* pnlc = RANGO_NEW<FENLConstraint>(GetFEModel() ,szt);
 			if (pnlc)
 			{
-				ReadParameterList(tag, pnlc);
+				//ReadParameterList(tag, pnlc);
 				fem.AddNonlinearConstraint(pnlc);
 			}
 			else throw XMLReader::InvalidAttributeValue(tag, "type", szt);

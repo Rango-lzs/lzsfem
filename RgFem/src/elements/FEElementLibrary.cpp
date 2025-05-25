@@ -1,6 +1,6 @@
 #include "FEElementLibrary.h"
-#include "elements/FEElement.h"
-#include "elements/FESolidElementShape.h"
+#include "elements/RgElement.h"
+#include "elements/ElementShape/FESolidElementShape.h"
 #include "FESurfaceElementShape.h"
 
 FEElementLibrary* FEElementLibrary::m_pThis = 0;
@@ -155,7 +155,7 @@ ElementShape FEElementLibrary::GetElementShape(int ntype)
 }
 
 //! return the element class of a given element type
-FE_Element_Class FEElementLibrary::GetElementClass(int ntype)
+ElementCategory FEElementLibrary::GetElementClass(int ntype)
 {
 	FEElementLibrary* p = GetInstance();
 	if ((ntype < 0) || (ntype >= p->m_Traits.size())) return FE_ELEM_INVALID_CLASS;
@@ -172,15 +172,15 @@ bool FEElementLibrary::IsValid(const FE_Element_Spec& c)
 	return true;
 }
 
-//! get the element spec from the type
-FE_Element_Spec FEElementLibrary::GetElementSpecFromType(ElementType elemType)
-{
-	FE_Element_Spec espec;
-	espec.etype = elemType;
-	if (elemType != FE_ELEM_INVALID_TYPE)
-	{
-		espec.eclass = GetElementClass(elemType);
-		espec.eshape = GetElementShape(elemType);
-	}
-	return espec;
-}
+////! get the element spec from the type
+//FE_Element_Spec FEElementLibrary::GetElementSpecFromType(ElementType elemType)
+//{
+//	FE_Element_Spec espec;
+//	espec.etype = elemType;
+//	if (elemType != FE_ELEM_INVALID_TYPE)
+//	{
+//		espec.eclass = GetElementClass(elemType);
+//		espec.eshape = GetElementShape(elemType);
+//	}
+//	return espec;
+//}

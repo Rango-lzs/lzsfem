@@ -53,7 +53,7 @@ void FEBioGlobalsSection::ParseGlobalData(XMLTag& tag)
     do
     {
         // create new global data
-        FEGlobalData* pgd = static_cast<FEGlobalData*>(FEGlobalData::staic_meta()->create());
+        FEGlobalData* pgd = static_cast<FEGlobalData*>(FEGlobalData::static_meta()->create());
         //fecore_new<FEGlobalData>(tag.Name(), &fem);
         if (pgd == 0)
             throw XMLReader::InvalidTag(tag);

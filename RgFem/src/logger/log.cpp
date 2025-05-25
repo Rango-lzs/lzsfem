@@ -15,6 +15,6 @@ void write_log(FEModel* fem, int ntag, const char* szmsg, ...)
 	va_start(args, szmsg);
 	vsprintf(sztxt, szmsg, args);
 	va_end(args);
-
-	fem->Log(ntag, sztxt);
+	//Rango TODO
+	//fem->Log(ntag, sztxt);
 }

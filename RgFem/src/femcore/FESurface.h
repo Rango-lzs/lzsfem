@@ -115,23 +115,23 @@ public:
     //! return an element of the surface
     FESurfaceElement& Element(int i)
     {
-        return m_el[i];
+        return *m_el[i];
     }
 
     //! return an element of the surface
     const FESurfaceElement& Element(int i) const
     {
-        return m_el[i];
+        return *m_el[i];
     }
 
     //! returns reference to element
     FEElement& ElementRef(int n) override
     {
-        return m_el[n];
+        return *m_el[n];
     }
     const FEElement& ElementRef(int n) const override
     {
-        return m_el[n];
+        return *m_el[n];
     }
 
     //! find the solid or shell element of a surface element
@@ -325,7 +325,7 @@ public:
 
 protected:
     FEFacetSet* m_surf;             //!< the facet set from which this surface is built
-    std::vector<FESurfaceElement> m_el;  //!< surface elements
+    std::vector<FESurfaceElement*> m_el;  //!< surface elements
     std::vector<Vector3d> m_nn;          //!< node normals
     bool m_bitfc;                   //!< interface status
     double m_alpha;                 //!< intermediate time fraction

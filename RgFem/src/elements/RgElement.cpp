@@ -94,7 +94,7 @@ int FEElement::getLocalId() const
     return m_loc_id;
 }
 
-const std::vector<NodeId>& FEElement::getNodeIds()
+const std::vector<NodeId>& FEElement::getNodeIds() const
 {
     return m_node;
 }

@@ -761,7 +761,8 @@ DumpStream& DumpStream::operator<<(T*& a)
     if (ar.IsShallow() == false)
     {
         // store the class info
-        T::SaveClass(*this, a);
+        // Rango TODO£º
+        //T::SaveClass(*this, a);
     }
 
     // serialize the object (assuming it has a Serialize member)
@@ -803,7 +804,8 @@ DumpStream& DumpStream::operator>>(T*& a)
     // read class identifier and instatiate class
     if (ar.IsShallow() == false)
     {
-        a = dynamic_cast<T*>(T::LoadClass(ar, a));
+        //Rango TODO:
+        //a = dynamic_cast<T*>(T::LoadClass(ar, a));
     }
 
     // store the pointer

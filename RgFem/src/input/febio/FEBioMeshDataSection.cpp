@@ -1,43 +1,14 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
 
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEBioMeshDataSection.h"
-#include "FECore/FEModel.h"
-#include "FECore/DOFS.h"
-#include <FECore/FEDataGenerator.h>
-#include <FECore/FECoreKernel.h>
-#include <FECore/FEDataMathGenerator.h>
-#include <FECore/FEMaterial.h>
-#include <FECore/FEModelParam.h>
-#include <FECore/FEDomainMap.h>
-#include <FECore/FEConstValueVec3.h>
+#include "femcore/FEModel.h"
+#include "femcore/DOFS.h"
+#include "materials/FEMaterial.h"
+#include "femcore/FEModelParam.h"
+#include "femcore/Domain/FEDomainMap.h"
+#include "femcore/FEConstValueVec3.h"
 #include <sstream>
+#include "femcore/FESurfaceMap.h"
+#include "femcore/FEScalarValuator.h"
 
 // in FEBioMeshDataSection3.cpp
 FEDataType str2datatype(const char* szdataType);
@@ -72,7 +43,7 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 		for (int j = 0; j<d.Elements(); ++j)
 		{
 			FEElement& el = d.ElementRef(j);
-			if (el.GetID() > max_id) max_id = el.GetID();
+			if (el.getId() > max_id) max_id = el.getId();
 		}
 	}
 
@@ -84,8 +55,8 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 		for (int i = 0; i<d.Elements(); ++i)
 		{
 			FEElement& el = d.ElementRef(i);
-			assert(m_pelem[el.GetID() - 1] == 0);
-			m_pelem[el.GetID() - 1] = &el;
+			assert(m_pelem[el.getId() - 1] == 0);
+			m_pelem[el.getId() - 1] = &el;
 		}
 	}
 
@@ -120,7 +91,7 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 				else
 				{
 					const char* szname = tag.AttributeValue("name");
-					string name = szname;
+					std::string name = szname;
 
 					const char* szdatatype = tag.AttributeValue("datatype");
 					FEDataType dataType = str2datatype(szdatatype);
@@ -160,51 +131,51 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 			}
 			else
 			{
-				// data will be generated
-				FEElemDataGenerator* gen = fecore_new<FEElemDataGenerator>(szgen, &fem);
-				if (gen == 0) throw XMLReader::InvalidAttributeValue(tag, "generator", szgen);
+				//// data will be generated
+				//FEElemDataGenerator* gen = fecore_new<FEElemDataGenerator>(szgen, &fem);
+				//if (gen == 0) throw XMLReader::InvalidAttributeValue(tag, "generator", szgen);
 
-				// get the variable or name
-				string mapName;
-				const char* szvar = tag.AttributeValue("var", true);
-				const char* szname = tag.AttributeValue("name", true);
-				if (szvar) mapName = szvar;
-				else if (szname) mapName = szname;
-				else { assert(false); }
+				//// get the variable or name
+				//string mapName;
+				//const char* szvar = tag.AttributeValue("var", true);
+				//const char* szname = tag.AttributeValue("name", true);
+				//if (szvar) mapName = szvar;
+				//else if (szname) mapName = szname;
+				//else { assert(false); }
 
-				// make sure the parameter is valid
-				FEParamDouble* pp = nullptr;
-				if (szvar)
-				{
-					// find the variable
-					ParamString paramName(szvar);
-					FEParam* pv = fem.FindParameter(paramName);
-					if (pv == nullptr) throw XMLReader::InvalidAttributeValue(tag, "var", szvar);
+				//// make sure the parameter is valid
+				//FEParamDouble* pp = nullptr;
+				//if (szvar)
+				//{
+				//	// find the variable
+				//	ParamString paramName(szvar);
+				//	FEParam* pv = fem.FindParameter(paramName);
+				//	if (pv == nullptr) throw XMLReader::InvalidAttributeValue(tag, "var", szvar);
 
-					// make sure it's a mapped parameter
-					if (pv->type() != FE_PARAM_DOUBLE_MAPPED)throw XMLReader::InvalidAttributeValue(tag, "var", szvar);
+				//	// make sure it's a mapped parameter
+				//	if (pv->type() != FE_PARAM_DOUBLE_MAPPED)throw XMLReader::InvalidAttributeValue(tag, "var", szvar);
 
-					// if it's an array parameter, get the right index
-					if (pv->dim() > 1)
-					{
-						ParamString l = paramName.last();
-						int m = l.Index();
-						assert(m >= 0);
-						pp = &(pv->value<FEParamDouble>(m));
-					}
-					else pp = &(pv->value<FEParamDouble>());
-				}
+				//	// if it's an array parameter, get the right index
+				//	if (pv->dim() > 1)
+				//	{
+				//		ParamString l = paramName.last();
+				//		int m = l.Index();
+				//		assert(m >= 0);
+				//		pp = &(pv->value<FEParamDouble>(m));
+				//	}
+				//	else pp = &(pv->value<FEParamDouble>());
+				//}
 
-				// create a new domain map (only scalars for now!)
-				FEDomainMap* map = new FEDomainMap(FE_DOUBLE);
-				map->Create(part);
-				map->SetName(mapName);
+				//// create a new domain map (only scalars for now!)
+				//FEDomainMap* map = new FEDomainMap(FE_DOUBLE);
+				//map->Create(part);
+				//map->SetName(mapName);
 
-				// read the parameters of the generator
-				ReadParameterList(tag, gen);
+				//// read the parameters of the generator
+				//ReadParameterList(tag, gen);
 
-				// Add it to the list (will be evaluated later)
-				GetBuilder()->AddMeshDataGenerator(gen, map, pp);
+				//// Add it to the list (will be evaluated later)
+				//GetBuilder()->AddMeshDataGenerator(gen, map, pp);
 			}
 		}
 		else if (tag == "SurfaceData")
@@ -229,7 +200,7 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 			pdata->SetName(szname);
 			pdata->Create(psurf);
 
-			const char* szgen = tag.AttributeValue("generator", true);
+			/*const char* szgen = tag.AttributeValue("generator", true);
 			if (szgen)
 			{
 				FEFaceDataGenerator* gen = fecore_new<FEFaceDataGenerator>(szgen, &fem);
@@ -240,11 +211,11 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 				gen->Generate(*pdata);
 			}
 			else
-				ParseDataArray(tag, *pdata, "face");
+				ParseDataArray(tag, *pdata, "face");*/
 		}
 		else if (tag == "EdgeData")
 		{
-			const char* szedge = tag.AttributeValue("edge");
+			/*const char* szedge = tag.AttributeValue("edge");
 			FESegmentSet* pset = mesh.FindSegmentSet(szedge);
 			if (pset == 0) throw XMLReader::InvalidAttributeValue(tag, "edge", szedge);
 
@@ -255,7 +226,7 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 			if (strcmp(sztype, "scalar") == 0) dataType = FE_DOUBLE;
 			else if (strcmp(sztype, "vec2") == 0) dataType = FE_VEC2D;
 			else if (strcmp(sztype, "vec3") == 0) dataType = FE_VEC3D;
-			if (dataType == -1) throw XMLReader::InvalidAttributeValue(tag, "data_type", sztype);
+			if (dataType == -1) throw XMLReader::InvalidAttributeValue(tag, "data_type", sztype);*/
 			/*
 			const char* szname = tag.AttributeValue("name");
 			FEDataArray* pdata = new FEDataArray(dataType);
@@ -296,14 +267,14 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 				++tag;
 				do
 				{
-					if (tag == "math")
+					/*if (tag == "math")
 					{
 						FEDataMathGenerator gen(&fem);
 						gen.setExpression(tag.szvalue());
 						if (gen.Init() == false)  throw XMLReader::InvalidValue(tag);
 						if (gen.Generate(*pdata) == false) throw XMLReader::InvalidValue(tag);
 					}
-					else throw XMLReader::InvalidTag(tag);
+					else throw XMLReader::InvalidTag(tag);*/
 					++tag;
 				} while (!tag.isend());
 			}
@@ -331,13 +302,13 @@ void FEBioMeshDataSection::ParseShellThickness(XMLTag& tag, FEElementSet& set)
 			FEShellElement* pel = dynamic_cast<FEShellElement*>(m_pelem[set[i] - 1]);
 			if (pel == 0) throw XMLReader::InvalidValue(tag);
 
-			if (pel->Nodes() != nval) throw XMLReader::InvalidValue(tag);
+			if (pel->NodeSize() != nval) throw XMLReader::InvalidValue(tag);
 			for (int j = 0; j<nval; ++j) pel->m_h0[j] = h[j];
 		}
 	}
 	else
 	{
-		vector<ELEMENT_DATA> data;
+		std::vector<ELEMENT_DATA> data;
 		ParseElementData(tag, set, data, FEElement::MAX_NODES);
 		for (int i = 0; i<(int)data.size(); ++i)
 		{
@@ -349,7 +320,7 @@ void FEBioMeshDataSection::ParseShellThickness(XMLTag& tag, FEElementSet& set)
 				if (el.Class() != FE_ELEM_SHELL) throw XMLReader::InvalidTag(tag);
 				FEShellElement& shell = static_cast<FEShellElement&> (el);
 
-				int ne = shell.Nodes();
+				int ne = shell.NodeSize();
 				if (ne != di.nval) throw XMLReader::InvalidTag(tag);
 				for (int j = 0; j<ne; ++j) shell.m_h0[j] = di.val[j];
 			}
@@ -366,7 +337,7 @@ void set_element_mat_axis(FEElement& el, const Vector3d& v1, const Vector3d& v2,
 void FEBioMeshDataSection::ParseMaterialFibers(XMLTag& tag, FEElementSet& set)
 {
 	// find the domain with the same name
-	string name = set.GetName();
+	std::string name = set.GetName();
 
 	FEMesh* mesh = const_cast<FEMesh*>(set.GetMesh());
 	FEDomain* dom = mesh->FindDomain(name);
@@ -376,19 +347,19 @@ void FEBioMeshDataSection::ParseMaterialFibers(XMLTag& tag, FEElementSet& set)
 	FEMaterial* mat = dom->GetMaterial();
 	if (mat == nullptr) throw XMLReader::InvalidAttributeValue(tag, "elem_set", name.c_str());
 
-	// get the fiber property
-	FEProperty* fiber = mat->FindProperty("fiber");
-	if (fiber == nullptr) throw XMLReader::InvalidAttributeValue(tag, "elem_set", name.c_str());
-	if (fiber->GetSuperClassID() != FEVEC3DVALUATOR_ID) throw XMLReader::InvalidAttributeValue(tag, "elem_set", name.c_str());
+	//// get the fiber property
+	//FEProperty* fiber = mat->FindProperty("fiber");
+	//if (fiber == nullptr) throw XMLReader::InvalidAttributeValue(tag, "elem_set", name.c_str());
+	//if (fiber->GetSuperClassID() != FEVEC3DVALUATOR_ID) throw XMLReader::InvalidAttributeValue(tag, "elem_set", name.c_str());
 
-	// create a domain map
-	FEDomainMap* map = new FEDomainMap(FE_VEC3D, FMT_ITEM);
-	map->Create(&set);
-	FEMappedValueVec3* val = fecore_new<FEMappedValueVec3>("map", GetFEModel());
-	val->setDataMap(map);
-	fiber->SetProperty(val);
+	//// create a domain map
+	//FEDomainMap* map = new FEDomainMap(FE_VEC3D, FMT_ITEM);
+	//map->Create(&set);
+	//FEMappedValueVec3* val = fecore_new<FEMappedValueVec3>("map", GetFEModel());
+	//val->setDataMap(map);
+	//fiber->SetProperty(val);
 
-	vector<ELEMENT_DATA> data;
+	std::vector<ELEMENT_DATA> data;
 	ParseElementData(tag, set, data, 3);
 	for (int i = 0; i<(int)data.size(); ++i)
 	{
@@ -400,7 +371,7 @@ void FEBioMeshDataSection::ParseMaterialFibers(XMLTag& tag, FEElementSet& set)
 			if (di.nval != 3) throw XMLReader::InvalidTag(tag);
 			Vector3d v(di.val[0], di.val[1], di.val[2]);
 			v.unit();
-			map->set<Vector3d>(i, v);
+			//map->set<Vector3d>(i, v);
 		}
 	}
 }
@@ -422,7 +393,7 @@ void FEBioMeshDataSection::ParseMaterialFiberProperty(XMLTag& tag, FEElementSet&
 	*ch++ = 0;
 	int nindex = atoi(ch);
 
-	vector<ELEMENT_DATA> data;
+	std::vector<ELEMENT_DATA> data;
 	ParseElementData(tag, set, data, 3);
 	for (int i = 0; i<(int)data.size(); ++i)
 	{
@@ -453,7 +424,7 @@ void FEBioMeshDataSection::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 	FEMesh& mesh = fem.GetMesh();
 
 	// find the domain
-	string domName = set.GetName();
+	std::string domName = set.GetName();
 	FEDomainList& DL = set.GetDomainList();
 	if (DL.Domains() != 1)
 	{
@@ -464,25 +435,25 @@ void FEBioMeshDataSection::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 	// get its material
 	FEMaterial* domMat = dom->GetMaterial();
 
-	// find the material property 
-	FEMaterial* mat = domMat;
-	if (ch)
-	{
-		mat = dynamic_cast<FEMaterial*>(domMat->GetProperty(szbuf));
-		if (mat == nullptr) throw XMLReader::InvalidAttributeValue(tag, "var", szvar);
-	}
+	//// find the material property 
+	//FEMaterial* mat = domMat;
+	//if (ch)
+	//{
+	//	mat = dynamic_cast<FEMaterial*>(domMat->GetProperty(szbuf));
+	//	if (mat == nullptr) throw XMLReader::InvalidAttributeValue(tag, "var", szvar);
+	//}
 
-	FEProperty* pQ = mat->FindProperty("mat_axis"); assert(pQ);
-	if (pQ == nullptr) throw XMLReader::InvalidAttributeValue(tag, "var", szvar);
+	//FEProperty* pQ = mat->FindProperty("mat_axis"); assert(pQ);
+	//if (pQ == nullptr) throw XMLReader::InvalidAttributeValue(tag, "var", szvar);
 
 	// create the map's name.
-	stringstream ss;
+	std::stringstream ss;
 	if (ch)
 		ss << "material" << domMat->GetID() << "." << szbuf << ".mat_axis";
 	else
 		ss << "material" << domMat->GetID() << ".mat_axis";
 
-	string mapName = ss.str();
+	std::string mapName = ss.str();
 
 	// create a domain map
 	FEDomainMap* map = new FEDomainMap(FE_MAT3D, FMT_ITEM);
@@ -548,15 +519,15 @@ void FEBioMeshDataSection::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 	else
 	{
 		// It does not, so add it
-		FEMappedValueMat3d* val = fecore_alloc(FEMappedValueMat3d, GetFEModel());
-		val->setDataMap(map);
-		pQ->SetProperty(val);
-		mesh.AddDataMap(map);
+		//FEMappedValueMat3d* val = RANGO_NEW<EMappedValueMat3d>( GetFEModel(),"");
+		//val->setDataMap(map);
+		////pQ->SetProperty(val);
+		//mesh.AddDataMap(map);
 	}
 }
 
 //-----------------------------------------------------------------------------
-void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, FEElementSet& set, const string& pname)
+void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, FEElementSet& set, const std::string& pname)
 {
 	// get the (optional) scale factor
 	double scale = 1.0;
@@ -565,7 +536,7 @@ void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, FEElementSet& set, con
 
 	// find the parameter
 	FEModel& fem = *GetFEModel();
-	ParamString PS(pname.c_str());
+	std::string PS(pname.c_str());
 	FEParam* p = fem.FindParameter(PS);
 	if (p == nullptr)
 	{
@@ -585,13 +556,13 @@ void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, FEElementSet& set, con
 
 	if (p->type() == FE_PARAM_DOUBLE_MAPPED)
 	{
-		vector<ELEMENT_DATA> data;
+		std::vector<ELEMENT_DATA> data;
 		ParseElementData(tag, set, data, 1);
 
 		FEParamDouble& param = p->value<FEParamDouble>();
 		param.SetItemList(&set);
 
-		FEMappedValue* val = fecore_alloc(FEMappedValue, &fem);
+		FEMappedValue* val = RANGO_NEW<FEMappedValue>( & fem,"");
 		if (val == nullptr)
 		{
 			printf("Something went horribly wrong.");
@@ -613,7 +584,7 @@ void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, FEElementSet& set, con
 		FEParamMat3ds& param = p->value<FEParamMat3ds>();
 		param.SetItemList(&set);
 
-		FEMappedValueMat3ds* val = fecore_alloc(FEMappedValueMat3ds, &fem);
+		FEMappedValueMat3ds* val = RANGO_NEW<FEMappedValueMat3ds>(& fem,"");
 		if (val == nullptr)
 		{
 			printf("Something went horribly wrong.");
@@ -622,7 +593,7 @@ void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, FEElementSet& set, con
 
 		if (fmt == FMT_ITEM)
 		{
-			vector<ELEMENT_DATA> data;
+			std::vector<ELEMENT_DATA> data;
 			ParseElementData(tag, set, data, 6);
 
 			FEDomainMap* map = new FEDomainMap(FEDataType::FE_MAT3DS, FMT_ITEM);
@@ -683,7 +654,7 @@ void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, FEElementSet& set, con
 }
 
 //-----------------------------------------------------------------------------
-void FEBioMeshDataSection::ParseElementData(XMLTag& tag, FEElementSet& set, vector<ELEMENT_DATA>& values, int nvalues)
+void FEBioMeshDataSection::ParseElementData(XMLTag& tag, FEElementSet& set, std::vector<ELEMENT_DATA>& values, int nvalues)
 {
 	// get the total nr of elements
 	FEModel& fem = *GetFEModel();
@@ -750,7 +721,7 @@ void FEBioMeshDataSection::ParseElementData(XMLTag& tag, FEDomainMap& map)
 			switch (dataType)
 			{
 			case FE_DOUBLE:	map.setValue(n, v[0]); break;
-			case FE_VEC2D:	map.setValue(n, vec2d(v[0], v[1])); break;
+			case FE_VEC2D:	map.setValue(n, Vector2d(v[0], v[1])); break;
 			case FE_VEC3D:	map.setValue(n, Vector3d(v[0], v[1], v[2])); break;
 			case FE_MAT3D:  map.setValue(n, Matrix3d(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8])); break;
             case FE_MAT3DS: map.setValue(n, Matrix3ds(v[0], v[1], v[2], v[3], v[4], v[5])); break;
@@ -766,7 +737,7 @@ void FEBioMeshDataSection::ParseElementData(XMLTag& tag, FEDomainMap& map)
 				switch (dataType)
 				{
 				case FE_DOUBLE:	map.setValue(n, i, v[0]); break;
-				case FE_VEC2D:	map.setValue(n, i, vec2d(v[0], v[1])); break;
+				case FE_VEC2D:	map.setValue(n, i, Vector2d(v[0], v[1])); break;
 				case FE_VEC3D:	map.setValue(n, i, Vector3d(v[0], v[1], v[2])); break;
 				default:
 					assert(false);

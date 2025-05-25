@@ -2,6 +2,7 @@
 #include "femcore/FEModel.h"
 #include "femcore/Domain/FEDomain.h"
 #include "femcore/FESurface.h"
+#include "../FEMesh.h"
 
 //-----------------------------------------------------------------------------
 FEElementMatrix::FEElementMatrix(const FEElement& el)

@@ -236,6 +236,8 @@ set(FEMCORE_HEADERS
     femcore/MathObject.h
     femcore/MatrixTools.h
     femcore/BSpline.h
+    femcore/eig3.h
+    femcore/sys.h
 )
 
 
@@ -412,6 +414,7 @@ set(FEMCORE_SOURCES
     femcore/FEConstValueVec3.cpp
     femcore/MathObject.cpp
     femcore/BSpline.cpp
+    femcore/eig3.cpp
 
 )
 

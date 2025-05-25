@@ -51,7 +51,7 @@ template <> struct fecoreType<Vector2d>
 
 template <> struct fecoreType<Vector3d>
 {
-	static FEDataType type() { return FE_Vector3d; }
+	static FEDataType type() { return FE_VEC3D; }
 	static int size() { return 3; }
 };
 

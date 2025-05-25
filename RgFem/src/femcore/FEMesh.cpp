@@ -1124,7 +1124,7 @@ void FEMesh::CopyFrom(FEMesh& mesh)
 	for (int i = 0; i < mesh.Domains(); ++i)
 	{
 		FEDomain& dom = mesh.Domain(i);
-		const char* sz = dom.GetTypeStr();
+		const std::string& sz = dom.GetTypeStr();
 
 		// create a new domain
 		// create a new domain

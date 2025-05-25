@@ -27,7 +27,7 @@ void FESurface::Create(int nsize, int elemType)
 	m_el.resize(nsize);
 	for (int i = 0; i < nsize; ++i)
 	{
-		FESurfaceElement& el = m_el[i];
+		FESurfaceElement& el = *m_el[i];
 		el.setLocalId(i);
 		el.SetMeshPartition(this);
 		el.m_elem[0] = nullptr;
@@ -36,7 +36,7 @@ void FESurface::Create(int nsize, int elemType)
 
 	if (elemType != -1)
 	{
-		for (int i = 0; i < nsize; ++i) m_el[i].setType(elemType);
+		for (int i = 0; i < nsize; ++i) m_el[i]->setType(elemType);
 		CreateMaterialPointData();
 	}
 }
@@ -86,7 +86,7 @@ void FESurface::CreateMaterialPointData()
 {
 	for (int i = 0; i < Elements(); ++i)
 	{
-		FESurfaceElement& el = m_el[i];
+		FESurfaceElement& el = *m_el[i];
 		int nint = el.GaussPointSize();
 		el.ClearData();
 		for (int n = 0; n < nint; ++n)
@@ -266,7 +266,7 @@ bool FESurface::Init()
 	// initialize material points of surface elements
 	for (int i = 0; i < Elements(); ++i)
 	{
-		FESurfaceElement& el = m_el[i];
+		FESurfaceElement& el = *m_el[i];
 
 		NodalCoordinates(el, re);
 
@@ -356,7 +356,7 @@ FEElement* FESurface::FindElement(FESurfaceElement& el)
 
 void FESurface::ForEachSurfaceElement(std::function<void(FESurfaceElement& el)> f)
 {
-	for (size_t i = 0; i < m_el.size(); ++i) f(m_el[i]);
+	for (size_t i = 0; i < m_el.size(); ++i) f(*m_el[i]);
 }
 
 void FESurface::FindElements(FESurfaceElement& el)
@@ -2451,7 +2451,7 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 					f(pt, dof_a, dof_b, kab);
 
 					// add it to the local element Matrix
-					ke.adds(dofPerNode_a * i, dofPerNode_b * j, kab, w[n]);
+					//ke.adds(dofPerNode_a * i, dofPerNode_b * j, kab, w[n]);
 				}
 			}
 		}

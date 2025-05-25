@@ -1,12 +1,12 @@
 
 #include "FEBModel.h"
-#include <FECore/FEModel.h>
-#include <FECore/FECoreKernel.h>
-#include <FECore/FEMaterial.h>
-#include <FECore/FEDomain.h>
-#include <FECore/FEShellDomain.h>
-#include <FECore/log.h>
-#include <FECore/FESurface.h>
+#include "femcore/FEModel.h"
+#include "materials/FEMaterial.h"
+#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/FEShellDomain.h"
+#include "logger/log.h"
+#include "femcore/FESurface.h"
+#include "femcore/FEMesh.h"
 using namespace std;
 
 //=============================================================================
@@ -327,7 +327,7 @@ FEBModel::Part* FEBModel::FindPart(const string& name)
 bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Transform& T)
 {
 	// we'll need the kernel for creating domains
-	FECoreKernel& febio = FECoreKernel::GetInstance();
+	/*FECoreKernel& febio = FECoreKernel::GetInstance();*/
 
 	FEMesh& mesh = fem.GetMesh();
 
@@ -415,7 +415,7 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 			if (mat == 0) return false;
 
 			// create the domain
-			FEDomain* dom = febio.CreateDomain(spec, &mesh, mat);
+			FEDomain* dom = nullptr;// febio.CreateDomain(spec, &mesh, mat);
 			if (dom == 0) return false;
 
 			if (dom->Create(elems, spec) == false)
@@ -434,7 +434,7 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 				const ELEMENT& domElement = partDomain.GetElement(j);
 
 				FEElement& el = dom->ElementRef(j);
-				el.SetID(++eid);
+				el.setId(++eid);
 
 				int ne = el.NodeSize();
 				for (int n = 0; n < ne; ++n) el.m_node[n] = NLT[domElement.node[n] - noff];
@@ -498,25 +498,25 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 		EdgeSet* edgeSet = part.GetEdgeSet(i);
 		int N = edgeSet->Edges();
 
-		// create a new segment set
-		FESegmentSet* segSet = new FESegmentSet(&fem);
-		string name = partName + edgeSet->Name();
-		segSet->SetName(name.c_str());
+		//// create a new segment set
+		//FESegmentSet* segSet = new FESegmentSet(&fem);
+		//string name = partName + edgeSet->Name();
+		//segSet->SetName(name.c_str());
 
-		// copy data
-		segSet->Create(N);
-		for (int j = 0; j < N; ++j)
-		{
-			EDGE& edge = edgeSet->Edge(j);
-			FESegmentSet::SEGMENT& seg = segSet->Segment(j);
+		//// copy data
+		//segSet->Create(N);
+		//for (int j = 0; j < N; ++j)
+		//{
+		//	EDGE& edge = edgeSet->Edge(j);
+		//	FESegmentSet::SEGMENT& seg = segSet->Segment(j);
 
-			seg.ntype = edge.ntype;
-			int nn = edge.ntype;	// we assume that the type also identifies the number of nodes
-			for (int n = 0; n < nn; ++n) seg.node[n] = NLT[edge.node[n] - noff];
-		}
+		//	seg.ntype = edge.ntype;
+		//	int nn = edge.ntype;	// we assume that the type also identifies the number of nodes
+		//	for (int n = 0; n < nn; ++n) seg.node[n] = NLT[edge.node[n] - noff];
+		//}
 
-		// add it to the mesh
-		mesh.AddSegmentSet(segSet);
+		//// add it to the mesh
+		//mesh.AddSegmentSet(segSet);
 	}
 
 	// create surfaces
@@ -656,7 +656,7 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 		string name = partName + dset.Name();
 
 		FEDiscreteSet* fedset = new FEDiscreteSet(&mesh);
-		mesh.AddDiscreteSet(fedset);
+		//mesh.AddDiscreteSet(fedset);
 		fedset->SetName(name);
 
 		const std::vector<DiscreteSet::ELEM>& elemList = dset.ElementList();

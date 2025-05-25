@@ -1026,8 +1026,9 @@ bool FEModel::DoCallback(unsigned int nevent)
     try
     {
         // do the callbacks
-        bool bret = CallbackHandler::DoCallback(this, nevent);
-        return bret;
+        // Rango TODO:
+        //bool bret = CallbackHandler::DoCallback(this, nevent);
+        //return bret;
     }
     catch (ForceConversion)
     {

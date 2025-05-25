@@ -1,6 +1,7 @@
 #include "Matrix3d.h"
-#include "eig3.h"
-#include "sys.h"
+#include "femcore/eig3.h"
+#include "femcore/sys.h"
+#include "MathUtils.h"
 
 #define ROTATE(a, i, j, k, l) g=a[i][j]; h=a[k][l];a[i][j]=g-s*(h+g*tau); a[k][l] = h + s*(g - h*tau);
 
@@ -211,7 +212,7 @@ double Matrix3ds::max_shear() const
 
 
 //-----------------------------------------------------------------------------
-void mat3fs::Principals(float e[3]) const
+void Matrix3fs::Principals(float e[3]) const
 {
 	const static float ONETHIRD = 1.f / 3.f;
 
@@ -226,7 +227,7 @@ void mat3fs::Principals(float e[3]) const
 }
 
 //-----------------------------------------------------------------------------
-void mat3fs::DeviatoricPrincipals(float e[3]) const
+void Matrix3fs::DeviatoricPrincipals(float e[3]) const
 {
 	const static float ONETHIRD = 1.f / 3.f;
 
@@ -279,7 +280,7 @@ void mat3fs::DeviatoricPrincipals(float e[3]) const
 }
 
 //-----------------------------------------------------------------------------
-float mat3fs::MaxShear() const
+float Matrix3fs::MaxShear() const
 {
 	float e[3];
 	Principals(e);
@@ -300,9 +301,9 @@ float mat3fs::MaxShear() const
 //-----------------------------------------------------------------------------
 #define ROTATE(a, i, j, k, l) g=a[i][j]; h=a[k][l];a[i][j]=g-s*(h+g*tau); a[k][l] = h + s*(g - h*tau);
 #define SWAPF(a, b) { float t = a; a = b; b = t; }
-#define SWAPV(a, b) { vec3f t = a; a = b; b = t; }
+#define SWAPV(a, b) { Vector3f t = a; a = b; b = t; }
 
-void mat3fs::eigen(vec3f e[3], float l[3]) const
+void Matrix3fs::eigen(Vector3f e[3], float l[3]) const
 {
 	const int NMAX = 50;
 	double sm, tresh, g, h, t, c, tau, s, th;
@@ -413,18 +414,18 @@ void mat3fs::eigen(vec3f e[3], float l[3]) const
 }
 
 //-----------------------------------------------------------------------------
-vec3f mat3fs::PrincDirection(int l)
+Vector3f Matrix3fs::PrincDirection(int l)
 {
-	vec3f e[3];
+	Vector3f e[3];
 	float lam[3];
 	eigen(e, lam);
 	return e[l] * lam[l];
 }
 
 //-----------------------------------------------------------------------------
-double fractional_anisotropy(const mat3fs& m)
+double fractional_anisotropy(const Matrix3fs& m)
 {
-	vec3f e[3];
+	Vector3f e[3];
 	float l[3];
 	m.eigen(e, l);
 

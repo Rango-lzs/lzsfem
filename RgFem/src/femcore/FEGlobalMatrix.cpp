@@ -1,36 +1,8 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
 #include "FEGlobalMatrix.h"
 #include "FEModel.h"
-#include "FEDomain.h"
+#include "femcore/Domain/FEDomain.h"
 #include "FESurface.h"
+#include "FEMesh.h"
 
 //-----------------------------------------------------------------------------
 FEElementMatrix::FEElementMatrix(const FEElement& el)
@@ -58,7 +30,7 @@ FEElementMatrix::FEElementMatrix(const FEElementMatrix& ke, double scale)
 }
 
 //-----------------------------------------------------------------------------
-FEElementMatrix::FEElementMatrix(const FEElement& el, const vector<int>& lmi) : Matrix((int)lmi.size(), (int)lmi.size())
+FEElementMatrix::FEElementMatrix(const FEElement& el, const std::vector<int>& lmi) : Matrix((int)lmi.size(), (int)lmi.size())
 {
 	m_node = el.m_node;
 	m_lmi = lmi;
@@ -66,7 +38,7 @@ FEElementMatrix::FEElementMatrix(const FEElement& el, const vector<int>& lmi) : 
 }
 
 //-----------------------------------------------------------------------------
-FEElementMatrix::FEElementMatrix(const FEElement& el, vector<int>& lmi, vector<int>& lmj) : Matrix((int)lmi.size(), (int)lmj.size())
+FEElementMatrix::FEElementMatrix(const FEElement& el, std::vector<int>& lmi, std::vector<int>& lmj) : Matrix((int)lmi.size(), (int)lmj.size())
 {
 	m_node = el.m_node;
 	m_lmi = lmi;
@@ -129,7 +101,7 @@ void FEGlobalMatrix::build_begin(int neq)
 //! list of degrees of freedom that are part of such an "element". Elements are 
 //! first copied into a local LM array.  When this array is full it is flushed and
 //! all elements in this array are added to the Matrix profile.
-void FEGlobalMatrix::build_add(vector<int>& lm)
+void FEGlobalMatrix::build_add(std::vector<int>& lm)
 {
 	if (lm.empty() == false)
 	{
@@ -258,7 +230,7 @@ bool FEGlobalMatrix::Create(FEMesh& mesh, int nstart, int nend)
 		{
 			FEDomain& d = mesh.Domain(nd);
 
-			vector<int> elm, lm;
+			std::vector<int> elm, lm;
 			const int NE = d.Elements();
 			for (int j = 0; j<NE; ++j)
 			{
@@ -304,7 +276,7 @@ bool FEGlobalMatrix::Create(const FESurface& surf, const std::vector<int>& equat
 	build_begin(neq);
 	for (int i = 0; i<surf.Elements(); ++i) {
 		const FESurfaceElement& el = surf.Element(i);
-		vector<int> elm(el.NodeSize(), -1);
+		std::vector<int> elm(el.NodeSize(), -1);
 		for (int j = 0; j<el.NodeSize(); ++j)
 			elm[j] = equationIDs[el.m_loc_node[j]];
 		build_add(elm);
