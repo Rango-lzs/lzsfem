@@ -40,15 +40,16 @@ message(status "resource files is ${APP_SOURCES}")
 
 
 # add basicio sources
-set(BASICIO_SOURCES "")
-add_subdirectory(basicio)
-source_group("basicio" FILES ${BASICIO_SOURCES})
+#set(BASICIO_SOURCES "")
+#add_subdirectory(basicio)
+#source_group("basicio" FILES ${BASICIO_SOURCES})
 
 
 # add femcore sources
 set(FEMCORE_HEADERS
     femcore/Callback.h
     femcore/DOFS.h
+
     #femcore/DataRecord.h
     #femcore/Domain/DomainDataRecord.h
     #femcore/Domain/FE3FieldElasticShellDomain.h
@@ -75,6 +76,7 @@ set(FEMCORE_HEADERS
     #femcore/DomainDataRecord.h
     #femcore/ElementDataRecord.h
     #femcore/FE3FieldElasticSolidDomain.h
+
     femcore/FEAnalysis/FEAnalysis.h
     femcore/FEAnalysis/RgAnalysis.h
     femcore/FEBodyLoad.h
@@ -91,7 +93,7 @@ set(FEMCORE_HEADERS
     femcore/FEFacetSet.h
     femcore/FEFunction1D.h
     femcore/FEGlobalData.h
-    femcore/FEGlobalMatrix.h
+    #femcore/FEGlobalMatrix.h
     femcore/FEGlobalVector.h
     femcore/FEInitialCondition.h
     femcore/FEItemList.h
@@ -120,7 +122,7 @@ set(FEMCORE_HEADERS
     femcore/FEParamObject.h
     femcore/FEParamValidator.h
     femcore/FEParameterList.h
-    femcore/FEPlotDataStore.h
+    #femcore/FEPlotDataStore.h
     femcore/FEPointFunction.h
     #femcore/FEProperty.h
     #femcore/FEPropertyT.h
@@ -140,6 +142,7 @@ set(FEMCORE_HEADERS
     femcore/FEVec3dValuator.h
     femcore/FSPath.h
     #femcore/FaceDataRecord.h
+
     femcore/Matrix/CSRMatrix.h
     femcore/Matrix/CompactMatrix.h
     femcore/Matrix/CompactSymmMatrix.h
@@ -168,6 +171,7 @@ set(FEMCORE_HEADERS
     femcore/MatrixSolver/SchurSolver.h
     femcore/MatrixSolver/StrategySolver.h
     femcore/MatrixSolver/TestSolver.h
+
     femcore/MetaObject.h
     femcore/MetaObjectDemo.h
     #femcore/NLConstraintDataRecord.h
@@ -177,6 +181,7 @@ set(FEMCORE_HEADERS
     femcore/RTTI/MetaClass.h
     femcore/RTTI/MetaClassStore.h
     femcore/RTTI/RTTIMacroDefine.h
+
     #femcore/Solver/BFGSSolver.h
     #femcore/Solver/EigenSolver.h
     #femcore/Solver/FEBroydenStrategy.h
@@ -240,11 +245,11 @@ set(FEMCORE_HEADERS
     femcore/sys.h
 )
 
-
 set(FEMCORE_SOURCES
     femcore/Callback.cpp
     femcore/DOFS.cpp
     #femcore/DataRecord.cpp
+
     #femcore/Domain/DomainDataRecord.cpp
     #femcore/Domain/FE3FieldElasticShellDomain.cpp
     #femcore/Domain/FE3FieldElasticSolidDomain.cpp
@@ -267,6 +272,7 @@ set(FEMCORE_SOURCES
     #femcore/Domain/FESolidDomainFactory.cpp
     #femcore/Domain/FETrussDomain.cpp
     #femcore/Domain/FESSIShellDomain.h
+
     #femcore/DomainDataRecord.cpp
     #femcore/ElementDataRecord.cpp
     #femcore/FE3FieldElasticSolidDomain.cpp
@@ -285,7 +291,7 @@ set(FEMCORE_SOURCES
     femcore/FEFacetSet.cpp
     femcore/FEFunction1D.cpp
     femcore/FEGlobalData.cpp
-    femcore/FEGlobalMatrix.cpp
+    #femcore/FEGlobalMatrix.cpp
     femcore/FEGlobalVector.cpp
     femcore/FEInitialCondition.cpp
     femcore/FEItemList.cpp
@@ -312,7 +318,7 @@ set(FEMCORE_SOURCES
     femcore/FEParam.cpp
     femcore/FEParamValidator.cpp
     femcore/FEParameterList.cpp
-    femcore/FEPlotDataStore.cpp
+    #femcore/FEPlotDataStore.cpp
     femcore/FEPointFunction.cpp
     #femcore/FEProperty.cpp
     femcore/FERgModel.cpp
@@ -419,7 +425,6 @@ set(FEMCORE_SOURCES
 )
 
 
-
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
     ${FEMCORE_HEADERS}
@@ -522,6 +527,51 @@ set(PROJECT_SOURCES
 )
 source_group("elements" FILES ${ELEMENT_HEADERS} ${ELEMENT_SOURCES})
 
+set(BASICIO_HEADERS
+    basicio/DataRecord.h
+    basicio/DataStore.h
+    basicio/DomainDataRecord.h
+    basicio/DumpFile.h
+    basicio/DumpMemStream.h
+    basicio/DumpStream.h
+    basicio/ElementDataRecord.h
+    basicio/FEModelDataRecord.h
+    basicio/FEPlotData.h
+    basicio/FEPlotDataStore.h
+    basicio/FaceDataRecord.h
+    basicio/NLConstraintDataRecord.h
+    basicio/NodeDataRecord.h
+    basicio/ObjectDataRecord.h
+    basicio/SurfaceDataRecord.h
+    basicio/FEDataExport.h
+)
+
+set(BASICIO_SOURCES
+    basicio/DataRecord.cpp
+    basicio/DataStore.cpp
+    basicio/DomainDataRecord.cpp
+    basicio/DumpFile.cpp
+    basicio/DumpMemStream.cpp
+    basicio/DumpStream.cpp
+    basicio/ElementDataRecord.cpp
+    basicio/FEModelDataRecord.cpp
+    basicio/FEPlotData.cpp
+    basicio/FEPlotDataStore.cpp
+    basicio/FaceDataRecord.cpp
+    basicio/NLConstraintDataRecord.cpp
+    basicio/NodeDataRecord.cpp
+    basicio/ObjectDataRecord.cpp
+    basicio/SurfaceDataRecord.cpp
+    basicio/FEDataExport.cpp
+)
+set(PROJECT_SOURCES
+    ${PROJECT_SOURCES}
+    ${BASICIO_HEADERS}
+    ${BASICIO_SOURCES}
+)
+source_group("basicio" FILES ${BASICIO_HEADERS} ${BASICIO_SOURCES})
+
+
 #add input sources
 set(INPUT_HEADERS
     input/XML/XMLReader.h
@@ -561,7 +611,7 @@ set(INPUT_HEADERS
     input/febio/FEBioStepSection.h
     input/febio/FEBioStepSection4.h
     input/febio/FEModelBuilder.h
-    input/febio/FEPlotDataStore.h
+    #input/febio/FEPlotDataStore.h
     input/febio/FERestartImport.h
     input/febio/FileImport.h
     input/febio/febioxml_api.h
@@ -615,7 +665,7 @@ set(INPUT_SOURCES
     input/febio/FEBioStepSection.cpp
     input/febio/FEBioStepSection4.cpp
     input/febio/FEModelBuilder.cpp
-    input/febio/FEPlotDataStore.cpp
+    #input/febio/FEPlotDataStore.cpp
     input/febio/FERestartImport.cpp
     input/febio/FileImport.cpp
     input/febio/xmltool.cpp
@@ -626,6 +676,7 @@ set(INPUT_SOURCES
     #input/oofem/text_input_record.cpp
     #input/oofem/tokenizer.cpp
 )
+
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
     ${INPUT_HEADERS}
