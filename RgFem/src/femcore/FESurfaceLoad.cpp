@@ -4,6 +4,8 @@
 #include "femcore/FEModel.h"
 #include "femcore/FESurface.h"
 
+DEFINE_META_CLASS(FESurfaceLoad, FEModelLoad, "");
+
 FESurfaceLoad::FESurfaceLoad(FEModel* pfem) : FEModelLoad(pfem)
 {
 	m_psurf = 0;

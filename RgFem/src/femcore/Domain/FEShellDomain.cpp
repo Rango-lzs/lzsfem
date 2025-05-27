@@ -2,6 +2,8 @@
 #include "femcore/FEMesh.h"
 #include "materials/FEMaterial.h"
 
+DEFINE_META_CLASS(FEShellDomain, FEDomain, "");
+
 //-----------------------------------------------------------------------------
 //! constructor
 FEShellDomain::FEShellDomain(FEModel* fem) : FEDomain(FE_DOMAIN_SHELL, fem)

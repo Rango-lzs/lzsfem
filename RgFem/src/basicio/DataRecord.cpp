@@ -5,6 +5,8 @@
 #include "logger/log.h"
 #include <sstream>
 
+DEFINE_META_CLASS(DataRecord, FEObjectBase, "");
+DEFINE_META_CLASS(FELogData, FEObjectBase, "");
 //-----------------------------------------------------------------------------
 UnknownDataField::UnknownDataField(const char* sz) : std::runtime_error(sz)
 {

@@ -5,6 +5,8 @@
 #include "materials/FEMaterialPoint.h"
 #include "femcore/FEParam.h"
 
+DEFINE_META_CLASS(FENodalLoad, FEModelLoad, "");
+
 //-----------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FENodalLoad, FEModelLoad)
 	ADD_PARAMETER(m_brelative, "relative");

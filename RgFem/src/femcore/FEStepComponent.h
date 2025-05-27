@@ -6,6 +6,8 @@
 // It adds a mechanism for activating and deactivating the component.
 class FEM_EXPORT FEStepComponent : public FEModelComponent
 {
+    DECLARE_META_CLASS(FEStepComponent, FEModelComponent);
+
 public:
     FEStepComponent(FEModel* fem);
     FEStepComponent();

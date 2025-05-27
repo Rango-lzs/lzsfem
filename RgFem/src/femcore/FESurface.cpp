@@ -5,6 +5,9 @@
 #include "basicio/DumpStream.h"
 #include "datastructure/Matrix.h"
 #include "logger/log.h"
+#include "elements/FEShellElement.h"
+
+DEFINE_META_CLASS(FESurface, FEMeshPartition, "");
 
 //-----------------------------------------------------------------------------
 FESurface::FESurface(FEModel* fem) : FEMeshPartition(FE_DOMAIN_SURFACE, fem)

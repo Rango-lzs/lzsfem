@@ -3,6 +3,8 @@
 #include "femcore/FESurface.h"
 #include "femcore/FEFacetSet.h"
 
+ DEFINE_META_CLASS(FELogFaceData, FELogData, "");
+
 //-----------------------------------------------------------------------------
 FELogFaceData::FELogFaceData(FEModel* fem) : FELogData(fem) {}
 

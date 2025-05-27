@@ -329,7 +329,7 @@ void FEBioMeshDomainsSection4::ParseShellDomainSection(XMLTag& tag)
             }
         }
 
-        shellDomain->AssignDefaultShellThickness();
+        //shellDomain->AssignDefaultShellThickness();
     }
 }
 

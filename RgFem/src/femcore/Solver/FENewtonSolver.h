@@ -1,5 +1,5 @@
 #pragma once
-#include "FELineSearch.h"
+#include "femcore/Solver/FELineSearch.h"
 #include "femcore/FETimeInfo.h"
 #include "FENewtonStrategy.h"
 #include "FESolver.h"

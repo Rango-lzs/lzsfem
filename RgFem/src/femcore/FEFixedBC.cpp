@@ -4,6 +4,9 @@
 #include "basicio/DumpStream.h"
 #include "logger/log.h"
 
+DEFINE_META_CLASS(FEFixedDOF, FEFixedBC, "");
+DEFINE_META_CLASS(FEFixedBC, FENodalBC, "");
+
 //-----------------------------------------------------------------------------
 FEFixedBC::FEFixedBC(FEModel* pfem) : FENodalBC(pfem)
 {

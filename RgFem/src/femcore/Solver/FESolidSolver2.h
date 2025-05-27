@@ -3,8 +3,10 @@
 #include "femcore/Solver/FENewtonSolver.h"
 #include "femcore/FETimeInfo.h"
 #include "femcore/FEGlobalVector.h"
-#include "femcore/Solver/FERigidSolver.h"
+//#include "femcore/Solver/FERigidSolver.h"
 #include "femcore/FEDofList.h"
+
+class FERigidSolver;
 
 //-----------------------------------------------------------------------------
 //! The FESolidSolver2 class solves large deformation solid mechanics problems
@@ -142,7 +144,7 @@ protected:
 	FEDofList	m_dofSU, m_dofSV, m_dofSA;
     
 protected:
-    FERigidSolverNew	m_rigidSolver;
+    //FERigidSolverNew*	m_rigidSolver;
 
 	// declare the parameter list
 	DECLARE_PARAM_LIST();

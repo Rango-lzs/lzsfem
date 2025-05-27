@@ -44,5 +44,5 @@ public:
 
 private:
     int m_ndof;
-    DECLARE_PARAM_LIST();
+    //DECLARE_PARAM_LIST();
 };

@@ -25,8 +25,9 @@ vector<double> operator / (vector<double>& b, Matrix& m)
 	vector<int> indx(n);
 	Matrix a(m);
 
-	ludcmp(a, n, &indx[0]);
-	lubksb(a, n, &indx[0], &x[0]);
+	//Rango
+	//ludcmp(a, n, &indx[0]);
+	//lubksb(a, n, &indx[0], &x[0]);
 
 	return x;
 }
@@ -176,7 +177,7 @@ void Matrix::lufactor(vector<int>& indx)
 	// do a LU decomposition
 	int n = m_nr;
 	indx.resize(n);
-	ludcmp(*(this), n, &indx[0]);
+	//ludcmp(*(this), n, &indx[0]);
 }
 
 //-----------------------------------------------------------------------------
@@ -186,7 +187,7 @@ void Matrix::lusolve(vector<double>& b, vector<int>& indx)
 {
 	// make sure this is a square Matrix
 	assert(m_nr == m_nc);
-	lubksb(*(this), m_nr, &indx[0], &b[0]);
+	//lubksb(*(this), m_nr, &indx[0], &b[0]);
 }
 
 //-----------------------------------------------------------------------------
@@ -202,7 +203,7 @@ Matrix Matrix::inverse()
 	// do a LU decomposition
 	int n = m_nr;
 	vector<int> indx(n);
-	ludcmp(a, n, &indx[0]);
+	//ludcmp(a, n, &indx[0]);  //Rango
 
 	// allocate the inverse Matrix
 	Matrix ai(n, n);
@@ -212,7 +213,7 @@ Matrix Matrix::inverse()
 	for (int j=0; j<n; ++j)
 	{
 		b[j] = 1;
-		lubksb(a, n, &indx[0], &b[0]);
+		//lubksb(a, n, &indx[0], &b[0]);
 
 		for (int i=0; i<n; ++i)
 		{
@@ -233,7 +234,7 @@ Matrix Matrix::svd_inverse()
 	vector<double> w(m_nc);
 
 	// calculate the decomposition
-	svdcmp(U, w, V);
+	//svdcmp(U, w, V); //Rango
 
 	Matrix Ai(m_nc, m_nr); // inverse
 	for (int i=0; i<m_nc; ++i)

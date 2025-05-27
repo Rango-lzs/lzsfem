@@ -1,11 +1,11 @@
 #include "FESolidSolver2.h"
 
-#include "femcore/Domain/FE3FieldElasticShellDomain.h"
+//#include "femcore/Domain/FE3FieldElasticShellDomain.h"
 #include "femcore/Domain/FE3FieldElasticSolidDomain.h"
 #include "femcore/FEBodyForce.h"
 //#include "femcore/FEContactInterface.h"
-#include "femcore/Domain/FEElasticANSShellDomain.h"
-#include "femcore/Domain/FEElasticEASShellDomain.h"
+//#include "femcore/Domain/FEElasticANSShellDomain.h"
+//#include "femcore/Domain/FEElasticEASShellDomain.h"
 #include "femcore/Domain/FELinearTrussDomain.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
 #include "femcore/FEResidualVector.h"
@@ -13,7 +13,7 @@
 //#include "femcore/FESlidingElasticInterface.h"
 #include "femcore/FESolidAnalysis.h"
 #include "femcore/FESolidLinearSystem.h"
-#include "femcore/Domain/FESSIShellDomain.h"
+// #include "femcore/Domain/FESSIShellDomain.h"
 //#include "materials/FETrussMaterial.h"
 //#include "FEUncoupledMaterial.h"
 #include "logger/log.h"
@@ -60,7 +60,7 @@ END_PARAM_DEFINE();
 //
 FESolidSolver2::FESolidSolver2(FEModel* pfem)
     : FENewtonSolver(pfem)
-    , m_rigidSolver(pfem)
+    //, m_rigidSolver(nullptr)
     , m_dofU(pfem)
     , m_dofV(pfem)
     , m_dofSQ(pfem)
@@ -118,7 +118,8 @@ FESolidSolver2::~FESolidSolver2()
 //! Return the rigid solver
 FERigidSolver* FESolidSolver2::GetRigidSolver()
 {
-    return &m_rigidSolver;
+    //return m_rigidSolver;
+    return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -225,17 +226,17 @@ bool FESolidSolver2::Init()
     for (int i = 0; i < mesh.Domains(); ++i)
     {
         FEElasticSolidDomain* d = dynamic_cast<FEElasticSolidDomain*>(&mesh.Domain(i));
-        FEElasticShellDomain* s = dynamic_cast<FEElasticShellDomain*>(&mesh.Domain(i));
-        FEElasticEASShellDomain* seas = dynamic_cast<FEElasticEASShellDomain*>(&mesh.Domain(i));
-        FEElasticANSShellDomain* sans = dynamic_cast<FEElasticANSShellDomain*>(&mesh.Domain(i));
+        //FEElasticShellDomain* s = dynamic_cast<FEElasticShellDomain*>(&mesh.Domain(i));
+        //FEElasticEASShellDomain* seas = dynamic_cast<FEElasticEASShellDomain*>(&mesh.Domain(i));
+        //FEElasticANSShellDomain* sans = dynamic_cast<FEElasticANSShellDomain*>(&mesh.Domain(i));
         if (d)
             d->SetDynamicUpdateFlag(b);
-        if (s)
+        /*if (s)
             s->SetDynamicUpdateFlag(b);
         if (seas)
             seas->SetDynamicUpdateFlag(b);
         if (sans)
-            sans->SetDynamicUpdateFlag(b);
+            sans->SetDynamicUpdateFlag(b);*/
     }
 
     return true;
@@ -272,7 +273,7 @@ void FESolidSolver2::Serialize(DumpStream& ar)
     }
 
     // serialize rigid solver
-    m_rigidSolver.Serialize(ar);
+   // m_rigidSolver.Serialize(ar);
 }
 
 //-----------------------------------------------------------------------------
@@ -287,7 +288,7 @@ bool FESolidSolver2::InitEquations()
     m_nreq = m_neq;
 
     // Next, we assign equation numbers to the rigid body degrees of freedom
-    int neq = m_rigidSolver.InitEquations(m_neq);
+    int neq = 0;  // m_rigidSolver.InitEquations(m_neq);
     if (neq == -1)
         return false;
     else
@@ -369,7 +370,7 @@ void FESolidSolver2::UpdateKinematics(std::vector<double>& ui)
     FEMesh& mesh = fem.GetMesh();
 
     // update rigid bodies
-    m_rigidSolver.UpdateRigidBodies(m_Ui, ui);
+    //m_rigidSolver.UpdateRigidBodies(m_Ui, ui);
 
     // total displacements
     std::vector<double> U(m_Ut.size());
@@ -475,7 +476,7 @@ void FESolidSolver2::UpdateIncrements(std::vector<double>& Ui, std::vector<doubl
     FEMesh& mesh = fem.GetMesh();
 
     // update rigid bodies
-    m_rigidSolver.UpdateIncrements(Ui, ui, emap);
+   // m_rigidSolver.UpdateIncrements(Ui, ui, emap);
 
     // update flexible nodes
     int n;
@@ -605,9 +606,9 @@ void FESolidSolver2::UpdateEAS(std::vector<double>& ui)
     // update EAS on shell domains
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FESSIShellDomain* sdom = dynamic_cast<FESSIShellDomain*>(&mesh.Domain(i));
+        /*FESSIShellDomain* sdom = dynamic_cast<FESSIShellDomain*>(&mesh.Domain(i));
         if (sdom && sdom->IsActive())
-            sdom->UpdateEAS(ui);
+            sdom->UpdateEAS(ui);*/
     }
 }
 
@@ -621,9 +622,9 @@ void FESolidSolver2::UpdateIncrementsEAS(std::vector<double>& ui, const bool bin
     // update EAS on shell domains
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FESSIShellDomain* sdom = dynamic_cast<FESSIShellDomain*>(&mesh.Domain(i));
+        /*FESSIShellDomain* sdom = dynamic_cast<FESSIShellDomain*>(&mesh.Domain(i));
         if (sdom && sdom->IsActive())
-            sdom->UpdateIncrementsEAS(ui, binc);
+            sdom->UpdateIncrementsEAS(ui, binc);*/
     }
 }
 
@@ -712,7 +713,7 @@ void FESolidSolver2::PrepStep()
     fem.GetLinearConstraintManager().PrepStep();
 
     // initialize rigid bodies
-    m_rigidSolver.PrepStep(tp, ui);
+  //  m_rigidSolver.PrepStep(tp, ui);
 
     // intialize material point data
     // NOTE: do this before the stresses are updated
@@ -1127,7 +1128,7 @@ bool FESolidSolver2::StiffnessMatrix()
     FEMesh& mesh = fem.GetMesh();
 
     // setup the linear system
-    FESolidLinearSystem ls(this, &m_rigidSolver, *m_pK, m_Fd, m_ui, (m_msymm == REAL_SYMMETRIC), m_alpha, m_nreq);
+    FESolidLinearSystem ls(this, nullptr, *m_pK, m_Fd, m_ui, (m_msymm == REAL_SYMMETRIC), m_alpha, m_nreq);
 
     // calculate the stiffness Matrix for each domain
     for (int i = 0; i < mesh.Domains(); ++i)
@@ -1165,7 +1166,7 @@ bool FESolidSolver2::StiffnessMatrix()
                 edom->MassMatrix(ls, a);
         }
 
-        m_rigidSolver.RigidMassMatrix(ls, curTime);
+       // m_rigidSolver.RigidMassMatrix(ls, curTime);
     }
 
     // calculate contact stiffness
@@ -1193,7 +1194,7 @@ bool FESolidSolver2::StiffnessMatrix()
     NonLinearConstraintStiffness(ls, curTime);
 
     // add contributions from rigid bodies
-    m_rigidSolver.StiffnessMatrix(*m_pK, curTime);
+  //  m_rigidSolver.StiffnessMatrix(*m_pK, curTime);
 
     return true;
 }
@@ -1261,7 +1262,7 @@ bool FESolidSolver2::Residual(std::vector<double>& R)
     FEResidualVector RHS(fem, R, m_Fr);
 
     // zero rigid body reaction forces
-    m_rigidSolver.Residual();
+  //  m_rigidSolver.Residual();
 
     // calculate the internal (stress) forces, 内部节点，应力产生的力
     InternalForces(RHS);  //计算时取了负号
@@ -1375,7 +1376,7 @@ void FESolidSolver2::ExternalForces(FEGlobalVector& RHS)
         }
 
         // update rigid bodies
-        m_rigidSolver.InertialForces(RHS, tp);
+       // m_rigidSolver.InertialForces(RHS, tp);
     }
 
     // calculate forces due to surface loads

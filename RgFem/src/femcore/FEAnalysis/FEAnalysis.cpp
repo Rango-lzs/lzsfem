@@ -96,9 +96,6 @@ FEAnalysis::FEAnalysis(FEModel* fem)
     m_bactive = false;
 }
 
- FEAnalysis::FEAnalysis()
-{
-}
 
 //-----------------------------------------------------------------------------
 FEAnalysis::~FEAnalysis()

@@ -9,9 +9,10 @@
 #include <sstream>
 #include "femcore/FESurfaceMap.h"
 #include "femcore/FEScalarValuator.h"
+#include "elements/FEShellElement.h"
 
 // in FEBioMeshDataSection3.cpp
-FEDataType str2datatype(const char* szdataType);
+//FEDataType str2datatype(const char* szdataType);
 
 //-----------------------------------------------------------------------------
 #ifdef WIN32
@@ -94,7 +95,7 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 					std::string name = szname;
 
 					const char* szdatatype = tag.AttributeValue("datatype");
-					FEDataType dataType = str2datatype(szdatatype);
+                    FEDataType dataType;  // str2datatype(szdatatype); //Rango
 					if (dataType == FEDataType::FE_INVALID_TYPE) throw XMLReader::InvalidAttributeValue(tag, "datatype", szdatatype);
 
 					// default format
@@ -405,7 +406,7 @@ void FEBioMeshDataSection::ParseMaterialFiberProperty(XMLTag& tag, FEElementSet&
 			if (di.nval != 3) throw XMLReader::InvalidTag(tag);
 			Vector3d v(di.val[0], di.val[1], di.val[2]);
 
-			set_element_fiber(el, v, nindex);
+			//set_element_fiber(el, v, nindex);
 		}
 	}
 }

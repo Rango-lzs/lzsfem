@@ -1,7 +1,7 @@
 set(TARGET_NAME RgFem)
 project(${TARGET_NAME} LANGUAGES CXX)
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-add_library(${TARGET_NAME} SHARED "")
+add_executable(${TARGET_NAME})
 target_compile_definitions(RgFem PRIVATE RgFem_Module)
 
 target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
@@ -137,7 +137,7 @@ set(FEMCORE_HEADERS
     femcore/FESurfacePairConstraint.h
     femcore/FESurfacePairConstraintNL.h
     #femcore/FESurfaceToSurfaceMap.h
-    femcore/FETimeInfo.h
+    #femcore/FETimeInfo.h
     femcore/FEValuator.h
     femcore/FEVec3dValuator.h
     femcore/FSPath.h
@@ -188,7 +188,7 @@ set(FEMCORE_HEADERS
     femcore/Solver/FECGSolidSolver.h
     #femcore/Solver/FEExplicitSolidSolver.h
     #femcore/Solver/FEFullNewtonStrategy.h
-    femcore/Solver/FEGlobalData.h
+    #femcore/Solver/FEGlobalData.h
     femcore/Solver/FELineSearch.h
     femcore/Solver/FELinearSolver.h
     #femcore/Solver/FEModifiedNewtonStrategy.h
@@ -333,7 +333,7 @@ set(FEMCORE_SOURCES
     femcore/FESurfacePairConstraint.cpp
     femcore/FESurfacePairConstraintNL.cpp
     #femcore/FESurfaceToSurfaceMap.cpp
-    femcore/FETimeInfo.cpp
+    #femcore/FETimeInfo.cpp
     femcore/FEVec3dValuator.cpp
     femcore/FSPath.cpp
     #femcore/FaceDataRecord.cpp
@@ -379,13 +379,14 @@ set(FEMCORE_SOURCES
     #femcore/Solver/FECGSolidSolver.cpp
     #femcore/Solver/FEExplicitSolidSolver.cpp
     femcore/Solver/FEFullNewtonStrategy.cpp
-    femcore/Solver/FEGlobalData.cpp
-    #femcore/Solver/FELineSearch.cpp
+    #femcore/Solver/FEGlobalData.cpp
+    femcore/Solver/FELineSearch.cpp
     femcore/Solver/FELinearSolver.cpp
     #femcore/Solver/FEModifiedNewtonStrategy.cpp
     femcore/Solver/FENewtonSolver.cpp
     femcore/Solver/FENewtonStrategy.cpp
     femcore/Solver/FENodeReorder.cpp
+
     #femcore/Solver/FERigidSolver.cpp
     femcore/Solver/FESolidSolver2.cpp
     femcore/Solver/FESolver.cpp
@@ -421,6 +422,11 @@ set(FEMCORE_SOURCES
     femcore/MathObject.cpp
     femcore/BSpline.cpp
     femcore/eig3.cpp
+
+    femcore/FEModelComponent.cpp
+    femcore/FEValuator.cpp
+    femcore/MItem.cpp
+    femcore/MFunctions.cpp
 
 )
 

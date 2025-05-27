@@ -3,6 +3,7 @@
 #include "femcore/Domain/FEDomain.h"
 #include "femcore/FEMesh.h"
 
+ DEFINE_META_CLASS(FELogDomainData, FELogData, "");
 //-----------------------------------------------------------------------------
 void FEDomainDataRecord::SetData(const char* szexpr)
 {

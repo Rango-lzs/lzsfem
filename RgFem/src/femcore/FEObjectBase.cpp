@@ -4,6 +4,8 @@
 #include "logger/log.h"
 #include <sstream>
 
+DEFINE_META_CLASS(FEObjectBase, FEParamObject, "");
+
 //-----------------------------------------------------------------------------
 FEObjectBase::FEObjectBase(FEModel* fem) : m_fem(fem)
 { 
@@ -31,6 +33,11 @@ const std::string& FEObjectBase::GetName() const
 	return m_name; 
 }
 
+
+std::string FEObjectBase::GetTypeStr()
+{
+    return "";
+}
 
 //-----------------------------------------------------------------------------
 //! return the component ID

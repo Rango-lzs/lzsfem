@@ -8,6 +8,8 @@ class FEModelParam;
 // Base class for evaluating model parameters
 class FEM_EXPORT FEValuator : public FEObjectBase
 {
+    DECLARE_META_CLASS(FEValuator, FEObjectBase);
+
 public:
     FEValuator(FEModel* fem)
         : FEObjectBase(fem)

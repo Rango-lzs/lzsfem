@@ -43,6 +43,7 @@ SOFTWARE.*/
 #include "femcore/FEConstValueVec3.h"
 #include <sstream>
 #include "femcore/FESurfaceMap.h"
+#include "elements/FEShellElement.h"
 
 // defined in FEBioMeshDataSection3.cpp
 extern FEDataType str2datatype(const char* szdataType);
@@ -122,7 +123,7 @@ void FEBioMeshDataSection4::ParseNodalData(XMLTag& tag)
 		// get the data type
 		const char* szdataType = tag.AttributeValue("data_type", true);
 		if (szdataType == nullptr) szdataType = "scalar";
-		FEDataType dataType = str2datatype(szdataType);
+        FEDataType dataType;// Rango //str2datatype(szdataType);
 		if (dataType == FEDataType::FE_INVALID_TYPE) throw XMLReader::InvalidAttributeValue(tag, "data_type", szdataType);
 
 		// create the data map
@@ -218,7 +219,8 @@ void FEBioMeshDataSection4::ParseSurfaceData(XMLTag& tag)
 		// get the data type
 		const char* szdataType = tag.AttributeValue("data_type", true);
 		if (szdataType == nullptr) szdataType = "scalar";
-		FEDataType dataType = str2datatype(szdataType);
+        FEDataType dataType;
+        //Rango : str2datatype(szdataType);
 		if (dataType == FEDataType::FE_INVALID_TYPE) throw XMLReader::InvalidAttributeValue(tag, "data_type", szdataType);
 
 		// create the data map
@@ -296,7 +298,8 @@ void FEBioMeshDataSection4::ParseElementData(XMLTag& tag)
 
 		// get the data type
 		if (szdataType == nullptr) szdataType = "scalar";
-		FEDataType dataType = str2datatype(szdataType);
+        FEDataType dataType;
+        //Rango //str2datatype(szdataType);
 		if (dataType == FEDataType::FE_INVALID_TYPE) throw XMLReader::InvalidAttributeValue(tag, "data_type", szdataType);
 
 		// default format

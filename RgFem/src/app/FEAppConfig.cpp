@@ -19,7 +19,7 @@ void FEAppConfig::SetOutputLevel(int n)
     m_noutput = n;
 }
 
-bool ReadConfig(std::string filepath)
+bool FEAppConfig::ReadConfig(std::string filepath)
 {
     return true;
 }

@@ -62,9 +62,15 @@ public:
     * dof : the local dof index
     * idx : the global equation number
     */
-    void setDofIdx(int dof, int idx);
+    void setDofIdx(int dof, int idx)
+    {
+        m_dofs[idx] = dof; 
+    }
 
-    const std::vector<int>& getDofs();
+    const std::vector<int>& getDofs()
+    {
+        return m_dofs;
+    }
 
     //! Get the nodal ID
     int GetID() const

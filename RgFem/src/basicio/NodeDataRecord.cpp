@@ -4,6 +4,8 @@
 #include "femcore/FEMesh.h"
 #include  <assert.h>
 
+DEFINE_META_CLASS(FELogNodeData, FELogData, "");
+
 FELogNodeData::FELogNodeData(FEModel* fem)
     : FELogData(fem)
 {

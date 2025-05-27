@@ -4,6 +4,8 @@
 #include "femcore/Domain/FEDomain.h"
 #include "femcore/FEMesh.h"
 
+DEFINE_META_CLASS(FELogElemData, FELogData, "");
+
 //-----------------------------------------------------------------------------
 FELogElemData::FELogElemData(FEModel* fem) : FELogData(fem) {}
 

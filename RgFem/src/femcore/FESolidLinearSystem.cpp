@@ -94,7 +94,7 @@ void FESolidLinearSystem::Assemble(const FEElementMatrix& ke)
 
 		// see if there are any rigid body dofs here
 		#pragma omp critical 
-		m_rigidSolver->RigidStiffness(m_K, m_u, m_F, ke, m_alpha);
+		/*m_rigidSolver->RigidStiffness(m_K, m_u, m_F, ke, m_alpha);*/
 	}
 }
 

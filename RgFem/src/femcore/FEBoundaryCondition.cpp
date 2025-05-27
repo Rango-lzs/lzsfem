@@ -2,6 +2,8 @@
 #include "femcore/FEFacetSet.h"
 #include "basicio/DumpStream.h"
 
+DEFINE_META_CLASS(FEBoundaryCondition, FEStepComponent, "");
+
 //-----------------------------------------------------------------------------
 FEBoundaryCondition::FEBoundaryCondition(FEModel* pfem) : FEStepComponent(pfem), m_dof(pfem)
 {

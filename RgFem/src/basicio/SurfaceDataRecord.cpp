@@ -3,6 +3,8 @@
 #include "femcore/FESurface.h"
 #include "femcore/FEMesh.h"
 
+DEFINE_META_CLASS(FELogSurfaceData, FELogData, "");
+
 //-----------------------------------------------------------------------------
 void FESurfaceDataRecord::SetData(const char* szexpr)
 {

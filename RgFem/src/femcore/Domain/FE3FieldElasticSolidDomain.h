@@ -45,18 +45,18 @@ public: // overridden from FEElasticDomain
 	// update stresses
 	void Update(const FETimeInfo& tp) override;
 
-	// calculate stiffness matrix
+	// calculate stiffness Matrix
 	void StiffnessMatrix(FELinearSystem& LS) override;
 
 protected:
 	//! Dilatational stiffness component for nearly-incompressible materials
-	void ElementDilatationalStiffness(FEModel& fem, int iel, matrix& ke);
+	void ElementDilatationalStiffness(FEModel& fem, int iel, Matrix& ke);
 
 	//! material stiffness component
-	void ElementMaterialStiffness(int iel, matrix& ke);
+	void ElementMaterialStiffness(int iel, Matrix& ke);
 
 	//! geometrical stiffness (i.e. initial stress)
-	void ElementGeometricalStiffness(int iel, matrix& ke);
+	void ElementGeometricalStiffness(int iel, Matrix& ke);
 
 	//! update the stress of an element
 	void UpdateElementStress(int iel, const FETimeInfo& tp) override;

@@ -21,6 +21,8 @@ class FEElementSet;
 //! a part of the mesh.
 class FEM_EXPORT FEMeshPartition : public FEObjectBase
 {
+    DECLARE_META_CLASS(FEMeshPartition, FEObjectBase);
+
 public:
     //! constructor
     FEMeshPartition(int nclass, FEModel* fem);

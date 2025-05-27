@@ -1,5 +1,7 @@
 #include "ObjectDataRecord.h"
 
+DEFINE_META_CLASS(FELogObjectData, FELogData, "");
+
 //-----------------------------------------------------------------------------
 ObjectDataRecord::ObjectDataRecord(FEModel* pfem) : DataRecord(pfem, FE_DATA_RB) 
 {

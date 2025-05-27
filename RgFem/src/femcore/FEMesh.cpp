@@ -2,7 +2,7 @@
 #include "FEException.h"
 //#include "femcore/Domain/FEDiscreteDomain.h"
 #include "femcore/Domain/FETrussDomain.h"
-#include "femcore/Domain/FEShellDomain.h"
+//#include "femcore/Domain/FEShellDomain.h"
 #include "femcore/Domain/FESolidDomain.h"
 #include "femcore/Domain/FEDomain2D.h"
 #include "femcore/DOFS.h"
@@ -417,8 +417,8 @@ double FEMesh::ElementVolume(FEElement &el)
 	break;
 	case FE_ELEM_SHELL: 
 	{
-		FEShellDomain* dom = dynamic_cast<FEShellDomain*>(el.GetMeshPartition()); assert(dom);
-		if (dom) V = dom->Volume(static_cast<FEShellElement&>(el));
+		/*FEShellDomain* dom = dynamic_cast<FEShellDomain*>(el.GetMeshPartition()); assert(dom);
+		if (dom) V = dom->Volume(static_cast<FEShellElement&>(el));*/
 	}
 	break;
 	}
@@ -441,8 +441,8 @@ double FEMesh::CurrentElementVolume(FEElement& el)
 	break;
 	case FE_ELEM_SHELL:
 	{
-		FEShellDomain* dom = dynamic_cast<FEShellDomain*>(el.GetMeshPartition()); assert(dom);
-		if (dom) return dom->CurrentVolume(static_cast<FEShellElement&>(el));
+		/*FEShellDomain* dom = dynamic_cast<FEShellDomain*>(el.GetMeshPartition()); assert(dom);
+		if (dom) return dom->CurrentVolume(static_cast<FEShellElement&>(el));*/
 	}
 	break;
 	}
@@ -1132,7 +1132,7 @@ void FEMesh::CopyFrom(FEMesh& mesh)
 		switch (dom.Class())
 		{
 		case FE_DOMAIN_SOLID   : pd = RANGO_NEW<FESolidDomain   >(nullptr,sz); break;
-		case FE_DOMAIN_SHELL: pd = RANGO_NEW<FEShellDomain   >(nullptr,sz); break;
+		//case FE_DOMAIN_SHELL: pd = RANGO_NEW<FEShellDomain   >(nullptr,sz); break;
 		case FE_DOMAIN_BEAM: pd = RANGO_NEW<FEBeamDomain    >(nullptr,sz); break;
 		case FE_DOMAIN_2D: pd = RANGO_NEW<FEDomain2D      >(nullptr,sz); break;
 		//case FE_DOMAIN_DISCRETE: pd = RANGO_NEW<FEDiscreteDomain>(nullptr,sz); break;

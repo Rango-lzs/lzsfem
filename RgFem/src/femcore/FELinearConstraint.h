@@ -24,6 +24,8 @@ private:
 
 class FEM_EXPORT FELinearConstraint : public FEBoundaryCondition
 {
+    DECLARE_META_CLASS(FELinearConstraint, FEBoundaryCondition);
+
 public:
 	typedef std::vector<FELinearConstraintDOF*>::iterator dof_iterator;
 

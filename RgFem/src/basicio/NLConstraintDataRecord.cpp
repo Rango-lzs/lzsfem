@@ -1,6 +1,8 @@
 #include "NLConstraintDataRecord.h"
 #include "femcore/FEModel.h"
 
+DEFINE_META_CLASS(FELogNLConstraintData, FELogData, "");
+
 //-----------------------------------------------------------------------------
 void NLConstraintDataRecord::SetData(const char* szexpr)
 {

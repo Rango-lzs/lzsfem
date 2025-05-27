@@ -4,6 +4,8 @@
 #include "FENode.h"
 #include "FEModel.h"
 
+DEFINE_META_CLASS(FEInitialCondition, FEStepComponent, "");
+
 FEInitialCondition::FEInitialCondition(FEModel* pfem) : FEStepComponent(pfem)
 {
 }

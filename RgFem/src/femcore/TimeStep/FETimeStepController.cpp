@@ -7,6 +7,8 @@
 #include "logger/log.h"
 #include "datastructure/MathUtils.h"
 
+DEFINE_META_CLASS(FETimeStepController, FEObjectBase, "");
+
 //-----------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FETimeStepController, FEParamObject)
 	ADD_PARAMETER(m_maxretries, "max_retries")->setLongName("max retries");

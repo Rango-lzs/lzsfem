@@ -4,7 +4,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 // this sort function is defined in qsort.cpp
-void qsort(int n, const int* arr, int* indx);
+//void qsort(int n, const int* arr, int* indx);
 
 //=================================================================================================
 CRSSparseMatrix::Iterator::Iterator(CRSSparseMatrix* A) : m_A(A)
@@ -164,7 +164,7 @@ void CRSSparseMatrix::Assemble(const Matrix& ke, const vector<int>& LM)
 	// find the permutation array that sorts LM in ascending order
 	// we can use this to speed up the row search (i.e. loop over n below)
 	P.resize(N);
-	qsort(N, &LM[0], &P[0]);
+	//qsort(N, &LM[0], &P[0]);
 
 	// get the data pointers 
 	int* indices = Indices();
@@ -578,7 +578,7 @@ void CCSSparseMatrix::Assemble(const Matrix& ke, const vector<int>& LM)
 	// find the permutation array that sorts LM in ascending order
 	// we can use this to speed up the row search (i.e. loop over n below)
 	P.resize(N);
-	qsort(N, &LM[0], &P[0]);
+	//qsort(N, &LM[0], &P[0]);
 
 	// get the data pointers 
 	int* indices = Indices();

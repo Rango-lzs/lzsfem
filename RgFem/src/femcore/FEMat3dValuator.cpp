@@ -5,6 +5,8 @@
 #include "basicio/DumpStream.h"
 #include "materials/FEMaterialPoint.h"
 
+DEFINE_META_CLASS(FEMat3dValuator, FEValuator, "");
+
 //=============================================================================
 // FELocalMap
 //-----------------------------------------------------------------------------

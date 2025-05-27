@@ -1,5 +1,7 @@
 #include "LinearSolver.h"
 
+DEFINE_META_CLASS(LinearSolver, FEObjectBase, "");
+
 //-----------------------------------------------------------------------------
 LinearSolver::LinearSolver(FEModel* fem) : FEObjectBase(fem)
 {

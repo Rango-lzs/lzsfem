@@ -7,6 +7,8 @@
 //! to DOF_FIXED when activated.
 class FEM_EXPORT FEFixedBC : public FENodalBC
 {
+    DECLARE_META_CLASS(FEFixedBC, FENodalBC);
+
 public:
 	//! constructors
 	FEFixedBC(FEModel* pfem);

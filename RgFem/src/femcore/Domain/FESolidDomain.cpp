@@ -10,6 +10,8 @@
 #include "../FENode.h"
 #include "../FEGlobalVector.h"
 
+DEFINE_META_CLASS(FESolidDomain, FEDomain, "");
+
 //-----------------------------------------------------------------------------
 FESolidDomain::FESolidDomain(FEModel* pfem) : FEDomain(FE_DOMAIN_SOLID, pfem), m_dofU(pfem), m_dofSU(pfem)
 {

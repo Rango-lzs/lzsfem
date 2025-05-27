@@ -19,7 +19,6 @@ class FEM_EXPORT FEAnalysis : public FEObjectBase
 public:
 	//! constructor
 	FEAnalysis(FEModel* pfem);
-	FEAnalysis();
 
 	//! destructor
 	virtual ~FEAnalysis() =0;

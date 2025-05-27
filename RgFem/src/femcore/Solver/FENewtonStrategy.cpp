@@ -4,6 +4,8 @@
 #include "../fecore_enum.h"
 #include "basicio/DumpStream.h"
 
+DEFINE_META_CLASS(FENewtonStrategy, FEObjectBase, "");
+
 FENewtonStrategy::FENewtonStrategy(FEModel* fem) : FEObjectBase(fem)
 {
 	m_pns = nullptr;

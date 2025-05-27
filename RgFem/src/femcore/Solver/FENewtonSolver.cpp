@@ -16,6 +16,9 @@
 #include "FESolver.h"
 #include "femcore/FEMesh.h"
 #include "femcore/fecore_enum.h"
+#include "FELineSearch.h"
+
+DEFINE_META_CLASS(FENewtonSolver, FESolver, "");
 
 //-----------------------------------------------------------------------------
 // define the parameter list

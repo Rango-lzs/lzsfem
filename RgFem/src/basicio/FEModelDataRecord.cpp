@@ -1,6 +1,8 @@
 
 #include "FEModelDataRecord.h"
 
+DEFINE_META_CLASS(FEModelLogData, FELogData, "");
+
 FEModelLogData::FEModelLogData(FEModel* fem) : FELogData(fem) {}
 FEModelLogData::~FEModelLogData() {}
 

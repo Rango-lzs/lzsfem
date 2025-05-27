@@ -1,6 +1,8 @@
 #include "femcore/FELoadController.h"
 #include "basicio/DumpStream.h"
 
+DEFINE_META_CLASS(FELoadController, FEModelComponent, "");
+
 FELoadController::FELoadController(FEModel* fem) : FEModelComponent(fem)
 {
 }

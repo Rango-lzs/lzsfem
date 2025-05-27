@@ -3,6 +3,8 @@
 #include "FEMesh.h"
 #include "FEModelParam.h"
 
+DEFINE_META_CLASS(FEBodyLoad, FEModelLoad, "");
+
 //-----------------------------------------------------------------------------
 FEBodyLoad::FEBodyLoad(FEModel* pfem) : FEModelLoad(pfem)
 {

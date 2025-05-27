@@ -5,6 +5,9 @@
 #include "FEModelParam.h"
 #include <string>
 #include <assert.h>
+
+DEFINE_META_CLASS(FEParamObject, MetaObject, "");
+
 using namespace std;
 
 //-----------------------------------------------------------------------------

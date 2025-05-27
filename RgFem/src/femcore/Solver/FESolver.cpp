@@ -20,6 +20,8 @@
 #include "femcore/FESurfacePairConstraint.h"
 #include "LinearSolver.h"
 
+DEFINE_META_CLASS(FESolver, FEObjectBase, "");
+
 BEGIN_PARAM_DEFINE(FESolver, FEObjectBase)
 BEGIN_PARAM_GROUP("linear system");
 ADD_PARAMETER(m_msymm, "symmetric_stiffness", 0, "non-symmetric\0symmetric\0symmetric structure\0");
@@ -119,6 +121,11 @@ double FESolver::ExtractSolutionNorm(const std::vector<double>& v, const FEDofLi
         }
     }
     return norm;
+}
+
+std::vector<double> FESolver::GetSolutionVector() const
+{
+    return std::vector<double>();
 }
 
 //-----------------------------------------------------------------------------

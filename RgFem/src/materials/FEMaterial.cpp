@@ -2,6 +2,9 @@
 #include "FEMaterial.h"
 #include "basicio/DumpStream.h"
 
+DEFINE_META_CLASS(FEMaterial, FEMaterialBase, "");
+DEFINE_META_CLASS(FEMaterialBase, FEModelComponent, "");
+
 //-----------------------------------------------------------------------------
 FEMaterialBase::FEMaterialBase(FEModel* fem) : FEModelComponent(fem)
 {

@@ -15,7 +15,10 @@ class FEMaterial;
 // Defines the FEBio namespace
 namespace Rango 
 {
-	FEM_EXPORT FEModel* CreateFEModel();
+	FEM_EXPORT FEModel* CreateFEModel()
+	{
+        return nullptr;
+	}
 	// Initialize all the FEBio modules
 	FEM_EXPORT void InitLibrary();
 
@@ -35,7 +38,10 @@ namespace Rango
 	FEM_EXPORT void FinishLibrary();
 
 	// helper function for retrieving the executable's path
-	FEM_EXPORT int get_app_path(char *pname, size_t pathsize);
+	FEM_EXPORT int get_app_path(char *pname, size_t pathsize)
+    {
+        return 0;
+	}
 
 	// print hello message
 	FEM_EXPORT int Hello(LogStream& log);

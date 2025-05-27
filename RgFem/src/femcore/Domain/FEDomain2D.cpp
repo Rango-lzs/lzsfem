@@ -4,6 +4,8 @@
 #include "elements/FEElement2d.h"
 #include "../FEException.h"
 
+DEFINE_META_CLASS(FEDomain2D, FEDomain, "");
+
 //-----------------------------------------------------------------------------
 bool FEDomain2D::Create(int nelems, FE_Element_Spec espec)
 {

@@ -4,6 +4,8 @@
 #include "femcore/FEMesh.h"
 #include "femcore/Matrix/FEGlobalMatrix.h"
 
+DEFINE_META_CLASS(FEDomain, FEMeshPartition, "");
+
 //-----------------------------------------------------------------------------
 FEDomain::FEDomain(int nclass, FEModel* fem) : FEMeshPartition(nclass, fem)
 {

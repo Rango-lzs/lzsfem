@@ -2,6 +2,8 @@
 #include "femcore/Solver/FESolver.h"
 #include "basicio/DumpStream.h"
 
+DEFINE_META_CLASS(FEModelLoad, FEStepComponent, "");
+
 //-----------------------------------------------------------------------------
 FEModelLoad::FEModelLoad(FEModel* pfem) : FEStepComponent(pfem), m_dof(pfem)
 {

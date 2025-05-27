@@ -5,6 +5,8 @@
 #include "basicio/DumpStream.h"
 #include "logger/log.h"
 
+DEFINE_META_CLASS(FEScalarValuator, FEValuator, "");
+
 ////=============================================================================
 //bool FEMathExpression::Init(const std::string& expr, FEObjectBase* pc)
 //{

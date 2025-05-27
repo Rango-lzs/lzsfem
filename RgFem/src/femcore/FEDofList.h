@@ -14,6 +14,7 @@ class DumpStream;
 class FEM_EXPORT FEDofList
 {
 public:
+    FEDofList() = default;
 	FEDofList(FEModel* fem);
 	FEDofList(const FEDofList& dofs);
 

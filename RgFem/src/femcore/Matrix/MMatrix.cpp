@@ -1,4 +1,6 @@
-#include "MMatrix.h"
+
+#include "femcore/Matrix/MMatrix.h"
+
 using namespace std;
 
 //-----------------------------------------------------------------------------

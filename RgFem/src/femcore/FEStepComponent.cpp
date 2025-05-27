@@ -1,6 +1,8 @@
 #include "FEStepComponent.h"
 #include "basicio/DumpStream.h"
 
+DEFINE_META_CLASS(FEStepComponent, FEModelComponent, "");
+
 FEStepComponent::FEStepComponent(FEModel* fem) : FEModelComponent(fem)
 {
 	// initialize parameters

@@ -1,6 +1,8 @@
 #include "FESurfaceBC.h"
 #include "FESurface.h"
 
+DEFINE_META_CLASS(FESurfaceBC, FEBoundaryCondition, "");
+
 FESurfaceBC::FESurfaceBC(FEModel* fem) : FEBoundaryCondition(fem)
 {
 	m_surface = nullptr;

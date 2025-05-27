@@ -1,6 +1,8 @@
 #include "femcore/FENodalBC.h"
 #include "basicio/DumpStream.h"
 
+DEFINE_META_CLASS(FENodalBC, FEBoundaryCondition, "");
+
 //==================================================================
 FENodalBC::FENodalBC(FEModel* fem) : FEBoundaryCondition(fem)
 {

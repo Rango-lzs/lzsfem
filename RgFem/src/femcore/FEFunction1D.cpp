@@ -5,6 +5,8 @@
 #include "MObj2String.h"
 #include "logger/log.h"
 
+DEFINE_META_CLASS(FEFunction1D, FEObjectBase, "");
+
 FEFunction1D::FEFunction1D(FEModel* fem) : FEObjectBase(fem)
 {
 }

@@ -4,6 +4,8 @@
 #include "FEDataMap.h"
 #include "basicio/DumpStream.h"
 
+DEFINE_META_CLASS(FEMat3dsValuator, FEValuator, "");
+
 //=============================================================================
 // FEConstValueMat3ds
 //-----------------------------------------------------------------------------

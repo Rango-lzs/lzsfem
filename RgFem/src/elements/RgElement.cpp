@@ -99,6 +99,34 @@ const std::vector<NodeId>& FEElement::getNodeIds() const
     return m_node;
 }
 
+NodeId FEElement::getNodeId(int idx) const
+{
+    if (idx >= 0 && idx < m_node.size())
+    {
+        return m_node[idx];
+	}
+    return -1;
+}
+
+NodeId FEElement::getLocNodeId(int idx) const
+{
+    if (idx >= 0 && idx < m_loc_node.size())
+    {
+        return m_loc_node[idx];
+    }
+    return -1;
+}
+
+void FEElement::setNodeId(int idx, int id)
+{
+    m_node[idx] = id;
+}
+
+int FEElement::getType() const
+{
+    return -1;
+}
+
 //-----------------------------------------------------------------------------
 void FEElement::SetTraits(FEElementTraits* ptraits)
 {

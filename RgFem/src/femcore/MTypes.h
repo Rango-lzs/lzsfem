@@ -54,7 +54,9 @@ public:
 
 	operator double() { return n / d; }
 
-	void normalize();
+	void normalize()
+    {
+    }
 };
 
 //-----------------------------------------------------------------------------
@@ -78,5 +80,6 @@ inline FRACTION operator / (double    l, FRACTION& r) { return FRACTION(l*r.d, r
 inline FRACTION operator - (FRACTION& a) { return FRACTION(-a.n, a.d); }
 //-----------------------------------------------------------------------------
 // Calculates the greatest common factor
+//Rango TODO:
 long gcf(long a, long b);
 

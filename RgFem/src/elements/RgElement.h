@@ -45,10 +45,10 @@ public:
     static constexpr int MAX_INTPOINTS = 4;
 
     FEElement();
-    virtual ~FEElement();
+    virtual ~FEElement(){};
 
-    FEElement(const FEElement& other);
-    FEElement& operator=(const FEElement& other);
+    FEElement(const FEElement& other) = default;
+    FEElement& operator=(const FEElement& other) = default;
 
     // 单元编号
     int getId() const;
@@ -81,8 +81,14 @@ public:
 
     void setNodeId(int idx, int id);
 
-    virtual void setNode(FENode* n, int i);
-    virtual FENode* getNode(int idx) const;
+    virtual void setNode(FENode* n, int i)
+    {
+    }
+
+    virtual FENode* getNode(int idx) const
+    {
+        return nullptr;
+    }
 
     //! Set the type of the element and initialize the traits by type
     void setType(int ntype)
@@ -90,7 +96,7 @@ public:
         FEElementLibrary::SetElementTraits(*this, ntype);
     }
 
-    int getType() const;
+    virtual int getType() const;
 
     //Set the traits of an element
     virtual void SetTraits(FEElementTraits* ptraits);
@@ -107,16 +113,31 @@ public:
         return m_pTraits->m_neln;
     }
 
-    bool isActive() const;
+    bool isActive() const
+    {
+        return false;
+    }
 
-    ElementCategory Class() const;
+    ElementCategory Class() const
+    {
+        return ElementCategory::FE_ELEM_SOLID;
+    }
 
-    bool HasNode(int i) const;
+    bool HasNode(int i) const
+    {
+        return false;
+    }
 
-    bool HasNodes(int* node, int size) const;
+    bool HasNodes(int* node, int size) const
+    {
+        return false;
+    }
 
     //! clear material point data
-    void ClearData();
+    void ClearData()
+    {
+    
+    }
 
 public: 
 
@@ -146,10 +167,16 @@ public:
     }
 
     //! return the nodes of the face
-    int GetFace(int nface, int* nodeList) const;
+    int GetFace(int nface, int* nodeList) const
+    {
+        return 0;
+    }
 
     //根据节点坐标，插值计算高斯点坐标
-    Vector3d Evaluate(Vector3d* value, int iGauss);
+    Vector3d Evaluate(Vector3d* value, int iGauss)
+    {
+        return Vector3d{0, 0, 0};
+    }
 
 
 public:

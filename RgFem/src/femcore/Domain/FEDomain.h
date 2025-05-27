@@ -7,6 +7,8 @@ class FEMaterial;
 // Base class for solid and shell parts. Domains can also have materials assigned.
 class FEM_EXPORT FEDomain : public FEMeshPartition
 {
+    DECLARE_META_CLASS(FEDomain, FEMeshPartition);
+
 public:
 	FEDomain(int nclass, FEModel* fem);
 

@@ -4,6 +4,9 @@
 #include "basicio/DumpStream.h"
 #include "logger/log.h"
 
+DEFINE_META_CLASS(FELinearConstraint, FEBoundaryCondition, "");
+DEFINE_META_CLASS(FELinearConstraintDOF, FEObjectBase, "");
+
 BEGIN_PARAM_DEFINE(FELinearConstraintDOF, FEObjectBase)
 	ADD_PARAMETER(dof, "dof", 0, "$(dof_list)");
 	ADD_PARAMETER(node, "node");
@@ -26,7 +29,7 @@ BEGIN_PARAM_DEFINE(FELinearConstraint, FEBoundaryCondition)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FELinearConstraint::FELinearConstraint() : FEBoundaryCondition(nullptr)
+FELinearConstraint::FELinearConstraint() : FEBoundaryCondition((FEModel*)nullptr)
 {
 	m_parentDof = nullptr;
 	m_off = 0.0;

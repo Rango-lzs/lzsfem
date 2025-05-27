@@ -192,7 +192,7 @@ void FEResidualVector::Assemble(int node_id, int dof, double f)
 		if (solver)
 		{
 			FERigidSolver* rigidSolver = solver->GetRigidSolver();
-			rigidSolver->AssembleResidual(node_id, dof, f, m_R);
+			/*rigidSolver->AssembleResidual(node_id, dof, f, m_R);*/
 		}
 	}
 }
