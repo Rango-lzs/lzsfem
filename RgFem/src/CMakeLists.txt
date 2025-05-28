@@ -33,16 +33,38 @@ set(PROJECT_SOURCES "")
 
 
 # add app sources
-set(APP_SOURCES "")
-add_subdirectory(app)
-source_group("app" FILES ${APP_SOURCES})
-message(status "resource files is ${APP_SOURCES}")
+#set(APP_SOURCES "")
+#add_subdirectory(app)
+#source_group("app" FILES ${APP_SOURCES})
+#message(status "resource files is ${APP_SOURCES}")
 
 
 # add basicio sources
 #set(BASICIO_SOURCES "")
 #add_subdirectory(basicio)
 #source_group("basicio" FILES ${BASICIO_SOURCES})
+
+#add app sources
+set(APP_HEADERS
+    app/AppUtils.h
+    app/CmdOptions.h
+    app/FEAppConfig.h
+    app/RgFemApp.h
+)
+set(APP_SOURCES
+    app/CmdOptions.cpp
+    app/FEAppConfig.cpp
+    app/AppUtils.cpp
+    app/RgFemApp.cpp
+    app/main.cpp
+)
+
+set(PROJECT_SOURCES
+    ${PROJECT_SOURCES}
+    ${APP_HEADERS}
+    ${APP_SOURCES}
+)
+source_group("app" FILES ${APP_HEADERS} ${APP_SOURCES})
 
 
 # add femcore sources

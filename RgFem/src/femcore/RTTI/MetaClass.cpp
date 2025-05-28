@@ -14,7 +14,10 @@
 	 ,mp_parent(pParent)
 	 ,m_constructor(std::move(cons))
 {
-	 pParent->m_childs.push_back(this);
+	 if (pParent)
+	 {
+         pParent->m_childs.push_back(this);
+	 }
 }
 
 const std::string& MetaClass::name() const

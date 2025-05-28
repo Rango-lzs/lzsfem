@@ -11,6 +11,7 @@
 FEAppConfig::FEAppConfig()
 {
     m_noutput = 1;
+    m_bRunFile = true;
     Defaults();
 }
 

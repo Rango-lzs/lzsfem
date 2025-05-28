@@ -73,15 +73,16 @@ private:
 template <class T>
 T* RANGO_NEW(const std::string& aliasName = "")
 {
+    const MetaClass* pThis = T::static_meta();
     const MetaClass* pTarget = nullptr;
     T* pNewObj = nullptr;
     if (aliasName.empty() || aliasName == T::alias_name())
     {
-        pTarget = T::static_meta();
+        pTarget = pThis;
     }
     else
     {
-        for (auto pMeta : pTarget->childs())
+        for (auto pMeta : pThis->childs())
         {
             if (pMeta->alias_name() == aliasName)
             {
@@ -96,15 +97,16 @@ T* RANGO_NEW(const std::string& aliasName = "")
 template <class T>
 T* RANGO_NEW(FEModel* pModel, const std::string& aliasName)
 {
+    const MetaClass* pThis = T::static_meta();
     const MetaClass* pTarget = nullptr;
     T* pNewObj = nullptr;
     if (aliasName.empty() || aliasName == T::alias_name())
     {
-        pTarget = T::static_meta();
+        pTarget = pThis;
     }
     else
     {
-        for (auto pMeta : pTarget->childs())
+        for (auto pMeta : pThis->childs())
         {
             if (pMeta->alias_name() == aliasName)
             {
