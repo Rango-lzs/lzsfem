@@ -1123,7 +1123,7 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEObjectBase* pc, const char* szp
 	// see if we can find this parameter
 	if (!ReadParameter(tag, pl, szparam, pc, parseAttributes))
 	{
-        return false;
+        return true;
         //		// if we get here, the parameter is not found.
 //		// See if the parameter container has defined a property of this name
 //		int n = pc->FindPropertyIndex(tag.Name());

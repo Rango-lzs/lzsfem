@@ -118,7 +118,7 @@ public:
     void SetParameter(const char* sz, T v);
 
 private:
-    FEParameterList* m_pParam;  //!< parameter list
+    FEParameterList* m_pParam = nullptr;  //!< parameter list
 };
 
 //-----------------------------------------------------------------------------
