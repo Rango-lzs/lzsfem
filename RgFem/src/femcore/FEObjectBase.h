@@ -10,6 +10,7 @@
 #include "femcore/FEParamObject.h"
 #include "femcore/RTTI/MetaClass.h"
 #include <string>
+#include "femcore/FEProperty.h"
 
 //-----------------------------------------------------------------------------
 class FECoreFactory;
@@ -53,6 +54,19 @@ public:
     virtual bool UpdateParams();
 
 public:
+    //! Add a property
+    //! Call this in the constructor of derived classes to
+    //! build the property list
+    void AddProperty(FEProperty* pp, const char* sz, unsigned int flags = FEProperty::Required);
+
+    void RemoveProperty(int i);
+
+    void ClearProperties();
+
+    template <class T>
+    T* ExtractProperty(bool extractSelf = true);
+
+public:
     //! Get the FE model
     FEModel* GetFEModel() const;
     //! set the FEModel of this class (use with caution!)
@@ -67,6 +81,7 @@ private:
     std::string m_name;  //!< user defined name of component
     FEModel* m_fem;      //!< the model this class belongs to
     int m_nID;           //!< component ID
+    std::vector<FEProperty*>	m_Prop;		//!< list of properties
 };
 
 
@@ -117,4 +132,63 @@ T* RANGO_NEW(FEModel* pModel, const std::string& aliasName)
     pNewObj = static_cast<T*>(pTarget->create());
     pNewObj->SetFEModel(pModel);
     return pNewObj;
+}
+
+
+// include template property definitions
+#include "FEPropertyT.h"
+
+template <class T>
+FEProperty* AddClassProperty(FEObjectBase* pc, T* pp, const char* sz)
+{
+    FEFixedPropertyT<T>* prop = new FEFixedPropertyT<T>(pp);
+    prop->SetDefaultType(sz);
+    pc->AddProperty(prop, sz, FEProperty::Fixed);
+    return prop;
+}
+
+template <class T>
+FEProperty* AddClassProperty(FEObjectBase* pc, T** pp, const char* sz, unsigned int flags = FEProperty::Required)
+{
+    FEPropertyT<T>* prop = new FEPropertyT<T>(pp);
+    if (prop->GetSuperClassID() == FECLASS_ID)
+        prop->SetDefaultType(sz);
+    pc->AddProperty(prop, sz, flags);
+    return prop;
+}
+
+template <class T>
+FEProperty* AddClassProperty(FEObjectBase* pc, std::vector<T*>* pp, const char* sz,
+                             unsigned int flags = FEProperty::Required)
+{
+    FEVecPropertyT<T>* prop = new FEVecPropertyT<T>(pp);
+    if (prop->GetSuperClassID() == FECLASS_ID)
+        prop->SetDefaultType(sz);
+    pc->AddProperty(prop, sz, flags);
+    return prop;
+}
+
+#define ADD_PROPERTY(theProp, ...) AddClassProperty(this, &theProp, __VA_ARGS__)
+
+template <class T>
+T* FEObjectBase::ExtractProperty(bool extractSelf)
+{
+    if (extractSelf)
+    {
+        if (dynamic_cast<T*>(this))
+            return dynamic_cast<T*>(this);
+    }
+
+    int NC = Properties();
+    for (int i = 0; i < NC; i++)
+    {
+        FEObjectBase* pci = GetProperty(i);
+        if (pci)
+        {
+            T* pc = pci->ExtractProperty<T>();
+            if (pc)
+                return pc;
+        }
+    }
+    return nullptr;
 }

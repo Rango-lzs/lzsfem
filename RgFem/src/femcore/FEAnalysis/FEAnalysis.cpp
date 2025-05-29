@@ -16,6 +16,7 @@
 #include "femcore/FEParam.h"
 #include "femcore/FEParamValidator.h"
 #include "femcore/RTTI/MetaClass.h"
+#include "../FEProperty.h"
 
 DEFINE_META_CLASS(FEAnalysis, FEObjectBase, "");
 
@@ -47,12 +48,12 @@ BEGIN_PARAM_GROUP("Advanced settings");
 ADD_PARAMETER(m_badaptorReSolve, "adaptor_re_solve")->setLongName("re-solve after adaptation");
 END_PARAM_GROUP();
 
-//ADD_PROPERTY(m_timeController, "time_stepper", FEProperty::Preferred)
-//    ->SetDefaultType("default")
-//    .SetLongName("Auto time stepper");
-//FEProperty* solver = ADD_PROPERTY(m_psolver, "solver");
+ADD_PROPERTY(m_timeController, "time_stepper", FEProperty::Preferred)
+    ->SetDefaultType("default")
+    .SetLongName("Auto time stepper");
+FEProperty* solver = ADD_PROPERTY(m_psolver, "solver");
 
-// the default type of the solver should match the active module's name
+ //the default type of the solver should match the active module's name
 //FECoreKernel& fecore = FECoreKernel::GetInstance();
 //const char* szmod = fecore.GetActiveModule()->GetName();
 //solver->SetDefaultType(szmod);

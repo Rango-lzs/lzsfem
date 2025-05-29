@@ -125,7 +125,7 @@ protected:
 
 protected:
 	// This class should not be created directly
-	FEProperty(SUPER_CLASS_ID classID);
+	FEProperty();
 
 protected:
 	FEObjectBase*		m_pParent;		//!< pointer to the parent class (i.e. the class that defines this property)

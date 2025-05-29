@@ -4,6 +4,7 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(${TARGET_NAME})
 target_compile_definitions(RgFem PRIVATE RgFem_Module)
 
+
 target_include_directories(${TARGET_NAME} PRIVATE ${SOURCE_DIR})
 
 
@@ -146,8 +147,8 @@ set(FEMCORE_HEADERS
     femcore/FEParameterList.h
     #femcore/FEPlotDataStore.h
     femcore/FEPointFunction.h
-    #femcore/FEProperty.h
-    #femcore/FEPropertyT.h
+    femcore/FEProperty.h
+    femcore/FEPropertyT.h
     femcore/FERgModel.h
     femcore/FEScalarValuator.h
     femcore/FESolidAnalysis.h
@@ -342,7 +343,7 @@ set(FEMCORE_SOURCES
     femcore/FEParameterList.cpp
     #femcore/FEPlotDataStore.cpp
     femcore/FEPointFunction.cpp
-    #femcore/FEProperty.cpp
+    femcore/FEProperty.cpp
     femcore/FERgModel.cpp
     femcore/FEScalarValuator.cpp
     femcore/FESolidAnalysis.cpp
@@ -386,6 +387,7 @@ set(FEMCORE_SOURCES
     #femcore/MatrixSolver/SchurSolver.cpp
     #femcore/MatrixSolver/StrategySolver.cpp
     #femcore/MatrixSolver/TestSolver.cpp
+
 
     femcore/MetaObject.cpp
     femcore/MetaObjectDemo.cpp

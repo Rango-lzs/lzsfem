@@ -1,33 +1,6 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
 
 #pragma once
-#include "DumpStream.h"
+#include "basicio/DumpStream.h"
 
 //-----------------------------------------------------------------------------
 template <class T>
@@ -37,10 +10,10 @@ private:
 	T**	m_pc;	//!< pointer to pointer of property
 
 public:
-	FEPropertyT(T** ppc) : FEProperty(T::superClassID())
+	FEPropertyT(T** ppc) : FEProperty()
 	{ 
 		m_pc = ppc; 
-		m_className = T::BaseClassName();
+		//m_className = T::BaseClassName();
 	}
 
 	bool IsArray() const override { return false; }
@@ -48,7 +21,7 @@ public:
 	void SetProperty(FEObjectBase* pc) override 
 	{ 
 		*m_pc = dynamic_cast<T*>(pc);
-		pc->SetParent(GetParent());
+		pc->setOwner(GetParent());
 	}
 	int size() const override { return ((*m_pc) == 0 ? 0 : 1); }
 
@@ -92,10 +65,10 @@ private:
 	T* m_pc;	//!< pointer to property
 
 public:
-	FEFixedPropertyT(T* ppc) : FEProperty(T::superClassID())
+	FEFixedPropertyT(T* ppc) : FEProperty()
 	{
 		m_pc = ppc;
-		m_className = T::BaseClassName();
+		//m_className = T::BaseClassName();
 	}
 
 	bool IsArray() const override { return false; }
@@ -150,10 +123,10 @@ private:
 	Y*	m_pmp;		//!< pointer to actual material property
 
 public:
-	FEVecPropertyT(Y* p) : FEProperty(T::superClassID()) 
+	FEVecPropertyT(Y* p) : FEProperty() 
 	{ 
 		m_pmp = p; 
-		m_className = T::BaseClassName();
+		//m_className = T::BaseClassName();
 	}
 	T* operator [] (int i) { return (*m_pmp)[i]; }
 	const T* operator [] (int i) const { return (*m_pmp)[i]; }

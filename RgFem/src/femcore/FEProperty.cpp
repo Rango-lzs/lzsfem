@@ -2,7 +2,7 @@
 #include "basicio/DumpStream.h"
 #include "FEObjectBase.h"
 //-----------------------------------------------------------------------------
-FEProperty::FEProperty(SUPER_CLASS_ID superClassID) : m_szname(nullptr), m_className(nullptr), m_szlongname(nullptr), m_szdefaultType(nullptr), m_flags(0), m_superClassID(superClassID) {}
+FEProperty::FEProperty() : m_szname(nullptr), m_className(nullptr), m_szlongname(nullptr), m_szdefaultType(nullptr), m_flags(0), m_superClassID() {}
 
 //-----------------------------------------------------------------------------
 FEProperty::~FEProperty(){}
@@ -49,10 +49,8 @@ void FEProperty::Write(DumpStream& ar, FEObjectBase* pc)
 	int nflag = (pc == 0 ? 0 : 1);
 	ar << nflag;
 	if (nflag)
-	{
-		int ntype = (int) pc->GetSuperClassID();
-		ar << pc->GetTypeStr();
-		ar << ntype;
+	{		
+		ar << pc->GetTypeStr();	
 		pc->Serialize(ar);
 	}
 }
@@ -66,11 +64,8 @@ FEObjectBase* FEProperty::Read(DumpStream& ar)
 	if (nflag)
 	{
 		char sz[256];
-		int ntype = FEINVALID_ID;
 		ar >> sz;
-		ar >> ntype;
-		pm = RANGO_NEW<FEObjectBase>(&ar.GetFEModel(), sz);
-		pm->SetOwner(GetParent());
+		pm = RANGO_NEW<FEObjectBase>(&ar.GetFEModel(), sz);	
 		pm->Serialize(ar);
 
 		// TODO: Do I really need to do this here?

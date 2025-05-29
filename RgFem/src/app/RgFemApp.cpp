@@ -102,7 +102,7 @@ int RgFemApp::RunModel()
 
 	// solve the model with the task and control file
     //bool ret = febio::SolveModel(model, m_cmd_opts.sztask, m_cmd_opts.szctrl);
-	if (pModel->Init())
+ 	if (pModel->Init())
 	{
 		return 1;
 	}
