@@ -119,7 +119,7 @@ public:
 		double	m_tstart;		//!< start time
 		double	m_tend;			//!< end time
 
-		FETimeStepController* m_timeController;
+		FETimeStepController* m_timeController = nullptr;
 	//}
 
 	// --- Quasi-Newton Solver Variables ---

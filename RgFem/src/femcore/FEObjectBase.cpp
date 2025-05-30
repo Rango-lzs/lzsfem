@@ -333,3 +333,126 @@ bool FEObjectBase::UpdateParams()
 {
 	return true;
 }
+
+
+//-----------------------------------------------------------------------------
+void FEObjectBase::AddProperty(FEProperty* pp, const char* sz, unsigned int flags)
+{
+    pp->SetName(sz);
+    pp->SetLongName(sz);
+    pp->SetFlags(flags);
+    pp->SetParent(this);
+    m_Prop.push_back(pp);
+}
+
+//-----------------------------------------------------------------------------
+void FEObjectBase::RemoveProperty(int i)
+{
+    m_Prop[i] = nullptr;
+}
+
+//-----------------------------------------------------------------------------
+void FEObjectBase::ClearProperties()
+{
+    for (int i = 0; i < m_Prop.size(); ++i)
+    {
+        delete m_Prop[i];
+    }
+    m_Prop.clear();
+}
+
+//-----------------------------------------------------------------------------
+int FEObjectBase::Properties()
+{
+    return (int)m_Prop.size();
+}
+
+//-----------------------------------------------------------------------------
+int FEObjectBase::FindPropertyIndex(const char* sz)
+{
+    int NP = (int)m_Prop.size();
+    for (int i = 0; i < NP; ++i)
+    {
+        const FEProperty* pm = m_Prop[i];
+        if (pm && (strcmp(pm->GetName(), sz) == 0))
+            return i;
+    }
+    return -1;
+}
+
+//-----------------------------------------------------------------------------
+FEProperty* FEObjectBase::FindProperty(const char* sz, bool searchChildren)
+{
+    // first, search the class' properties
+    int NP = (int)m_Prop.size();
+    for (int i = 0; i < NP; ++i)
+    {
+        FEProperty* pm = m_Prop[i];
+        if (pm && (strcmp(pm->GetName(), sz) == 0))
+            return pm;
+    }
+
+    // the property, wasn't found so look into the properties' properties
+    if (searchChildren)
+    {
+        for (int i = 0; i < NP; ++i)
+        {
+            FEProperty* pm = m_Prop[i];
+            if (pm)
+            {
+                int m = pm->size();
+                for (int j = 0; j < m; ++j)
+                {
+                    FEObjectBase* pcj = pm->get(j);
+                    if (pcj)
+                    {
+                        // Note: we don't search children's children!
+                        FEProperty* pj = pcj->FindProperty(sz);
+                        if (pj)
+                            return pj;
+                    }
+                }
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+//-----------------------------------------------------------------------------
+FEProperty* FEObjectBase::GetProperty(int i)
+{  
+    return m_Prop[i];
+}
+
+//-----------------------------------------------------------------------------
+bool FEObjectBase::SetProperty(int i, FEObjectBase* pb)
+{
+    FEProperty* pm = m_Prop[i];
+    if (pm->IsType(pb))
+    {
+        pm->SetProperty(pb);
+        /*if (pb)
+            pb->SetParent(this);*/
+        return true;
+    }
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+//! Set a property via name
+bool FEObjectBase::SetProperty(const char* sz, FEObjectBase* pb)
+{
+    FEProperty* prop = FindProperty(sz);
+    if (prop == nullptr)
+        return false;
+
+    if (prop->IsType(pb))
+    {
+        prop->SetProperty(pb);
+        /*if (pb)
+            pb->SetParent(this);*/
+        return true;
+    }
+    return false;
+}

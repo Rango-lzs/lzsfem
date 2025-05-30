@@ -21,7 +21,7 @@ public:
 	void SetProperty(FEObjectBase* pc) override 
 	{ 
 		*m_pc = dynamic_cast<T*>(pc);
-		pc->setOwner(GetParent());
+		//SetParent(pc);
 	}
 	int size() const override { return ((*m_pc) == 0 ? 0 : 1); }
 

@@ -57,11 +57,34 @@ public:
     //! Add a property
     //! Call this in the constructor of derived classes to
     //! build the property list
-    void AddProperty(FEProperty* pp, const char* sz, unsigned int flags = FEProperty::Required);
+    
+    void AddProperty( FEProperty* pp, const char* sz, unsigned int flags);
 
+    //-----------------------------------------------------------------------------
     void RemoveProperty(int i);
 
+    //-----------------------------------------------------------------------------
     void ClearProperties();
+
+    //-----------------------------------------------------------------------------
+    int Properties();
+
+    //-----------------------------------------------------------------------------
+    int FindPropertyIndex(const char* sz);
+
+    //-----------------------------------------------------------------------------
+    FEProperty* FindProperty(const char* sz, bool searchChildren = false);
+    
+    //-----------------------------------------------------------------------------
+    FEProperty* GetProperty(int n);
+
+
+    //-----------------------------------------------------------------------------
+    bool SetProperty(int i, FEObjectBase* pb);
+
+    //-----------------------------------------------------------------------------
+    //! Set a property via name
+    bool SetProperty(const char* sz, FEObjectBase* pb);
 
     template <class T>
     T* ExtractProperty(bool extractSelf = true);

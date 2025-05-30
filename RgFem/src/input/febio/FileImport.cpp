@@ -1123,144 +1123,145 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEObjectBase* pc, const char* szp
 	// see if we can find this parameter
 	if (!ReadParameter(tag, pl, szparam, pc, parseAttributes))
 	{
-        return true;
-        //		// if we get here, the parameter is not found.
-//		// See if the parameter container has defined a property of this name
-//		int n = pc->FindPropertyIndex(tag.Name());
-//		if (n >= 0)
-//		{
-//			FEProperty* prop = pc->PropertyClass(n);
-//
-//			if (prop->IsReference())
-//			{
-//				// get the reference. It is either defined by the ref attribute
-//				// or the value of the tag.
-//				if (tag.isleaf() == false) throw XMLReader::InvalidValue(tag);
-//
-//				const char* szref = tag.AttributeValue("ref", true);
-//				if (szref == nullptr) szref = tag.szvalue();
-//
-//				const char* sztag = tag.Name();
-//
-//				FEMesh& mesh = GetFEModel()->GetMesh();
-//
-//				// This property should reference an existing class
-//				SUPER_CLASS_ID classID = prop->GetSuperClassID();
-///*				if (classID == FEITEMLIST_ID)
-//				{
-//					FENodeSet* nodeSet = mesh.FindNodeSet(szref);
-//					if (nodeSet == nullptr) throw XMLReader::InvalidValue(tag);
-//					prop->SetProperty(nodeSet);
-//				}
-//				else */if (classID == FESURFACE_ID)
-//				{
-//					FEModelBuilder* builder = GetBuilder();
-//					FEFacetSet* facetSet = mesh.FindFacetSet(szref);
-//					if (facetSet == nullptr) throw XMLReader::InvalidValue(tag);
-//
-//					FESurface* surface = fecore_alloc(FESurface, GetFEModel());
-//					GetBuilder()->BuildSurface(*surface, *facetSet);
-//					mesh.AddSurface(surface);
-//
-//					prop->SetProperty(surface);
-//				}
-//				else throw XMLReader::InvalidTag(tag);
-//			}
-//			else
-//			{
-//				// see if the property is already allocated
-//				if ((prop->IsArray() == false) && (prop->get(0)))
-//				{
-//					// If so, let's just read the parameters
-//					FEObjectBase* pc = prop->get(0);
-//					if (tag.isleaf() == false) ReadParameterList(tag, pc);
-//				}
-//				else
-//				{
-//					const char* sztype = tag.AttributeValue("type", true);
-//
-//					// If the type attribute is omitted we try the property's default type,
-//					// otherwise assume the tag's name is the default type
-//					if (sztype == nullptr)
-//					{
-//						if (prop->GetDefaultType()) sztype = prop->GetDefaultType();
-//						else sztype = tag.Name();
-//					}
-//
-//					// HACK for getting passed the old "user" fiber type.
-//					if (strcmp(sztype, "user") == 0) sztype = "map";
-//
-//					// HACK for mapping load curves to FEFunction1D
-//					const char* szlc = tag.AttributeValue("lc", true);
-//					if (szlc && (tag.m_att.size() == 1) && (prop->GetSuperClassID() == FEFUNCTION1D_ID))
-//					{
-//						double v = 1;
-//						tag.value(v);
-//						FEPointFunction* f = fecore_alloc(FEPointFunction, GetFEModel()); assert(f);
-//						prop->SetProperty(f);
-//
-//						int lc = atoi(szlc) - 1;
-//						GetBuilder()->MapLoadCurveToFunction(f, lc, v);
-//					}
-//					else
-//					{
-//						// try to allocate the class
-//						FEObjectBase* pp = fecore_new<FEObjectBase>(prop->GetSuperClassID(), sztype, GetFEModel());
-//						if (pp == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
-//
-//						prop->SetProperty(pp);
-//
-//						// read the property data
-//						if (tag.isleaf() == false)
-//						{
-//							ReadParameterList(tag, pp);
-//						}
-//						else if (tag.isempty() == false)
-//						{
-//							if ((tag.szvalue() != nullptr) && (tag.szvalue()[0] != 0))
-//							{
-//								// parse attributes first
-//								ReadAttributes(tag, pp);
-//
-//								// There should be a parameter with the same name as the type
-//								if (ReadParameter(tag, pp->GetParameterList(), sztype, pp) == false)
-//									throw XMLReader::InvalidValue(tag);
-//							}
-//						}
-//						else
-//						{
-//							// we get here if the property was defined with an empty tag.
-//							// We should still validate it.
-//							int NP = pp->PropertyClasses();
-//							for (int i = 0; i < NP; ++i)
-//							{
-//								FEProperty* pi = pp->PropertyClass(i);
-//								bool a = pi->IsRequired();
-//								bool b = (pi->size() == 0);
-//								if (a && b)
-//								{
-//									std::string name = pp->GetName();
-//									if (name.empty()) name = prop->GetName();
-//									throw FEBioImport::MissingProperty(name, pi->GetName());
-//								}
-//							}
-//
-//						}
-//					}
-//				}
-//				return true;
-//			}
-//		}
-//		else
-//		{
-//			// backward compatibility hack for older formats (< v 3.0)
-///*			if (strcmp(tag.Name(), "fiber") == 0)
-//			{
-//				return ReadParameter(tag, pc, "mat_axis", parseAttributes);
-//			}
-//			else return false;
-//*/			return false;
-//		}
+      
+        // if we get here, the parameter is not found.
+		// See if the parameter container has defined a property of this name
+		int n = pc->FindPropertyIndex(tag.Name());
+		if (n >= 0)
+		{
+			FEProperty* prop = pc->GetProperty(n);
+
+			if (prop->IsReference())
+			{
+				// get the reference. It is either defined by the ref attribute
+				// or the value of the tag.
+				if (tag.isleaf() == false) throw XMLReader::InvalidValue(tag);
+
+				const char* szref = tag.AttributeValue("ref", true);
+				if (szref == nullptr) szref = tag.szvalue();
+
+				const char* sztag = tag.Name();
+
+				FEMesh& mesh = GetFEModel()->GetMesh();
+
+				// This property should reference an existing class
+				SUPER_CLASS_ID classID = prop->GetSuperClassID();
+/*				if (classID == FEITEMLIST_ID)
+				{
+					FENodeSet* nodeSet = mesh.FindNodeSet(szref);
+					if (nodeSet == nullptr) throw XMLReader::InvalidValue(tag);
+					prop->SetProperty(nodeSet);
+				}
+				else */if (classID == FESURFACE_ID)
+				{
+					FEModelBuilder* builder = GetBuilder();
+					FEFacetSet* facetSet = mesh.FindFacetSet(szref);
+					if (facetSet == nullptr) throw XMLReader::InvalidValue(tag);
+
+					FESurface* surface = RANGO_NEW<FESurface>(GetFEModel(), "");
+					GetBuilder()->BuildSurface(*surface, *facetSet);
+					mesh.AddSurface(surface);
+
+					prop->SetProperty(surface);
+				}
+				else throw XMLReader::InvalidTag(tag);
+			}
+			else
+			{
+				// see if the property is already allocated
+				if ((prop->IsArray() == false) && (prop->get(0)))
+				{
+					// If so, let's just read the parameters
+					FEObjectBase* pc = prop->get(0);
+					if (tag.isleaf() == false) ReadParameterList(tag, pc);
+				}
+				else
+				{
+					const char* sztype = tag.AttributeValue("type", true);
+
+					// If the type attribute is omitted we try the property's default type,
+					// otherwise assume the tag's name is the default type
+					if (sztype == nullptr)
+					{
+						if (prop->GetDefaultType()) sztype = prop->GetDefaultType();
+						else sztype = tag.Name();
+					}
+
+					// HACK for getting passed the old "user" fiber type.
+					if (strcmp(sztype, "user") == 0) sztype = "map";
+
+					// HACK for mapping load curves to FEFunction1D
+					const char* szlc = tag.AttributeValue("lc", true);
+					if (szlc && (tag.m_att.size() == 1) && (prop->GetSuperClassID() == FEFUNCTION1D_ID))
+					{
+						double v = 1;
+						tag.value(v);
+                        FEPointFunction* f = RANGO_NEW<FEPointFunction>(GetFEModel(), "");
+                        assert(f);
+						prop->SetProperty(f);
+
+						int lc = atoi(szlc) - 1;
+						GetBuilder()->MapLoadCurveToFunction(f, lc, v);
+					}
+					else
+					{
+						// try to allocate the class
+                        FEObjectBase* pp = RANGO_NEW<FEObjectBase>(GetFEModel(), sztype);
+						if (pp == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
+
+						prop->SetProperty(pp);
+
+						// read the property data
+						if (tag.isleaf() == false)
+						{
+							ReadParameterList(tag, pp);
+						}
+						else if (tag.isempty() == false)
+						{
+							if ((tag.szvalue() != nullptr) && (tag.szvalue()[0] != 0))
+							{
+								// parse attributes first
+								ReadAttributes(tag, pp);
+
+								// There should be a parameter with the same name as the type
+								if (ReadParameter(tag, pp->GetParameterList(), sztype, pp) == false)
+									throw XMLReader::InvalidValue(tag);
+							}
+						}
+						else
+						{
+							// we get here if the property was defined with an empty tag.
+							// We should still validate it.
+							int NP = pp->Properties();
+							for (int i = 0; i < NP; ++i)
+							{
+								FEProperty* pi = pp->GetProperty(i);
+								bool a = pi->IsRequired();
+								bool b = (pi->size() == 0);
+								if (a && b)
+								{
+									std::string name = pp->GetName();
+									if (name.empty()) name = prop->GetName();
+									throw FEBioImport::MissingProperty(name, pi->GetName());
+								}
+							}
+
+						}
+					}
+				}
+				return true;
+			}
+		}
+		else
+		{
+			// backward compatibility hack for older formats (< v 3.0)
+            /*if (strcmp(tag.Name(), "fiber") == 0)
+			{
+				return ReadParameter(tag, pc, "mat_axis", parseAttributes);
+			}
+			else return false;*/	
+			return false;
+		}
 	}
 	return true;
 }
