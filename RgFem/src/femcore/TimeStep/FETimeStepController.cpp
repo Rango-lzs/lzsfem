@@ -7,7 +7,7 @@
 #include "logger/log.h"
 #include "datastructure/MathUtils.h"
 
-DEFINE_META_CLASS(FETimeStepController, FEObjectBase, "");
+DEFINE_META_CLASS(FETimeStepController, FEObjectBase, "default");
 
 //-----------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FETimeStepController, FEParamObject)

@@ -1206,7 +1206,8 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEObjectBase* pc, const char* szp
 					else
 					{
 						// try to allocate the class
-                        FEObjectBase* pp = RANGO_NEW<FEObjectBase>(GetFEModel(), sztype);
+                        //FEObjectBase* pp = RANGO_NEW<FEObjectBase>(GetFEModel(), sztype);
+						FEObjectBase* pp = CreateFEObject(prop->metaClass(), sztype);
 						if (pp == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
 						prop->SetProperty(pp);

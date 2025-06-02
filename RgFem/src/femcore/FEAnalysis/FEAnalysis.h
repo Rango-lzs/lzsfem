@@ -142,7 +142,7 @@ public:
 
 private:
 	// the FE solver
-	FESolver*	m_psolver;	//!< pointer to solver class that will solve this step.
+	FESolver*	m_psolver = nullptr;	//!< pointer to solver class that will solve this step.
 	bool		m_bactive;	//!< activation flag
 
 protected:

@@ -107,6 +107,7 @@ private:
     std::vector<FEProperty*>	m_Prop;		//!< list of properties
 };
 
+const MetaClass* findChildMeta(const MetaClass* pMeta, const std::string& aliasName);
 
 template <class T>
 T* RANGO_NEW(const std::string& aliasName = "")
@@ -120,13 +121,7 @@ T* RANGO_NEW(const std::string& aliasName = "")
     }
     else
     {
-        for (auto pMeta : pThis->childs())
-        {
-            if (pMeta->alias_name() == aliasName)
-            {
-                pTarget = pMeta;
-            }
-        }
+        pTarget = findChildMeta(pThis, aliasName);
     }
     pNewObj = static_cast<T*>(pTarget->create());
     return pNewObj;
@@ -144,19 +139,14 @@ T* RANGO_NEW(FEModel* pModel, const std::string& aliasName)
     }
     else
     {
-        for (auto pMeta : pThis->childs())
-        {
-            if (pMeta->alias_name() == aliasName)
-            {
-                pTarget = pMeta;
-            }
-        }
+        pTarget = findChildMeta(pThis, aliasName);
     }
     pNewObj = static_cast<T*>(pTarget->create());
     pNewObj->SetFEModel(pModel);
     return pNewObj;
 }
 
+FEObjectBase* CreateFEObject(const MetaClass* pMeta, const std::string& aliasName = "");
 
 // include template property definitions
 #include "FEPropertyT.h"

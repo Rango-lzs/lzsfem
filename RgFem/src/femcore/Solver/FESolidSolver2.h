@@ -14,6 +14,8 @@ class FERigidSolver;
 //! 
 class FEM_EXPORT FESolidSolver2 : public FENewtonSolver
 {
+	DECLARE_META_CLASS(FESolidSolver2, FENewtonSolver);
+
 	enum ARC_LENGTH_METHOD {
 		NONE,
 		CRISFIELD,

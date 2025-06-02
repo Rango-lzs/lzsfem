@@ -456,3 +456,37 @@ bool FEObjectBase::SetProperty(const char* sz, FEObjectBase* pb)
     }
     return false;
 }
+
+FEObjectBase* CreateFEObject(const MetaClass* pMeta, const std::string& aliasName)
+{
+    const MetaClass* pTarget = nullptr;
+    FEObjectBase* pNewObj = nullptr;
+    if (aliasName.empty() || aliasName == pMeta->alias_name())
+    {
+        pTarget = pMeta;
+    }
+    else
+    {
+		pTarget = findChildMeta(pMeta, aliasName);
+    }
+    pNewObj = static_cast<FEObjectBase*>(pTarget->create());
+    return pNewObj;
+}
+
+
+const MetaClass* findChildMeta(const MetaClass* pMeta, const std::string& aliasName)
+{
+    if (pMeta->childs().empty())
+    {
+        return nullptr;
+    }
+
+    for (auto pMetaChild : pMeta->childs())
+    {
+        if (pMetaChild->alias_name() == aliasName)
+        {
+            return pMetaChild;
+        }
+        return findChildMeta(pMetaChild, aliasName);
+    }
+}

@@ -38,6 +38,8 @@
 #include "femcore/FENLConstraint.h"
 #include "femcore/FESurfacePairConstraint.h"
 
+DEFINE_META_CLASS(FESolidSolver2, FENewtonSolver,"solid");
+
 //-----------------------------------------------------------------------------
 // define the parameter list
 BEGIN_PARAM_DEFINE(FESolidSolver2, FENewtonSolver)

@@ -55,6 +55,11 @@ public:
 		if (m_pc && (*m_pc)) return (*m_pc)->Validate();
 		return true;
 	}
+
+	const MetaClass* metaClass() override
+    {
+        return T::static_meta();
+    }
 };
 
 //-----------------------------------------------------------------------------
@@ -111,6 +116,11 @@ public:
 	{
 		if (m_pc) return m_pc->Validate();
 		return true;
+	}
+
+	const MetaClass* metaClass() override
+	{
+		return T::static_meta();
 	}
 };
 
@@ -228,5 +238,10 @@ public:
 		}
 		return true;
 	}
+
+	const MetaClass* metaClass() override
+    {
+        return T::static_meta();
+    }
 };
 

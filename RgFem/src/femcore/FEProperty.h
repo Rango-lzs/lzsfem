@@ -3,6 +3,8 @@
 #include "FEM_EXPORT.h"
 #include "fecore_enum.h"
 
+class MetaClass;
+
 //-----------------------------------------------------------------------------
 class FEObjectBase;
 class DumpStream;
@@ -114,6 +116,8 @@ public: // these functions have to be implemented by derived classes
 
 	//! Get the class ID
 	SUPER_CLASS_ID GetSuperClassID() const { return m_superClassID; }
+
+	virtual const MetaClass* metaClass() = 0;
 
 public:
 	virtual ~FEProperty();
