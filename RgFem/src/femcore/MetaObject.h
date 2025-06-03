@@ -16,9 +16,10 @@
 class MetaClass;
 class FEModel;
 
-struct DummyParam
-{
-};
+//有很多类需要构造函数里面进行成员初始化，所以不提供空实现的构造函数
+//struct DummyParam
+//{
+//};
 
 class FEM_EXPORT MetaObject
 {
@@ -33,8 +34,7 @@ public:
     bool isKindOf(const MetaClass* pMeta) const;
 
 public:
-    //MetaObject() = default;
-    MetaObject(DummyParam* p = nullptr){}
+    MetaObject() = default;
 };
 
 #endif

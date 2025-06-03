@@ -7,7 +7,7 @@
 DEFINE_META_CLASS(FEObjectBase, FEParamObject, "");
 
 //-----------------------------------------------------------------------------
-FEObjectBase::FEObjectBase(FEModel* fem) : m_fem(fem)
+FEObjectBase::FEObjectBase() : m_fem(nullptr)
 { 
 	m_nID = -1;
 }

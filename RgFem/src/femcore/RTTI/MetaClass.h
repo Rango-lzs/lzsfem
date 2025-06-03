@@ -60,7 +60,7 @@ public:
 private:
     ConcreteMeta()
         : MetaClass(T::class_name(), T::alias_name(), ConcreteMeta<T::BaseClass>::instance(),
-                    []() -> MetaObject* { return new T((DummyParam*)nullptr); })
+                    []() -> MetaObject* { return new T(); })
     {
     }
 };

@@ -11,10 +11,6 @@
 #define DECLARE_META_CLASS(DERIVE_CLASS, BASE_CLASS)                                                                   \
 public:                                                                                                                \
     using BaseClass = BASE_CLASS;                                                                                      \
-    DERIVE_CLASS(DummyParam* p)                                                                              \
-        : BASE_CLASS((DummyParam*) nullptr)                                                                                          \
-    {                                                                                                                  \
-    }                                                                                                                  \
     virtual const const MetaClass* meta() const;                                                                       \
     static const MetaClass* static_meta();                                                                             \
     static std::string class_name();                                                                                   \

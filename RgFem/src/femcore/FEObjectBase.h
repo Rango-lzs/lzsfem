@@ -25,8 +25,7 @@ class FEM_EXPORT FEObjectBase : public FEParamObject
 public:
     //! constructor
     FEObjectBase();
-    explicit FEObjectBase(FEModel* pModel);
-
+   
     //! destructor
     virtual ~FEObjectBase();
 

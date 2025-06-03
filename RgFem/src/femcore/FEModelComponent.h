@@ -24,6 +24,8 @@ public:
     //! constructor
     FEModelComponent(FEModel* fem);
 
+    FEModelComponent() = default;
+
     //! destructor
     virtual ~FEModelComponent();
 
