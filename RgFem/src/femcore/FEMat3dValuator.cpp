@@ -15,7 +15,7 @@ BEGIN_PARAM_DEFINE(FEConstValueMat3d, FEMat3dValuator)
 	ADD_PARAMETER(m_val, "const");
 END_PARAM_DEFINE();
 
-FEConstValueMat3d::FEConstValueMat3d(FEModel* fem) : FEMat3dValuator(fem)
+FEConstValueMat3d::FEConstValueMat3d() : FEMat3dValuator()
 {
 	m_val.zero();
 }
@@ -36,7 +36,7 @@ BEGIN_PARAM_DEFINE(FEMat3dLocalElementMap, FEMat3dValuator)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEMat3dLocalElementMap::FEMat3dLocalElementMap(FEModel* pfem) : FEMat3dValuator(pfem)
+FEMat3dLocalElementMap::FEMat3dLocalElementMap() : FEMat3dValuator()
 {
 	m_n[0] = 0;
 	m_n[1] = 0;
@@ -95,7 +95,7 @@ Matrix3d FEMat3dLocalElementMap::operator () (const FEMaterialPoint& mp)
 //-----------------------------------------------------------------------------
 FEMat3dValuator* FEMat3dLocalElementMap::copy()
 {
-	FEMat3dLocalElementMap* map = new FEMat3dLocalElementMap(GetFEModel());
+	FEMat3dLocalElementMap* map = new FEMat3dLocalElementMap();
 	map->m_n[0] = m_n[0];
 	map->m_n[1] = m_n[1];
 	map->m_n[2] = m_n[2];
@@ -119,7 +119,7 @@ BEGIN_PARAM_DEFINE(FEMat3dSphericalMap, FEMat3dValuator)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEMat3dSphericalMap::FEMat3dSphericalMap(FEModel* pfem): FEMat3dValuator(pfem)
+FEMat3dSphericalMap::FEMat3dSphericalMap(): FEMat3dValuator()
 {
 	m_c = Vector3d(0,0,0);
 	m_r = Vector3d(1,0,0);
@@ -173,7 +173,7 @@ Matrix3d FEMat3dSphericalMap::operator () (const FEMaterialPoint& mp)
 //-----------------------------------------------------------------------------
 FEMat3dValuator* FEMat3dSphericalMap::copy()
 {
-	FEMat3dSphericalMap* map = new FEMat3dSphericalMap(GetFEModel());
+	FEMat3dSphericalMap* map = new FEMat3dSphericalMap();
 	map->m_c = m_c;
 	map->m_r = m_r;
 	return map;
@@ -190,7 +190,7 @@ BEGIN_PARAM_DEFINE(FEMat3dCylindricalMap, FEMat3dValuator)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEMat3dCylindricalMap::FEMat3dCylindricalMap(FEModel* pfem) : FEMat3dValuator(pfem)
+FEMat3dCylindricalMap::FEMat3dCylindricalMap() : FEMat3dValuator()
 {
 	m_c = Vector3d(0,0,0);
 	m_a = Vector3d(0,0,1);
@@ -248,7 +248,7 @@ Matrix3d FEMat3dCylindricalMap::operator () (const FEMaterialPoint& mp)
 //-----------------------------------------------------------------------------
 FEMat3dValuator* FEMat3dCylindricalMap::copy()
 {
-	FEMat3dCylindricalMap* val = new FEMat3dCylindricalMap(GetFEModel());
+	FEMat3dCylindricalMap* val = new FEMat3dCylindricalMap();
 	val->m_c = m_c;
 	val->m_a = m_a;
 	val->m_r = m_r;
@@ -269,7 +269,7 @@ BEGIN_PARAM_DEFINE(FEMat3dPolarMap, FEMat3dValuator)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEMat3dPolarMap::FEMat3dPolarMap(FEModel* pfem) : FEMat3dValuator(pfem)
+FEMat3dPolarMap::FEMat3dPolarMap() : FEMat3dValuator()
 {
 	m_c = Vector3d(0,0,0);
 	m_a = Vector3d(0,0,1);
@@ -343,7 +343,7 @@ Matrix3d FEMat3dPolarMap::operator () (const FEMaterialPoint& mp)
 //-----------------------------------------------------------------------------
 FEMat3dValuator* FEMat3dPolarMap::copy()
 {
-	FEMat3dPolarMap* map = new FEMat3dPolarMap(GetFEModel());
+	FEMat3dPolarMap* map = new FEMat3dPolarMap();
 	map->m_c = m_c;
 	map->m_a = m_a;
 	map->m_d0 = m_d0;
@@ -363,7 +363,7 @@ BEGIN_PARAM_DEFINE(FEMat3dVectorMap, FEMat3dValuator)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEMat3dVectorMap::FEMat3dVectorMap(FEModel* pfem) : FEMat3dValuator(pfem)
+FEMat3dVectorMap::FEMat3dVectorMap() : FEMat3dValuator()
 {
 	m_a = Vector3d(1,0,0);
 	m_d = Vector3d(0,1,0);
@@ -423,7 +423,7 @@ Matrix3d FEMat3dVectorMap::operator () (const FEMaterialPoint& mp)
 //-----------------------------------------------------------------------------
 FEMat3dValuator* FEMat3dVectorMap::copy()
 {
-	FEMat3dVectorMap* map = new FEMat3dVectorMap(GetFEModel());
+	FEMat3dVectorMap* map = new FEMat3dVectorMap();
 	map->m_a = m_a;
 	map->m_d = m_d;
 	map->m_Q = m_Q;
@@ -446,7 +446,7 @@ BEGIN_PARAM_DEFINE(FEMappedValueMat3d, FEMat3dValuator)
 END_PARAM_DEFINE();
 
 
-FEMappedValueMat3d::FEMappedValueMat3d(FEModel* fem) : FEMat3dValuator(fem)
+FEMappedValueMat3d::FEMappedValueMat3d() : FEMat3dValuator()
 {
 	m_val = nullptr;
 }

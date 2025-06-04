@@ -32,8 +32,8 @@ END_PARAM_GROUP();
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FESolver::FESolver(FEModel* fem)
-    : FEObjectBase(fem)
+FESolver::FESolver()
+    : FEObjectBase()
 {
     m_niter = 0;
     m_nref = 0;

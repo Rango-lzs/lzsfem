@@ -9,7 +9,7 @@ class FEM_EXPORT FELogSurfaceData : public FELogData
     DECLARE_META_CLASS(FELogSurfaceData, FELogData);
 
 public:
-    FELogSurfaceData(FEModel* fem) : FELogData(fem) {}
+    FELogSurfaceData() : FELogData() {}
     virtual ~FELogSurfaceData() {}
     virtual double value(FESurface& surface) = 0;
 };

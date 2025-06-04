@@ -22,7 +22,7 @@ BEGIN_PARAM_DEFINE(FETimeStepController, FEParamObject)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FETimeStepController::FETimeStepController(FEModel* fem) : FEObjectBase(fem)
+FETimeStepController::FETimeStepController() : FEObjectBase()
 {
 	m_step = nullptr; // must be set with SetAnalysis
 	m_nretries = 0;

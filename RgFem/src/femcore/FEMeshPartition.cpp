@@ -10,7 +10,7 @@
  DEFINE_META_CLASS(FEMeshPartition, FEObjectBase, "");
 
 //-----------------------------------------------------------------------------
-FEMeshPartition::FEMeshPartition(int nclass, FEModel* fem) : FEObjectBase(fem), m_nclass(nclass)
+FEMeshPartition::FEMeshPartition(int nclass, FEModel* fem) : FEObjectBase(), m_nclass(nclass)
 {
 	m_pMesh = nullptr;
 	if (fem) m_pMesh = &fem->GetMesh();

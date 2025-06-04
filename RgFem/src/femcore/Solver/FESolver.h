@@ -63,7 +63,7 @@ class FEM_EXPORT FESolver : public FEObjectBase
 
 public:
     //! constructor
-    FESolver(FEModel* fem);
+    FESolver();
 
     //! destructor
     virtual ~FESolver();

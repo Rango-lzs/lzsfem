@@ -6,7 +6,7 @@ DEFINE_META_CLASS(FEMaterial, FEMaterialBase, "");
 DEFINE_META_CLASS(FEMaterialBase, FEModelComponent, "");
 
 //-----------------------------------------------------------------------------
-FEMaterialBase::FEMaterialBase(FEModel* fem) : FEModelComponent(fem)
+FEMaterialBase::FEMaterialBase() : FEModelComponent()
 {
 }
 
@@ -27,7 +27,7 @@ BEGIN_PARAM_DEFINE(FEMaterial, FEMaterialBase)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEMaterial::FEMaterial(FEModel* fem) : FEMaterialBase(fem)
+FEMaterial::FEMaterial() : FEMaterialBase()
 {
 	m_Q = nullptr;
 }
@@ -71,7 +71,7 @@ void FEMaterial::AddDomain(FEDomain* dom)
 BEGIN_PARAM_DEFINE(FEMaterialProperty, FEMaterialBase)
 END_PARAM_DEFINE();
 
-FEMaterialProperty::FEMaterialProperty(FEModel* fem) : FEMaterialBase(fem)
+FEMaterialProperty::FEMaterialProperty() : FEMaterialBase()
 {
 
 }

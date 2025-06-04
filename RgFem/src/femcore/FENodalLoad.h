@@ -15,7 +15,7 @@ class FEM_EXPORT FENodalLoad : public FEModelLoad
 
 public:
     //! constructor
-    FENodalLoad(FEModel* pfem);
+    FENodalLoad();
 
     //! initialization
     bool Init() override;
@@ -66,7 +66,7 @@ private:
 class FEM_EXPORT FENodalDOFLoad : public FENodalLoad
 {
 public:
-    FENodalDOFLoad(FEModel* fem);
+    FENodalDOFLoad();
 
     //! Set the DOF list
     bool SetDofList(FEDofList& dofList) override;

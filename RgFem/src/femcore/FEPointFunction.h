@@ -49,7 +49,7 @@ public:
 
 public:
 	//! default constructor
-	FEPointFunction(FEModel* fem);
+	FEPointFunction();
 
 	//! destructor
 	~FEPointFunction();

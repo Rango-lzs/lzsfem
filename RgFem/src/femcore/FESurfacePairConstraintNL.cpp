@@ -1,7 +1,7 @@
 #include "femcore/FESurfacePairConstraintNL.h"
 
 //-----------------------------------------------------------------------------
-FESurfacePairConstraintNL::FESurfacePairConstraintNL(FEModel* pfem) : FENLConstraint(pfem)
+FESurfacePairConstraintNL::FESurfacePairConstraintNL() : FENLConstraint()
 {
 }
 

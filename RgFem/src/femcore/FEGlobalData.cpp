@@ -3,7 +3,7 @@
 DEFINE_META_CLASS(FEGlobalData, FEModelComponent, "");
 
 //-----------------------------------------------------------------------------
-FEGlobalData::FEGlobalData(FEModel* fem) : FEModelComponent(fem)
+FEGlobalData::FEGlobalData() : FEModelComponent()
 {
 
 }

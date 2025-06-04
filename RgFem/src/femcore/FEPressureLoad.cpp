@@ -15,7 +15,7 @@ END_PARAM_DEFINE()
 
 //-----------------------------------------------------------------------------
 //! constructor
-FEPressureLoad::FEPressureLoad(FEModel* pfem) : FESurfaceLoad(pfem)
+FEPressureLoad::FEPressureLoad() : FESurfaceLoad()
 { 
 	m_pressure = 0.0;
 	m_bsymm = true;

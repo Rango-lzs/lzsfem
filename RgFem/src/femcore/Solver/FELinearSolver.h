@@ -15,7 +15,7 @@ class FEM_EXPORT FELinearSolver : public FESolver
 {
 public:
 	//! constructor
-	FELinearSolver(FEModel* pfem);
+	FELinearSolver();
 
 	//! Set the degrees of freedom
 	void SetDOF(std::vector<int>& dof);

@@ -5,7 +5,7 @@
 DEFINE_META_CLASS(FEBoundaryCondition, FEStepComponent, "");
 
 //-----------------------------------------------------------------------------
-FEBoundaryCondition::FEBoundaryCondition(FEModel* pfem) : FEStepComponent(pfem), m_dof(pfem)
+FEBoundaryCondition::FEBoundaryCondition() : FEStepComponent(), m_dof()
 {
 }
 

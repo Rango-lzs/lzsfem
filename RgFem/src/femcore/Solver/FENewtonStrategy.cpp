@@ -6,7 +6,7 @@
 
 DEFINE_META_CLASS(FENewtonStrategy, FEObjectBase, "");
 
-FENewtonStrategy::FENewtonStrategy(FEModel* fem) : FEObjectBase(fem)
+FENewtonStrategy::FENewtonStrategy() : FEObjectBase()
 {
 	m_pns = nullptr;
 

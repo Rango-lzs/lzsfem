@@ -1,7 +1,7 @@
 #include "FEPlotData.h"
 
 //-----------------------------------------------------------------------------
-FEPlotData::FEPlotData(FEModel* fem) : FEObjectBase(fem)
+FEPlotData::FEPlotData() : FEObjectBase()
 {
 	m_ntype = PLT_FLOAT;
 	m_sfmt = FMT_NODE;
@@ -14,7 +14,7 @@ FEPlotData::FEPlotData(FEModel* fem) : FEObjectBase(fem)
 
 //-----------------------------------------------------------------------------
 FEPlotData::FEPlotData(FEModel* fem, Region_Type R, Var_Type t, Storage_Fmt s)
-    : FEObjectBase(fem)
+    : FEObjectBase()
 { 
 	m_ntype = t; 
 	m_sfmt = s; 

@@ -6,7 +6,7 @@
 DEFINE_META_CLASS(FEBodyLoad, FEModelLoad, "");
 
 //-----------------------------------------------------------------------------
-FEBodyLoad::FEBodyLoad(FEModel* pfem) : FEModelLoad(pfem)
+FEBodyLoad::FEBodyLoad() : FEModelLoad()
 {
 }
 

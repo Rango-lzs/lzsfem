@@ -36,7 +36,7 @@ SOFTWARE.*/
 class FEM_EXPORT FEPrescribedNodeSet : public FENodalBC
 {
 public:
-	FEPrescribedNodeSet(FEModel* fem);
+	FEPrescribedNodeSet();
 
 	void Activate() override;
 
@@ -76,7 +76,7 @@ protected:
 class FEM_EXPORT FEPrescribedSurface : public FESurfaceBC
 {
 public:
-	FEPrescribedSurface(FEModel* fem);
+	FEPrescribedSurface();
 
 	void Activate() override;
 

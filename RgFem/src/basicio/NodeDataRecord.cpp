@@ -6,8 +6,8 @@
 
 DEFINE_META_CLASS(FELogNodeData, FELogData, "");
 
-FELogNodeData::FELogNodeData(FEModel* fem)
-    : FELogData(fem)
+FELogNodeData::FELogNodeData()
+    : FELogData()
 {
 }
 
@@ -92,7 +92,7 @@ void NodeDataRecord::SetItemList(FEItemList* items, const std::vector<int>& sele
 }
 
 FENodeVarData::FENodeVarData(FEModel* pfem, int ndof)
-    : FELogNodeData(pfem)
+    : FELogNodeData()
     , m_ndof(ndof)
 {
 }

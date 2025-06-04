@@ -60,16 +60,16 @@ END_PARAM_DEFINE();
 //-----------------------------------------------------------------------------
 //! FESolidSolver2 Construction
 //
-FESolidSolver2::FESolidSolver2(FEModel* pfem)
-    : FENewtonSolver(pfem)
+FESolidSolver2::FESolidSolver2()
+    : FENewtonSolver()
     //, m_rigidSolver(nullptr)
-    , m_dofU(pfem)
-    , m_dofV(pfem)
-    , m_dofSQ(pfem)
-    , m_dofRQ(pfem)
-    , m_dofSU(pfem)
-    , m_dofSV(pfem)
-    , m_dofSA(pfem)
+    , m_dofU()
+    , m_dofV()
+    , m_dofSQ()
+    , m_dofRQ()
+    , m_dofSU()
+    , m_dofSV()
+    , m_dofSA()
 {
     // default values
     m_Rtol = 0;  // deactivate residual convergence
@@ -99,7 +99,7 @@ FESolidSolver2::FESolidSolver2(FEModel* pfem)
 
     // get the DOF indices
     // TODO: Can this be done in Init, since there is no error checking
-    if (pfem)
+    if (0)
     {
        /* m_dofU.AddVariable(FEBioMech::GetVariableName(FEBioMech::DISPLACEMENT));
         m_dofSQ.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_ROTATION));

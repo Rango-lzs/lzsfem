@@ -5,7 +5,7 @@
 DEFINE_META_CLASS(FEModelLoad, FEStepComponent, "");
 
 //-----------------------------------------------------------------------------
-FEModelLoad::FEModelLoad(FEModel* pfem) : FEStepComponent(pfem), m_dof(pfem)
+FEModelLoad::FEModelLoad() : FEStepComponent(), m_dof()
 {
 }
 

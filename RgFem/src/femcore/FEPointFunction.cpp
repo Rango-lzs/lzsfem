@@ -17,7 +17,7 @@ END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 //! default constructor
-FEPointFunction::FEPointFunction(FEModel* fem) : FEFunction1D(fem)
+FEPointFunction::FEPointFunction() : FEFunction1D()
 {
 	m_int = PointCurve::LINEAR;
 	m_ext = PointCurve::CONSTANT;
@@ -168,7 +168,7 @@ double FEPointFunction::integrate(double a, double b) const
 //-----------------------------------------------------------------------------
 FEFunction1D* FEPointFunction::copy()
 {
-	FEPointFunction* f = new FEPointFunction(GetFEModel());
+	FEPointFunction* f = new FEPointFunction();
 
 	f->m_int = m_int;
 	f->m_ext = m_ext;

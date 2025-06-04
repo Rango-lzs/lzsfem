@@ -49,8 +49,8 @@ END_PARAM_GROUP();
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FENewtonSolver::FENewtonSolver(FEModel* pfem)
-    : FESolver(pfem)
+FENewtonSolver::FENewtonSolver()
+    : FESolver()
 {
     m_lineSearch = new FELineSearch(this);
     m_ls = 0.0;

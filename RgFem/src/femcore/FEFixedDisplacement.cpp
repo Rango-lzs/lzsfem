@@ -7,7 +7,7 @@ BEGIN_PARAM_DEFINE(FEFixedDisplacement, FEFixedBC)
 	ADD_PARAMETER(m_dofz, "z_dof")->setLongName("z-displacement");
 END_PARAM_DEFINE();
 
-FEFixedDisplacement::FEFixedDisplacement(FEModel* fem) : FEFixedBC(fem)
+FEFixedDisplacement::FEFixedDisplacement() : FEFixedBC()
 {
 	m_dofx = false;
 	m_dofy = false;

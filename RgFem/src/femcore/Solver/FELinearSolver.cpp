@@ -19,7 +19,7 @@
 
 //-----------------------------------------------------------------------------
 //! constructor
-FELinearSolver::FELinearSolver(FEModel* pfem) : FESolver(pfem)
+FELinearSolver::FELinearSolver() : FESolver()
 {
 	m_pls = 0;
 	m_pK = 0;

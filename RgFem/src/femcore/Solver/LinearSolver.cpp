@@ -3,7 +3,7 @@
 DEFINE_META_CLASS(LinearSolver, FEObjectBase, "");
 
 //-----------------------------------------------------------------------------
-LinearSolver::LinearSolver(FEModel* fem) : FEObjectBase(fem)
+LinearSolver::LinearSolver() : FEObjectBase()
 {
 	ResetStats();
 }
@@ -106,7 +106,7 @@ bool LinearSolver::Solve(std::vector<double>& x, std::vector<double>& y)
 }
 
 //-----------------------------------------------------------------------------
-IterativeLinearSolver::IterativeLinearSolver(FEModel* fem) : LinearSolver(fem) 
+IterativeLinearSolver::IterativeLinearSolver() : LinearSolver() 
 {
 
 }

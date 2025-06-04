@@ -111,7 +111,7 @@ bool FEBioBoundarySection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int nf
 void FEBioBoundarySection::AddFixedBC(FENodeSet* set, int dof)
 {
 	FEModel* fem = GetFEModel();
-	FEFixedBC* bc = new FEFixedBC(fem);
+	FEFixedBC* bc = new FEFixedBC();
 	bc->SetDOFList(dof);
 	bc->SetNodeSet(set);
 	fem->AddBoundaryCondition(bc);

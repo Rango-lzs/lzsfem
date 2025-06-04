@@ -10,5 +10,5 @@ class FEM_EXPORT FEGlobalData : public FEModelComponent
 
 public:
 	//! constructor
-	FEGlobalData(FEModel* fem);
+	FEGlobalData();
 };

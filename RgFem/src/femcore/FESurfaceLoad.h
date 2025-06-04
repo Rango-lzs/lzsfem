@@ -15,7 +15,7 @@ class FEM_EXPORT FESurfaceLoad : public FEModelLoad
     DECLARE_META_CLASS(FESurfaceLoad, FEModelLoad);
 
 public:
-	FESurfaceLoad(FEModel* pfem);
+	FESurfaceLoad();
 	virtual ~FESurfaceLoad(void);
 
 	//! Set the surface to apply the load to

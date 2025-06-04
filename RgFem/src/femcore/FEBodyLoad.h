@@ -44,7 +44,7 @@ class FEM_EXPORT FEBodyLoad : public FEModelLoad
 	DECLARE_META_CLASS(FEBodyLoad, FEModelLoad);
 
 public:
-	FEBodyLoad(FEModel* pfem);
+	FEBodyLoad();
 	virtual ~FEBodyLoad();
 
 	//! initialization

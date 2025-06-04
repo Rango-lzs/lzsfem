@@ -5,8 +5,8 @@
 class FEIsotropicElastic : public FEElasticMaterial
 {
 public:
-    FEIsotropicElastic(FEModel* pfem)
-        : FEElasticMaterial(pfem)
+    FEIsotropicElastic()
+        : FEElasticMaterial()
     {
     }
 

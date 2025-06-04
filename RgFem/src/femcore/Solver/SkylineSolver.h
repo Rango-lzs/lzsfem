@@ -10,7 +10,7 @@ class FEM_EXPORT SkylineSolver : public LinearSolver
 {
 public:
 	//! constructor
-	SkylineSolver(FEModel* fem);
+	SkylineSolver();
 
 	//! Preprocess 
 	bool PreProcess() override;

@@ -3,7 +3,7 @@
 
 DEFINE_META_CLASS(FELoadController, FEModelComponent, "");
 
-FELoadController::FELoadController(FEModel* fem) : FEModelComponent(fem)
+FELoadController::FELoadController() : FEModelComponent()
 {
 }
 

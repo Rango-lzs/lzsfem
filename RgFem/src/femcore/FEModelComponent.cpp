@@ -6,7 +6,7 @@
 DEFINE_META_CLASS(FEModelComponent, FEObjectBase, "");
 
 //-----------------------------------------------------------------------------
-FEModelComponent::FEModelComponent(FEModel* fem) : FEObjectBase(fem)
+FEModelComponent::FEModelComponent() : FEObjectBase()
 {
 }
 

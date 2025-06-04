@@ -12,7 +12,7 @@ class FEM_EXPORT FETimeStepController : public FEObjectBase
     DECLARE_META_CLASS(FETimeStepController, FEObjectBase);
 
 public:
-    FETimeStepController(FEModel* fem);
+    FETimeStepController();
 
     void SetAnalysis(FEAnalysis* step);
 

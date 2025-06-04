@@ -17,7 +17,7 @@ class FEM_EXPORT FELoadController : public FEModelComponent
     DECLARE_META_CLASS(FELoadController, FEModelComponent);
 
 public:
-    FELoadController(FEModel* fem);
+    FELoadController();
 
     //! evaluate the load controller
     void Evaluate(double time);

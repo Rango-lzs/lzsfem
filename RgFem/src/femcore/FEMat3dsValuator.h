@@ -11,7 +11,7 @@ class FEM_EXPORT FEMat3dsValuator : public FEValuator
     DECLARE_META_CLASS(FEMat3dsValuator, FEValuator);
 
 public:
-	FEMat3dsValuator(FEModel* fem) : FEValuator(fem) {};
+	FEMat3dsValuator() : FEValuator() {};
 
 	virtual Matrix3ds operator()(const FEMaterialPoint& pt) = 0;
 
@@ -27,7 +27,7 @@ public:
 class FEM_EXPORT FEConstValueMat3ds : public FEMat3dsValuator
 {
 public:
-	FEConstValueMat3ds(FEModel* fem);
+	FEConstValueMat3ds();
 
 	FEMat3dsValuator* copy() override;
 
@@ -51,7 +51,7 @@ private:
 class FEM_EXPORT FEMappedValueMat3ds : public FEMat3dsValuator
 {
 public:
-	FEMappedValueMat3ds(FEModel* fem);
+	FEMappedValueMat3ds();
 
 	void setDataMap(FEDataMap* val);
 

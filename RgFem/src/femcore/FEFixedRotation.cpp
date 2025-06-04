@@ -7,7 +7,7 @@ BEGIN_PARAM_DEFINE(FEFixedRotation, FEFixedBC)
 	ADD_PARAMETER(m_dof[2], "w_dof")->setLongName("z-rotation");
 END_PARAM_DEFINE();
 
-FEFixedRotation::FEFixedRotation(FEModel* fem) : FEFixedBC(fem)
+FEFixedRotation::FEFixedRotation() : FEFixedBC()
 {
 	m_dof[0] = false;
 	m_dof[1] = false;

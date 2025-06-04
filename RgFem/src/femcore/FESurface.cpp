@@ -10,7 +10,7 @@
 DEFINE_META_CLASS(FESurface, FEMeshPartition, "");
 
 //-----------------------------------------------------------------------------
-FESurface::FESurface(FEModel* fem) : FEMeshPartition(FE_DOMAIN_SURFACE, fem)
+FESurface::FESurface() : FEMeshPartition(FE_DOMAIN_SURFACE, nullptr)
 {
 	m_surf = 0;
 	m_bitfc = false;

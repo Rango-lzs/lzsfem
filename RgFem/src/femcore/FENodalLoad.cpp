@@ -14,7 +14,7 @@ BEGIN_PARAM_DEFINE(FENodalLoad, FEModelLoad)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FENodalLoad::FENodalLoad(FEModel* pfem) : FEModelLoad(pfem), m_dofs(pfem)
+FENodalLoad::FENodalLoad() : FEModelLoad(), m_dofs()
 {
 	m_brelative = false;
 	m_nodeSet = nullptr;
@@ -131,7 +131,7 @@ BEGIN_PARAM_DEFINE(FENodalDOFLoad, FENodalLoad)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FENodalDOFLoad::FENodalDOFLoad(FEModel* fem) : FENodalLoad(fem)
+FENodalDOFLoad::FENodalDOFLoad() : FENodalLoad()
 {
 	m_dof = -1;
 	m_scale = 0.0;

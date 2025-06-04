@@ -21,10 +21,7 @@ class FEM_EXPORT FEModelComponent : public FEObjectBase
 {
     DECLARE_META_CLASS(FEModelComponent,FEObjectBase);
 public:
-    //! constructor
-    FEModelComponent(FEModel* fem);
-
-    FEModelComponent() = default;
+    FEModelComponent();
 
     //! destructor
     virtual ~FEModelComponent();

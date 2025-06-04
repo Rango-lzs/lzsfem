@@ -7,7 +7,7 @@
 
 DEFINE_META_CLASS(FEFunction1D, FEObjectBase, "");
 
-FEFunction1D::FEFunction1D(FEModel* fem) : FEObjectBase(fem)
+FEFunction1D::FEFunction1D() : FEObjectBase()
 {
 }
 

@@ -33,7 +33,7 @@ SOFTWARE.*/
 class FEM_EXPORT FEConstValueVec3 : public FEVec3dValuator
 {
 public:
-	FEConstValueVec3(FEModel* fem);
+	FEConstValueVec3();
 
 	FEVec3dValuator* copy() override;
 
@@ -60,7 +60,7 @@ private:
 class FEM_EXPORT FEMathValueVec3 : public FEVec3dValuator
 {
 public:
-	FEMathValueVec3(FEModel* fem);
+	FEMathValueVec3();
 	Vector3d operator()(const FEMaterialPoint& pt) override;
 
 	bool Init() override;
@@ -83,7 +83,7 @@ private:
 class FEM_EXPORT FEMappedValueVec3 : public FEVec3dValuator
 {
 public:
-	FEMappedValueVec3(FEModel* fem);
+	FEMappedValueVec3();
 
 	void setDataMap(FEDataMap* val, Vector3d scl = Vector3d(1, 1, 1));
 
@@ -110,7 +110,7 @@ private:
 class FEM_EXPORT FELocalVectorGenerator : public FEVec3dValuator
 {
 public:
-	FELocalVectorGenerator(FEModel* fem);
+	FELocalVectorGenerator();
 
 	bool Init() override;
 
@@ -128,7 +128,7 @@ protected:
 class FEM_EXPORT FECylindricalVectorGenerator : public FEVec3dValuator
 {
 public:
-	FECylindricalVectorGenerator(FEModel* fem);
+	FECylindricalVectorGenerator();
 
 	bool Init() override;
 
@@ -148,7 +148,7 @@ protected:
 class FEM_EXPORT FESphericalVectorGenerator : public FEVec3dValuator
 {
 public:
-	FESphericalVectorGenerator(FEModel* fem);
+	FESphericalVectorGenerator();
 
 	bool Init() override;
 
@@ -167,7 +167,7 @@ protected:
 class FEM_EXPORT FESphericalAnglesVectorGenerator : public FEVec3dValuator
 {
 public:
-	FESphericalAnglesVectorGenerator(FEModel* fem);
+	FESphericalAnglesVectorGenerator();
 
 	Vector3d operator () (const FEMaterialPoint& mp) override;
 
@@ -186,7 +186,7 @@ protected:
 class FEM_EXPORT FEUserVectorGenerator : public FEVec3dValuator
 {
 public:
-	FEUserVectorGenerator(FEModel* fem);
+	FEUserVectorGenerator();
 
 	Vector3d operator () (const FEMaterialPoint& mp) override;
 

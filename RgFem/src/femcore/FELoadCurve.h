@@ -9,7 +9,7 @@ class FEM_EXPORT FELoadCurve : public FELoadController
 {
 public:
     // constructor
-    FELoadCurve(FEModel* fem);
+    FELoadCurve();
     FELoadCurve(const FELoadCurve& lc);
 
     void operator=(const FELoadCurve& lc);

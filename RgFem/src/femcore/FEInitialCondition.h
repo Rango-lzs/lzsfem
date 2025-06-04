@@ -43,7 +43,7 @@ class FEM_EXPORT FEInitialCondition : public FEStepComponent
     DECLARE_META_CLASS(FEInitialCondition, FEStepComponent);
 
 public:
-    FEInitialCondition(FEModel* pfem);
+    FEInitialCondition();
 };
 
 //-----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ public:
 class FEM_EXPORT FENodalIC : public FEInitialCondition
 {
 public:
-    FENodalIC(FEModel* fem);
+    FENodalIC();
 
     // set the nodeset for this component
     void SetNodeSet(FENodeSet* nset);
@@ -85,7 +85,7 @@ protected:
 class FEM_EXPORT FEInitialDOF : public FENodalIC
 {
 public:
-    FEInitialDOF(FEModel* pfem);
+    FEInitialDOF();
     FEInitialDOF(FEModel* fem, int ndof, FENodeSet* nset);
 
     void SetDOF(int ndof);

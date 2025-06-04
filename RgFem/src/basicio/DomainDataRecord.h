@@ -11,7 +11,7 @@ class FEM_EXPORT FELogDomainData : public FELogData
     DECLARE_META_CLASS(FELogDomainData, FELogData);
 
 public:
-    FELogDomainData(FEModel* fem) : FELogData(fem) {}
+    FELogDomainData() : FELogData() {}
     virtual ~FELogDomainData() {}
     virtual double value(FEDomain& rc) = 0;
 
@@ -37,7 +37,7 @@ private:
 class FEM_EXPORT FELogAvgDomainData : public FELogDomainData
 {
 public:
-    FELogAvgDomainData(FEModel* pfem);
+    FELogAvgDomainData();
     ~FELogAvgDomainData();
     double value(FEDomain& rc) override;
 
@@ -51,7 +51,7 @@ private:
 class FEM_EXPORT FELogPctDomainData : public FELogDomainData
 {
 public:
-    FELogPctDomainData(FEModel* pfem);
+    FELogPctDomainData();
     ~FELogPctDomainData();
     double value(FEDomain& rc) override;
 
@@ -66,7 +66,7 @@ private:
 class FEM_EXPORT FELogIntegralDomainData : public FELogDomainData
 {
 public:
-	FELogIntegralDomainData(FEModel* pfem);
+	FELogIntegralDomainData();
 	~FELogIntegralDomainData();
 	double value(FEDomain& rc) override;
 

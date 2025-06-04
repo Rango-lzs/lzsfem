@@ -11,7 +11,7 @@ class FEM_EXPORT FEMat3dValuator : public FEValuator
     DECLARE_META_CLASS(FEMat3dValuator, FEValuator);
 
 public:
-	FEMat3dValuator(FEModel* fem) : FEValuator(fem) {};
+	FEMat3dValuator() : FEValuator() {};
 
 	virtual Matrix3d operator()(const FEMaterialPoint& pt) = 0;
 
@@ -27,7 +27,7 @@ public:
 class FEM_EXPORT FEConstValueMat3d : public FEMat3dValuator
 {
 public:
-	FEConstValueMat3d(FEModel* fem);
+	FEConstValueMat3d();
 
 	FEMat3dValuator* copy() override;
 
@@ -53,7 +53,7 @@ private:
 class FEM_EXPORT FEMat3dLocalElementMap : public FEMat3dValuator
 {
 public:
-	FEMat3dLocalElementMap(FEModel* pfem);
+	FEMat3dLocalElementMap();
 
 	bool Init() override;
 
@@ -75,7 +75,7 @@ protected:
 class FEM_EXPORT FEMat3dSphericalMap : public FEMat3dValuator
 {
 public:
-	FEMat3dSphericalMap(FEModel* pfem);
+	FEMat3dSphericalMap();
 
 	bool Init() override;
 
@@ -99,7 +99,7 @@ protected:
 class FEM_EXPORT FEMat3dCylindricalMap : public FEMat3dValuator
 {
 public:
-	FEMat3dCylindricalMap(FEModel* pfem);
+	FEMat3dCylindricalMap();
 
 	bool Init() override;
 
@@ -126,7 +126,7 @@ protected:
 class FEM_EXPORT FEMat3dPolarMap : public FEMat3dValuator
 {
 public:
-	FEMat3dPolarMap(FEModel* pfem);
+	FEMat3dPolarMap();
 
 	bool Init() override;
 
@@ -158,7 +158,7 @@ protected:
 class FEM_EXPORT FEMat3dVectorMap : public FEMat3dValuator
 {
 public:
-	FEMat3dVectorMap(FEModel* pfem);
+	FEMat3dVectorMap();
 
 	bool Init() override;
 
@@ -181,7 +181,7 @@ public:
 class FEM_EXPORT FEMappedValueMat3d : public FEMat3dValuator
 {
 public:
-	FEMappedValueMat3d(FEModel* fem);
+	FEMappedValueMat3d();
 
 	void setDataMap(FEDataMap* val);
 

@@ -86,7 +86,7 @@ void FEDomainDataRecord::SelectAllItems()
 }
 
 //============================================================================
-FELogAvgDomainData::FELogAvgDomainData(FEModel* pfem) : FELogDomainData(pfem) 
+FELogAvgDomainData::FELogAvgDomainData() : FELogDomainData() 
 {
     m_elemData = nullptr;
 }
@@ -127,7 +127,7 @@ double FELogAvgDomainData::value(FEDomain& dom)
 }
 
 //============================================================================
-FELogPctDomainData::FELogPctDomainData(FEModel* pfem) : FELogDomainData(pfem)
+FELogPctDomainData::FELogPctDomainData() : FELogDomainData()
 {
     m_pct = 0.0;
     m_elemData = nullptr;
@@ -176,7 +176,7 @@ double FELogPctDomainData::value(FEDomain& dom)
 
 
 //============================================================================
-FELogIntegralDomainData::FELogIntegralDomainData(FEModel* pfem) : FELogDomainData(pfem)
+FELogIntegralDomainData::FELogIntegralDomainData() : FELogDomainData()
 {
 	m_elemData = nullptr;
 }

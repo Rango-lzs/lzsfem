@@ -3,7 +3,7 @@
 #include "femcore/Domain/FEElasticDomain.h"
 
 //-----------------------------------------------------------------------------
-FEBodyForce::FEBodyForce(FEModel* pfem) : FEBodyLoad(pfem)
+FEBodyForce::FEBodyForce() : FEBodyLoad()
 {
 }
 

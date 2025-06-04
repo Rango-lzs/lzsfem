@@ -214,7 +214,7 @@ DEFINE_META_CLASS(FEScalarValuator, FEValuator, "");
 
 //---------------------------------------------------------------------------------------
 
-FEMappedValue::FEMappedValue(FEModel* fem) : FEScalarValuator(fem), m_val(nullptr)
+FEMappedValue::FEMappedValue() : FEScalarValuator(), m_val(nullptr)
 {
 	m_scale = 1.0;
 }

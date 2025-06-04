@@ -12,14 +12,14 @@ BEGIN_PARAM_DEFINE(FEPrescribedDOF, FEPrescribedNodeSet)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEPrescribedDOF::FEPrescribedDOF(FEModel* pfem) : FEPrescribedNodeSet(pfem)
+FEPrescribedDOF::FEPrescribedDOF() : FEPrescribedNodeSet()
 {
 	m_scale = 0.0;
 	m_dof = -1;
 }
 
 //-----------------------------------------------------------------------------
-FEPrescribedDOF::FEPrescribedDOF(FEModel* pfem, int dof, FENodeSet* nset) : FEPrescribedNodeSet(pfem)
+FEPrescribedDOF::FEPrescribedDOF(FEModel* pfem, int dof, FENodeSet* nset) : FEPrescribedNodeSet()
 {
 	m_scale = 0.0;
 	SetNodeSet(nset);

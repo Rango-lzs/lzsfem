@@ -2,7 +2,7 @@
 #include <math.h>
 
 //-----------------------------------------------------------------------------
-LUSolver::LUSolver(FEModel* fem) : LinearSolver(fem), m_pA(nullptr)
+LUSolver::LUSolver() : LinearSolver(), m_pA(nullptr)
 {
 
 }

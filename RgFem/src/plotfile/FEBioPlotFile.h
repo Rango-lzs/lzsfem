@@ -393,7 +393,7 @@ protected:
 class FEPlotObjectData : public FEPlotData
 {
 public:
-	FEPlotObjectData(FEModel* fem) : FEPlotData(fem) {}
+	FEPlotObjectData() : FEPlotData() {}
 
 	virtual bool Save(FEBioPlotFile::PlotObject* po, FEDataStream& ar) = 0;
 };

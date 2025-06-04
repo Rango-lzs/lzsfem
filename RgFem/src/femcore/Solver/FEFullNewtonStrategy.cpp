@@ -5,7 +5,7 @@
 #include "FENewtonSolver.h"
 
 //-----------------------------------------------------------------------------
-FEFullNewtonStrategy::FEFullNewtonStrategy(FEModel* fem) : FENewtonStrategy(fem)
+FEFullNewtonStrategy::FEFullNewtonStrategy() : FENewtonStrategy()
 {
 	m_plinsolve = nullptr;
 	m_maxups = 0;

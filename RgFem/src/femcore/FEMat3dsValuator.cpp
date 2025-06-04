@@ -14,7 +14,7 @@ BEGIN_PARAM_DEFINE(FEConstValueMat3ds, FEMat3dsValuator)
 	ADD_PARAMETER(m_val, "const");
 END_PARAM_DEFINE();
 
-FEConstValueMat3ds::FEConstValueMat3ds(FEModel* fem) : FEMat3dsValuator(fem)
+FEConstValueMat3ds::FEConstValueMat3ds() : FEMat3dsValuator()
 {
 	m_val.zero();
 }
@@ -34,7 +34,7 @@ BEGIN_PARAM_DEFINE(FEMappedValueMat3ds, FEMat3dsValuator)
 	ADD_PARAMETER(m_mapName, "map");
 END_PARAM_DEFINE();
 
-FEMappedValueMat3ds::FEMappedValueMat3ds(FEModel* fem) : FEMat3dsValuator(fem)
+FEMappedValueMat3ds::FEMappedValueMat3ds() : FEMat3dsValuator()
 {
 	m_val = nullptr;
 }

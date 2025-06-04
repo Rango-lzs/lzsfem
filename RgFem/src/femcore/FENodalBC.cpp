@@ -4,7 +4,7 @@
 DEFINE_META_CLASS(FENodalBC, FEBoundaryCondition, "");
 
 //==================================================================
-FENodalBC::FENodalBC(FEModel* fem) : FEBoundaryCondition(fem)
+FENodalBC::FENodalBC()
 {
 	m_nodeSet = nullptr;
 }

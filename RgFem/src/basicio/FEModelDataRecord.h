@@ -8,7 +8,7 @@ class FEM_EXPORT FEModelLogData : public FELogData
     DECLARE_META_CLASS(FEModelLogData, FELogData);
 
 public:
-    FEModelLogData(FEModel* fem);
+    FEModelLogData();
     virtual ~FEModelLogData();
     virtual double value() = 0;
 };

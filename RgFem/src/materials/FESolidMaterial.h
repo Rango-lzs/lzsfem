@@ -10,7 +10,7 @@ class FEM_EXPORT FESolidMaterial : public FEMaterial
 {
 public:
 	//! constructor
-	FESolidMaterial(FEModel* pfem);
+	FESolidMaterial();
 
 	//¿ÂÎ÷Ó¦Á¦ causy stress
 	virtual Matrix3ds Stress(FEMaterialPoint& pt) = 0;

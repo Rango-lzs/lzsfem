@@ -52,7 +52,7 @@ class FEM_EXPORT FENewtonSolver : public FESolver
 
 public:
     //! constructor
-    FENewtonSolver(FEModel* pfem);
+    FENewtonSolver();
 
     //! destrcutor
     ~FENewtonSolver();

@@ -171,7 +171,7 @@ void FEBioOutputSection::ParseLogfile(XMLTag &tag)
 				FEFacetSet* pfs = mesh.FindFacetSet(sz);
 				if (pfs == nullptr) throw XMLReader::InvalidAttributeValue(tag, "surface", sz);
 
-				surf = new FESurface(&fem);
+				surf = new FESurface();
 				surf->Create(*pfs);
 				surf->SetName(sz);
 				surf->Init();

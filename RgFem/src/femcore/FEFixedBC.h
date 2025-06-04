@@ -11,7 +11,7 @@ class FEM_EXPORT FEFixedBC : public FENodalBC
 
 public:
 	//! constructors
-	FEFixedBC(FEModel* pfem);
+	FEFixedBC();
 	FEFixedBC(FEModel* pfem, int dof, FENodeSet* ps);
 
 	//! initialization
@@ -34,7 +34,7 @@ class FEM_EXPORT FEFixedDOF : public FEFixedBC
 	DECLARE_META_CLASS(FEFixedDOF, FEFixedBC);
 
 public:
-	FEFixedDOF(FEModel* fem);
+	FEFixedDOF();
 
 	void SetDOFS(const std::vector<int>& dofs);
 

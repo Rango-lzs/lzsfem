@@ -8,7 +8,7 @@ BEGIN_PARAM_DEFINE(FESolidAnalysis, FEAnalysis)
 	FindParameterFromData(&m_nanalysis)->setEnums("STATIC\0DYNAMIC\0");
 END_PARAM_DEFINE()
 
-FESolidAnalysis::FESolidAnalysis(FEModel* fem) : FEAnalysis(fem)
+FESolidAnalysis::FESolidAnalysis() : FEAnalysis()
 {
 
 }

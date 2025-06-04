@@ -9,7 +9,6 @@ class FEM_EXPORT FEStepComponent : public FEModelComponent
     DECLARE_META_CLASS(FEStepComponent, FEModelComponent);
 
 public:
-    FEStepComponent(FEModel* fem);
     FEStepComponent();
 
     //-----------------------------------------------------------------------------------

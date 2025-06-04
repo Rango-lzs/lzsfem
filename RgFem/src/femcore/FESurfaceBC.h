@@ -9,7 +9,7 @@ class FEM_EXPORT FESurfaceBC : public FEBoundaryCondition
     DECLARE_META_CLASS(FESurfaceBC, FEBoundaryCondition);
 
 public:
-	FESurfaceBC(FEModel* fem);
+	FESurfaceBC();
 
 	bool Init() override;
 

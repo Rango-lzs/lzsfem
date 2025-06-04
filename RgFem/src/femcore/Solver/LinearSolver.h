@@ -28,7 +28,7 @@ class FEM_EXPORT LinearSolver : public FEObjectBase
 
 public:
 	//! constructor
-	LinearSolver(FEModel* fem);
+	LinearSolver();
 
 	//! destructor
 	virtual ~LinearSolver();
@@ -107,7 +107,7 @@ class FEM_EXPORT IterativeLinearSolver : public LinearSolver
 {
 public:
 	// constructor
-	IterativeLinearSolver(FEModel* fem);
+	IterativeLinearSolver();
 
 	// return whether the iterative solver has a preconditioner or not
 	virtual bool HasPreconditioner() const = 0;

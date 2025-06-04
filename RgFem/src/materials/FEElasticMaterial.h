@@ -10,7 +10,7 @@ class FEM_EXPORT FEElasticMaterial : public FESolidMaterial
 {
 public:
 	//! constructor 
-	FEElasticMaterial(FEModel* pfem);
+	FEElasticMaterial();
 
 	//! destructor
 	~FEElasticMaterial();

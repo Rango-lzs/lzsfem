@@ -71,7 +71,7 @@ class FEM_EXPORT FESurface : public FEMeshPartition
 
 public:
     //! default constructor
-    FESurface(FEModel* fem);
+    FESurface();
 
     //! destructor
     virtual ~FESurface();

@@ -24,7 +24,7 @@ void NLConstraintDataRecord::SetData(const char* szexpr)
 }
 
 //-----------------------------------------------------------------------------
-NLConstraintDataRecord::NLConstraintDataRecord(FEModel* pfem) : DataRecord(pfem, FE_DATA_NLC) {}
+NLConstraintDataRecord::NLConstraintDataRecord() : DataRecord(nullptr, FE_DATA_NLC) {}
 
 //-----------------------------------------------------------------------------
 int NLConstraintDataRecord::Size() const { return (int)m_Data.size(); }

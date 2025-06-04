@@ -7,7 +7,7 @@ BEGIN_PARAM_DEFINE(FEPrescribedNodeSet, FENodalBC)
 	ADD_PARAMETER(m_brelative, "relative");
 END_PARAM_DEFINE();
 
-FEPrescribedNodeSet::FEPrescribedNodeSet(FEModel* fem) : FENodalBC(fem)
+FEPrescribedNodeSet::FEPrescribedNodeSet() : FENodalBC()
 {
 	m_brelative = false;
 }
@@ -175,7 +175,7 @@ void FEPrescribedNodeSet::Repair()
 BEGIN_PARAM_DEFINE(FEPrescribedSurface, FESurfaceBC)
 END_PARAM_DEFINE();
 
-FEPrescribedSurface::FEPrescribedSurface(FEModel* fem) : FESurfaceBC(fem)
+FEPrescribedSurface::FEPrescribedSurface() : FESurfaceBC()
 {
 	m_brelative = false;
 }

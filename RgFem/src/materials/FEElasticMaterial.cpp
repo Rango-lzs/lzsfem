@@ -4,7 +4,7 @@
 BEGIN_PARAM_DEFINE(FEElasticMaterial, FESolidMaterial)
 END_PARAM_DEFINE();
 
-FEElasticMaterial::FEElasticMaterial(FEModel* pfem) : FESolidMaterial(pfem)
+FEElasticMaterial::FEElasticMaterial() : FESolidMaterial()
 { 
 	m_density = 1;
 	//AddDomainParameter(new FEElasticStress());

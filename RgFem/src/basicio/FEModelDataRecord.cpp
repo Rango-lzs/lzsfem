@@ -3,7 +3,7 @@
 
 DEFINE_META_CLASS(FEModelLogData, FELogData, "");
 
-FEModelLogData::FEModelLogData(FEModel* fem) : FELogData(fem) {}
+FEModelLogData::FEModelLogData() : FELogData() {}
 FEModelLogData::~FEModelLogData() {}
 
 FEModelDataRecord::FEModelDataRecord(FEModel* pfem) : DataRecord(pfem, FE_DATA_MODEL) {}

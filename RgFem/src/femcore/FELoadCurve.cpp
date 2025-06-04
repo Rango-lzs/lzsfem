@@ -11,8 +11,8 @@ ADD_PARAMETER(m_ext, "extend", 0, "CONSTANT\0EXTRAPOLATE\0REPEAT\0REPEAT OFFSET\
 ADD_PARAMETER(m_points, "points");
 END_PARAM_DEFINE();
 
-FELoadCurve::FELoadCurve(FEModel* fem)
-    : FELoadController(fem)
+FELoadCurve::FELoadCurve()
+    : FELoadController()
 {
     m_int = PointCurve::LINEAR;
     m_ext = PointCurve::CONSTANT;

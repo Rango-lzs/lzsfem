@@ -8,7 +8,7 @@ class FEM_EXPORT FELinearConstraintDOF : public FEObjectBase
 {
 	DECLARE_META_CLASS(FELinearConstraintDOF, FEObjectBase);
 public:
-	FELinearConstraintDOF(FEModel* fem);
+	FELinearConstraintDOF();
 
 	public:
 		int		node;	// node number
@@ -32,7 +32,6 @@ public:
 public:
 	// constructors
 	FELinearConstraint();
-	FELinearConstraint(FEModel* pfem);
 	FELinearConstraint(const FELinearConstraint& LC);
 
 	~FELinearConstraint();

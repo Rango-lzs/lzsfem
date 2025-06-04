@@ -102,7 +102,7 @@ END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 FEModel::FEModel(void)
-    : FEObjectBase(this)
+    : FEObjectBase()
     , m_imp(new FEModel::Impl(this))
 {
     // set the name

@@ -7,7 +7,7 @@
 DEFINE_META_CLASS(FELogElemData, FELogData, "");
 
 //-----------------------------------------------------------------------------
-FELogElemData::FELogElemData(FEModel* fem) : FELogData(fem) {}
+FELogElemData::FELogElemData() : FELogData() {}
 
 //-----------------------------------------------------------------------------
 FELogElemData::~FELogElemData() {}

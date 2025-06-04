@@ -3,7 +3,7 @@
 
 DEFINE_META_CLASS(FEStepComponent, FEModelComponent, "");
 
-FEStepComponent::FEStepComponent(FEModel* fem) : FEModelComponent(fem)
+FEStepComponent::FEStepComponent()
 {
 	// initialize parameters
 	m_bactive = true;

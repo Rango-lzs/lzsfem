@@ -15,7 +15,7 @@ class FEM_EXPORT LUSolver : public LinearSolver
 {
 public:
 	//! constructor
-	LUSolver(FEModel* fem = nullptr);
+	LUSolver();
 
 	//! Pre-process data
 	bool PreProcess() override;

@@ -9,7 +9,7 @@ class FEM_EXPORT FENodalBC : public FEBoundaryCondition
 	DECLARE_META_CLASS(FENodalBC, FEBoundaryCondition);
 
 public:
-	FENodalBC(FEModel* fem);
+	FENodalBC();
 
 	// Set the node set
 	void SetNodeSet(FENodeSet* nodeSet);

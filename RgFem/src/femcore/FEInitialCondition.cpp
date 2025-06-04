@@ -6,7 +6,7 @@
 
 DEFINE_META_CLASS(FEInitialCondition, FEStepComponent, "");
 
-FEInitialCondition::FEInitialCondition(FEModel* pfem) : FEStepComponent(pfem)
+FEInitialCondition::FEInitialCondition() : FEStepComponent()
 {
 }
 
@@ -15,7 +15,7 @@ BEGIN_PARAM_DEFINE(FENodalIC, FEInitialCondition)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FENodalIC::FENodalIC(FEModel* fem) : FEInitialCondition(fem), m_dofs(fem)
+FENodalIC::FENodalIC() : FEInitialCondition(), m_dofs()
 {
 	m_nodeSet = nullptr;
 }
@@ -90,14 +90,14 @@ BEGIN_PARAM_DEFINE(FEInitialDOF, FENodalIC)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEInitialDOF::FEInitialDOF(FEModel* pfem) : FENodalIC(pfem)
+FEInitialDOF::FEInitialDOF() : FENodalIC()
 {
 	m_dof = -1;
 	m_data = 0.0;
 }
 
 //-----------------------------------------------------------------------------
-FEInitialDOF::FEInitialDOF(FEModel* fem, int ndof, FENodeSet* nset) : FENodalIC(fem)
+FEInitialDOF::FEInitialDOF(FEModel* fem, int ndof, FENodeSet* nset) : FENodalIC()
 {
 	SetDOF(ndof);
 	SetNodeSet(nset);

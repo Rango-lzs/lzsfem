@@ -18,7 +18,7 @@ class FEM_EXPORT FEMaterialBase : public FEModelComponent
 {
     DECLARE_META_CLASS(FEMaterialBase, FEModelComponent);
 public:
-    FEMaterialBase(FEModel* fem);
+    FEMaterialBase();
 
     //! returns a pointer to a new material point object
     virtual FEMaterialPointData* CreateMaterialPointData() = 0;
@@ -40,7 +40,7 @@ class FEM_EXPORT FEMaterial : public FEMaterialBase
 
 public:
 
-    FEMaterial(FEModel* fem);
+    FEMaterial();
     virtual ~FEMaterial();
 
     //! performs initialization
@@ -75,7 +75,7 @@ private:
 class FEM_EXPORT FEMaterialProperty : public FEMaterialBase
 {
 public:
-    FEMaterialProperty(FEModel* fem);
+    FEMaterialProperty();
 
     // evaluate local coordinate system at material point
     Matrix3d GetLocalCS(const FEMaterialPoint& mp) override;

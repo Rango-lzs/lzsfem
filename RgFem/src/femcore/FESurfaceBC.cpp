@@ -3,7 +3,7 @@
 
 DEFINE_META_CLASS(FESurfaceBC, FEBoundaryCondition, "");
 
-FESurfaceBC::FESurfaceBC(FEModel* fem) : FEBoundaryCondition(fem)
+FESurfaceBC::FESurfaceBC() : FEBoundaryCondition()
 {
 	m_surface = nullptr;
 }

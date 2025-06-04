@@ -16,7 +16,7 @@ class FEM_EXPORT FEModelLoad : public FEStepComponent
 
 public:
     //! constructor
-    FEModelLoad(FEModel* pfem);
+    FEModelLoad();
 
     const FEDofList& GetDofList() const;
 

@@ -22,7 +22,7 @@ class FEM_EXPORT FENLConstraint : public FEStepComponent
     DECLARE_META_CLASS(FENLConstraint, FEStepComponent);
 
 public:
-	FENLConstraint(FEModel* pfem);
+	FENLConstraint();
 	virtual ~FENLConstraint();
 
 	// clone the constraint

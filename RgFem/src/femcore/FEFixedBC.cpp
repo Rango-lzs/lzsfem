@@ -8,11 +8,11 @@ DEFINE_META_CLASS(FEFixedDOF, FEFixedBC, "");
 DEFINE_META_CLASS(FEFixedBC, FENodalBC, "");
 
 //-----------------------------------------------------------------------------
-FEFixedBC::FEFixedBC(FEModel* pfem) : FENodalBC(pfem)
+FEFixedBC::FEFixedBC() : FENodalBC()
 {
 }
 
-FEFixedBC::FEFixedBC(FEModel* pfem, int dof, FENodeSet* ps) : FENodalBC(pfem)
+FEFixedBC::FEFixedBC(FEModel* pfem, int dof, FENodeSet* ps) : FENodalBC()
 {
 	SetDOFList(dof);
 	SetNodeSet(ps);
@@ -88,7 +88,7 @@ BEGIN_PARAM_DEFINE(FEFixedDOF, FEFixedBC)
 	ADD_PARAMETER(m_dofs, "dofs", 0, "$(dof_list)");
 END_PARAM_DEFINE();
 
-FEFixedDOF::FEFixedDOF(FEModel* fem) : FEFixedBC(fem)
+FEFixedDOF::FEFixedDOF() : FEFixedBC()
 {
 
 }

@@ -11,7 +11,7 @@ class FEM_EXPORT FEScalarValuator : public FEValuator
     DECLARE_META_CLASS(FEScalarValuator, FEValuator);
 
 public:
-	FEScalarValuator(FEModel* fem) : FEValuator(fem) {};
+	FEScalarValuator() : FEValuator() {};
 
 	virtual double operator()(const FEMaterialPoint& pt) = 0;
 
@@ -26,7 +26,7 @@ public:
 class FEM_EXPORT FEConstValue : public FEScalarValuator
 {
 public:
-	FEConstValue(FEModel* fem) : FEScalarValuator(fem), m_val(0.0) {};
+	FEConstValue() : FEScalarValuator(), m_val(0.0) {};
 	double operator()(const FEMaterialPoint& pt) override { return m_val; }
 
 	bool isConst() override { return true; }
@@ -92,7 +92,7 @@ private:
 class FEM_EXPORT FEMappedValue : public FEScalarValuator
 {
 public:
-	FEMappedValue(FEModel* fem);
+	FEMappedValue();
 	void setDataMap(FEDataMap* val);
 	void setScaleFactor(double s);
 

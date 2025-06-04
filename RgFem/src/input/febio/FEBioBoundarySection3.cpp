@@ -169,7 +169,7 @@ void FEBioBoundarySection3::ParseLinearConstraint(XMLTag& tag)
 		}
 		else if (tag == "child_dof")
 		{
-			FELinearConstraintDOF* dof = new FELinearConstraintDOF(&fem);
+			FELinearConstraintDOF* dof = new FELinearConstraintDOF();
 			++tag;
 			do
 			{

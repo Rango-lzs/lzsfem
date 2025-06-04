@@ -10,7 +10,7 @@ class FEM_EXPORT FEBodyForce : public FEBodyLoad
 {
 public:
 	//! constructor
-	FEBodyForce(FEModel* pfem);
+	FEBodyForce();
 
 public:
 	//! calculate the body force at a material point

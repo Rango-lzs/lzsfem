@@ -11,7 +11,7 @@ class FEM_EXPORT FELogFaceData : public FELogData
     DECLARE_META_CLASS(FELogFaceData, FELogData);
 
 public:
-	FELogFaceData(FEModel* fem);
+	FELogFaceData();
 	virtual ~FELogFaceData();
 	virtual double value(FESurfaceElement& el) = 0;
 };

@@ -19,7 +19,7 @@ class FEM_EXPORT FESurfacePairConstraint : public FEStepComponent
 
 public:
 	//! constructor
-	FESurfacePairConstraint(FEModel* pfem);
+	FESurfacePairConstraint();
 
 public:
 	//! return the primary surface

@@ -15,7 +15,7 @@ class FEM_EXPORT FENewtonStrategy : public FEObjectBase
     DECLARE_META_CLASS(FENewtonStrategy, FEObjectBase);
 
 public:
-	FENewtonStrategy(FEModel* fem);
+	FENewtonStrategy();
 	virtual ~FENewtonStrategy();
 
 	void SetNewtonSolver(FENewtonSolver* solver);

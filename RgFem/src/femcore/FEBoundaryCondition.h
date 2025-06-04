@@ -19,7 +19,7 @@ class FEM_EXPORT FEBoundaryCondition : public FEStepComponent
 
 public:
 	//! constructor
-	FEBoundaryCondition(FEModel* pfem);
+	FEBoundaryCondition();
 
 	//! desctructor
 	~FEBoundaryCondition();

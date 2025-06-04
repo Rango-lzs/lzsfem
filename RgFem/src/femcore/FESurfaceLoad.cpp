@@ -6,7 +6,7 @@
 
 DEFINE_META_CLASS(FESurfaceLoad, FEModelLoad, "");
 
-FESurfaceLoad::FESurfaceLoad(FEModel* pfem) : FEModelLoad(pfem)
+FESurfaceLoad::FESurfaceLoad() : FEModelLoad()
 {
 	m_psurf = 0;
 }

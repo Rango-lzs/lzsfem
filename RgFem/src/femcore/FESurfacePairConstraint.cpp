@@ -3,7 +3,7 @@
 DEFINE_META_CLASS(FESurfacePairConstraint, FEStepComponent, "");
 
 //-----------------------------------------------------------------------------
-FESurfacePairConstraint::FESurfacePairConstraint(FEModel* pfem) : FEStepComponent(pfem)
+FESurfacePairConstraint::FESurfacePairConstraint() : FEStepComponent()
 {
 }
 

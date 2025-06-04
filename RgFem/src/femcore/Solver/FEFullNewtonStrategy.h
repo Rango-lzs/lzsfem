@@ -9,7 +9,7 @@ class FEM_EXPORT FEFullNewtonStrategy : public FENewtonStrategy
 {
 public:
 	//! constructor
-	FEFullNewtonStrategy(FEModel* fem);
+	FEFullNewtonStrategy();
 
 	//! New initialization method
 	bool Init() override;

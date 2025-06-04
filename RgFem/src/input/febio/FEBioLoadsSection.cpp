@@ -146,7 +146,7 @@ void FEBioLoadsSection3::ParseSurfaceLoad(XMLTag& tag)
 					if (v.isConst()) s = v.constValue(); else throw XMLReader::InvalidTag(tag);
 
 					// create map and assign
-					FEMappedValue* map = new FEMappedValue(&fem);
+					FEMappedValue* map = new FEMappedValue();
 					map->setDataMap(surfMap);
 					map->setScaleFactor(s);
 					v.setValuator(map);

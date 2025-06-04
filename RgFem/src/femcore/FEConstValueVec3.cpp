@@ -14,7 +14,7 @@ BEGIN_PARAM_DEFINE(FEConstValueVec3, FEVec3dValuator)
 	ADD_PARAMETER(m_val, "vector");
 END_PARAM_DEFINE();
 
-FEConstValueVec3::FEConstValueVec3(FEModel* fem) : FEVec3dValuator(fem) {}
+FEConstValueVec3::FEConstValueVec3() : FEVec3dValuator() {}
 
 FEVec3dValuator* FEConstValueVec3::copy()
 {
@@ -28,7 +28,7 @@ BEGIN_PARAM_DEFINE(FEMathValueVec3, FEVec3dValuator)
 	ADD_PARAMETER(m_expr, "math");
 END_PARAM_DEFINE();
 
-FEMathValueVec3::FEMathValueVec3(FEModel* fem) : FEVec3dValuator(fem)
+FEMathValueVec3::FEMathValueVec3() : FEVec3dValuator()
 {
 	m_expr = "0,0,0";
 	Init();
@@ -101,7 +101,7 @@ BEGIN_PARAM_DEFINE(FEMappedValueVec3, FEVec3dValuator)
 	ADD_PARAMETER(m_mapName, "map");
 END_PARAM_DEFINE();
 
-FEMappedValueVec3::FEMappedValueVec3(FEModel* fem) : FEVec3dValuator(fem)
+FEMappedValueVec3::FEMappedValueVec3() : FEVec3dValuator()
 {
 	m_val = nullptr;
 }
@@ -149,7 +149,7 @@ BEGIN_PARAM_DEFINE(FELocalVectorGenerator, FEVec3dValuator)
 	ADD_PARAMETER(m_n, 2, "local");
 END_PARAM_DEFINE();
 
-FELocalVectorGenerator::FELocalVectorGenerator(FEModel* fem) : FEVec3dValuator(fem)
+FELocalVectorGenerator::FELocalVectorGenerator() : FEVec3dValuator()
 {
 	m_n[0] = m_n[1] = 0;
 }
@@ -193,7 +193,7 @@ BEGIN_PARAM_DEFINE(FESphericalVectorGenerator, FEVec3dValuator)
 	ADD_PARAMETER(m_vector, "vector");
 END_PARAM_DEFINE();
 
-FESphericalVectorGenerator::FESphericalVectorGenerator(FEModel* fem) : FEVec3dValuator(fem)
+FESphericalVectorGenerator::FESphericalVectorGenerator() : FEVec3dValuator()
 {
 	m_center = Vector3d(0, 0, 0);
 	m_vector = Vector3d(1, 0, 0);
@@ -237,7 +237,7 @@ BEGIN_PARAM_DEFINE(FECylindricalVectorGenerator, FEVec3dValuator)
 	ADD_PARAMETER(m_vector, "vector");
 END_PARAM_DEFINE();
 
-FECylindricalVectorGenerator::FECylindricalVectorGenerator(FEModel* fem) : FEVec3dValuator(fem)
+FECylindricalVectorGenerator::FECylindricalVectorGenerator() : FEVec3dValuator()
 {
 	m_center = Vector3d(0, 0, 0);
 	m_axis = Vector3d(0, 0, 1);
@@ -287,7 +287,7 @@ BEGIN_PARAM_DEFINE(FESphericalAnglesVectorGenerator, FEVec3dValuator)
 	ADD_PARAMETER(m_phi, "phi");
 END_PARAM_DEFINE();
 
-FESphericalAnglesVectorGenerator::FESphericalAnglesVectorGenerator(FEModel* fem) : FEVec3dValuator(fem)
+FESphericalAnglesVectorGenerator::FESphericalAnglesVectorGenerator() : FEVec3dValuator()
 {
 	// equal to x-axis (1,0,0)
 	m_theta = 0.0;
@@ -322,7 +322,7 @@ FEVec3dValuator* FESphericalAnglesVectorGenerator::copy()
 BEGIN_PARAM_DEFINE(FEUserVectorGenerator, FEVec3dValuator)
 END_PARAM_DEFINE();
 
-FEUserVectorGenerator::FEUserVectorGenerator(FEModel* fem) : FEVec3dValuator(fem)
+FEUserVectorGenerator::FEUserVectorGenerator() : FEVec3dValuator()
 {
 }
 

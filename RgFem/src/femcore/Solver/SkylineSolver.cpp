@@ -5,7 +5,7 @@ void colsol_factor(int N, double* values, int* pointers);
 void colsol_solve(int N, double* values, int* pointers, double* R);
 
 //-----------------------------------------------------------------------------
-SkylineSolver::SkylineSolver(FEModel* fem) : LinearSolver(fem), m_pA(0)
+SkylineSolver::SkylineSolver() : LinearSolver(), m_pA(0)
 {
 }
 

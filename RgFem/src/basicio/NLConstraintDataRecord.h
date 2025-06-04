@@ -9,7 +9,7 @@ class FEM_EXPORT FELogNLConstraintData : public FELogData
     DECLARE_META_CLASS(FELogNLConstraintData, FELogData);
 
 public:
-    FELogNLConstraintData(FEModel* fem) : FELogData(fem) {}
+    FELogNLConstraintData() : FELogData() {}
     virtual ~FELogNLConstraintData(){}
     virtual double value(FENLConstraint& rc) = 0;
 };
@@ -18,7 +18,7 @@ public:
 class FEM_EXPORT NLConstraintDataRecord : public DataRecord
 {
 public:
-	NLConstraintDataRecord(FEModel* pfem);
+	NLConstraintDataRecord();
     double Evaluate(int item, int ndata);
     void SetData(const char* sz) override;
     void SelectAllItems();

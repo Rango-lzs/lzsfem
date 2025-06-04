@@ -4,7 +4,7 @@
 class FEFixedRotation : public FEFixedBC
 {
 public:
-    FEFixedRotation(FEModel* fem);
+    FEFixedRotation();
 
     bool Init() override;
 

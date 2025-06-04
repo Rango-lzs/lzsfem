@@ -7,7 +7,7 @@
 class FEM_EXPORT FEPrescribedDOF : public FEPrescribedNodeSet
 {
 public:
-	FEPrescribedDOF(FEModel* pfem);
+	FEPrescribedDOF();
 	FEPrescribedDOF(FEModel* pfem, int dof, FENodeSet* nset);
 
 	void SetDOF(int ndof);

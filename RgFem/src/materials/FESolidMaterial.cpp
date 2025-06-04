@@ -15,7 +15,7 @@ BEGIN_PARAM_DEFINE(FESolidMaterial, FEMaterial)
 	ADD_PARAMETER(m_density, "density")->setUnits(UNIT_DENSITY)->MakeTopLevel(true);
 END_PARAM_DEFINE();
 
-FESolidMaterial::FESolidMaterial(FEModel* pfem) : FEMaterial(pfem)
+FESolidMaterial::FESolidMaterial() : FEMaterial()
 {
     m_density = 1.0;
 }

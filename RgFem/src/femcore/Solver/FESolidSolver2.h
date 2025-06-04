@@ -23,7 +23,7 @@ class FEM_EXPORT FESolidSolver2 : public FENewtonSolver
 
 public:
 	//! constructor
-	FESolidSolver2(FEModel* pfem);
+	FESolidSolver2();
 
 	//! destructor
 	virtual ~FESolidSolver2();

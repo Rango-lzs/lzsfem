@@ -13,7 +13,7 @@ class FEM_EXPORT FECoreTask : public FEObjectBase
     DECLARE_META_CLASS(FECoreTask, FEObjectBase);
 
 public:
-	FECoreTask(FEModel* fem);
+	FECoreTask();
 	virtual ~FECoreTask(void);
 
 	//! initialize the task

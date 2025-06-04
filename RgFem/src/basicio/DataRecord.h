@@ -100,5 +100,5 @@ class FEM_EXPORT FELogData : public FEObjectBase
     DECLARE_META_CLASS(FELogData, FEObjectBase);
 
 public:
-    FELogData(FEModel* fem);
+    FELogData();
 };

@@ -11,7 +11,7 @@ class FEM_EXPORT FELogNodeData : public FELogData
     DECLARE_META_CLASS(FELogNodeData, FELogData);
 
 public:
-    FELogNodeData(FEModel* fem);
+    FELogNodeData();
     virtual ~FELogNodeData();
     virtual double value(const FENode& node) = 0;
 };

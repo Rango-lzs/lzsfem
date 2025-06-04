@@ -61,8 +61,8 @@ FEProperty* solver = ADD_PROPERTY(m_psolver, "solver");
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-FEAnalysis::FEAnalysis(FEModel* fem)
-    : FEObjectBase(fem)
+FEAnalysis::FEAnalysis()
+    : FEObjectBase()
 {
     m_psolver = nullptr;
     m_tend = 0.0;
@@ -120,7 +120,7 @@ void FEAnalysis::CopyFrom(FEAnalysis* step)
 
     if (step->m_timeController)
     {
-        m_timeController = new FETimeStepController(GetFEModel());
+        m_timeController = new FETimeStepController();
         m_timeController->SetAnalysis(this);
         m_timeController->CopyFrom(step->m_timeController);
     }

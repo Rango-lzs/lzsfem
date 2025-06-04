@@ -35,7 +35,7 @@ class FEElement;
 class FEM_EXPORT FEPlotData : public FEObjectBase
 {
 public:
-	FEPlotData(FEModel* fem);
+	FEPlotData();
 	FEPlotData(FEModel* fem, Region_Type R, Var_Type t, Storage_Fmt s);
 
 	// The filter can be used to pass additional information to the plot field.

@@ -10,7 +10,7 @@ class FEPressureLoad : public FESurfaceLoad
 {
 public:
 	//! constructor
-	FEPressureLoad(FEModel* pfem);
+	FEPressureLoad();
 
 	//! initialization
 	bool Init() override;

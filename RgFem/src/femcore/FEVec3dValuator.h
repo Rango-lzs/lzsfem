@@ -10,7 +10,7 @@ class FEM_EXPORT FEVec3dValuator : public FEValuator
 	DECLARE_META_CLASS(FEVec3dValuator, FEValuator);
 
 public:
-	FEVec3dValuator(FEModel* fem);
+	FEVec3dValuator();
 
 public:
 	// evaluate value at a material point

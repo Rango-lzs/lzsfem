@@ -4,7 +4,7 @@
 class FEFixedDisplacement : public FEFixedBC
 {
 public:
-    FEFixedDisplacement(FEModel* fem);
+    FEFixedDisplacement();
 
     bool Init() override;
 

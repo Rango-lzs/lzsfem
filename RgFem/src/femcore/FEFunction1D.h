@@ -18,7 +18,7 @@ class FEM_EXPORT FEFunction1D : public FEObjectBase
     DECLARE_META_CLASS(FEFunction1D, FEObjectBase);
 
 public:
-	FEFunction1D(FEModel* pfem);
+	FEFunction1D();
 
 	// serialization
 	void Serialize(DumpStream& ar);
@@ -53,7 +53,7 @@ public:
 class FEM_EXPORT FEConstFunction : public FEFunction1D
 {
 public:
-	FEConstFunction(FEModel* fem) : FEFunction1D(fem), m_value(0.0) {}
+	FEConstFunction() : FEFunction1D(), m_value(0.0) {}
 	FEFunction1D* copy() override { return new FEConstFunction(GetFEModel(), m_value); }
 
 	double value(double t) const override { return m_value;	}
@@ -61,7 +61,7 @@ public:
 	double deriv2(double t) const override { return 0.0; }
 
 protected:
-	FEConstFunction(FEModel* fem, double val) : FEFunction1D(fem), m_value(val) {}
+	FEConstFunction(FEModel* fem, double val) : FEFunction1D(), m_value(val) {}
 
 private:
 	double	m_value;
@@ -74,8 +74,8 @@ private:
 class FEM_EXPORT FELinearFunction : public FEFunction1D
 {
 public:
-	FELinearFunction(FEModel* fem) : FEFunction1D(fem), m_slope(0.0), m_intercept(0.0) {}
-	FELinearFunction(FEModel* fem, double m, double y0) : FEFunction1D(fem), m_slope(m), m_intercept(y0) {}
+	FELinearFunction() : FEFunction1D(), m_slope(0.0), m_intercept(0.0) {}
+	FELinearFunction(FEModel* fem, double m, double y0) : FEFunction1D(), m_slope(m), m_intercept(y0) {}
 	FEFunction1D* copy() override { return new FELinearFunction(GetFEModel(), m_slope, m_intercept); }
 
 	double value(double t) const override
@@ -105,8 +105,8 @@ private:
 class FEM_EXPORT FEStepFunction : public FEFunction1D
 {
 public:
-	FEStepFunction(FEModel* fem) : FEFunction1D(fem), m_x0(0.0), m_leftVal(0.0), m_rightVal(1.0) {}
-	FEStepFunction(FEModel* fem, double x0, double lv, double rv) : FEFunction1D(fem), m_x0(x0), m_leftVal(lv), m_rightVal(rv) {}
+	FEStepFunction() : FEFunction1D(), m_x0(0.0), m_leftVal(0.0), m_rightVal(1.0) {}
+	FEStepFunction(FEModel* fem, double x0, double lv, double rv) : FEFunction1D(), m_x0(x0), m_leftVal(lv), m_rightVal(rv) {}
 	FEFunction1D* copy() override { return new FEStepFunction(GetFEModel(), m_x0, m_leftVal, m_rightVal); }
 
 	double value(double t) const override

@@ -9,7 +9,7 @@ class FEM_EXPORT FELogObjectData : public FELogData
     DECLARE_META_CLASS(FELogObjectData, FELogData);
 
 public:
-	FELogObjectData(FEModel* fem) : FELogData(fem) {}
+	FELogObjectData() : FELogData() {}
 	virtual ~FELogObjectData(){}
 	//virtual double value(FERigidBody& rb) = 0;
 };

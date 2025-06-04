@@ -10,7 +10,7 @@ public:
 	};
 
 public:
-	FESolidAnalysis(FEModel* fem);
+	FESolidAnalysis();
 
 	DECLARE_PARAM_LIST();
 };
