@@ -6,6 +6,7 @@
 #include "logger/log.h"
 
 DEFINE_META_CLASS(FEScalarValuator, FEValuator, "");
+DEFINE_META_CLASS(FEConstValue, FEScalarValuator, "const");
 
 ////=============================================================================
 //bool FEMathExpression::Init(const std::string& expr, FEObjectBase* pc)

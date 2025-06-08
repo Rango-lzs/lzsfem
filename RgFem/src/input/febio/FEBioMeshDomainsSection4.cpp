@@ -4,10 +4,12 @@
 #include <femcore/Domain/FEShellDomain.h>
 #include <femcore/Domain/FESolidDomain.h>
 #include <femcore/Domain/FETrussDomain.h>
-#include <femcore/FEModel.h>
+#include "femcore/FEModel.h"
 #include <femcore/FENodeNodeList.h>
 #include <materials/FEMaterial.h>
 #include <sstream>
+#include "app/RgFemApp.h"
+#include "femcore/Domain/FEElasticSolidDomain.h"
 
 FEBioMeshDomainsSection4::FEBioMeshDomainsSection4(FEBioImport* pim)
     : FEBioFileSection(pim)
@@ -154,7 +156,7 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
     FE_Element_Spec spec = partDomain->ElementSpec();
 
     // create the domain
-    FEDomain* dom = nullptr;
+    FEDomain* dom = new FEElasticSolidDomain(GET_FEMODEL);
     if (sztype)
     {
         // if the type attribute is defined, try to allocate the domain class directly.
@@ -168,8 +170,8 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
         // if not, then use "old" logic, which tries to match the domain using the
         // domain factories.
         /*dom = febio.CreateDomain(spec, &mesh, mat);*/
-        if (dom == 0)
-            throw XMLReader::InvalidTag(tag);
+        /*if (dom == 0)
+            throw XMLReader::InvalidTag(tag);*/
     }
 
     // add it to the mesh

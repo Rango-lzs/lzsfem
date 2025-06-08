@@ -25,6 +25,7 @@ public:
 //---------------------------------------------------------------------------------------
 class FEM_EXPORT FEConstValue : public FEScalarValuator
 {
+    DECLARE_META_CLASS(FEConstValue, FEScalarValuator);
 public:
 	FEConstValue() : FEScalarValuator(), m_val(0.0) {};
 	double operator()(const FEMaterialPoint& pt) override { return m_val; }
@@ -33,12 +34,15 @@ public:
 
 	double* constValue() override { return &m_val; }
 
-	FEScalarValuator* copy() override;
+	FEScalarValuator* copy() override
+    {
+        return nullptr;
+    }
 
 private:
 	double	m_val;
 
-	DECLARE_PARAM_LIST();
+	//DECLARE_PARAM_LIST();
 };
 
 ////---------------------------------------------------------------------------------------

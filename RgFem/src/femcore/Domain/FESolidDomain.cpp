@@ -32,8 +32,9 @@ bool FESolidDomain::Create(int nsize, FE_Element_Spec espec)
 	// allocate elements
     m_Elem.resize(nsize);
 	for (int i = 0; i < nsize; ++i)
-	{
-		FESolidElement& el = *m_Elem[i];
+	{	
+        m_Elem[i] = new FESolidElement();
+        FESolidElement& el = *m_Elem[i];
 		el.setLocalId(i);
 		el.SetMeshPartition(this);
 	}

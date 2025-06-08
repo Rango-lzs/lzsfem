@@ -1,6 +1,8 @@
 #include "FEElasticMaterial.h"
 #include "femcore/FEModel.h"
 
+DEFINE_META_CLASS(FEElasticMaterial, FESolidMaterial, "");
+
 BEGIN_PARAM_DEFINE(FEElasticMaterial, FESolidMaterial)
 END_PARAM_DEFINE();
 

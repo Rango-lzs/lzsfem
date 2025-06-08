@@ -8,6 +8,8 @@
 
 class FEM_EXPORT FEElasticMaterial : public FESolidMaterial
 {
+    DECLARE_META_CLASS(FEElasticMaterial, FESolidMaterial);
+
 public:
 	//! constructor 
 	FEElasticMaterial();

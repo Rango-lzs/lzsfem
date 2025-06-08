@@ -3,6 +3,7 @@
 #include "FEModelParam.h"
 #include "logger/log.h"
 #include <sstream>
+#include "app/RgFemApp.h"
 
 DEFINE_META_CLASS(FEObjectBase, FEParamObject, "");
 
@@ -49,7 +50,7 @@ void FEObjectBase::SetID(int nid) { m_nID = nid; }
 
 //-----------------------------------------------------------------------------
 //! Get the FE model
-FEModel* FEObjectBase::GetFEModel() const { return m_fem; }
+FEModel* FEObjectBase::GetFEModel() const { return GET_FEMODEL; }
 
 //-----------------------------------------------------------------------------
 void FEObjectBase::SetFEModel(FEModel* fem) { m_fem = fem; }

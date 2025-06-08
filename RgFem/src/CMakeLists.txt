@@ -203,10 +203,10 @@ set(FEMCORE_HEADERS
     femcore/RTTI/MetaClassStore.h
     femcore/RTTI/RTTIMacroDefine.h
 
-    #femcore/Solver/BFGSSolver.h
+    femcore/Solver/BFGSSolver.h
     #femcore/Solver/EigenSolver.h
     #femcore/Solver/FEBroydenStrategy.h
-    femcore/Solver/FECGSolidSolver.h
+    #femcore/Solver/FECGSolidSolver.h
     #femcore/Solver/FEExplicitSolidSolver.h
     #femcore/Solver/FEFullNewtonStrategy.h
     #femcore/Solver/FEGlobalData.h
@@ -395,7 +395,7 @@ set(FEMCORE_SOURCES
     femcore/PointCurve.cpp
     femcore/RTTI/MetaClass.cpp
     femcore/RTTI/MetaClassStore.cpp
-    #femcore/Solver/BFGSSolver.cpp
+    femcore/Solver/BFGSSolver.cpp
     #femcore/Solver/EigenSolver.cpp
     #femcore/Solver/FEBroydenStrategy.cpp
     #femcore/Solver/FECGSolidSolver.cpp

@@ -10,6 +10,8 @@
 #include "materials/FEElasticMaterial.h"
 #include "femcore/units.h"
 
+DEFINE_META_CLASS(FESolidMaterial, FEMaterial, "");
+
 // Material parameters for FEElasticMaterial
 BEGIN_PARAM_DEFINE(FESolidMaterial, FEMaterial)
 	ADD_PARAMETER(m_density, "density")->setUnits(UNIT_DENSITY)->MakeTopLevel(true);

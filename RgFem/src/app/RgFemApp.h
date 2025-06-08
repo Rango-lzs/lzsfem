@@ -35,3 +35,6 @@ private:
     CmdOptions m_cmd_opts;
     FEModel* mp_model;
 };
+
+
+#define GET_FEMODEL RgFemApp::Instance()->GetCurrentModel()

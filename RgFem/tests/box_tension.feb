@@ -69,7 +69,7 @@ This is tutorial 1 in the PreView manual.
 		</Constants>
 	</Globals>
 	<Material>
-		<material id="1" name="Material 1" type="Mooney-Rivlin">
+		<material id="1" name="Material 1" type="iso-elastic">
 			<density>1</density>
 			<k>100</k>
 			<pressure_model>default</pressure_model>

@@ -74,7 +74,10 @@ public:
     int getLocalId() const;
     const std::vector<NodeId>& getNodeIds() const;
 
-    virtual ElementType elementType() const = 0;
+    virtual ElementType elementType() const
+    {
+        return ElementType::FE_ELEM_INVALID_TYPE;
+    }
     
     virtual NodeId getNodeId(int idx) const;
     virtual NodeId getLocNodeId(int idx) const;
@@ -189,11 +192,11 @@ public:
     virtual void Serialize(DumpStream& ar);
 
 public:  // Filed evalulate
-    virtual void stiffnessMatrix(Matrix3d& stiffMat) = 0;
-    virtual void loadVector(std::vector<double>&) = 0;
+    virtual void stiffnessMatrix(Matrix3d& stiffMat) ;
+    virtual void loadVector(std::vector<double>&) ;
 
-    virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) = 0;
-    virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) = 0;
+    virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) ;
+    virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) ;
 
     std::vector<NodeId> m_node;      //!< connectivity
     std::vector<NodeId> m_loc_node;  //!< local connectivity

@@ -42,10 +42,10 @@ ADD_PARAMETER(m_Rmin, FE_RANGE_GREATER_OR_EQUAL(0.0), "min_residual");
 ADD_PARAMETER(m_Rmax, FE_RANGE_GREATER_OR_EQUAL(0.0), "max_residual");
 END_PARAM_GROUP();
 
-//ADD_PROPERTY(m_qnstrategy, "qn_method", FEProperty::Preferred)
-//    ->SetDefaultType("BFGS")
-//    .SetLongName("Quasi-Newton method");
-//ADD_PROPERTY(m_plinsolve, "linear_solver", FEProperty::Optional)->SetDefaultType("pardiso");
+ADD_PROPERTY(m_qnstrategy, "qn_method", FEProperty::Preferred)
+    ->SetDefaultType("BFGS")
+    .SetLongName("Quasi-Newton method");
+ADD_PROPERTY(m_plinsolve, "linear_solver", FEProperty::Optional)->SetDefaultType("pardiso");
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------

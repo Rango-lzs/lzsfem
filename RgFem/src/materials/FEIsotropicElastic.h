@@ -4,6 +4,8 @@
 //此材料用于小应变，大转动场景
 class FEIsotropicElastic : public FEElasticMaterial
 {
+    DECLARE_META_CLASS(FEIsotropicElastic, FEElasticMaterial);
+
 public:
     FEIsotropicElastic()
         : FEElasticMaterial()

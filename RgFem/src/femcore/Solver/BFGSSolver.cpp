@@ -1,50 +1,23 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
+#include "femcore/Solver/BFGSSolver.h"
+#include "femcore/Solver/FESolver.h"
+#include "femcore/FEException.h"
+#include "femcore/Solver/FENewtonSolver.h"
+#include "logger/log.h"
 
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-
-
-#include "stdafx.h"
-#include "BFGSSolver.h"
-#include "FESolver.h"
-#include "FEException.h"
-#include "FENewtonSolver.h"
-#include "log.h"
+DEFINE_META_CLASS(BFGSSolver, FENewtonStrategy,"BFGS");
 
 //-----------------------------------------------------------------------------
 // BFGSSolver
 //-----------------------------------------------------------------------------
-BEGIN_FECORE_CLASS(BFGSSolver, FENewtonStrategy)
+BEGIN_PARAM_DEFINE(BFGSSolver, FENewtonStrategy)
 	ADD_PARAMETER(m_maxups, "max_ups");
 	ADD_PARAMETER(m_max_buf_size, FE_RANGE_GREATER_OR_EQUAL(0), "max_buffer_size"); 
 	ADD_PARAMETER(m_cycle_buffer, "cycle_buffer");
 	ADD_PARAMETER(m_cmax, FE_RANGE_GREATER_OR_EQUAL(0.0), "cmax");
-END_FECORE_CLASS();
+END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-BFGSSolver::BFGSSolver(FEModel* fem) : FENewtonStrategy(fem)
+BFGSSolver::BFGSSolver() : FENewtonStrategy()
 {
 	m_neq = 0;
 
@@ -88,7 +61,7 @@ bool BFGSSolver::Init()
 //! be an indication of an ill-conditioned matrix and the update should
 //! not be performed.
 
-bool BFGSSolver::Update(double s, vector<double>& ui, vector<double>& R0, vector<double>& R1)
+bool BFGSSolver::Update(double s, std::vector<double>& ui, std::vector<double>& R0, std::vector<double>& R1)
 {
 	// for full-Newton, we skip QN update
 	if (m_maxups == 0) return false;
@@ -155,7 +128,7 @@ bool BFGSSolver::Update(double s, vector<double>& ui, vector<double>& R0, vector
 // The variable m_nups keeps track of how many updates have been made so far.
 // 
 
-void BFGSSolver::SolveEquations(vector<double>& x, vector<double>& b)
+void BFGSSolver::SolveEquations(std::vector<double>& x, std::vector<double>& b)
 {
 	// make sure we need to do work
 	if (m_neq ==0) return;

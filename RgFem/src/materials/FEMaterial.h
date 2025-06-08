@@ -24,7 +24,7 @@ public:
     virtual FEMaterialPointData* CreateMaterialPointData() = 0;
 
     //! Update specialized material points at each iteration
-    virtual void UpdateSpecializedMaterialPoints(FEMaterialPoint& mp, const FETimeInfo& tp) = 0;
+    virtual void UpdateSpecializedMaterialPoints(FEMaterialPoint& mp, const FETimeInfo& tp);
 
     // evaluate local coordinate system at material point
     virtual Matrix3d GetLocalCS(const FEMaterialPoint& mp) = 0;

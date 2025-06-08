@@ -2,6 +2,8 @@
 #include "femcore/units.h"
 #include "femcore/FEParamValidator.h"
 
+DEFINE_META_CLASS(FEIsotropicElastic, FEElasticMaterial, "iso-elastic");
+
 //-----------------------------------------------------------------------------
 // define the material parameters
 BEGIN_PARAM_DEFINE(FEIsotropicElastic, FEElasticMaterial)
