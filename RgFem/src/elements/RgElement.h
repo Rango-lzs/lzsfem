@@ -192,11 +192,11 @@ public:
     virtual void Serialize(DumpStream& ar);
 
 public:  // Filed evalulate
-    virtual void stiffnessMatrix(Matrix3d& stiffMat) ;
-    virtual void loadVector(std::vector<double>&) ;
+    virtual void stiffnessMatrix(Matrix3d& stiffMat) {}
+    virtual void loadVector(std::vector<double>&) {}
 
-    virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) ;
-    virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) ;
+    virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) {}
+    virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) {}
 
     std::vector<NodeId> m_node;      //!< connectivity
     std::vector<NodeId> m_loc_node;  //!< local connectivity

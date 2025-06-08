@@ -71,10 +71,8 @@ This is tutorial 1 in the PreView manual.
 	<Material>
 		<material id="1" name="Material 1" type="iso-elastic">
 			<density>1</density>
-			<k>100</k>
-			<pressure_model>default</pressure_model>
-			<c1>20</c1>
-			<c2>0</c2>
+			<E>100</E>
+			<v>0.3</v>
 		</material>
 	</Material>
 	<Mesh>
