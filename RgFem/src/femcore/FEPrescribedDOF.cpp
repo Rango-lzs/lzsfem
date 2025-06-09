@@ -5,6 +5,8 @@
 #include "logger/log.h"
 #include "materials/FEMaterialPoint.h"
 
+DEFINE_META_CLASS(FEPrescribedDOF, FEPrescribedNodeSet, "");
+
 //-----------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FEPrescribedDOF, FEPrescribedNodeSet)
 	ADD_PARAMETER(m_scale, "scale");

@@ -1,6 +1,8 @@
 #include "femcore/FEFixedDisplacement.h"
 #include "femcore/FEParam.h"
 
+DEFINE_META_CLASS(FEFixedDisplacement, FEFixedBC, "zero displacement");
+
 BEGIN_PARAM_DEFINE(FEFixedDisplacement, FEFixedBC)
 	ADD_PARAMETER(m_dofx, "x_dof")->setLongName("x-displacement");
 	ADD_PARAMETER(m_dofy, "y_dof")->setLongName("y-displacement");

@@ -264,6 +264,10 @@ set(FEMCORE_HEADERS
     femcore/BSpline.h
     femcore/eig3.h
     femcore/sys.h
+
+    femcore/FEPrescribedDisplacement.h
+
+    femcore/FESolidModule.h
 )
 
 set(FEMCORE_SOURCES
@@ -449,6 +453,9 @@ set(FEMCORE_SOURCES
     femcore/FEValuator.cpp
     femcore/MItem.cpp
     femcore/MFunctions.cpp
+
+    femcore/FEPrescribedDisplacement.cpp
+    femcore/FESolidModule.cpp
 
 )
 
@@ -676,6 +683,7 @@ set(INPUT_SOURCES
     input/febio/FEBioIncludeSection.cpp
     input/febio/FEBioInitialSection.cpp
     input/febio/FEBioInitialSection3.cpp
+    input/febio/FEBioLoadDataSection3.cpp
     input/febio/FEBioLoadDataSection.cpp
     input/febio/FEBioLoadsSection.cpp
     input/febio/FEBioMaterialSection.cpp

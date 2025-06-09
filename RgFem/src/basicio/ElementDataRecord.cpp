@@ -4,7 +4,8 @@
 #include "femcore/Domain/FEDomain.h"
 #include "femcore/FEMesh.h"
 
-DEFINE_META_CLASS(FELogElemData, FELogData, "");
+DEFINE_META_CLASS(FELogElemData, FELogData, "element_data");
+DEFINE_META_CLASS(ElementDataRecord, DataRecord, "element_data");
 
 //-----------------------------------------------------------------------------
 FELogElemData::FELogElemData() : FELogData() {}
@@ -13,7 +14,7 @@ FELogElemData::FELogElemData() : FELogData() {}
 FELogElemData::~FELogElemData() {}
 
 //-----------------------------------------------------------------------------
-ElementDataRecord::ElementDataRecord(FEModel* pfem) : DataRecord(pfem, FE_DATA_ELEM)
+ElementDataRecord::ElementDataRecord() : DataRecord(nullptr, FE_DATA_ELEM)
 {
 	m_offset = 0;
 }

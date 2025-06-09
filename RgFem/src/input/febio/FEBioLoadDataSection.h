@@ -22,14 +22,10 @@ protected:
 class FEBioLoadDataSection3 : public FEFileSection
 {
 public:
-    FEBioLoadDataSection3(FEFileImport* pim) 
-		: FEFileSection(pim)
-    {
-    }
+    FEBioLoadDataSection3(FEFileImport* pim);
   
-	void Parse(XMLTag& tag)
-    {
-    }
+	void Parse(XMLTag& tag);
+
 
 	// Set the redefine curves flag.
 	// When this flag is set, curves can be redefined by using an existing ID

@@ -28,6 +28,7 @@
 #include <stdarg.h>
 #include <string>
 #include "FEException.h"
+#include "FESolidModule.h"
 using namespace std;
 
 //-----------------------------------------------------------------------------
@@ -211,6 +212,9 @@ void FEModel::SetActiveModule(const std::string& moduleName)
     //fecore.SetActiveModule(moduleName.c_str());
     //FEModule* pmod = fecore.GetActiveModule();
    // pmod->InitModel(this);
+
+    FEModule* pmod = new FESolidModule();
+    pmod->InitModel(this);
 }
 
 //-----------------------------------------------------------------------------

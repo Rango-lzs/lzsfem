@@ -4,6 +4,8 @@
 #include "FEFunction1D.h"
 #include "logger/log.h"
 
+DEFINE_META_CLASS(FELoadCurve, FELoadController,"loadcurve");
+
 BEGIN_PARAM_DEFINE(FELoadCurve, FELoadController)
 ADD_PARAMETER(m_int, "interpolate", 0,
               "LINEAR\0STEP\0SMOOTH\0CUBIC SPLINE\0CONTROL POINTS\0APPROXIMATION\0SMOOTH STEP\0");

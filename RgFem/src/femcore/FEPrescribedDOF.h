@@ -6,6 +6,8 @@
 //! Boundary condition for prescribing a degree of freedom
 class FEM_EXPORT FEPrescribedDOF : public FEPrescribedNodeSet
 {
+    DECLARE_META_CLASS(FEPrescribedDOF, FEPrescribedNodeSet);
+
 public:
 	FEPrescribedDOF();
 	FEPrescribedDOF(FEModel* pfem, int dof, FENodeSet* nset);

@@ -7,6 +7,8 @@
 // Load curves are used to manipulate the time dependency of model parameters.
 class FEM_EXPORT FELoadCurve : public FELoadController
 {
+    DECLARE_META_CLASS(FELoadCurve, FELoadController);
+
 public:
     // constructor
     FELoadCurve();

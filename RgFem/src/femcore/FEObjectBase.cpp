@@ -488,6 +488,11 @@ const MetaClass* findChildMeta(const MetaClass* pMeta, const std::string& aliasN
         {
             return pMetaChild;
         }
-        return findChildMeta(pMetaChild, aliasName);
+        else
+        {
+            const MetaClass* pFind = findChildMeta(pMetaChild, aliasName);
+            if (pFind)
+                return pFind;
+		}       
     }
 }

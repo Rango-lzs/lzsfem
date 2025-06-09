@@ -3,6 +3,8 @@
 
 class FEFixedDisplacement : public FEFixedBC
 {
+    DECLARE_META_CLASS(FEFixedDisplacement, FEFixedBC);
+
 public:
     FEFixedDisplacement();
 

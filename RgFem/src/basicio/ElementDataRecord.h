@@ -19,6 +19,7 @@ public:
 //-----------------------------------------------------------------------------
 class FEM_EXPORT ElementDataRecord : public DataRecord
 {
+    DECLARE_META_CLASS(ElementDataRecord, DataRecord);
     struct ELEMREF
     {
         int ndom;
@@ -26,7 +27,7 @@ class FEM_EXPORT ElementDataRecord : public DataRecord
     };
 
 public:
-    ElementDataRecord(FEModel* pfem);
+    ElementDataRecord();
     double Evaluate(int item, int ndata);
     void SetData(const char* sz) override;
     void SelectAllItems();

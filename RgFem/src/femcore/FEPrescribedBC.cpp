@@ -2,6 +2,8 @@
 #include "FESurface.h"
 #include "FENode.h"
 
+DEFINE_META_CLASS(FEPrescribedNodeSet, FENodalBC, "");
+
 //=============================================================================
 BEGIN_PARAM_DEFINE(FEPrescribedNodeSet, FENodalBC)
 	ADD_PARAMETER(m_brelative, "relative");

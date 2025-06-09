@@ -35,6 +35,8 @@ SOFTWARE.*/
 // Base class for prescribed BCs on a nodeset
 class FEM_EXPORT FEPrescribedNodeSet : public FENodalBC
 {
+    DECLARE_META_CLASS(FEPrescribedNodeSet, FENodalBC);
+
 public:
 	FEPrescribedNodeSet();
 
