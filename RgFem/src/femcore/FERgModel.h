@@ -44,6 +44,13 @@ public:
     //input data from file
     bool Input(const char* szfile);
 
+    void Log(int ntag, const char* szmsg) override;
+    // get the log file
+    Logfile& GetLogFile()
+    {
+        return m_log;
+    }
+
 public:
     //Return the total timer
     Timer& GetSolveTimer();

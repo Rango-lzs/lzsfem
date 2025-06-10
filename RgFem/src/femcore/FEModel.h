@@ -36,6 +36,7 @@ class FEPlotDataStore;
 class Timer;
 class DataStore;
 class DOFS;
+class Logfile;
 
 /**
  * 定义整个求解模型. 包含所有的FEM组件，此类可进一步精简，定义每个组件的Manager
@@ -48,6 +49,9 @@ public:
     void Clear(); //do some memory manage
 
 	virtual bool Input(const char* szfile) = 0;
+
+	virtual void Log(int ntag, const char* szmsg) = 0;
+	virtual Logfile& GetLogFile() = 0;
 
 	virtual bool Init() override;
 	virtual bool Solve();

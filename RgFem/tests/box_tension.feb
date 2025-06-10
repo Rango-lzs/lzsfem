@@ -1418,8 +1418,8 @@ This is tutorial 1 in the PreView manual.
 			<var type="relative volume"/>
 			<var type="stress"/>
 		</plotfile>
-		<logfile>
+		<!-- <logfile>
 			<element_data data="Ez" elem_set="unnamed_set01"/>
-		</logfile>
+		</logfile> -->
 	</Output>
 </febio_spec>

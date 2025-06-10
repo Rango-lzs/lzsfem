@@ -831,6 +831,8 @@ bool FEModel::InitMesh()
             feLogWarning("%d isolated vertices removed.", ni);
     }
 
+    mesh.Reset();
+
     //// Initialize shell data
     //// This has to be done before the domains are initialized below
     //InitShells();

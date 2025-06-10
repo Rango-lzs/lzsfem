@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 
 //-----------------------------------------------------------------------------
 // class used to create an abstract interface to a screen
@@ -16,4 +17,14 @@ public:
 
 	// flush the stream
 	virtual void flush() {}
+};
+
+class ConsoleStream : public LogStream
+{
+public:
+	void print(const char* sz) override
+	{
+        fprintf(stdout, "%s", sz);
+        fflush(stdout);
+	}
 };

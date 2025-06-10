@@ -185,3 +185,21 @@ bool FERgModel::Input(const char* szfile)
     // we're done reading
     return true;
 }
+
+void FERgModel::Log(int ntag, const char* szmsg)
+{
+    if (ntag == 0)
+        m_log.printf(szmsg);
+    else if ((ntag == 1) && m_bshowErrors)
+        m_log.printbox("WARNING", szmsg);
+    else if ((ntag == 2) && m_bshowErrors)
+        m_log.printbox("ERROR", szmsg);
+    else if (ntag == 3)
+        m_log.printbox(nullptr, szmsg);
+    else if (ntag == 4)
+    {
+        /*if (GetDebugLevel() > 0)
+            m_log.printf("debug>%s\n", szmsg);*/
+        m_log.printf("debug>%s\n", szmsg);
+    }
+}

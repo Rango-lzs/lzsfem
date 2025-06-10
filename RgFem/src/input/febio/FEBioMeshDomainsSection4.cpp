@@ -174,6 +174,8 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
             throw XMLReader::InvalidTag(tag);*/
     }
 
+    dom->SetMaterial(mat);
+
     // add it to the mesh
     mesh.AddDomain(dom);
 

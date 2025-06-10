@@ -9,6 +9,8 @@
 #include "RgFemApp.h"
 #include "app/AppUtils.h"
 #include "femcore/FERgModel.h"
+#include "logger/LogStream.h"
+#include "logger/Logfile.h"
 
 //#include "CLI/CLI.hpp"
 
@@ -86,6 +88,10 @@ int RgFemApp::RunModel()
 	// create the FEModel object
 	FEModel* pModel = Rango::CreateFEModel();
     SetCurrentModel(pModel);
+
+	// add console stream to log file   
+	pModel->GetLogFile().SetLogStream(new ConsoleStream);
+
 
 	// read the input file if specified
     if (m_config.m_bRunFile)
