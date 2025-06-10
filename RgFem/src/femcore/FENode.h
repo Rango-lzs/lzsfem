@@ -62,7 +62,7 @@ public:
     * dof : the local dof index
     * idx : the global equation number
     */
-    void setDofIdx(int dof, int idx)
+    void setDofIdx(int idx, int dof)
     {
         m_dofs[idx] = dof; 
     }

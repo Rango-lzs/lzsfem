@@ -10,6 +10,7 @@
 #include "../FEException.h"
 #include "../FEMeshPartition.h"
 #include "femcore/FEMesh.h"
+#include "../FESolidModule.h"
 
 //-----------------------------------------------------------------------------
 //! constructor
@@ -28,12 +29,12 @@ FEElasticSolidDomain::FEElasticSolidDomain(FEModel* pfem) : FESolidDomain(pfem),
 	// TODO: Can this be done in Init, since  there is no error checking
 	if (pfem)
 	{
-		/*m_dofU.AddVariable(FEBioMech::GetVariableName(FEBioMech::DISPLACEMENT));
-		m_dofR.AddVariable(FEBioMech::GetVariableName(FEBioMech::RIGID_ROTATION));
-		m_dofSU.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_DISPLACEMENT));
-		m_dofV.AddVariable(FEBioMech::GetVariableName(FEBioMech::VELOCTIY));
-		m_dofSV.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_VELOCITY));
-		m_dofSA.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_ACCELERATION));*/
+		m_dofU.AddVariable(GetVariableName(DISPLACEMENT));
+		m_dofR.AddVariable(GetVariableName(RIGID_ROTATION));
+		m_dofSU.AddVariable(GetVariableName(SHELL_DISPLACEMENT));
+		m_dofV.AddVariable(GetVariableName(VELOCTIY));
+		m_dofSV.AddVariable(GetVariableName(SHELL_VELOCITY));
+		m_dofSA.AddVariable(GetVariableName(SHELL_ACCELERATION));
 	}
 }
 

@@ -37,6 +37,7 @@
 #include "femcore/FEResidualVector.h"
 #include "femcore/FENLConstraint.h"
 #include "femcore/FESurfacePairConstraint.h"
+#include "../FESolidModule.h"
 
 DEFINE_META_CLASS(FESolidSolver2, FENewtonSolver,"solid");
 
@@ -99,15 +100,15 @@ FESolidSolver2::FESolidSolver2()
 
     // get the DOF indices
     // TODO: Can this be done in Init, since there is no error checking
-    if (0)
+    if (1)
     {
-       /* m_dofU.AddVariable(FEBioMech::GetVariableName(FEBioMech::DISPLACEMENT));
-        m_dofSQ.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_ROTATION));
-        m_dofRQ.AddVariable(FEBioMech::GetVariableName(FEBioMech::RIGID_ROTATION));
-        m_dofV.AddVariable(FEBioMech::GetVariableName(FEBioMech::VELOCTIY));
-        m_dofSU.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_DISPLACEMENT));
-        m_dofSV.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_VELOCITY));
-        m_dofSA.AddVariable(FEBioMech::GetVariableName(FEBioMech::SHELL_ACCELERATION));*/
+        m_dofU.AddVariable(GetVariableName(DISPLACEMENT));
+        m_dofSQ.AddVariable(GetVariableName(SHELL_ROTATION));
+        m_dofRQ.AddVariable(GetVariableName(RIGID_ROTATION));
+        m_dofV.AddVariable(GetVariableName(VELOCTIY));
+        m_dofSU.AddVariable(GetVariableName(SHELL_DISPLACEMENT));
+        m_dofSV.AddVariable(GetVariableName(SHELL_VELOCITY));
+        m_dofSA.AddVariable(GetVariableName(SHELL_ACCELERATION));
     }
 }
 

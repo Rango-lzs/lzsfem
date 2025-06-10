@@ -2,18 +2,7 @@
 #include "femcore/DOFS.h"
 #include "femcore/FEModel.h"
 
-enum MECH_VARIABLE
-{
-    DISPLACEMENT,
-    SHELL_ROTATION,
-    RIGID_ROTATION,
-    SHELL_DISPLACEMENT,
-    VELOCTIY,
-    SHELL_VELOCITY,
-    SHELL_ACCELERATION,
-};
-
-static const char* GetVariableName(MECH_VARIABLE var)
+const char* GetVariableName(MECH_VARIABLE var)
 {
     switch (var)
     {

@@ -17,6 +17,7 @@
 #include "femcore/FEMesh.h"
 #include "femcore/fecore_enum.h"
 #include "FELineSearch.h"
+#include "SkylineSolver.h"
 
 DEFINE_META_CLASS(FENewtonSolver, FESolver, "");
 
@@ -337,7 +338,7 @@ bool FENewtonSolver::AllocateLinearSystem()
     {
         FEModel* fem = GetFEModel();
         //Rango TODO:
-        //m_plinsolve = fecore.CreateDefaultLinearSolver(fem);
+        m_plinsolve = new SkylineSolver();  // CreateDefaultLinearSolver(fem);
         if (m_plinsolve == 0)
         {
             feLogError("Unknown solver type selected\n");

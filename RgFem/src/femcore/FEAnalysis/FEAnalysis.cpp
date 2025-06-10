@@ -65,7 +65,7 @@ FEAnalysis::FEAnalysis()
     : FEObjectBase()
 {
     m_psolver = nullptr;
-    m_tend = 0.0;
+    m_tend = 1.0;
 
     m_timeController = nullptr;
 

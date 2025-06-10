@@ -2,6 +2,7 @@
 #include "FEModel.h"
 #include "basicio/DumpStream.h"
 #include "DOFS.h"
+#include "app/RgFemApp.h"
 
 FEDofList::FEDofList(FEModel* fem)
 {
@@ -13,6 +14,11 @@ FEDofList::FEDofList(const FEDofList& dofs)
 	m_fem = dofs.m_fem;
 	m_dofList = dofs.m_dofList;
 }
+
+ FEDofList::FEDofList()
+{
+    m_fem = GET_FEMODEL;
+ }
 
 void FEDofList::operator = (const FEDofList& dofs)
 {
