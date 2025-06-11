@@ -292,10 +292,10 @@ bool FESolidSolver2::InitEquations()
 
     // Next, we assign equation numbers to the rigid body degrees of freedom
     int neq = 0;  // m_rigidSolver.InitEquations(m_neq);
-    if (neq == -1)
+    /*if (neq == -1)
         return false;
     else
-        m_neq = neq;
+        m_neq = neq;*/
 
     // Next, we add any Lagrange Multipliers
     FEModel& fem = *GetFEModel();

@@ -387,7 +387,7 @@ void FEMesh::Reset()
 		int ndof = (int)node.dofSize();
 		for (int i=0; i<ndof; ++i) 
 		{
-			node.set_inactive(i);
+			node.set_active(i); //Rango
 			node.setDofState(i, DOF_OPEN);
 			node.set(i, 0.0);
 			node.set_load(i, 0.0);
