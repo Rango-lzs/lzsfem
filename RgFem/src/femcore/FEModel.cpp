@@ -1,34 +1,33 @@
 #include "FEModel.h"
 
-#include "femcore/FEMesh.h"
-
+#include "basicio/DataStore.h"
 #include "basicio/DumpMemStream.h"
 #include "basicio/DumpStream.h"
-#include "basicio/DataStore.h"
 #include "basicio/FEPlotDataStore.h"
-
+#include "Domain/FEDomain.h"
 #include "FEBoundaryCondition.h"
+#include "FEException.h"
 #include "FEGlobalData.h"
 #include "FEInitialCondition.h"
 #include "FELinearConstraintManager.h"
 #include "FELoadController.h"
+#include "femcore/Callback.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
+#include "femcore/FEMesh.h"
 #include "FEModelLoad.h"
 #include "FEModelParam.h"
 #include "FEModule.h"
 #include "FENLConstraint.h"
+#include "FESolidModule.h"
 #include "FESurfaceLoad.h"
 #include "FESurfacePairConstraint.h"
 #include "logger/log.h"
 #include "materials/FEMaterial.h"
 #include "Timer.h"
-#include "femcore/Callback.h"
 
 #include <map>
 #include <stdarg.h>
 #include <string>
-#include "FEException.h"
-#include "FESolidModule.h"
 using namespace std;
 
 //-----------------------------------------------------------------------------
@@ -86,9 +85,9 @@ public:
 public:
     FEModel* m_fem;
     std::string m_moduleName;
-    bool m_bsolved;  // solved flag
-    DOFS m_dofs;  // meta info of degree of freedoms in this model
-    FEMesh m_mesh;  //the one and only FE mesh
+    bool m_bsolved;              // solved flag
+    DOFS m_dofs;                 // meta info of degree of freedoms in this model
+    FEMesh m_mesh;               // the one and only FE mesh
     FELinearConstraintManager* m_LCM;
     DataStore m_dataStore;       //!< the data store used for data logging
     FEPlotDataStore m_plotData;  //!< Output request for plot file
@@ -208,10 +207,10 @@ void FEModel::Clear()
 void FEModel::SetActiveModule(const std::string& moduleName)
 {
     m_imp->m_moduleName = moduleName;
-    //FECoreKernel& fecore = FECoreKernel::GetInstance();
-    //fecore.SetActiveModule(moduleName.c_str());
-    //FEModule* pmod = fecore.GetActiveModule();
-   // pmod->InitModel(this);
+    // FECoreKernel& fecore = FECoreKernel::GetInstance();
+    // fecore.SetActiveModule(moduleName.c_str());
+    // FEModule* pmod = fecore.GetActiveModule();
+    // pmod->InitModel(this);
 
     FEModule* pmod = new FESolidModule();
     pmod->InitModel(this);
@@ -429,18 +428,18 @@ bool FEModel::Init()
     }
 
     // evaluate all mesh data generators
-  /*  for (int i = 0; i < MeshDataGenerators(); ++i)
-    {
-        FEMeshDataGenerator* pmd = m_imp->m_MD[i];
-        if (pmd->Init() == false)
-        {
-            std::string s = pmd->GetName();
-            const char* sz = (s.empty() ? "<unnamed>" : s.c_str());
-            feLogError("Node data generator %d (%s) failed to initialize", i + 1, sz);
-            return false;
-        }
-        pmd->Evaluate(0);
-    }*/
+    /*  for (int i = 0; i < MeshDataGenerators(); ++i)
+      {
+          FEMeshDataGenerator* pmd = m_imp->m_MD[i];
+          if (pmd->Init() == false)
+          {
+              std::string s = pmd->GetName();
+              const char* sz = (s.empty() ? "<unnamed>" : s.c_str());
+              feLogError("Node data generator %d (%s) failed to initialize", i + 1, sz);
+              return false;
+          }
+          pmd->Evaluate(0);
+      }*/
 
     // check step data
     for (int i = 0; i < (int)m_imp->m_Step.size(); ++i)
@@ -492,7 +491,14 @@ bool FEModel::Init()
         return false;*/
 
     // activate all permanent dofs
-    //Activate();
+    // Activate();
+    for (auto pbc : m_imp->m_BC)
+    {
+        if (pbc)
+        {
+            pbc->Activate();
+        }
+    }
 
     bool ret = false;
     try
@@ -768,15 +774,15 @@ void FEModel::AttachLoadController(FEParam* p, FELoadController* plc)
 //! Detach a load controller from a parameter
 bool FEModel::DetachLoadController(FEParam* p)
 {
-   /* for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
-    {
-        Impl::LoadParam& pi = m_imp->m_Param[i];
-        if (pi.param == p)
-        {
-            m_imp->m_Param.erase(m_imp->m_Param.begin() + i);
-            return true;
-        }
-    }*/
+    /* for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
+     {
+         Impl::LoadParam& pi = m_imp->m_Param[i];
+         if (pi.param == p)
+         {
+             m_imp->m_Param.erase(m_imp->m_Param.begin() + i);
+             return true;
+         }
+     }*/
     return false;
 }
 
@@ -831,50 +837,50 @@ bool FEModel::InitMesh()
             feLogWarning("%d isolated vertices removed.", ni);
     }
 
-    mesh.Reset();
 
     //// Initialize shell data
     //// This has to be done before the domains are initialized below
-    //InitShells();
+    // InitShells();
 
-    //// reset data
-    //// TODO: Not sure why this is here
-    //try
-    //{
-    //    mesh.Reset();
-    //}
-    //catch (NegativeJacobian e)
-    //{
-    //    feLogError("Negative jacobian detected during mesh initialization.");
-    //    return false;
-    //}
+    // reset data
+    // TODO: Not sure why this is here
+    try
+    {
+        mesh.Reset();
+    }
+    catch (NegativeJacobian e)
+    {
+        feLogError("Negative jacobian detected during mesh initialization.");
+        return false;
+    }
 
-    //// initialize all domains
-    //// Initialize shell domains first (in order to establish SSI)
-    //// TODO: I'd like to move the initialization of the SSI to InitShells, but I can't
-    ////       do that because FESSIShellDomain::FindSSI depends on the FEDomain::m_Node array which is
-    ////       initialized in FEDomain::Init.
-    //for (int i = 0; i < mesh.Domains(); ++i)
-    //{
-    //    FEDomain& dom = mesh.Domain(i);
-    //    if (dom.Class() == FE_DOMAIN_SHELL)
-    //        if (dom.Init() == false)
-    //            return false;
-    //}
-    //for (int i = 0; i < mesh.Domains(); ++i)
-    //{
-    //    FEDomain& dom = mesh.Domain(i);
-    //    if (dom.Class() != FE_DOMAIN_SHELL)
-    //        if (dom.Init() == false)
-    //            return false;
-    //}
+    // initialize all domains
+    // Initialize shell domains first (in order to establish SSI)
+    // TODO: I'd like to move the initialization of the SSI to InitShells, but I can't
+    //       do that because FESSIShellDomain::FindSSI depends on the FEDomain::m_Node array which is
+    //       initialized in FEDomain::Init.
+    for (int i = 0; i < mesh.Domains(); ++i)
+    {
+        FEDomain& dom = mesh.Domain(i);
+        if (dom.Class() == FE_DOMAIN_SHELL)
+            if (dom.Init() == false)
+                return false;
+    }
+
+    for (int i = 0; i < mesh.Domains(); ++i)
+    {
+        FEDomain& dom = mesh.Domain(i);
+        if (dom.Class() != FE_DOMAIN_SHELL)
+            if (dom.Init() == false)
+                return false;
+    }
 
     //// initialize surfaces
-    //for (int i = 0; i < mesh.Surfaces(); ++i)
+    // for (int i = 0; i < mesh.Surfaces(); ++i)
     //{
-    //    if (mesh.Surface(i).Init() == false)
-    //        return false;
-    //}
+    //     if (mesh.Surface(i).Init() == false)
+    //         return false;
+    // }
 
     // All done
     return true;
@@ -947,7 +953,7 @@ bool FEModel::Solve()
         // solve the analaysis step
         bOk = m_imp->mp_CurStep->Solve();
 
-        if (iStep + 1 == Steps())  //the last step
+        if (iStep + 1 == Steps())  // the last step
         {
             m_imp->m_bsolved = bOk;
         }
@@ -1033,8 +1039,8 @@ bool FEModel::DoCallback(unsigned int nevent)
     {
         // do the callbacks
         // Rango TODO:
-        //bool bret = CallbackHandler::DoCallback(this, nevent);
-        //return bret;
+        // bool bret = CallbackHandler::DoCallback(this, nevent);
+        // return bret;
     }
     catch (ForceConversion)
     {
@@ -1063,21 +1069,21 @@ bool FEModel::DoCallback(unsigned int nevent)
 //-----------------------------------------------------------------------------
 void FEModel::SetGlobalConstant(const string& s, double v)
 {
-    //m_imp->m_Const[s] = v;
+    // m_imp->m_Const[s] = v;
     return;
 }
 
 //-----------------------------------------------------------------------------
 double FEModel::GetGlobalConstant(const string& s)
 {
-    //return (m_imp->m_Const.count(s) ? m_imp->m_Const.find(s)->second : 0);
+    // return (m_imp->m_Const.count(s) ? m_imp->m_Const.find(s)->second : 0);
     return 0;
 }
 
 //-----------------------------------------------------------------------------
 int FEModel::GlobalVariables() const
 {
-    //return (int)m_imp->m_Var.size();
+    // return (int)m_imp->m_Var.size();
     return 0;
 }
 
@@ -1088,25 +1094,25 @@ void FEModel::AddGlobalVariable(const string& s, double v)
     var->v = v;
     var->name = s;
     AddParameter(var->v, var->name.c_str());
-    //m_imp->m_Var.push_back(var);
+    // m_imp->m_Var.push_back(var);
 }
 
 const FEGlobalVariable& FEModel::GetGlobalVariable(int n)
 {
-    //return *m_imp->m_Var[n];
+    // return *m_imp->m_Var[n];
     return FEGlobalVariable();
 }
 
 //-----------------------------------------------------------------------------
 void FEModel::AddGlobalData(FEGlobalData* psd)
 {
-    //m_imp->m_GD.push_back(psd);
+    // m_imp->m_GD.push_back(psd);
 }
 
 //-----------------------------------------------------------------------------
 FEGlobalData* FEModel::GetGlobalData(int i)
 {
-    //return m_imp->m_GD[i];
+    // return m_imp->m_GD[i];
     return nullptr;
 }
 
@@ -1135,14 +1141,14 @@ int FEModel::FindGlobalDataIndex(const char* szname)
 //-----------------------------------------------------------------------------
 int FEModel::GlobalDataItems()
 {
-    //return (int)m_imp->m_GD.size();
+    // return (int)m_imp->m_GD.size();
     return 0;
 }
 
 //-----------------------------------------------------------------------------
 // This function serializes data to a stream.
 // This is used for running and cold restarts.
-//void FEModel::Impl::Serialize(DumpStream& ar)
+// void FEModel::Impl::Serialize(DumpStream& ar)
 //{
 //    if (ar.IsShallow())
 //    {
@@ -1227,7 +1233,7 @@ void FEModel::Serialize(DumpStream& ar)
 {
     TRACK_TIME(TimerID::Timer_Update);
 
-    //m_imp->Serialize(ar);
+    // m_imp->Serialize(ar);
     DoCallback(ar.IsSaving() ? CB_SERIALIZE_SAVE : CB_SERIALIZE_LOAD);
 }
 

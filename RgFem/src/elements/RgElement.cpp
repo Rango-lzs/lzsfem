@@ -132,7 +132,7 @@ void FEElement::SetTraits(FEElementTraits* ptraits)
 {
 	m_pTraits = ptraits;
 	m_node.resize(NodeSize());
-	//m_loc_node.resize(NodeSize());
+	m_loc_node.resize(NodeSize());
 	m_state.Create(GaussPointSize());
 }
 

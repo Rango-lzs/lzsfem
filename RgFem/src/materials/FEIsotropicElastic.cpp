@@ -47,8 +47,8 @@ tens4ds FEIsotropicElastic::Tangent(FEMaterialPoint& mp)
 {
 	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
 
-	double E = m_E(mp);
-	double v = m_v(mp);
+	double E =  2.1e11 ; //m_E(mp);
+    double v = 0.3; //m_v(mp);
 
 	// deformation gradient
 	Matrix3d& F = pt.m_F;

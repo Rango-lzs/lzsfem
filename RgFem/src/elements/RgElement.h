@@ -118,7 +118,7 @@ public:
 
     bool isActive() const
     {
-        return false;
+        return true;
     }
 
     ElementCategory Class() const
