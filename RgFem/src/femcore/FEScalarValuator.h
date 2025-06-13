@@ -42,7 +42,7 @@ public:
 private:
 	double	m_val;
 
-	//DECLARE_PARAM_LIST();
+	DECLARE_PARAM_LIST();
 };
 
 ////---------------------------------------------------------------------------------------

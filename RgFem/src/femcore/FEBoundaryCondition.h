@@ -25,7 +25,7 @@ public:
 	~FEBoundaryCondition();
 
 	//! fill the prescribed values
-	virtual void PrepStep(std::vector<double>& u, bool brel = true);
+	virtual void PrepStep(std::vector<double>& u, bool brel = false);
 
 	// copy data from another class
 	virtual void CopyFrom(FEBoundaryCondition* pbc) = 0;

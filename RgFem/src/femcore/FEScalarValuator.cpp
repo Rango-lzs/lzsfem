@@ -121,11 +121,11 @@ DEFINE_META_CLASS(FEConstValue, FEScalarValuator, "const");
 //	return value_s(var);
 //}
 //
-////=============================================================================
-//BEGIN_FECORE_CLASS(FEConstValue, FEScalarValuator)
-//	ADD_PARAMETER(m_val, "const");
-//END_FECORE_CLASS();
-//
+//=============================================================================
+BEGIN_PARAM_DEFINE(FEConstValue, FEScalarValuator)
+	ADD_PARAMETER(m_val, "const");
+END_PARAM_DEFINE();
+
 //FEScalarValuator* FEConstValue::copy()
 //{
 //	FEConstValue* val = fecore_alloc(FEConstValue, GetFEModel());

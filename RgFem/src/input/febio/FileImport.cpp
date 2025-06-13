@@ -754,36 +754,36 @@ bool FEFileSection::ReadParameter(XMLTag& tag, FEParameterList& pl, const char* 
 				sztype = (is_number(szval) ? "const" : "math");
 			}
 
-			//// allocate valuator
-			//FEScalarValuator* val = fecore_new<FEScalarValuator>(sztype, GetFEModel());
-			//if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
+			// allocate valuator
+            FEScalarValuator* val = RANGO_NEW<FEScalarValuator>(GetFEModel(), sztype);
+			if (val == nullptr) throw XMLReader::InvalidAttributeValue(tag, "type", sztype);
 
-			//// Figure out the item list
-			//FEItemList* itemList = nullptr;
-			//if (dynamic_cast<FESurfaceLoad*>(pc))
-			//{
-			//	FESurfaceLoad* psl = dynamic_cast<FESurfaceLoad*>(pc);
-			//	itemList = psl->GetSurface().GetFacetSet();
-			//}
+			// Figure out the item list
+			FEItemList* itemList = nullptr;
+			if (dynamic_cast<FESurfaceLoad*>(pc))
+			{
+				FESurfaceLoad* psl = dynamic_cast<FESurfaceLoad*>(pc);
+				itemList = psl->GetSurface().GetFacetSet();
+			}
 
-			//p.SetItemList(itemList);
+			p.SetItemList(itemList);
 
-			//// mapped values require special treatment
-			//// The value is just the name of the map, but the problem is that 
-			//// these maps may not be defined yet.
-			//// So, we add them to the FEBioModel, which will process mapped 
-			//// parameters after the rest of the file is processed
-			//if (strcmp(sztype, "map") == 0)
-			//{
-			//	GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
-			//}
-			//else {
-			//	// read the parameter list
-			//	ReadParameterList(tag, val);
-			//}
+			// mapped values require special treatment
+			// The value is just the name of the map, but the problem is that 
+			// these maps may not be defined yet.
+			// So, we add them to the FEBioModel, which will process mapped 
+			// parameters after the rest of the file is processed
+			if (strcmp(sztype, "map") == 0)
+			{
+				GetBuilder()->AddMappedParameter(pp, pc, tag.szvalue());
+			}
+			else {
+				// read the parameter list
+				ReadParameterList(tag, val);
+			}
 
-			//// assign the valuator to the parameter
-			//p.setValuator(val);
+			// assign the valuator to the parameter
+			p.setValuator(val);
 		}
 		break;
 		case FE_PARAM_VEC3D_MAPPED:
@@ -1312,7 +1312,7 @@ void FEFileSection::ReadParameterList(XMLTag& tag, FEObjectBase* pc)
 		if (ReadParameter(tag, pc, 0, false) == false)
 		{
 			// try a parameter with the type string as name
-            if (ReadParameter(tag, pc, pc->GetName().c_str(), false) == false)
+            if (ReadParameter(tag, pc, "const" /*pc->GetName().c_str()*/, false) == false)
 				throw XMLReader::InvalidTag(tag);
 		}
 	}
