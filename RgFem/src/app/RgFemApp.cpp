@@ -110,7 +110,7 @@ int RgFemApp::RunModel()
     //bool ret = febio::SolveModel(model, m_cmd_opts.sztask, m_cmd_opts.szctrl);
  	if (!pModel->Init())
 	{
-		return 1;
+		return 1; 
 	}
 
 	
