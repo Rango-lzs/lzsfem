@@ -90,6 +90,10 @@ public:
 	bool DetachLoadController(FEParam* p);
 	FELoadController* GetLoadController(FEParam* p);
 
+	void EvaluateLoadControllers(double time);
+    //-----------------------------------------------------------------------------
+    bool EvaluateLoadParameters();
+
 	//--- Material functions ---
 public: 
 

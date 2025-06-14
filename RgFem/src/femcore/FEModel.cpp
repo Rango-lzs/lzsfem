@@ -35,6 +35,54 @@ using namespace std;
 class FEModel::Impl
 {
 public:
+    struct LoadParam
+    {
+        FEParam* param;
+        int lc;
+
+        double m_scl;
+        Vector3d m_vscl;
+
+        LoadParam()
+        {
+            m_scl = 1.0;
+            m_vscl = Vector3d(0, 0, 0);
+        }
+
+        void Serialize(DumpStream& ar)
+        {
+            ar& lc;
+            ar& m_scl& m_vscl;
+
+            if (ar.IsShallow() == false)
+            {
+                // we can't save the FEParam* directly, so we need to store meta data and try to find it on loading
+                if (ar.IsSaving())
+                {
+                    FEObjectBase* pc = dynamic_cast<FEObjectBase*>(param->owner());
+                    assert(pc);
+                    ar << pc;
+                    ar << param->name();
+                }
+                else
+                {
+                    FEObjectBase* pc = nullptr;
+                    ar >> pc;
+                    assert(pc);
+
+                    char name[256] = {0};
+                    ar >> name;
+
+                    param = pc->FindParameter(name);
+                    assert(param);
+                }
+            }
+            else
+                param = nullptr;
+        }
+    };
+
+public:
     Impl(FEModel* fem)
         : m_fem(fem)
         , m_mesh(fem)
@@ -73,6 +121,7 @@ public:
     std::vector<FENLConstraint*> m_NLC;          //!< nonlinear constraints
     std::vector<FELoadController*> m_LC;         //!< load controller data
     std::vector<FEAnalysis*> m_Step;             //!< array of analysis steps
+    std::vector<LoadParam> m_Param;              //!< list of parameters controller by load controllers
     std::vector<Timer> m_timers;                 // list of timers
 
 public:
@@ -747,7 +796,7 @@ int FEModel::LoadControllers() const
 //! Attach a load controller to a parameter
 void FEModel::AttachLoadController(FEParam* param, int lc)
 {
-    /*Impl::LoadParam lp;
+    Impl::LoadParam lp;
     lp.param = param;
     lp.lc = lc;
 
@@ -761,7 +810,7 @@ void FEModel::AttachLoadController(FEParam* param, int lc)
             break;
     }
 
-    m_imp->m_Param.push_back(lp);*/
+    m_imp->m_Param.push_back(lp);
 }
 
 //-----------------------------------------------------------------------------
@@ -774,15 +823,15 @@ void FEModel::AttachLoadController(FEParam* p, FELoadController* plc)
 //! Detach a load controller from a parameter
 bool FEModel::DetachLoadController(FEParam* p)
 {
-    /* for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
-     {
-         Impl::LoadParam& pi = m_imp->m_Param[i];
-         if (pi.param == p)
-         {
-             m_imp->m_Param.erase(m_imp->m_Param.begin() + i);
-             return true;
-         }
-     }*/
+    for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
+    {
+        Impl::LoadParam& pi = m_imp->m_Param[i];
+        if (pi.param == p)
+        {
+            m_imp->m_Param.erase(m_imp->m_Param.begin() + i);
+            return true;
+        }
+    }
     return false;
 }
 
@@ -1311,4 +1360,104 @@ const char* FEModel::GetUnits() const
         return nullptr;
     else
         return m_imp->m_units.c_str();
+}
+
+
+//! Evaluates all load curves at the specified time
+void FEModel::EvaluateLoadControllers(double time)
+{
+    const int NLC = LoadControllers();
+    for (int i = 0; i < NLC; ++i)
+        GetLoadController(i)->Evaluate(time);
+}
+
+//-----------------------------------------------------------------------------
+bool FEModel::EvaluateLoadParameters()
+{
+    feLog("\n");
+    int NLC = LoadControllers();
+    for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
+    {
+        Impl::LoadParam& pi = m_imp->m_Param[i];
+        int nlc = pi.lc;
+        if ((nlc >= 0) && (nlc < NLC))
+        {
+            double s = GetLoadController(nlc)->Value();
+            FEParam* p = pi.param;
+            FEObjectBase* parent = dynamic_cast<FEObjectBase*>(p->owner());
+            if (m_imp->m_printParams)
+            {
+                if (parent && (parent->GetName().empty() == false))
+                {
+                    const char* pname = parent->GetName().c_str();
+                    feLog("Setting parameter \"%s.%s\" to : ", pname, p->name());
+                }
+                else
+                    feLog("Setting parameter \"%s\" to : ", p->name());
+            };
+            assert(p->IsVolatile());
+            switch (p->type())
+            {
+                case FE_PARAM_INT:
+                {
+                    p->value<int>() = (int)s;
+                    if (m_imp->m_printParams)
+                        feLog("%d\n", p->value<int>());
+                }
+                break;
+                case FE_PARAM_DOUBLE:
+                {
+                    p->value<double>() = pi.m_scl * s;
+                    if (m_imp->m_printParams)
+                        feLog("%lg\n", p->value<double>());
+                }
+                break;
+                case FE_PARAM_BOOL:
+                {
+                    p->value<bool>() = (s > 0 ? true : false);
+                    if (m_imp->m_printParams)
+                        feLog("%s\n", (p->value<bool>() ? "true" : "false"));
+                }
+                break;
+                case FE_PARAM_VEC3D:
+                {
+                    Vector3d& v = p->value<Vector3d>();
+                    p->value<Vector3d>() = pi.m_vscl * s;
+                    if (m_imp->m_printParams)
+                        feLog("%lg, %lg, %lg\n", v.x, v.y, v.z);
+                }
+                break;
+                case FE_PARAM_DOUBLE_MAPPED:
+                {
+                    FEParamDouble& v = p->value<FEParamDouble>();
+                    double c = 1.0;
+                    if (v.isConst())
+                        c = v.constValue();
+                    v.SetScaleFactor(s * pi.m_scl);
+                    if (m_imp->m_printParams)
+                        feLog("%lg\n", c * p->value<FEParamDouble>().GetScaleFactor());
+                }
+                break;
+                case FE_PARAM_VEC3D_MAPPED:
+                {
+                    FEParamVec3& v = p->value<FEParamVec3>();
+                    v.SetScaleFactor(s * pi.m_scl);
+                    if (m_imp->m_printParams)
+                        feLog("%lg\n", v.GetScaleFactor());
+                }
+                break;
+                default:
+                    feLog("\n");
+                    assert(false);
+            }
+        }
+        else
+        {
+            feLogError("Invalid load curve ID");
+            return false;
+        }
+    }
+    feLog("\n");
+
+    return true;
 }

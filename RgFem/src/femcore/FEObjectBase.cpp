@@ -200,24 +200,24 @@ bool FEObjectBase::Init()
 	if (Validate() == false) return false;
 
 	// initialize properties
-	/*const int nprop = (int)m_Prop.size();
-	for (int i = 0; i<nprop; ++i)
-	{
-		FEProperty* pi = m_Prop[i];
-		if (pi)
-		{
-			if (pi->Init() == false)
-			{
-				feLogError("The property \"%s\" failed to initialize or was not defined.", pi->GetName());
-				return false;
-			}
-		}
-		else
-		{
-			feLogError("A nullptr was set for property i");
-			return false;
-		}
-	}*/
+    const int nprop = (int)m_Prop.size();
+    for (int i = 0; i < nprop; ++i)
+    {
+        FEProperty* pi = m_Prop[i];
+        if (pi)
+        {
+            if (pi->Init() == false)
+            {
+                feLogError("The property \"%s\" failed to initialize or was not defined.", pi->GetName());
+                return false;
+            }
+        }
+        else
+        {
+            feLogError("A nullptr was set for property i");
+            return false;
+        }
+    }
 	return true;
 }
 

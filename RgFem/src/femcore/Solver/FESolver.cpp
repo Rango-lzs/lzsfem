@@ -268,12 +268,12 @@ bool FESolver::InitStep(double time)
 {
     FEModel& fem = *GetFEModel();
 
-    //// evaluate load controllers values at current time
-    // fem.EvaluateLoadControllers(time);
+    // evaluate load controllers values at current time
+     fem.EvaluateLoadControllers(time);
     //// evaluate data generators at current time
     // fem.EvaluateDataGenerators(time);
-    //// evaluate load parameters
-    // fem.EvaluateLoadParameters();
+    // evaluate load parameters
+     fem.EvaluateLoadParameters();
 
     // re-validate materials
     // This is necessary since the material parameters can have changed (e.g. via load curves) and thus
