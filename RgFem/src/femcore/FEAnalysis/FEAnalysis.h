@@ -35,6 +35,14 @@ public:
 	//! copy data from another analysis
 	void CopyFrom(FEAnalysis* step);
 
+	//-----------------------------------------------------------------------------
+    //! See if this step is active
+	bool FEAnalysis::IsActive();
+    //-----------------------------------------------------------------------------
+    //! This function gets called right before the step needs to be solved.
+	bool Activate();
+    
+
 public:
 	void SetFESolver(FESolver* psolver);
 

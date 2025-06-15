@@ -70,8 +70,8 @@ This is tutorial 1 in the PreView manual.
 	</Globals>
 	<Material>
 		<material id="1" name="Material 1" type="iso-elastic">
-			<density>1</density>
-			<E>100</E>
+			<density>7.9e3</density>
+			<E>2.1e11</E>
 			<v>0.3</v>
 		</material>
 	</Material>
@@ -1397,7 +1397,7 @@ This is tutorial 1 in the PreView manual.
 		</bc>
 		<bc name="PrescribedBC243" node_set="PrescribedBC243" type="prescribed displacement">
 			<dof>x</dof>
-			<value lc="1">1</value>
+			<value lc="1">0.01</value>
 			<relative>0</relative>
 		</bc>
 	</Boundary>

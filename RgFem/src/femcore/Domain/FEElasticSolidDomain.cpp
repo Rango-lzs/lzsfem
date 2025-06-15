@@ -10,7 +10,8 @@
 #include "../FEException.h"
 #include "../FEMeshPartition.h"
 #include "femcore/FEMesh.h"
-#include "../FESolidModule.h"
+#include "femcore/FESolidModule.h"
+#include "femcore/FEGlobalVector.h"
 
 //-----------------------------------------------------------------------------
 //! constructor
@@ -161,7 +162,7 @@ void FEElasticSolidDomain::InternalForces(FEGlobalVector& R)
 
 			// assemble element 'fe'-std::vector into global R std::vector
 			// Rango TODO:
-			//R.Assemble(el.getNodeIds(), lm, fe);
+			R.Assemble(el.m_node, lm, fe);
 		}
 	}
 }

@@ -997,6 +997,13 @@ bool FEModel::Solve()
         m_imp->m_nStep = iStep;
         m_imp->mp_CurStep = m_imp->m_Step[(int)iStep];
 
+        // intitialize step data
+        if (m_imp->mp_CurStep->Activate() == false)
+        {
+            bOk = false;
+            break;
+        }
+
         DoCallback(CB_STEP_ACTIVE);
 
         // solve the analaysis step
