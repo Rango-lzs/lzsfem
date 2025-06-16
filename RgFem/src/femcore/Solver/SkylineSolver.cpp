@@ -26,7 +26,7 @@ bool SkylineSolver::PreProcess()
 //-----------------------------------------------------------------------------
 bool SkylineSolver::Factor()
 {
-	//colsol_factor(m_pA->Rows(), m_pA->values(), m_pA->pointers());
+	colsol_factor(m_pA->Rows(), m_pA->values(), m_pA->pointers());
 	return true;
 }
 
@@ -37,7 +37,7 @@ bool SkylineSolver::BackSolve(double* x, double* b)
 	// with the solution
 	int neq = m_pA->Rows();
 	for (int i=0; i<neq; ++i) x[i] = b[i];
-	//colsol_solve(m_pA->Rows(), m_pA->values(), m_pA->pointers(), x);
+	colsol_solve(m_pA->Rows(), m_pA->values(), m_pA->pointers(), x);
 
 	return true;
 }

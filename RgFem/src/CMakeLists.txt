@@ -457,6 +457,7 @@ set(FEMCORE_SOURCES
     femcore/FEPrescribedDisplacement.cpp
     femcore/FESolidModule.cpp
 
+    femcore/colsol.cpp
 )
 
 
