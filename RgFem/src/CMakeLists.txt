@@ -12,15 +12,20 @@ target_include_directories(${TARGET_NAME} PRIVATE ${CLI11_INCLUDE_DIR})
 message(status "Third party root is ****${THIRD_PARTY_ROOT}")
 
 #Add Eigen3 Library
-set(Eigen_Root "D:/Program Files/eigen-3.4.0/eigen-3.4.0")
-target_include_directories(${TARGET_NAME} PRIVATE ${Eigen_Root})
+#set(Eigen_Root "D:/Program Files/eigen-3.4.0/eigen-3.4.0")
+#target_include_directories(${TARGET_NAME} PRIVATE ${Eigen_Root})
 
 #set(Eigen3_INCLUDE_DIR "D:/ThirdParty/eigen3") //at home
 
-message(status "flzs****${CMAKE_MODULE_PATH}")
+message(status "cmake module****${CMAKE_MODULE_PATH}")
 
+message(status "cmake source****${CMAKE_SOURCE_DIR}")
+
+
+# 设置模块搜索路径
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakes")
 # 找到Eigen库
-#find_package(Eigen3 3.3 REQUIRED)
+find_package(Eigen3 REQUIRED)
  
 # 如果找到Eigen库，则将其包含目录添加到你的项目中
 if(Eigen3_FOUND)

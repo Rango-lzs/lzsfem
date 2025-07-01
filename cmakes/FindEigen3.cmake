@@ -1,7 +1,10 @@
-find_path(Eigen3_INCLUDE_DIR
-  NAMES signature_of_eigen3_matrix_library
-  PATH_SUFFIXES eigen3 eigen
-  DOC "Eigen include directory")
+set(Eigen3_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/ThirdParty/eigen3")
+message(status "***eigen source****${Eigen3_INCLUDE_DIRS}")
+
+#find_path(Eigen3_INCLUDE_DIR
+#  NAMES signature_of_eigen3_matrix_library
+#  PATH_SUFFIXES eigen3 eigen
+#  DOC "Eigen include directory")
 mark_as_advanced(Eigen3_INCLUDE_DIR)
 
 if (Eigen3_INCLUDE_DIR)
