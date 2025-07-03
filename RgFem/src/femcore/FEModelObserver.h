@@ -2,6 +2,7 @@
 #include "femcore/fem_export.h"
 
 #include <list>
+#include <memory>
 #include <vector>
 
 //-----------------------------------------------------------------------------
@@ -30,53 +31,9 @@ class FEModel;
 #define CB_SERIALIZE_LOAD   0x00008000  //!< Called at the end of FEModel::Serialize when loading
 #define CB_USER1            0x01000000  //!< can be used by users
 
-typedef unsigned int FECORE_CB_WHEN;
-typedef bool (*FECORE_CB_FNC)(FEModel*, unsigned int, void*);
 
-//-----------------------------------------------------------------------------
-// callback structure
-struct FECORE_CALLBACK
-{
-    FECORE_CB_FNC m_pcb;     // pointer to callback function
-    void* m_pd;              // pointer to user data
-    FECORE_CB_WHEN m_nwhen;  // when to call function
-};
-
-//-----------------------------------------------------------------------------
-// class that handles callbacks
-class FEM_EXPORT CallbackHandler
-{
-public:
-    enum CBInsertPolicy
-    {
-        CB_ADD_FRONT,
-        CB_ADD_END
-    };
-
-public:
-    CallbackHandler();
-    virtual ~CallbackHandler();
-
-    //! set callback function
-    void AddCallback(FECORE_CB_FNC pcb, unsigned int nwhen, void* pd,
-                     CBInsertPolicy insert = CBInsertPolicy::CB_ADD_END);
-
-    //! call the callback function
-    //! This function returns false if the run is to be aborted
-    bool DoCallback(FEModel* fem, unsigned int nevent);
-
-    //! Get the current callback reason (or zero if not inside DoCallback)
-    unsigned int CurrentEvent() const;
-
-private:
-    std::list<FECORE_CALLBACK> m_pcb;  //!< pointer to callback function
-    unsigned int m_event;              //!< reason for current callback (or zero)
-};
-
-//Model 可以通过notify发送一个待特殊Event的消息给所有观察者，观察者只处理自己关注的消息
-
-
-// 使用强类型枚举替代原生的宏定义
+// Model 可以通过notify发送一个待特殊Event的消息给所有观察者，观察者只处理自己关注的消息
+//  使用强类型枚举替代原生的宏定义
 enum class FEModelEvent
 {
     Init = 0x00000001,
@@ -196,4 +153,77 @@ protected:
         }
         return true;
     }
+};
+
+class OutputStrategy
+{
+public:
+    virtual ~OutputStrategy() = default;
+    virtual void write(const FEModelEvent& event) = 0;
+};
+
+// VTK格式输出
+class VTKOutput : public OutputStrategy
+{
+public:
+    void write(const FEModelEvent& event) override
+    {
+        // const auto& results = event.getResults();
+        // std::string filename = "result_" + std::to_string(event.getStep()) + ".vtk";
+
+        //// 实现VTK文件写入逻辑
+        // writeVTKFile(filename, results);
+    }
+};
+
+// HDF5格式输出
+class HDF5Output : public OutputStrategy
+{
+public:
+    void write(const FEModelEvent& event) override
+    {
+        // HDF5写入实现
+    }
+};
+
+
+class OutputObserver : public FEFilteredObserver
+{
+public:
+protected:
+    bool onEvent(FEModel* model, FEModelEvent event) override
+    {
+        switch (event)
+        {
+            case FEModelEvent::MajorIteration:
+                // logConvergence(model->getResidual());
+                {
+                    if (shouldWrite(event))
+                    {
+                        outputStrategy_->write(event);
+                    }
+                }
+                break;
+            case FEModelEvent::MinorIteration:
+                // updateProgress(model->getIteration());
+                break;
+        }
+        return true;
+    }
+
+    void setOutputStrategy(std::unique_ptr<OutputStrategy> strategy)
+    {
+        outputStrategy_ = std::move(strategy);
+    }
+
+private:
+    bool shouldWrite(const FEModelEvent& event)
+    {
+        // 根据步数、时间等条件判断是否需要输出
+        // return (event.getStep() % outputInterval_ == 0);
+        return true;
+    }
+
+    std::unique_ptr<OutputStrategy> outputStrategy_;
+    int outputInterval_ = 10;  // 每10步输出一次
 };

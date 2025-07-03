@@ -69,6 +69,7 @@ source_group("app" FILES ${APP_HEADERS} ${APP_SOURCES})
 # add femcore sources
 set(FEMCORE_HEADERS
     femcore/Callback.h
+    femcore/FEModelObserver.h
     femcore/DOFS.h
 
     #femcore/DataRecord.h
@@ -779,12 +780,14 @@ set(PLOT_FILE_HEADERS
     plotfile/FEBioPlotFile.h
     plotfile/PlotFile.h
     plotfile/PltArchive.h
+    plotfile/FEVTKPlotFile.h
 )
 
 set(PLOT_FILE_SOURCES
     plotfile/FEBioPlotFile.cpp
     plotfile/PlotFile.cpp
     plotfile/PltArchive.cpp
+    plotfile/FEVTKPlotFile.cpp
 )
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
