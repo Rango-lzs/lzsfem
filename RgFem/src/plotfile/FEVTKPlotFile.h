@@ -2,8 +2,8 @@
 #include "PlotFile.h"
 
 //-----------------------------------------------------------------------------
-//! This class implements the facilities to export FE data in the FEBio
-//! plot file format (version 3).
+//! This class implements the facilities to export FE data in the VTK
+//! plot file format.
 //!
 class FEVTKPlotFile : public PlotFile
 {

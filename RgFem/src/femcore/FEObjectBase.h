@@ -15,6 +15,7 @@
 //-----------------------------------------------------------------------------
 class FECoreFactory;
 class FEModel;
+class FEObserver;
 
 //-----------------------------------------------------------------------------
 //! Base class for most classes in FECore library and the base class for all
@@ -104,6 +105,7 @@ private:
     FEModel* m_fem;      //!< the model this class belongs to
     int m_nID;           //!< component ID
     std::vector<FEProperty*>	m_Prop;		//!< list of properties
+    std::vector<FEObserver*> m_observers;
 };
 
 const MetaClass* findChildMeta(const MetaClass* pMeta, const std::string& aliasName);

@@ -1,164 +1,81 @@
 #pragma once
-
 #include "femcore/fem_export.h"
-#include <memory.h>
+#include <memory>
 #include <vector>
+
 
 class Matrix3d;
 class Vector3d;
 
-//-----------------------------------------------------------------------------
-//!一般的矩阵，
 class FEM_EXPORT Matrix
 {
 public:
-	//! constructor
-	Matrix() : m_nr(0), m_nc(0), m_nsize(0), m_pd(nullptr), m_pr(nullptr) {}
+    // 构造与析构
+    Matrix();
+    Matrix(int nr, int nc);
+    Matrix(const Matrix& m);
+    Matrix(Matrix&& m) noexcept;
+    ~Matrix();
 
-	//! constructor
-	Matrix(int nr, int nc);
+    // 赋值操作符
+    Matrix& operator=(const Matrix& m);
+    Matrix& operator=(Matrix&& m) noexcept;
 
-	//! copy constructor
-	Matrix(const Matrix& m);
+    // 矩阵操作
+    void resize(int nr, int nc);
+    void zero();
+    int rows() const;
+    int columns() const;
 
-	//! constructor
-	Matrix(const Matrix3d& m);
+    // 元素访问
+    double* operator[](int i);
+    const double* operator[](int i) const;
+    double& operator()(int i, int j);
+    double operator()(int i, int j) const;
 
-	//! move constructor
-	Matrix(Matrix&& m);
+    //将Matrix转换成double**
+    operator double**();
 
-	//! assignment operator
-	Matrix& operator = (const Matrix& m);
+    // 线性代数运算
+    Matrix transpose() const;
+    Matrix inverse() const;
+    Matrix svd_inverse() const;
 
-	//! move assigment operator
-	Matrix& operator = (Matrix&& m);
+    // 矩阵运算
+    Matrix operator*(double s) const;
+    Matrix operator*(const Matrix& m) const;
+    Matrix operator+(const Matrix& m) const;
+    Matrix operator-(const Matrix& m) const;
+    Matrix& operator*=(double s);
+    Matrix& operator+=(const Matrix& m);
+    Matrix& operator-=(const Matrix& m);
 
-	//! assignment operator
-	Matrix& operator = (const Matrix3d& m);
+    // 作为成员函数的矩阵-向量乘法
+    std::vector<double> operator*(const std::vector<double>& x) const;
 
-	//! Matrix reallocation
-	void resize(int nr, int nc);
+    // 求解线性系统的成员函数（供 operator/ 使用）
+    std::vector<double> solve(const std::vector<double>& b) const;
 
-	//! destructor
-	~Matrix() { clear(); }
+    // 求解器
+    void solve(std::vector<double>& x, const std::vector<double>& b);
+    bool lsq_solve(std::vector<double>& x, std::vector<double>& b);
 
-	//! access operator
-	double * operator [] (int l) { return m_pr[l]; }
-	const double* operator [] (int l) const { return m_pr[l]; }
-	double& operator () (int i, int j) { return m_pr[i][j]; }
-	double operator () (int i, int j) const { return m_pr[i][j]; }
-	operator double** () { return m_pr; }
+    // 子矩阵操作
+    void get(int i, int j, int rows, int cols, Matrix& A) const;
+    void fill(int i, int j, int rows, int cols, double val);
 
-	int rows   () const { return m_nr; }
-	int columns() const { return m_nc; }
+    // 特征值与乘法
+    bool eigen_vectors(Matrix& eigenVecs, std::vector<double>& eigenVals);
+    void mult(std::vector<double>& x, std::vector<double>& y);
 
-	void zero() { memset(m_pd, 0, sizeof(double)*m_nsize); }
-
-	//! Matrix transpose
-	Matrix transpose();
-
-	//! Matrix inversion
-	Matrix inverse();
-
-	//! Matrix inverse using SVD
-	Matrix svd_inverse();
-
-	//! Matrix operators
-	Matrix operator *(double a) const;
-	Matrix operator * (const Matrix& m) const;
-
-	Matrix operator + (const Matrix& m) const;
-
-	Matrix operator - (const Matrix& m) const;
-
-	Matrix& operator += (const Matrix& m);
-
-	Matrix& operator -= (const Matrix& m);
-
-	Matrix& operator *=(double g)
-	{
-		for (int i=0; i<m_nsize; ++i) m_pd[i] *= g;
-		return *this;
-	}
-
-	Matrix operator * (const Vector3d& v) const;
-
-	// calculate the LU decomposition
-	// note that this modifies the Matrix
-	void lufactor(std::vector<int>& indx);
-
-	// solve using the lu factor calculated with lufactor
-	void lusolve(std::vector<double>& b, std::vector<int>& indx);
-
-	// solve the linear system Ax=b
-	void solve(std::vector<double>& x, const std::vector<double>& b);
-
-	bool lsq_solve(std::vector<double>& x, std::vector<double>& b);
-
-	bool eigen_vectors(Matrix& Eigen, std::vector<double>& eigen_values);
-
-	// infinity-norm
-	double inf_norm();
-
-	void mult(std::vector<double>& x, std::vector<double>& y);
-    void mult(const Matrix& m, std::vector<double>& x, std::vector<double>& y);
-	void mult_transpose(std::vector<double>& x, std::vector<double>& y);
-	void mult_transpose_self(Matrix& AAt);
-
-
-	// extract a Matrix block
-	// the returned Matrix will have the dimensions rows x cols
-	// if the Matrix doesn't fit in this Matrix, the missing entries will be set to zero
-	void get(int i, int j, int rows, int cols, Matrix& A) const;
-
-	// fill a Matrix
-	void fill(int i, int j, int rows, int cols, double val);
+    static Matrix OuterProduct(const std::vector<double>& a);
 
 private:
-	void alloc(int nr, int nc);
-	void clear();
-
-protected:
-	double**	m_pr;	// pointer to rows
-	double*		m_pd;	// Matrix elements
-
-	int	m_nr;		// nr of rows
-	int	m_nc;		// nr of columns
-	int	m_nsize;	// size of Matrix (ie. total nr of elements = nr*nc)
+    class InnerData;                    // 前置声明
+    std::unique_ptr<InnerData> m_data;  // PIMPL核心
 };
 
-std::vector<double> FEM_EXPORT operator / (std::vector<double>& b, Matrix& m);
-std::vector<double> FEM_EXPORT operator * (Matrix& m, std::vector<double>& b);
+// 全局函数声明
+std::vector<double> FEM_EXPORT operator/(std::vector<double>& b, Matrix& m);
+// 通过外积构造matrix m(i,j) = a(i)*a(j)
 Matrix FEM_EXPORT outer_product(std::vector<double>& a);
-
-//! move constructor
-inline Matrix::Matrix(Matrix&& m)
-{
-	m_nr = m.m_nr;
-	m_nc = m.m_nc;
-	m_pd = m.m_pd;
-	m_pr = m.m_pr;
-
-	m.m_pr = nullptr;
-	m.m_pd = nullptr;
-}
-
-//! move assigment operator
-inline Matrix& Matrix::operator = (Matrix&& m)
-{
-	if (this != &m)
-	{
-		if (m_pd) delete[] m_pd;
-		if (m_pr) delete[] m_pr;
-
-		m_nr = m.m_nr;
-		m_nc = m.m_nc;
-		m_pd = m.m_pd;
-		m_pr = m.m_pr;
-
-		m.m_pr = nullptr;
-		m.m_pd = nullptr;
-	}
-
-	return *this;
-}

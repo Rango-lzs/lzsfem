@@ -1,4 +1,4 @@
-set(Eigen3_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/ThirdParty/eigen3")
+set(Eigen3_INCLUDE_DIR "${THIRD_PARTY_ROOT}/eigen3")
 message(status "***eigen source****${Eigen3_INCLUDE_DIRS}")
 
 #find_path(Eigen3_INCLUDE_DIR
