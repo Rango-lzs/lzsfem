@@ -1,0 +1,6 @@
+[submodule "ThirdParty/cli11-src"]
+	path = ThirdParty/cli11-src
+	url = https://github.com/CLIUtils/CLI11.git
+[submodule "ThirdParty/paraviewo-src"]
+	path = ThirdParty/paraviewo-src
+	url = https://github.com/polyfem/paraviewo.git
