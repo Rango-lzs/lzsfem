@@ -2,6 +2,8 @@
 #include "datastructure/Vector3d.h"
 #include "datastructure/Matrix2d.h"
 #include <assert.h>
+#include "Eigen/Dense"
+
 //-----------------------------------------------------------------------------
 // The following classes are defined in this file
 class Matrix3d;	// general 3D Matrixrix of doubles
@@ -434,7 +436,8 @@ public:
 	static Matrix3d identity() { return Matrix3d(1,0,0, 0,1,0, 0,0,1); }
 
 protected:
-	double d[3][3];	// Matrixrix data
+	//double d[3][3];	// Matrixrix data
+    Eigen::Matrix3d m_matrix;
 
 	friend class Matrix3dd;
 	friend class Matrix3ds;
