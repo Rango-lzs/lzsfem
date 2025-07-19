@@ -70,23 +70,23 @@ inline Matrix3ds Matrix3dd::operator * (const Matrix3ds& m) const
 // arithmetic operators for Matrix3d
 inline Matrix3d Matrix3dd::operator + (const Matrix3d& m) const
 {
-	return Matrix3d(d[0]+m.d[0][0], m.d[0][1], m.d[0][2],
-				 m.d[1][0], d[1]+m.d[1][1], m.d[1][2],
-				 m.d[2][0], m.d[2][1], d[2]+m.d[2][2]);
+	return Matrix3d(d[0]+m[0][0], m[0][1], m[0][2],
+				 m[1][0], d[1]+m[1][1], m[1][2],
+				 m[2][0], m[2][1], d[2]+m[2][2]);
 }
 
 inline Matrix3d Matrix3dd::operator - (const Matrix3d& m) const
 {
-	return Matrix3d(d[0]-m.d[0][0], -m.d[0][1], -m.d[0][2],
-				 -m.d[1][0], d[1]-m.d[1][1], -m.d[1][2],
-				 -m.d[2][0], -m.d[2][1], d[2]-m.d[2][2]);
+	return Matrix3d(d[0]-m[0][0], -m[0][1], -m[0][2],
+				 -m[1][0], d[1]-m[1][1], -m[1][2],
+				 -m[2][0], -m[2][1], d[2]-m[2][2]);
 }
 
 inline Matrix3d Matrix3dd::operator * (const Matrix3d& m) const
 {
-	return Matrix3d(d[0]*m.d[0][0], d[0]*m.d[0][1], d[0]*m.d[0][2],
-				 d[1]*m.d[1][0], d[1]*m.d[1][1], d[1]*m.d[1][2],
-				 d[2]*m.d[2][0], d[2]*m.d[2][1], d[2]*m.d[2][2]);
+	return Matrix3d(d[0]*m[0][0], d[0]*m[0][1], d[0]*m[0][2],
+				 d[1]*m[1][0], d[1]*m[1][1], d[1]*m[1][2],
+				 d[2]*m[2][0], d[2]*m[2][1], d[2]*m[2][2]);
 }
 
 // arithmetic operators for Matrix3da
@@ -187,19 +187,19 @@ inline const double& Matrix3ds::operator ()(int i, int j) const
 // operator + for Matrix3dd objects
 inline Matrix3ds Matrix3ds::operator + (const Matrix3dd& d) const
 {
-	return Matrix3ds(m[XX]+d.d[0], m[YY]+d.d[1], m[ZZ]+d.d[2], m[XY], m[YZ], m[XZ]);
+    return Matrix3ds(m[XX] + d.d[0], m[YY] + d.d[1], m[ZZ] + d.d[2], m[XY], m[YZ], m[XZ]);
 }
 
 // operator - for Matrix3dd objects
 inline Matrix3ds Matrix3ds::operator - (const Matrix3dd& d) const
 {
-	return Matrix3ds(m[XX]-d.d[0], m[YY]-d.d[1], m[ZZ]-d.d[2], m[XY], m[YZ], m[XZ]);
+    return Matrix3ds(m[XX] - d.d[0], m[YY] - d.d[1], m[ZZ] - d.d[2], m[XY], m[YZ], m[XZ]);
 }
 
 // operator * for Matrix3dd objects
 inline Matrix3ds Matrix3ds::operator * (const Matrix3dd& d) const
 {
-	return Matrix3ds(m[XX]*d.d[0], m[YY]*d.d[1], m[ZZ]*d.d[2], m[XY]*d.d[1], m[YZ]*d.d[2], m[XZ]*d.d[2]);
+    return Matrix3ds(m[XX] * d.d[0], m[YY] * d.d[1], m[ZZ] * d.d[2], m[XY] * d.d[1], m[YZ] * d.d[2], m[XZ] * d.d[2]);
 }
 
 
@@ -249,31 +249,31 @@ inline Matrix3ds Matrix3ds::operator / (double g) const
 // operator + for Matrix3d objects
 inline Matrix3d Matrix3ds::operator + (const Matrix3d& d) const
 {
-	return Matrix3d(m[XX]+d.d[0][0], m[XY]+d.d[0][1], m[XZ]+d.d[0][2],
-				 m[XY]+d.d[1][0], m[YY]+d.d[1][1], m[YZ]+d.d[1][2],
-				 m[XZ]+d.d[2][0], m[YZ]+d.d[2][1], m[ZZ]+d.d[2][2]);
+	return Matrix3d(m[XX]+d[0][0], m[XY]+d[0][1], m[XZ]+d[0][2],
+				 m[XY]+d[1][0], m[YY]+d[1][1], m[YZ]+d[1][2],
+				 m[XZ]+d[2][0], m[YZ]+d[2][1], m[ZZ]+d[2][2]);
 }
 
 // operator - for Matrix3d objects
-inline Matrix3d Matrix3ds::operator - (const Matrix3d& d) const
+inline Matrix3d Matrix3ds::operator - (const Matrix3d& mat3d) const
 {
-	return Matrix3d(m[XX]-d.d[0][0], m[XY]-d.d[0][1], m[XZ]-d.d[0][2],
-				 m[XY]-d.d[1][0], m[YY]-d.d[1][1], m[YZ]-d.d[1][2],
-				 m[XZ]-d.d[2][0], m[YZ]-d.d[2][1], m[ZZ]-d.d[2][2]);
+	return Matrix3d(m[XX]-mat3d[0][0], m[XY]-mat3d[0][1], m[XZ]-mat3d[0][2],
+				 m[XY]-mat3d[1][0], m[YY]-mat3d[1][1], m[YZ]-mat3d[1][2],
+				 m[XZ]-mat3d[2][0], m[YZ]-mat3d[2][1], m[ZZ]-mat3d[2][2]);
 }
 
 // operator * for Matrix3d objects
 inline Matrix3d Matrix3ds::operator * (const Matrix3d& d) const
 {
-	return Matrix3d(d.d[0][0]*m[XX] + d.d[1][0]*m[XY] + d.d[2][0]*m[XZ], 
-				 d.d[0][1]*m[XX] + d.d[1][1]*m[XY] + d.d[2][1]*m[XZ], 
-				 d.d[0][2]*m[XX] + d.d[1][2]*m[XY] + d.d[2][2]*m[XZ],
-				 d.d[0][0]*m[XY] + d.d[1][0]*m[YY] + d.d[2][0]*m[YZ], 
-				 d.d[0][1]*m[XY] + d.d[1][1]*m[YY] + d.d[2][1]*m[YZ], 
-				 d.d[0][2]*m[XY] + d.d[1][2]*m[YY] + d.d[2][2]*m[YZ],
-				 d.d[0][0]*m[XZ] + d.d[1][0]*m[YZ] + d.d[2][0]*m[ZZ], 
-				 d.d[0][1]*m[XZ] + d.d[1][1]*m[YZ] + d.d[2][1]*m[ZZ], 
-				 d.d[0][2]*m[XZ] + d.d[1][2]*m[YZ] + d.d[2][2]*m[ZZ]);
+	return Matrix3d(d[0][0]*m[XX] + d[1][0]*m[XY] + d[2][0]*m[XZ], 
+				 d[0][1]*m[XX] + d[1][1]*m[XY] + d[2][1]*m[XZ], 
+				 d[0][2]*m[XX] + d[1][2]*m[XY] + d[2][2]*m[XZ],
+				 d[0][0]*m[XY] + d[1][0]*m[YY] + d[2][0]*m[YZ], 
+				 d[0][1]*m[XY] + d[1][1]*m[YY] + d[2][1]*m[YZ], 
+				 d[0][2]*m[XY] + d[1][2]*m[YY] + d[2][2]*m[YZ],
+				 d[0][0]*m[XZ] + d[1][0]*m[YZ] + d[2][0]*m[ZZ], 
+				 d[0][1]*m[XZ] + d[1][1]*m[YZ] + d[2][1]*m[ZZ], 
+				 d[0][2]*m[XZ] + d[1][2]*m[YZ] + d[2][2]*m[ZZ]);
 }
 
 // operator + for Matrix3da objects
@@ -369,9 +369,9 @@ inline Matrix3ds& Matrix3ds::operator += (const Matrix3dd& d)
 
 inline Matrix3ds& Matrix3ds::operator -= (const Matrix3dd& d)
 {
-	m[XX] -= d.d[0];
-	m[YY] -= d.d[1];
-	m[ZZ] -= d.d[2];
+    m[XX] -= d.d[0];
+    m[YY] -= d.d[1];
+    m[ZZ] -= d.d[2];
 	return (*this);
 }
 
@@ -546,12 +546,12 @@ inline Matrix3da Matrix3da::transpose() const
 }
 
 // Matrix multiplication
-inline Matrix3d Matrix3da::operator * (const Matrix3d& m)
+inline Matrix3d Matrix3da::operator * (const Matrix3d& mat3d)
 {
 	return Matrix3d(
-		 d[0]*m.d[1][0] + d[2]*m.d[2][0],  d[0]*m.d[1][1] + d[2]*m.d[2][1],  d[0]*m.d[1][2] + d[2]*m.d[2][2],
-		-d[0]*m.d[0][0] + d[1]*m.d[2][0], -d[0]*m.d[0][1] + d[1]*m.d[2][1], -d[0]*m.d[0][2] + d[1]*m.d[2][2],
-		-d[2]*m.d[0][0] - d[1]*m.d[1][0], -d[2]*m.d[0][1] - d[1]*m.d[1][1], -d[2]*m.d[0][2] - d[1]*m.d[1][2]
+		 d[0]*mat3d[1][0] + d[2]*mat3d[2][0],  d[0]*mat3d[1][1] + d[2]*mat3d[2][1],  d[0]*mat3d[1][2] + d[2]*mat3d[2][2],
+		-d[0]*mat3d[0][0] + d[1]*mat3d[2][0], -d[0]*mat3d[0][1] + d[1]*mat3d[2][1], -d[0]*mat3d[0][2] + d[1]*mat3d[2][2],
+		-d[2]*mat3d[0][0] - d[1]*mat3d[1][0], -d[2]*mat3d[0][1] - d[1]*mat3d[1][1], -d[2]*mat3d[0][2] - d[1]*mat3d[1][2]
 	);
 }
 
@@ -579,551 +579,4 @@ inline Vector3d Matrix3da::operator * (const Vector3d& a)
 		 d[0] * a.y + d[2] * a.z, \
 		-d[0] * a.x + d[1] * a.z, \
 		-d[2] * a.x - d[1] * a.y);
-}
-
-//-----------------------------------------------------------------------------
-// class Matrix3d : general 3D Matrix of doubles
-//-----------------------------------------------------------------------------
-
-// constructors
-
-inline Matrix3d::Matrix3d(double a)
-{
-	d[0][0] = a; d[0][1] = a; d[0][2] = a;
-	d[1][0] = a; d[1][1] = a; d[1][2] = a;
-	d[2][0] = a; d[2][1] = a; d[2][2] = a;
-}
-
-inline Matrix3d::Matrix3d(double a00, double a01, double a02,
-					double a10, double a11, double a12,
-					double a20, double a21, double a22)
-{
-	d[0][0] = a00; d[0][1] = a01; d[0][2] = a02;
-	d[1][0] = a10; d[1][1] = a11; d[1][2] = a12;
-	d[2][0] = a20; d[2][1] = a21; d[2][2] = a22;
-}
-
-inline Matrix3d::Matrix3d(double m[3][3])
-{
-	d[0][0] = m[0][0]; d[0][1] = m[0][1]; d[0][2] = m[0][2];
-	d[1][0] = m[1][0]; d[1][1] = m[1][1]; d[1][2] = m[1][2];
-	d[2][0] = m[2][0]; d[2][1] = m[2][1]; d[2][2] = m[2][2];
-}
-
-inline Matrix3d::Matrix3d(double a[9])
-{
-	d[0][0] = a[0]; d[0][1] = a[1]; d[0][2] = a[2];
-	d[1][0] = a[3]; d[1][1] = a[4]; d[1][2] = a[5];
-	d[2][0] = a[6]; d[2][1] = a[7]; d[2][2] = a[8];
-}
-
-inline Matrix3d::Matrix3d(const Matrix3dd& m)
-{
-	d[0][0] = m.d[0]; d[1][1] = m.d[1]; d[2][2] = m.d[2];
-	d[0][1] = d[1][0] = 0;
-	d[1][2] = d[2][1] = 0;
-	d[0][2] = d[2][0] = 0;
-}
-
-inline Matrix3d::Matrix3d(const Matrix3ds& m)
-{
-	d[0][0] = m.m[Matrix3ds::XX];
-	d[1][1] = m.m[Matrix3ds::YY];
-	d[2][2] = m.m[Matrix3ds::ZZ];
-	d[0][1] = d[1][0] = m.m[Matrix3ds::XY];
-	d[1][2] = d[2][1] = m.m[Matrix3ds::YZ];
-	d[0][2] = d[2][0] = m.m[Matrix3ds::XZ];
-}
-
-inline Matrix3d::Matrix3d(const Matrix3da& m)
-{
-	d[0][0] = d[1][1] = d[2][2] = 0;
-	d[0][1] = m.d[0]; d[1][0] = -m.d[0];
-	d[1][2] = m.d[1]; d[2][1] = -m.d[1];
-	d[0][2] = m.d[2]; d[2][0] = -m.d[2];
-}
-
-inline Matrix3d::Matrix3d(const Matrix2d& m)
-{
-	d[0][0] = m(0,0); d[0][1] = m(0,1); d[0][2] = 0.0;
-	d[1][0] = m(1,0); d[1][1] = m(1,1); d[1][2] = 0.0;
-	d[2][0] = d[2][1] = 0.0;
-	d[2][2] = 0.0;	// Should I set this to 1.0 instead? that way det(), inverse() etc. remain valid for the Matrix3d
-}
-
-inline Matrix3d::Matrix3d(const Vector3d& e1, const Vector3d& e2, const Vector3d& e3)
-{
-	d[0][0] = e1.x; d[0][1] = e2.x; d[0][2] = e3.x;
-	d[1][0] = e1.y; d[1][1] = e2.y; d[1][2] = e3.y;
-	d[2][0] = e1.z; d[2][1] = e2.z; d[2][2] = e3.z;
-}
-
-// assignment operators
-inline Matrix3d& Matrix3d::operator = (const Matrix3dd& m)
-{
-	d[0][0] = m.d[0];
-	d[1][1] = m.d[1];
-	d[2][2] = m.d[2];
-	d[0][1] = d[1][0] = 0;
-	d[1][2] = d[2][1] = 0;
-	d[0][2] = d[2][0] = 0;
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator = (const Matrix3ds& m)
-{
-	d[0][0] = m.m[Matrix3ds::XX];
-	d[1][1] = m.m[Matrix3ds::YY];
-	d[2][2] = m.m[Matrix3ds::ZZ];
-	d[0][1] = d[1][0] = m.m[Matrix3ds::XY];
-	d[1][2] = d[2][1] = m.m[Matrix3ds::YZ];
-	d[0][2] = d[2][0] = m.m[Matrix3ds::XZ];
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator = (const double m[3][3])
-{
-	d[0][0] = m[0][0]; d[0][1] = m[0][1]; d[0][2] = m[0][2];
-	d[1][0] = m[1][0]; d[1][1] = m[1][1]; d[1][2] = m[1][2];
-	d[2][0] = m[2][0]; d[2][1] = m[2][1]; d[2][2] = m[2][2];
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator = (const Matrix3d& m)
-{
-	d[0][0] = m.d[0][0]; d[0][1] = m.d[0][1]; d[0][2] = m.d[0][2];
-	d[1][0] = m.d[1][0]; d[1][1] = m.d[1][1]; d[1][2] = m.d[1][2];
-	d[2][0] = m.d[2][0]; d[2][1] = m.d[2][1]; d[2][2] = m.d[2][2];
-	return (*this);
-}
-
-// access operator
-inline double& Matrix3d::operator () (int i, int j) { return d[i][j]; }
-inline const double& Matrix3d::operator () (int i, int j) const { return d[i][j]; }
-inline double* Matrix3d::operator [] (int i) { return d[i]; }
-inline const double* Matrix3d::operator [] (int i) const { return d[i]; }
-
-// arithmetic operators
-inline Matrix3d Matrix3d::operator + (const Matrix3d& m) const
-{
-	return Matrix3d( d[0][0]+m.d[0][0], d[0][1]+m.d[0][1], d[0][2]+m.d[0][2],
-				  d[1][0]+m.d[1][0], d[1][1]+m.d[1][1], d[1][2]+m.d[1][2],
-				  d[2][0]+m.d[2][0], d[2][1]+m.d[2][1], d[2][2]+m.d[2][2]);
-}
-
-inline Matrix3d Matrix3d::operator - (const Matrix3d& m) const
-{
-	return Matrix3d( d[0][0]-m.d[0][0], d[0][1]-m.d[0][1], d[0][2]-m.d[0][2],
-				  d[1][0]-m.d[1][0], d[1][1]-m.d[1][1], d[1][2]-m.d[1][2],
-				  d[2][0]-m.d[2][0], d[2][1]-m.d[2][1], d[2][2]-m.d[2][2]);
-}
-
-inline Matrix3d Matrix3d::operator * (const Matrix3d& m) const
-{
-	return Matrix3d(d[0][0]*m.d[0][0]+d[0][1]*m.d[1][0]+d[0][2]*m.d[2][0],
-				 d[0][0]*m.d[0][1]+d[0][1]*m.d[1][1]+d[0][2]*m.d[2][1],
-				 d[0][0]*m.d[0][2]+d[0][1]*m.d[1][2]+d[0][2]*m.d[2][2],
-				 d[1][0]*m.d[0][0]+d[1][1]*m.d[1][0]+d[1][2]*m.d[2][0],
-				 d[1][0]*m.d[0][1]+d[1][1]*m.d[1][1]+d[1][2]*m.d[2][1],
-				 d[1][0]*m.d[0][2]+d[1][1]*m.d[1][2]+d[1][2]*m.d[2][2],
-				 d[2][0]*m.d[0][0]+d[2][1]*m.d[1][0]+d[2][2]*m.d[2][0],
-				 d[2][0]*m.d[0][1]+d[2][1]*m.d[1][1]+d[2][2]*m.d[2][1],
-				 d[2][0]*m.d[0][2]+d[2][1]*m.d[1][2]+d[2][2]*m.d[2][2]);
-}
-
-inline Matrix3d Matrix3d::operator * (double a) const
-{
-	return Matrix3d(d[0][0]*a, d[0][1]*a, d[0][2]*a,
-				 d[1][0]*a, d[1][1]*a, d[1][2]*a,
-				 d[2][0]*a, d[2][1]*a, d[2][2]*a);
-}
-
-inline Matrix3d Matrix3d::operator / (double a) const
-{
-	a = 1./a;
-	return Matrix3d(d[0][0]*a, d[0][1]*a, d[0][2]*a,
-				 d[1][0]*a, d[1][1]*a, d[1][2]*a,
-				 d[2][0]*a, d[2][1]*a, d[2][2]*a);
-}
-
-// arithmetic operators for Matrix3dd
-inline Matrix3d Matrix3d::operator + (const Matrix3dd& m) const
-{
-	return Matrix3d( d[0][0]+m.d[0], d[0][1], d[0][2],
-				  d[1][0], d[1][1]+m.d[1], d[1][2],
-				  d[2][0], d[2][1], d[2][2]+m.d[2]);
-}
-
-inline Matrix3d Matrix3d::operator - (const Matrix3dd& m) const
-{
-	return Matrix3d( d[0][0]-m.d[0], d[0][1], d[0][2],
-				  d[1][0], d[1][1]-m.d[1], d[1][2],
-				  d[2][0], d[2][1], d[2][2]-m.d[2]);
-}
-
-inline Matrix3d Matrix3d::operator * (const Matrix3dd& m) const
-{
-	return Matrix3d( d[0][0]*m.d[0], d[0][1]*m.d[1], d[0][2]*m.d[2],
-				  d[1][0]*m.d[0], d[1][1]*m.d[1], d[1][2]*m.d[2],
-				  d[2][0]*m.d[0], d[2][1]*m.d[1], d[2][2]*m.d[2]);
-}
-
-// arithmetic operators for Matrix3ds
-inline Matrix3d Matrix3d::operator + (const Matrix3ds& m) const
-{
-	return Matrix3d(d[0][0]+m.m[m.XX], d[0][1]+m.m[m.XY], d[0][2]+m.m[m.XZ],
-				 d[1][0]+m.m[m.XY], d[1][1]+m.m[m.YY], d[1][2]+m.m[m.YZ],
-				 d[2][0]+m.m[m.XZ], d[2][1]+m.m[m.YZ], d[2][2]+m.m[m.ZZ]);
-}
-
-inline Matrix3d Matrix3d::operator - (const Matrix3ds& m) const
-{
-	return Matrix3d(d[0][0]-m.m[m.XX], d[0][1]-m.m[m.XY], d[0][2]-m.m[m.XZ],
-				 d[1][0]-m.m[m.XY], d[1][1]-m.m[m.YY], d[1][2]-m.m[m.YZ],
-				 d[2][0]-m.m[m.XZ], d[2][1]-m.m[m.YZ], d[2][2]-m.m[m.ZZ]);
-}
-
-inline Matrix3d Matrix3d::operator * (const Matrix3ds& m) const
-{
-	return Matrix3d(
-		d[0][0]*m.m[m.XX] + d[0][1]*m.m[m.XY] + d[0][2]*m.m[m.XZ],
-		d[0][0]*m.m[m.XY] + d[0][1]*m.m[m.YY] + d[0][2]*m.m[m.YZ],
-		d[0][0]*m.m[m.XZ] + d[0][1]*m.m[m.YZ] + d[0][2]*m.m[m.ZZ],
-		d[1][0]*m.m[m.XX] + d[1][1]*m.m[m.XY] + d[1][2]*m.m[m.XZ],
-		d[1][0]*m.m[m.XY] + d[1][1]*m.m[m.YY] + d[1][2]*m.m[m.YZ],
-		d[1][0]*m.m[m.XZ] + d[1][1]*m.m[m.YZ] + d[1][2]*m.m[m.ZZ],
-		d[2][0]*m.m[m.XX] + d[2][1]*m.m[m.XY] + d[2][2]*m.m[m.XZ],
-		d[2][0]*m.m[m.XY] + d[2][1]*m.m[m.YY] + d[2][2]*m.m[m.YZ],
-		d[2][0]*m.m[m.XZ] + d[2][1]*m.m[m.YZ] + d[2][2]*m.m[m.ZZ]);
-}
-
-// arithmetic assignment operators
-inline Matrix3d& Matrix3d::operator += (const Matrix3d& m)
-{
-	d[0][0] += m.d[0][0]; d[0][1] += m.d[0][1]; d[0][2] += m.d[0][2];
-	d[1][0] += m.d[1][0]; d[1][1] += m.d[1][1]; d[1][2] += m.d[1][2];
-	d[2][0] += m.d[2][0]; d[2][1] += m.d[2][1]; d[2][2] += m.d[2][2];
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator -= (const Matrix3d& m)
-{
-	d[0][0] -= m.d[0][0]; d[0][1] -= m.d[0][1]; d[0][2] -= m.d[0][2];
-	d[1][0] -= m.d[1][0]; d[1][1] -= m.d[1][1]; d[1][2] -= m.d[1][2];
-	d[2][0] -= m.d[2][0]; d[2][1] -= m.d[2][1]; d[2][2] -= m.d[2][2];
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator *= (const Matrix3d& m)
-{
-	double d00 = d[0][0]*m.d[0][0]+d[0][1]*m.d[1][0]+d[0][2]*m.d[2][0];
-	double d01 = d[0][0]*m.d[0][1]+d[0][1]*m.d[1][1]+d[0][2]*m.d[2][1];
-	double d02 = d[0][0]*m.d[0][2]+d[0][1]*m.d[1][2]+d[0][2]*m.d[2][2];
-	double d10 = d[1][0]*m.d[0][0]+d[1][1]*m.d[1][0]+d[1][2]*m.d[2][0];
-	double d11 = d[1][0]*m.d[0][1]+d[1][1]*m.d[1][1]+d[1][2]*m.d[2][1];
-	double d12 = d[1][0]*m.d[0][2]+d[1][1]*m.d[1][2]+d[1][2]*m.d[2][2];
-	double d20 = d[2][0]*m.d[0][0]+d[2][1]*m.d[1][0]+d[2][2]*m.d[2][0];
-	double d21 = d[2][0]*m.d[0][1]+d[2][1]*m.d[1][1]+d[2][2]*m.d[2][1];
-	double d22 = d[2][0]*m.d[0][2]+d[2][1]*m.d[1][2]+d[2][2]*m.d[2][2];
-
-	d[0][0] = d00; d[0][1] = d01; d[0][2] = d02;
-	d[1][0] = d10; d[1][1] = d11; d[1][2] = d12;
-	d[2][0] = d20; d[2][1] = d21; d[2][2] = d22;
-
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator *= (double a)
-{
-	d[0][0]*=a; d[0][1]*=a; d[0][2]*=a;
-	d[1][0]*=a; d[1][1]*=a; d[1][2]*=a;
-	d[2][0]*=a; d[2][1]*=a; d[2][2]*=a;
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator /= (double a)
-{
-	a = 1./a;
-	d[0][0]*=a; d[0][1]*=a; d[0][2]*=a;
-	d[1][0]*=a; d[1][1]*=a; d[1][2]*=a;
-	d[2][0]*=a; d[2][1]*=a; d[2][2]*=a;
-	return (*this);
-}
-
-// arithmetic assignment operators for Matrix3dd
-inline Matrix3d& Matrix3d::operator += (const Matrix3dd& m)
-{
-	d[0][0] += m.d[0];
-	d[1][1] += m.d[1];
-	d[2][2] += m.d[2];
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator -= (const Matrix3dd& m)
-{
-	d[0][0] -= m.d[0];
-	d[1][1] -= m.d[1];
-	d[2][2] -= m.d[2];
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator *= (const Matrix3dd& m)
-{
-	d[0][0] *= m.d[0]; d[0][1] *= m.d[1]; d[0][2] *= m.d[2];
-	d[1][0] *= m.d[0]; d[1][1] *= m.d[1]; d[1][2] *= m.d[2];
-	d[2][0] *= m.d[0]; d[2][1] *= m.d[1]; d[2][2] *= m.d[2];
-	return (*this);
-}
-
-// arithmetic operators for Matrix3ds
-inline Matrix3d& Matrix3d::operator += (const Matrix3ds& m)
-{
-	d[0][0] += m.m[m.XX]; d[0][1] += m.m[m.XY]; d[0][2] += m.m[m.XZ];
-	d[1][0] += m.m[m.XY]; d[1][1] += m.m[m.YY]; d[1][2] += m.m[m.YZ];
-	d[2][0] += m.m[m.XZ]; d[2][1] += m.m[m.YZ]; d[2][2] += m.m[m.ZZ];
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator -= (const Matrix3ds& m)
-{
-	d[0][0] -= m.m[m.XX]; d[0][1] -= m.m[m.XY]; d[0][2] -= m.m[m.XZ];
-	d[1][0] -= m.m[m.XY]; d[1][1] -= m.m[m.YY]; d[1][2] -= m.m[m.YZ];
-	d[2][0] -= m.m[m.XZ]; d[2][1] -= m.m[m.YZ]; d[2][2] -= m.m[m.ZZ];
-	return (*this);
-}
-
-inline Matrix3d& Matrix3d::operator *= (const Matrix3ds& m)
-{
-	double d00 = d[0][0]*m.m[m.XX]+d[0][1]*m.m[m.XY]+d[0][2]*m.m[m.XZ];
-	double d01 = d[0][0]*m.m[m.XY]+d[0][1]*m.m[m.YY]+d[0][2]*m.m[m.YZ];
-	double d02 = d[0][0]*m.m[m.XZ]+d[0][1]*m.m[m.YZ]+d[0][2]*m.m[m.ZZ];
-	double d10 = d[1][0]*m.m[m.XX]+d[1][1]*m.m[m.XY]+d[1][2]*m.m[m.XZ];
-	double d11 = d[1][0]*m.m[m.XY]+d[1][1]*m.m[m.YY]+d[1][2]*m.m[m.YZ];
-	double d12 = d[1][0]*m.m[m.XZ]+d[1][1]*m.m[m.YZ]+d[1][2]*m.m[m.ZZ];
-	double d20 = d[2][0]*m.m[m.XX]+d[2][1]*m.m[m.XY]+d[2][2]*m.m[m.XZ];
-	double d21 = d[2][0]*m.m[m.XY]+d[2][1]*m.m[m.YY]+d[2][2]*m.m[m.YZ];
-	double d22 = d[2][0]*m.m[m.XZ]+d[2][1]*m.m[m.YZ]+d[2][2]*m.m[m.ZZ];
-
-	d[0][0] = d00; d[0][1] = d01; d[0][2] = d02;
-	d[1][0] = d10; d[1][1] = d11; d[1][2] = d12;
-	d[2][0] = d20; d[2][1] = d21; d[2][2] = d22;
-
-	return (*this);
-}
-
-
-// Matrix-vector multiplication
-inline Vector3d Matrix3d::operator * (const Vector3d& r) const
-{
-	return Vector3d(d[0][0]*r.x+d[0][1]*r.y+d[0][2]*r.z,
-				 d[1][0]*r.x+d[1][1]*r.y+d[1][2]*r.z,
-				 d[2][0]*r.x+d[2][1]*r.y+d[2][2]*r.z);
-}
-
-// determinant
-inline double Matrix3d::det() const
-{
-	return (d[0][0]*(d[1][1]*d[2][2] - d[1][2]*d[2][1])
-		  + d[0][1]*(d[1][2]*d[2][0] - d[2][2]*d[1][0])
-		  + d[0][2]*(d[1][0]*d[2][1] - d[1][1]*d[2][0]));
-}
-
-// trace
-inline double Matrix3d::trace() const { return d[0][0]+d[1][1]+d[2][2]; }
-
-inline void Matrix3d::unit()
-{
-	d[0][0] = d[1][1] = d[2][2] = 1;
-	d[0][1] = d[1][0] = 0;
-	d[0][2] = d[2][0] = 0;
-	d[1][2] = d[2][1] = 0;
-}
-
-// zero the Matrix
-inline void Matrix3d::zero()
-{
-	d[0][0] = d[0][1] = d[0][2] = 0;
-	d[1][0] = d[1][1] = d[1][2] = 0;
-	d[2][0] = d[2][1] = d[2][2] = 0;
-}
-
-// return a column vector from the Matrix
-inline Vector3d Matrix3d::col(int j) const
-{
-	return Vector3d(d[0][j], d[1][j], d[2][j]);
-}
-
-// return a row vector from the Matrix
-inline Vector3d Matrix3d::row(int j) const
-{
-	return Vector3d(d[j][0], d[j][1], d[j][2]);
-}
-
-// set the column of the Matrix
-inline void Matrix3d::setCol(int i, const Vector3d& a)
-{
-	d[0][i] = a.x;
-	d[1][i] = a.y;
-	d[2][i] = a.z;
-}
-
-// set the row of the Matrix
-inline void Matrix3d::setRow(int i, const Vector3d& a)
-{
-	d[i][0] = a.x;
-	d[i][1] = a.y;
-	d[i][2] = a.z;
-}
-
-// return the symmetric Matrix 0.5*(A+A^T)
-inline Matrix3ds Matrix3d::sym() const
-{
-	return Matrix3ds(
-		d[0][0],
-		d[1][1],
-		d[2][2],
-		0.5*(d[0][1]+d[1][0]),
-		0.5*(d[1][2]+d[2][1]),
-		0.5*(d[0][2]+d[2][0]));
-}
-
-// return the anti-symmetric Matrix 0.5*(A - A^T)
-inline Matrix3da Matrix3d::skew() const
-{
-	return Matrix3da(
-		0.5*(d[0][1] - d[1][0]),
-		0.5*(d[1][2] - d[2][1]),
-		0.5*(d[0][2] - d[2][0]));
-}
-
-// return the inverse Matrix
-inline Matrix3d Matrix3d::inverse() const
-{
-	double D = det();
-	assert(D != 0);
-	D = 1/D;
-
-	return Matrix3d(D*(d[1][1]*d[2][2] - d[1][2]*d[2][1]),
-				 D*(d[0][2]*d[2][1] - d[0][1]*d[2][2]),
-				 D*(d[0][1]*d[1][2] - d[1][1]*d[0][2]),
-				 D*(d[1][2]*d[2][0] - d[1][0]*d[2][2]),
-				 D*(d[0][0]*d[2][2] - d[0][2]*d[2][0]),
-				 D*(d[0][2]*d[1][0] - d[0][0]*d[1][2]),
-				 D*(d[1][0]*d[2][1] - d[1][1]*d[2][0]),
-				 D*(d[0][1]*d[2][0] - d[0][0]*d[2][1]),
-				 D*(d[0][0]*d[1][1] - d[0][1]*d[1][0]));
-}
-
-// return the inverse Matrix
-inline bool Matrix3d::invert()
-{
-    double D = det();
-	if (D == 0) return false;
-	D = 1.0 / D;
-
-	// calculate conjugate Matrix
-	double mi[3][3];
-
-	mi[0][0] =  (d[1][1] * d[2][2] - d[1][2] * d[2][1]);
-	mi[0][1] = -(d[1][0] * d[2][2] - d[1][2] * d[2][0]);
-	mi[0][2] =  (d[1][0] * d[2][1] - d[1][1] * d[2][0]);
-
-	mi[1][0] = -(d[0][1] * d[2][2] - d[0][2] * d[2][1]);
-	mi[1][1] =  (d[0][0] * d[2][2] - d[0][2] * d[2][0]);
-	mi[1][2] = -(d[0][0] * d[2][1] - d[0][1] * d[2][0]);
-
-	mi[2][0] =  (d[0][1] * d[1][2] - d[0][2] * d[1][1]);
-	mi[2][1] = -(d[0][0] * d[1][2] - d[0][2] * d[1][0]);
-	mi[2][2] =  (d[0][0] * d[1][1] - d[0][1] * d[1][0]);
-
-	// divide by det and transpose
-	d[0][0] = mi[0][0] * D; d[1][0] = mi[0][1] * D; d[2][0] = mi[0][2] * D;
-	d[0][1] = mi[1][0] * D; d[1][1] = mi[1][1] * D; d[2][1] = mi[1][2] * D;
-	d[0][2] = mi[2][0] * D; d[1][2] = mi[2][1] * D; d[2][2] = mi[2][2] * D;
-
-    return true;
-}
-
-// return the transpose Matrix
-inline Matrix3d Matrix3d::transpose() const
-{
-	return Matrix3d(d[0][0], d[1][0], d[2][0],
-				 d[0][1], d[1][1], d[2][1],
-				 d[0][2], d[1][2], d[2][2]);
-}
-
-// return the transposed inverse Matrix
-inline Matrix3d Matrix3d::transinv() const
-{
-	double D = det();
-	assert(D != 0);
-	D = 1/D;
-
-	return Matrix3d(D*(d[1][1]*d[2][2] - d[1][2]*d[2][1]), // xx
-				 D*(d[1][2]*d[2][0] - d[1][0]*d[2][2]), // yx
-				 D*(d[1][0]*d[2][1] - d[1][1]*d[2][0]), // zx
-				 D*(d[0][2]*d[2][1] - d[0][1]*d[2][2]), // xy
-				 D*(d[0][0]*d[2][2] - d[0][2]*d[2][0]), // yy
-				 D*(d[0][1]*d[2][0] - d[0][0]*d[2][1]), // zy
-				 D*(d[0][1]*d[1][2] - d[1][1]*d[0][2]), // xz
-				 D*(d[0][2]*d[1][0] - d[0][0]*d[1][2]), // yz
-				 D*(d[0][0]*d[1][1] - d[0][1]*d[1][0])); // zz
-}
-
-// calculate the skew symmetric Matrix from a vector
-inline void Matrix3d::skew(const Vector3d& v)
-{
-	d[0][0] =    0; d[0][1] = -v.z; d[0][2] =  v.y;
-	d[1][0] =  v.z; d[1][1] =    0; d[1][2] = -v.x;
-	d[2][0] = -v.y; d[2][1] =  v.x; d[2][2] =    0;
-}
-
-// calculate the one-norm (max of absolute column-sum)
-inline double Matrix3d::norm() const
-{
-	double s, sc;
-	sc = fabs(d[0][0]) + fabs(d[1][0]) + fabs(d[2][0]); s = sc;
-	sc = fabs(d[0][1]) + fabs(d[1][1]) + fabs(d[2][1]); if (sc > s) s = sc;
-	sc = fabs(d[0][2]) + fabs(d[1][2]) + fabs(d[2][2]); if (sc > s) s = sc;
-	return s;
-}
-
-// double contraction
-inline double Matrix3d::dotdot(const Matrix3d& T) const
-{
-	return (T.d[0][0]*d[0][0] + T.d[0][1]*d[0][1] + T.d[0][2]*d[0][2] + T.d[1][0]*d[1][0] + T.d[1][1]*d[1][1] + T.d[1][2]*d[1][2] + T.d[2][0]*d[2][0] + T.d[2][1]*d[2][1] + T.d[2][2]*d[2][2]);
-}
-
-
-// return the inverse Matrix
-inline bool Matrix3f::invert()
-{
-	float D = d[0][0] * (d[1][1] * d[2][2] - d[1][2] * d[2][1])
-		+ d[0][1] * (d[1][2] * d[2][0] - d[2][2] * d[1][0])
-		+ d[0][2] * (d[1][0] * d[2][1] - d[1][1] * d[2][0]);
-
-	if (D == 0.f) return false;
-	D = 1.f / D;
-
-	// calculate conjugate Matrix
-	float mi[3][3];
-
-	mi[0][0] =  (d[1][1] * d[2][2] - d[1][2] * d[2][1]);
-	mi[0][1] = -(d[1][0] * d[2][2] - d[1][2] * d[2][0]);
-	mi[0][2] =  (d[1][0] * d[2][1] - d[1][1] * d[2][0]);
-
-	mi[1][0] = -(d[0][1] * d[2][2] - d[0][2] * d[2][1]);
-	mi[1][1] =  (d[0][0] * d[2][2] - d[0][2] * d[2][0]);
-	mi[1][2] = -(d[0][0] * d[2][1] - d[0][1] * d[2][0]);
-
-	mi[2][0] =  (d[0][1] * d[1][2] - d[0][2] * d[1][1]);
-	mi[2][1] = -(d[0][0] * d[1][2] - d[0][2] * d[1][0]);
-	mi[2][2] =  (d[0][0] * d[1][1] - d[0][1] * d[1][0]);
-
-	// divide by det and transpose
-	d[0][0] = mi[0][0] * D; d[1][0] = mi[0][1] * D; d[2][0] = mi[0][2] * D;
-	d[0][1] = mi[1][0] * D; d[1][1] = mi[1][1] * D; d[2][1] = mi[1][2] * D;
-	d[0][2] = mi[2][0] * D; d[1][2] = mi[2][1] * D; d[2][2] = mi[2][2] * D;
-
-	return true;
 }

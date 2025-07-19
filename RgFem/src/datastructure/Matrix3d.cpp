@@ -1,438 +1,391 @@
-#include "Matrix3d.h"
-#include "femcore/eig3.h"
-#include "femcore/sys.h"
-#include "MathUtils.h"
+#include "datastructure/Matrix3d.h"
+#include "datastructure/Vector3d.h"
 
-#define ROTATE(a, i, j, k, l) g=a[i][j]; h=a[k][l];a[i][j]=g-s*(h+g*tau); a[k][l] = h + s*(g - h*tau);
+#include <Eigen/Dense>
+#include <Eigen/SVD>
+#include <stdexcept>
 
-void Matrix3ds::eigen(double l[3], Vector3d r[3]) const
+// ================ 构造函数 ================
+Matrix3d::Matrix3d()
+    : m_matrix(Eigen::Matrix3d::Zero())
 {
-	const int NMAX = 50;
-	double sm, tresh, g, h, t, c, tau, s, th;
-	int i, j, k;
-
-	// copy the Matrix components since we will be overwriting them
-	double a[3][3] = {
-			{m[XX], m[XY], m[XZ]},
-			{m[XY], m[YY], m[YZ]}, 
-			{m[XZ], m[YZ], m[ZZ]}
-	};
-
-	// the v Matrix contains the eigen vectors
-	// intialize to identity
-	double v[3][3] = {
-		{ 1, 0, 0 },
-		{ 0, 1, 0 },
-		{ 0, 0, 1 }
-	};
-
-	// initialize b and d to the diagonal of a
-	double b[3] = {a[0][0], a[1][1], a[2][2]};
-	double d[3] = {a[0][0], a[1][1], a[2][2]};
-	double z[3] = {0};
-
-	const double eps = 0;//1.0e-15;
-
-	// loop
-	int n, nrot = 0;
-	for (n=0; n<NMAX; ++n)
-	{
-		// sum off-diagonal elements
-		sm = fabs(a[0][1]) + fabs(a[0][2]) + fabs(a[1][2]);
-		if (sm <= eps) break;
-
-		// set the treshold
-		if (n < 3) tresh = 0.2*sm/9.0; else tresh = 0.0;
-
-		// loop over off-diagonal elements
-		for (i=0; i<2; ++i)
-		{
-			for (j=i+1; j<3; ++j)
-			{
-				g = 100.0*fabs(a[i][j]);
-
-				// after four sweeps, skip the rotation if the off-diagonal element is small
-				if ((n > 3) && ((fabs(d[i])+g) == fabs(d[i]))
-							&& ((fabs(d[j])+g) == fabs(d[j])))
-				{
-					a[i][j] = 0.0;
-				}
-				else if (fabs(a[i][j]) > tresh)
-				{
-					h = d[j] - d[i];
-					if ((fabs(h)+g) == fabs(h))
-						t = a[i][j]/h;
-					else
-					{
-						th = 0.5*h/a[i][j];
-						t = 1.0/(fabs(th) + sqrt(1+th*th));
-						if (th < 0.0) t = -t;
-					}
-
-					c = 1.0/sqrt(1.0 + t*t);
-					s = t*c;
-					tau = s/(1.0+c);
-					h = t*a[i][j];
-					z[i] -= h;
-					z[j] += h;
-					d[i] -= h;
-					d[j] += h;
-					a[i][j] = 0;
-
-					for (k=  0; k<=i-1; ++k) { ROTATE(a, k, i, k, j) }
-					for (k=i+1; k<=j-1; ++k) { ROTATE(a, i, k, k, j) }
-					for (k=j+1; k<   3; ++k) { ROTATE(a, i, k, j, k) }
-					for (k=  0; k<   3; ++k) { ROTATE(v, k, i, k, j) }
-					++nrot;
-				}
-			}
-		}
-
-		for (i=0; i<3; ++i) 
-		{
-			b[i] += z[i];
-			d[i] = b[i];
-			z[i] = 0.0;
-		}
-	}
-
-	// we sure we converged
-	assert(n < NMAX);
-
-	// copy eigenvalues
-	l[0] = d[0];
-	l[1] = d[1];
-	l[2] = d[2];
-
-	// copy eigenvectors
-	if (r)
-	{
-		r[0].x = v[0][0]; r[0].y = v[1][0]; r[0].z = v[2][0];
-		r[1].x = v[0][1]; r[1].y = v[1][1]; r[1].z = v[2][1];
-		r[2].x = v[0][2]; r[2].y = v[1][2]; r[2].z = v[2][2];
-	}
 }
 
-//-----------------------------------------------------------------------------
-// Calculate the eigenvalues of A using an analytical expression for the 
-// eigen values.
-void Matrix3ds::exact_eigen(double l[3]) const
+Matrix3d::Matrix3d(const Eigen::Matrix3d& matrix)
+    : m_matrix(matrix)
 {
-	const double S3 = sqrt(3.0);
-	const double S2 = sqrt(2.0);
-
-	Matrix3ds S = dev();
-	double nS = S.norm();
-	Matrix3ds T = (S.sqr()).dev();
-	double nT = T.norm();
-
-	double D = nS * nT;
-	if (D > 0.0)
-	{
-		double w = S.dotdot(T) / D;	if (w > 1.0) w = 1.0; if (w < -1.0) w = -1.0;
-		double t = asin(w) / 3.0;
-		double r = S.norm();
-		double z = tr() / S3;
-
-		l[0] = z / S3 + (r / S2)*(sin(t) / S3 + cos(t));
-		l[1] = z / S3 - (S2 / S3)*r*sin(t);
-		l[2] = z / S3 + (r / S2)*(sin(t) / S3 - cos(t));
-	}
-	else
-	{
-		l[0] = l[1] = l[2] = 0.0;
-	}
 }
 
-//-----------------------------------------------------------------------------
-// Calculate the eigenvalues and eigenvectors of A using the method of
-// Connelly Barnes ( http://barnesc.blogspot.com/2007/02/eigenvectors-of-3x3-symmetric-Matrix.html )
-void Matrix3ds::eigen2(double l[3], Vector3d r[3]) const
+Matrix3d::Matrix3d(double a)
+    : m_matrix(Eigen::Matrix3d::Identity() * a)
 {
-    double A[3][3] = {xx(), xy(), xz(), xy(), yy(), yz(), xz(), yz(), zz()};
-    double V[3][3];
-    if (ISNAN(tr())) return;
-    eigen_decomposition(A, V, l);
-    if (r) {
-        r[0] = Vector3d(V[0][0],V[1][0],V[2][0]);
-        r[1] = Vector3d(V[0][1],V[1][1],V[2][1]);
-        r[2] = Vector3d(V[0][2],V[1][2],V[2][2]);
+}
+
+Matrix3d::Matrix3d(double a00, double a01, double a02, double a10, double a11, double a12, double a20, double a21,
+                   double a22)
+{
+    m_matrix << a00, a01, a02, a10, a11, a12, a20, a21, a22;
+}
+
+Matrix3d::Matrix3d(double m[3][3])
+{
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            m_matrix(i, j) = m[i][j];
+}
+
+Matrix3d::Matrix3d(double a[9])
+{
+    m_matrix << a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8];
+}
+
+inline Matrix3d::Matrix3d(const Matrix3dd& m)
+{
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            m_matrix(i, j) = m(i,j);
+}
+
+inline Matrix3d::Matrix3d(const Matrix3ds& m)
+{
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            m_matrix(i, j) = m(i, j);
+}
+
+inline Matrix3d::Matrix3d(const Matrix3da& m)
+{
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            m_matrix(i, j) = m(i, j);
+}
+
+Matrix3d::Matrix3d(const Matrix2d& m)
+{
+    m_matrix.setZero();
+    for (int i = 0; i < 2; ++i)
+    {
+        for (int j = 0; j < 2; ++j)
+        {
+            m_matrix(i, j) = m(i, j);
+        }
     }
+    m_matrix(2, 2) = 1.0;
 }
 
-//-----------------------------------------------------------------------------
-// calculates the unique right polar decomposition F = R*U
+Matrix3d::Matrix3d(const Vector3d& e1, const Vector3d& e2, const Vector3d& e3)
+{
+    m_matrix.col(0) = Eigen::Vector3d(e1.x, e1.y, e1.z);
+    m_matrix.col(1) = Eigen::Vector3d(e2.x, e2.y, e2.z);
+    m_matrix.col(2) = Eigen::Vector3d(e3.x, e3.y, e3.z);
+}
+
+// ================ 赋值运算符 ================
+Matrix3d& Matrix3d::operator=(const Matrix3d& m)
+{
+    if (this != &m)
+    {
+        m_matrix = m.m_matrix;
+    }
+    return *this;
+}
+
+Matrix3d& Matrix3d::operator=(const double m[3][3])
+{
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            m_matrix(i, j) = m[i][j];
+    return *this;
+}
+
+// ================ 一元运算符 ================
+Matrix3d Matrix3d::operator-() const
+{
+    return Matrix3d(-m_matrix);
+}
+
+// ================ 访问运算符 ================
+double& Matrix3d::operator()(int i, int j)
+{
+    if (i < 0 || i > 2 || j < 0 || j > 2)
+    {
+        throw std::out_of_range("Matrix3d index out of range");
+    }
+    return m_matrix(i, j);
+}
+
+const double& Matrix3d::operator()(int i, int j) const
+{
+    if (i < 0 || i > 2 || j < 0 || j > 2)
+    {
+        throw std::out_of_range("Matrix3d index out of range");
+    }
+    return m_matrix(i, j);
+}
+
+double* Matrix3d::operator[](int i)
+{
+    if (i < 0 || i > 2)
+    {
+        throw std::out_of_range("Matrix3d row index out of range");
+    }
+    return m_matrix.row(i).data();
+}
+
+const double* Matrix3d::operator[](int i) const
+{
+    if (i < 0 || i > 2)
+    {
+        throw std::out_of_range("Matrix3d row index out of range");
+    }
+    return m_matrix.row(i).data();
+}
+
+// ================ 算术运算符 ================
+Matrix3d Matrix3d::operator+(const Matrix3d& m) const
+{
+    return Matrix3d(m_matrix + m.m_matrix);
+}
+
+Matrix3d Matrix3d::operator-(const Matrix3d& m) const
+{
+    return Matrix3d(m_matrix - m.m_matrix);
+}
+
+Matrix3d Matrix3d::operator*(const Matrix3d& m) const
+{
+    return Matrix3d(m_matrix * m.m_matrix);
+}
+
+Matrix3d Matrix3d::operator*(double a) const
+{
+    return Matrix3d(m_matrix * a);
+}
+
+Matrix3d Matrix3d::operator/(double a) const
+{
+    if (a == 0)
+    {
+        throw std::invalid_argument("Matrix3d division by zero");
+    }
+    return Matrix3d(m_matrix / a);
+}
+
+// ================ 算术赋值运算符 ================
+Matrix3d& Matrix3d::operator+=(const Matrix3d& m)
+{
+    m_matrix += m.m_matrix;
+    return *this;
+}
+
+Matrix3d& Matrix3d::operator-=(const Matrix3d& m)
+{
+    m_matrix -= m.m_matrix;
+    return *this;
+}
+
+Matrix3d& Matrix3d::operator*=(const Matrix3d& m)
+{
+    m_matrix *= m.m_matrix;
+    return *this;
+}
+
+Matrix3d& Matrix3d::operator*=(double a)
+{
+    m_matrix *= a;
+    return *this;
+}
+
+Matrix3d& Matrix3d::operator/=(double a)
+{
+    if (a == 0)
+    {
+        throw std::invalid_argument("Matrix3d division by zero");
+    }
+    m_matrix /= a;
+    return *this;
+}
+
+// ================ 矩阵-向量乘法 ================
+Vector3d Matrix3d::operator*(const Vector3d& r) const
+{
+    Eigen::Vector3d result = m_matrix * Eigen::Vector3d(r.x, r.y, r.z);
+    return Vector3d(result.x(), result.y(), result.z());
+}
+
+// ================ 矩阵属性 ================
+double Matrix3d::det() const
+{
+    return m_matrix.determinant();
+}
+
+double Matrix3d::trace() const
+{
+    return m_matrix.trace();
+}
+
+// ================ 矩阵操作 ================
+void Matrix3d::zero()
+{
+    m_matrix.setZero();
+}
+
+void Matrix3d::unit()
+{
+    m_matrix.setIdentity();
+}
+
+Vector3d Matrix3d::col(int j) const
+{
+    if (j < 0 || j > 2)
+    {
+        throw std::out_of_range("Matrix3d column index out of range");
+    }
+    Eigen::Vector3d c = m_matrix.col(j);
+    return Vector3d(c.x(), c.y(), c.z());
+}
+
+Vector3d Matrix3d::row(int i) const
+{
+    if (i < 0 || i > 2)
+    {
+        throw std::out_of_range("Matrix3d row index out of range");
+    }
+    Eigen::Vector3d r = m_matrix.row(i);
+    return Vector3d(r.x(), r.y(), r.z());
+}
+
+void Matrix3d::setCol(int j, const Vector3d& a)
+{
+    if (j < 0 || j > 2)
+    {
+        throw std::out_of_range("Matrix3d column index out of range");
+    }
+    m_matrix.col(j) = Eigen::Vector3d(a.x, a.y, a.z);
+}
+
+void Matrix3d::setRow(int i, const Vector3d& a)
+{
+    if (i < 0 || i > 2)
+    {
+        throw std::out_of_range("Matrix3d row index out of range");
+    }
+    m_matrix.row(i) = Eigen::Vector3d(a.x, a.y, a.z);
+}
+
+Matrix3ds Matrix3d::sym() const
+{
+    Eigen::Matrix3d sym = 0.5 * (m_matrix + m_matrix.transpose());
+    return Matrix3ds(sym(0, 0), sym(1,1), sym(2, 2), sym(0, 1), sym(1, 2), sym(0, 2));
+}
+
+Matrix3da Matrix3d::skew() const
+{
+    Eigen::Matrix3d skew = 0.5 * (m_matrix - m_matrix.transpose());
+    return Matrix3da(skew(0, 1), skew(1, 2), skew(0, 2));
+}
+
+Matrix3d Matrix3d::inverse() const
+{
+    if (det() < 1e-12)
+    {
+        throw std::runtime_error("Matrix3d is singular, cannot compute inverse");
+    }
+    return Matrix3d(m_matrix.inverse());
+}
+
+bool Matrix3d::invert()
+{
+    if (det() < 1e-12)
+    {
+        return false;
+    }
+    m_matrix = m_matrix.inverse().eval();
+    return true;
+}
+
+Matrix3d Matrix3d::transpose() const
+{
+    return Matrix3d(m_matrix.transpose());
+}
+
+Matrix3d Matrix3d::transinv() const
+{
+    return transpose().inverse();
+}
+
+void Matrix3d::skew(const Vector3d& v)
+{
+    m_matrix << 0, -v.z, v.y, v.z, 0, -v.x, -v.y, v.x, 0;
+}
+
+double Matrix3d::norm() const
+{
+    return m_matrix.lpNorm<1>();
+}
+
+double Matrix3d::dotdot(const Matrix3d& T) const
+{
+    return (m_matrix.array() * T.m_matrix.array()).sum();
+}
+
+// ================ 极分解 ================
 void Matrix3d::right_polar(Matrix3d& R, Matrix3ds& U) const
 {
-	const Matrix3d& F = *this;
-	Matrix3ds C = (F.transpose()*F).sym();
+    Eigen::JacobiSVD<Eigen::Matrix3d> svd(m_matrix, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
-	double l[3];
-	Vector3d v[3];
-	C.eigen2(l, v);
+    // 确保旋转矩阵是正交的
+    R.m_matrix = svd.matrixU() * svd.matrixV().transpose();
+    if (R.det() < 0)
+    {
+        // 处理反射情况
+        Eigen::Matrix3d V = svd.matrixV();
+        V.col(2) = -V.col(2);
+        R.m_matrix = svd.matrixU() * V.transpose();
+    }
 
-	U = dyad(v[0])*sqrt(l[0]) + dyad(v[1])*sqrt(l[1]) + dyad(v[2])*sqrt(l[2]);
-	R = F*U.inverse();
+    // 计算右拉伸张量
+    auto mat = svd.matrixV() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
+    U = Matrix3d(mat).sym();
 }
 
-//-----------------------------------------------------------------------------
-// calculates the unique left polar decomposition F = V*R
 void Matrix3d::left_polar(Matrix3ds& V, Matrix3d& R) const
 {
-	const Matrix3d& F = *this;
-	Matrix3ds b = (F*F.transpose()).sym();
+    Eigen::JacobiSVD<Eigen::Matrix3d> svd(m_matrix, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
-	double l[3];
-	Vector3d v[3];
-	b.eigen2(l, v);
+    // 确保旋转矩阵是正交的
+    R.m_matrix = svd.matrixU() * svd.matrixV().transpose();
+    if (R.det() < 0)
+    {
+        // 处理反射情况
+        Eigen::Matrix3d U = svd.matrixU();
+        U.col(2) = -U.col(2);
+        R.m_matrix = U * svd.matrixV().transpose();
+    }
 
-	V = dyad(v[0])*sqrt(l[0]) + dyad(v[1])*sqrt(l[1]) + dyad(v[2])*sqrt(l[2]);
-	R = V.inverse()*F;
+    // 计算左拉伸张量
+    auto mat = svd.matrixU() * svd.singularValues().asDiagonal() * svd.matrixU().transpose();
+    V = Matrix3d(mat).sym();
 }
 
-//-----------------------------------------------------------------------------
-// the "max shear" value
-double Matrix3ds::max_shear() const
+// ================ 静态方法 ================
+Matrix3d Matrix3d::identity()
 {
-	double e[3];
-	exact_eigen(e);
-
-	double t1 = fabs(0.5f*(e[1] - e[2]));
-	double t2 = fabs(0.5f*(e[2] - e[0]));
-	double t3 = fabs(0.5f*(e[0] - e[1]));
-
-	// TODO: is this necessary? I think the values returned
-	//       by Principals are already ordered.
-	double tmax = t1;
-	if (t2 > tmax) tmax = t2;
-	if (t3 > tmax) tmax = t3;
-
-	return tmax;
+    return Matrix3d(Eigen::Matrix3d::Identity());
 }
 
-
-//-----------------------------------------------------------------------------
-void Matrix3fs::Principals(float e[3]) const
+// ================ 全局运算符 ================
+Matrix3d operator*(double s, const Matrix3d& m)
 {
-	const static float ONETHIRD = 1.f / 3.f;
-
-	// pressure
-	float p = -(x + y + z) * ONETHIRD;
-
-	DeviatoricPrincipals(e);
-
-	e[0] -= p;
-	e[1] -= p;
-	e[2] -= p;
+    return m * s;
 }
 
-//-----------------------------------------------------------------------------
-void Matrix3fs::DeviatoricPrincipals(float e[3]) const
+inline Matrix3d operator&(const Vector3d& a, const Vector3d& b)
 {
-	const static float ONETHIRD = 1.f / 3.f;
-
-	// pressure
-	float p = -(x + y + z) * ONETHIRD;
-
-	// deviatoric stresses
-	float dev[3];
-	dev[0] = x + p;
-	dev[1] = y + p;
-	dev[2] = z + p;
-
-	// invariants
-	float I[3];
-	I[0] = dev[0] + dev[1] + dev[2]; // = tr[s']
-
-	I[1] = 0.5f * (dev[0] * dev[0]
-		+ dev[1] * dev[1]
-		+ dev[2] * dev[2])
-		+ xy * xy
-		+ yz * yz
-		+ xz * xz; // = s':s'
-
-	I[2] = -dev[0] * dev[1] * dev[2] - 2.0f * xy * yz * xz
-		+ dev[0] * yz * yz
-		+ dev[1] * xz * xz
-		+ dev[2] * xy * xy; // = -det(s')
-
-						  // check to see if we can have a non-zero divisor, if no
-						  // set principal stress to 0
-	if (I[1] != 0)
-	{
-		double a = -0.5 * sqrt(27.0 / I[1]) * I[2] / I[1];
-		if (a < 0)
-			a = MAX(a, -1.0);
-		else
-			a = MIN(a, 1.0);
-		double w = acos(a) * ONETHIRD;
-		double val = 2.0 * sqrt(I[1] * ONETHIRD);
-		e[0] = (float)(val * cos(w));
-		w = w - 2.0 * PI * ONETHIRD;
-		e[1] = (float)(val * cos(w));
-		w = w + 4.0 * PI * ONETHIRD;
-		e[2] = (float)(val * cos(w));
-	}
-	else
-	{
-		e[0] = e[1] = e[2] = 0.f;
-	}
+    return Matrix3d(a.x * b.x, a.x * b.y, a.x * b.z, a.y * b.x, a.y * b.y, a.y * b.z, a.z * b.x, a.z * b.y, a.z * b.z);
 }
 
-//-----------------------------------------------------------------------------
-float Matrix3fs::MaxShear() const
+inline Matrix3d skew(const Vector3d& a)
 {
-	float e[3];
-	Principals(e);
-
-	float t1 = (float)fabs(0.5f * (e[1] - e[2]));
-	float t2 = (float)fabs(0.5f * (e[2] - e[0]));
-	float t3 = (float)fabs(0.5f * (e[0] - e[1]));
-
-	// TODO: is this necessary? I think the values returned
-	//       by Principals are already ordered.
-	float tmax = t1;
-	if (t2 > tmax) tmax = t2;
-	if (t3 > tmax) tmax = t3;
-
-	return tmax;
-}
-
-//-----------------------------------------------------------------------------
-#define ROTATE(a, i, j, k, l) g=a[i][j]; h=a[k][l];a[i][j]=g-s*(h+g*tau); a[k][l] = h + s*(g - h*tau);
-#define SWAPF(a, b) { float t = a; a = b; b = t; }
-#define SWAPV(a, b) { Vector3f t = a; a = b; b = t; }
-
-void Matrix3fs::eigen(Vector3f e[3], float l[3]) const
-{
-	const int NMAX = 50;
-	double sm, tresh, g, h, t, c, tau, s, th;
-	int i, j, k;
-
-	// copy the Matrix components since we will be overwriting them
-	double a[3][3] = {
-		{ x , xy, xz },
-		{ xy, y , yz },
-		{ xz, yz, z }
-	};
-
-	// the v Matrix contains the eigen vectors
-	// intialize to identity
-	double v[3][3] = {
-		{ 1, 0, 0 },
-		{ 0, 1, 0 },
-		{ 0, 0, 1 }
-	};
-
-	// initialize b and d to the diagonal of a
-	double b[3] = { a[0][0], a[1][1], a[2][2] };
-	double d[3] = { a[0][0], a[1][1], a[2][2] };
-	double z[3] = { 0 };
-
-	const double eps = 0;//1.0e-15;
-
-						 // loop
-	int n, nrot = 0;
-	for (n = 0; n < NMAX; ++n)
-	{
-		// sum off-diagonal elements
-		sm = fabs(a[0][1]) + fabs(a[0][2]) + fabs(a[1][2]);
-		if (sm <= eps) break;
-
-		// set the treshold
-		if (n < 3) tresh = 0.2 * sm / 9.0; else tresh = 0.0;
-
-		// loop over off-diagonal elements
-		for (i = 0; i < 2; ++i)
-		{
-			for (j = i + 1; j < 3; ++j)
-			{
-				g = 100.0 * fabs(a[i][j]);
-
-				// after four sweeps, skip the rotation if the off-diagonal element is small
-				if ((n > 3) && ((fabs(d[i]) + g) == fabs(d[i]))
-					&& ((fabs(d[j]) + g) == fabs(d[j])))
-				{
-					a[i][j] = 0.0;
-				}
-				else if (fabs(a[i][j]) > tresh)
-				{
-					h = d[j] - d[i];
-					if ((fabs(h) + g) == fabs(h))
-						t = a[i][j] / h;
-					else
-					{
-						th = 0.5 * h / a[i][j];
-						t = 1.0 / (fabs(th) + sqrt(1 + th * th));
-						if (th < 0.0) t = -t;
-					}
-
-					c = 1.0 / sqrt(1.0 + t * t);
-					s = t * c;
-					tau = s / (1.0 + c);
-					h = t * a[i][j];
-					z[i] -= h;
-					z[j] += h;
-					d[i] -= h;
-					d[j] += h;
-					a[i][j] = 0;
-
-					for (k = 0; k <= i - 1; ++k) { ROTATE(a, k, i, k, j) }
-					for (k = i + 1; k <= j - 1; ++k) { ROTATE(a, i, k, k, j) }
-					for (k = j + 1; k < 3; ++k) { ROTATE(a, i, k, j, k) }
-					for (k = 0; k < 3; ++k) { ROTATE(v, k, i, k, j) }
-					++nrot;
-				}
-			}
-		}
-
-		for (i = 0; i < 3; ++i)
-		{
-			b[i] += z[i];
-			d[i] = b[i];
-			z[i] = 0.0;
-		}
-	}
-
-	// we sure we converged
-	assert(n < NMAX);
-
-	// copy eigenvalues
-	l[0] = (float)d[0];
-	l[1] = (float)d[1];
-	l[2] = (float)d[2];
-
-	// copy eigenvectors
-	e[0].x = (float)v[0][0]; e[0].y = (float)v[1][0]; e[0].z = (float)v[2][0];
-	e[1].x = (float)v[0][1]; e[1].y = (float)v[1][1]; e[1].z = (float)v[2][1];
-	e[2].x = (float)v[0][2]; e[2].y = (float)v[1][2]; e[2].z = (float)v[2][2];
-
-	// we still need to sort the eigenvalues
-	if (l[1] > l[0]) { SWAPF(l[0], l[1]); SWAPV(e[0], e[1]); }
-	if (l[2] > l[0]) { SWAPF(l[0], l[2]); SWAPV(e[0], e[2]); }
-	if (l[2] > l[1]) { SWAPF(l[2], l[1]); SWAPV(e[2], e[1]); }
-}
-
-//-----------------------------------------------------------------------------
-Vector3f Matrix3fs::PrincDirection(int l)
-{
-	Vector3f e[3];
-	float lam[3];
-	eigen(e, lam);
-	return e[l] * lam[l];
-}
-
-//-----------------------------------------------------------------------------
-double fractional_anisotropy(const Matrix3fs& m)
-{
-	Vector3f e[3];
-	float l[3];
-	m.eigen(e, l);
-
-	double la = (l[0] + l[1] + l[2]) / 3.0;
-	double D = sqrt(l[0] * l[0] + l[1] * l[1] + l[2] * l[2]);
-	double fa = 0.0;
-	if (D != 0) fa = sqrt(3.0 / 2.0) * sqrt((l[0] - la) * (l[0] - la) + (l[1] - la) * (l[1] - la) + (l[2] - la) * (l[2] - la)) / D;
-
-	return fa;
+    return Matrix3d(0, -a.z, a.y, a.z, 0, -a.x, -a.y, a.x, 0);
 }

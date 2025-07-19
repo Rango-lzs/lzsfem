@@ -5,6 +5,7 @@
 #include <Eigen/SVD>
 #include <vector>
 #include <iostream>
+#include "Matrix3d.h"
 
 // PIMPLÊµÏÖÏ¸½Ú
 class Matrix::InnerData
@@ -63,6 +64,12 @@ Matrix& Matrix::operator=(Matrix&& m) noexcept
     {
         m_data = std::move(m.m_data);
     }
+    return *this;
+}
+
+Matrix& Matrix::operator=(const Matrix3d& m)
+{
+    //m_data = std::move(m.m_matrix);
     return *this;
 }
 

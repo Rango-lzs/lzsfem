@@ -20,6 +20,8 @@ public:
     // ¸³Öµ²Ù×÷·û
     Matrix& operator=(const Matrix& m);
     Matrix& operator=(Matrix&& m) noexcept;
+    //! assignment operator
+    Matrix& operator=(const Matrix3d& m);
 
     // ¾ØÕó²Ù×÷
     void resize(int nr, int nc);

@@ -501,6 +501,7 @@ set(DATA_STRUCTURE_HEADERS
     datastructure/tensor_base.h
     datastructure/vector_operator.h
     datastructure/table.h
+    datastructure/Matrix3dSpecial.h
 )
 
 set(DATA_STRUCTURE_SOURCES
@@ -511,6 +512,7 @@ set(DATA_STRUCTURE_SOURCES
     datastructure/tens3d.cpp
     datastructure/tens4d.cpp
     datastructure/vector_operator.cpp
+    datastructure/Matrix3dSpecial.cpp
 )
 
 set(PROJECT_SOURCES
