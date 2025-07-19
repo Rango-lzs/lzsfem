@@ -29,7 +29,7 @@ endmacro(sub_dir_list)
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "cmakes/")
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmakes)
 
-set(THIRD_PARTY_ROOT "D:/Lzs/PhysicEngine/FEM_Project/lzsfem/ThirdParty") #office
+set(THIRD_PARTY_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty) #office
 #set(THIRD_PARTY_ROOT "D:/ThirdParty") #home
 
 option(ENABLE_UNIT_TESTS "Enable unit tests" OFF)

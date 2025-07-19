@@ -1,5 +1,5 @@
 set(Eigen3_INCLUDE_DIR "${THIRD_PARTY_ROOT}/eigen3")
-message(status "***eigen source****${Eigen3_INCLUDE_DIRS}")
+message(status "***eigen source****${Eigen3_INCLUDE_DIR}")
 
 #find_path(Eigen3_INCLUDE_DIR
 #  NAMES signature_of_eigen3_matrix_library

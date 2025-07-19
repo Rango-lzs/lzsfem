@@ -24,6 +24,7 @@ message(status "cmake source****${CMAKE_SOURCE_DIR}")
 
 # 设置模块搜索路径
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakes")
+
 # 找到Eigen库
 find_package(Eigen3 REQUIRED)
  
