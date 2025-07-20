@@ -10,12 +10,14 @@ class Matrix3dd;  // diagonal Matrixrix of doubles
 class Matrix2d;   // general 2D Matrixrix of doubles 2*2
 class Vector3d;
 
+using EigenMat3d = Eigen::Matrix<double, 3, 3, Eigen::RowMajor>;
+
 class Matrix3d
 {
 public:
     // 构造函数
     Matrix3d();
-    Matrix3d(const Eigen::Matrix3d& matrix);
+    Matrix3d(const EigenMat3d& matrix);
     explicit Matrix3d(double a);
     Matrix3d(double a00, double a01, double a02, double a10, double a11, double a12, double a20, double a21,
              double a22);
@@ -88,17 +90,17 @@ public:
     static Matrix3d identity();
 
 private:
-    Eigen::Matrix3d m_matrix;
+    EigenMat3d m_matrix;
 };
 
 // 全局运算符
 Matrix3d operator*(double s, const Matrix3d& m);
 
 // outer product for vectors
-inline Matrix3d operator&(const Vector3d& a, const Vector3d& b);
+Matrix3d operator&(const Vector3d& a, const Vector3d& b);
 
 // skew-symmetric Matrixrix of dual vector
-inline Matrix3d skew(const Vector3d& a);
+Matrix3d skew(const Vector3d& a);
 
 #endif  // MATRIX3D_H
 

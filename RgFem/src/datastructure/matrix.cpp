@@ -11,7 +11,7 @@
 class Matrix::InnerData
 {
 public:
-    Eigen::MatrixXd mat;
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> mat;
 
     InnerData() = default;
     InnerData(int nr, int nc)

@@ -11,7 +11,7 @@ Matrix3d::Matrix3d()
 {
 }
 
-Matrix3d::Matrix3d(const Eigen::Matrix3d& matrix)
+Matrix3d::Matrix3d(const EigenMat3d& matrix)
     : m_matrix(matrix)
 {
 }
@@ -39,21 +39,21 @@ Matrix3d::Matrix3d(double a[9])
     m_matrix << a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8];
 }
 
-inline Matrix3d::Matrix3d(const Matrix3dd& m)
+Matrix3d::Matrix3d(const Matrix3dd& m)
 {
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
             m_matrix(i, j) = m(i,j);
 }
 
-inline Matrix3d::Matrix3d(const Matrix3ds& m)
+Matrix3d::Matrix3d(const Matrix3ds& m)
 {
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
             m_matrix(i, j) = m(i, j);
 }
 
-inline Matrix3d::Matrix3d(const Matrix3da& m)
+Matrix3d::Matrix3d(const Matrix3da& m)
 {
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
@@ -380,12 +380,12 @@ Matrix3d operator*(double s, const Matrix3d& m)
     return m * s;
 }
 
-inline Matrix3d operator&(const Vector3d& a, const Vector3d& b)
+Matrix3d operator&(const Vector3d& a, const Vector3d& b)
 {
     return Matrix3d(a.x * b.x, a.x * b.y, a.x * b.z, a.y * b.x, a.y * b.y, a.y * b.z, a.z * b.x, a.z * b.y, a.z * b.z);
 }
 
-inline Matrix3d skew(const Vector3d& a)
+Matrix3d skew(const Vector3d& a)
 {
     return Matrix3d(0, -a.z, a.y, a.z, 0, -a.x, -a.y, a.x, 0);
 }
