@@ -789,6 +789,7 @@ set(PLOT_FILE_HEADERS
     plotfile/PlotFile.h
     plotfile/PltArchive.h
     plotfile/FEVTKPlotFile.h
+    plotfile/VtuWriter.h
 )
 
 set(PLOT_FILE_SOURCES
@@ -796,6 +797,7 @@ set(PLOT_FILE_SOURCES
     plotfile/PlotFile.cpp
     plotfile/PltArchive.cpp
     plotfile/FEVTKPlotFile.cpp
+    plotfile/VtuWriter.cpp
 )
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
@@ -803,6 +805,32 @@ set(PROJECT_SOURCES
     ${PLOT_FILE_SOURCES}
 )
 source_group("plotfile" FILES ${PLOT_FILE_HEADERS} ${PLOT_FILE_SOURCES})
+
+set(VTU_HEADERS
+	../../ThirdParty/paraviewo-src/src/paraviewo/ParaviewWriter.hpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/VTMWriter.hpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/HDF5VTUWriter.hpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/VTUWriter.hpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/PVDWriter.hpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/base64Layer.hpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/base64Layer.cpp
+)
+
+set(VTU_SOURCES
+	../../ThirdParty/paraviewo-src/src/paraviewo/VTMWriter.cpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/HDF5VTUWriter.cpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/VTUWriter.cpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/PVDWriter.cpp
+	../../ThirdParty/paraviewo-src/src/paraviewo/base64Layer.cpp
+)
+
+set(PROJECT_SOURCES
+    ${PROJECT_SOURCES}
+    ${VTU_HEADERS}
+    ${VTU_SOURCES}
+)
+source_group("vtuwriter" FILES ${VTU_HEADERS} ${VTU_SOURCES})
+
 
 target_sources(${TARGET_NAME} PRIVATE ${PROJECT_SOURCES})
 

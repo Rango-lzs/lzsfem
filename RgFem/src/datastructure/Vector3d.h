@@ -47,6 +47,33 @@ public:
             default: {return x; break;}
         }
     }
+
+	double operator[](int i) const
+    {
+        switch (i)
+        {
+            case 0:
+            {
+                return x;
+                break;
+            }
+            case 1:
+            {
+                return y;
+                break;
+            }
+            case 2:
+            {
+                return z;
+                break;
+            }
+            default:
+            {
+                return x;
+                break;
+            }
+        }
+    }
     
 	// dot product
 	double operator * (const Vector3d& r) const { return (x*r.x + y*r.y + z*r.z); }
