@@ -170,6 +170,10 @@ public:
     // --- DOMAINS ---
     int Domains();
     FEDomain& Domain(int n);
+    const std::vector<FEDomain*>& AllDomain()
+    {
+        return m_Domain;
+    }
 
     void AddDomain(FEDomain* pd);
 

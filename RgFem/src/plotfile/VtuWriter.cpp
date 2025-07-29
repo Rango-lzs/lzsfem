@@ -4,6 +4,11 @@
 #include "elements/RgElemTypeDefine.h"
 #include "femcore/FEModel.h"
 #include "femcore/FEMesh.h"
+#include "materials/FESolidMaterial.h"
+#include "femcore/Domain/FEDomain.h"
+
+#include <vector>
+#include "materials/FEElasticMaterialPoint.h"
 
 #define SPACE2 "  "
 #define SPACE4 "    "
@@ -40,10 +45,40 @@ void VTUWriter::write(const std::vector<NodeData>& nodes,
     m_out << "      </PointData>\n";
 
     // 4. 写入单元数据（应力、应变等）
-    //m_out << "      <CellData>\n";
+    m_out << "      <CellData>\n";
     //writeScalarData("VonMisesStress", elements, [](const ElementData& e) { return e.vonMisesStress; });
     //writeScalarData("PlasticStrain", elements, [](const ElementData& e) { return e.plasticStrain; });
-    //m_out << "      </CellData>\n";
+    
+    m_out << "        <DataArray type=\"Float64\" Name=\"Stress\" NumberOfComponents=\"6\" format=\"ascii\">\n";
+   
+    for (auto dom : mp_model->GetMesh().AllDomain())
+    {
+        auto stressGeter = [](const FEMaterialPoint& mp)
+        {
+            const FEElasticMaterialPoint& ep = *mp.ExtractData<FEElasticMaterialPoint>();
+            Matrix3ds s = ep.m_s;
+            //Matrix3ds S = ep.pull_back(s);
+            return s;
+        };
+
+        for (int i = 0; i < dom->Elements(); i++)
+        {
+            FEElement& el = dom->ElementRef(i);
+            Matrix3ds s(0.0);
+            for (int j = 0; j < el.GaussPointSize(); ++j)
+                s += stressGeter(*el.GetMaterialPoint(j));
+            s /= (double)el.GaussPointSize();
+
+            m_out << "          ";      
+            {
+                m_out << s.xx() << " "<< s.yy()<<" "<< s.zz()<<" "<< s.xy()<<" "<< s.yz() <<" " << s.xz();
+            }
+            m_out << "\n";
+        }
+    }
+    
+    m_out << "        </DataArray>\n";
+    m_out << "      </CellData>\n";
 
     // 5. 写入节点相关的单元数据（需要特殊处理）
     //writeNodalCellData(elements);
