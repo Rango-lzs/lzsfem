@@ -589,6 +589,7 @@ set(BASICIO_HEADERS
     basicio/ObjectDataRecord.h
     basicio/SurfaceDataRecord.h
     basicio/FEDataExport.h
+    #basicio/FEBioMechPlot.h
 )
 
 set(BASICIO_SOURCES
@@ -608,6 +609,7 @@ set(BASICIO_SOURCES
     basicio/ObjectDataRecord.cpp
     basicio/SurfaceDataRecord.cpp
     basicio/FEDataExport.cpp
+    #basicio/FEBioMechPlot.cpp
 )
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
@@ -826,8 +828,8 @@ set(VTU_SOURCES
 
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
-    ${VTU_HEADERS}
-    ${VTU_SOURCES}
+#    ${VTU_HEADERS}
+#    ${VTU_SOURCES}
 )
 source_group("vtuwriter" FILES ${VTU_HEADERS} ${VTU_SOURCES})
 

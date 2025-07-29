@@ -430,6 +430,8 @@ bool FEAnalysis::Solve()
         }
     }
 
+    
+    fem.notify();
     // TODO: Why is this here?
     fem.SetStartTime(fem.GetCurrentTime());
     return bConv;

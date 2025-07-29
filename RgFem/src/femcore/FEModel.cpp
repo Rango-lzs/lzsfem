@@ -28,6 +28,7 @@
 #include <map>
 #include <stdarg.h>
 #include <string>
+#include "FEModelObserver.h"
 using namespace std;
 
 //-----------------------------------------------------------------------------
@@ -559,6 +560,12 @@ bool FEModel::Init()
         ret = false;
         feLogError(c.what());
     }
+
+    mp_model_sbj = new FEModelSubject(this);
+    auto obser = new OutputObserver();
+    obser->setOutputStrategy(std::make_unique<VTKOutput>());
+    mp_model_sbj->attach(obser);
+
 
     // do the callback
     return ret;
@@ -1467,4 +1474,12 @@ bool FEModel::EvaluateLoadParameters()
     feLog("\n");
 
     return true;
+}
+
+void FEModel::notify()
+{
+    if (mp_model_sbj)
+    {
+        mp_model_sbj->notify(FEModelEvent::MajorIteration);
+    }
 }

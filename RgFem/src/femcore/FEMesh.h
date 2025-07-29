@@ -80,6 +80,11 @@ public:
     FENode& Node(int i);
     const FENode& Node(int i) const;
 
+    const std::vector<FENode>& AllNode() const
+    {
+        return m_Node;
+    }
+
     //! Set the number of degrees of freedom on this mesh
     void SetDOFS(int n);
 

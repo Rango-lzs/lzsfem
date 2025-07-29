@@ -4,6 +4,7 @@
 #include <list>
 #include <memory>
 #include <vector>
+#include "plotfile/FEVTKPlotFile.h"
 
 //-----------------------------------------------------------------------------
 // Forward declarations.
@@ -73,9 +74,15 @@ public:
 class FEFilteredObserver : public FEObserver
 {
 public:
+    FEFilteredObserver()
+    {
+        m_relevantEvents = static_cast<uint32_t>(FEModelEvent::MajorIteration);
+    }
+
     explicit FEFilteredObserver(FEModelEvent relevantEvents)
         : m_relevantEvents(static_cast<uint32_t>(relevantEvents))
     {
+        m_relevantEvents = static_cast<uint32_t>(FEModelEvent::MajorIteration);
     }
 
     bool handleEvent(FEModel* model, FEModelEvent event) override
@@ -97,6 +104,11 @@ private:
 class FEModelSubject : public FESubject
 {
 public:
+    FEModelSubject(FEModel* pModel)
+        : m_model(pModel)
+    {
+    }
+
     void attach(FEObserver* observer, int priority = 0) override
     {
         m_observers.emplace_back(observer);
@@ -159,20 +171,25 @@ class OutputStrategy
 {
 public:
     virtual ~OutputStrategy() = default;
-    virtual void write(const FEModelEvent& event) = 0;
+    virtual void write(FEModel* pModel, const FEModelEvent& event) = 0;
 };
 
 // VTK格式输出
 class VTKOutput : public OutputStrategy
 {
 public:
-    void write(const FEModelEvent& event) override
+    void write(FEModel* pModel,const FEModelEvent& event) override
     {
         // const auto& results = event.getResults();
         // std::string filename = "result_" + std::to_string(event.getStep()) + ".vtk";
 
         //// 实现VTK文件写入逻辑
         // writeVTKFile(filename, results);
+        FEVTKPlotFile plot(pModel);
+        plot.Open("test.vtk");
+        plot.Write(1.0,1);
+        plot.Close();
+
     }
 };
 
@@ -180,7 +197,7 @@ public:
 class HDF5Output : public OutputStrategy
 {
 public:
-    void write(const FEModelEvent& event) override
+    void write(FEModel* pModel,const FEModelEvent& event) override
     {
         // HDF5写入实现
     }
@@ -190,7 +207,8 @@ public:
 class OutputObserver : public FEFilteredObserver
 {
 public:
-protected:
+    OutputObserver() = default;
+
     bool onEvent(FEModel* model, FEModelEvent event) override
     {
         switch (event)
@@ -200,7 +218,7 @@ protected:
                 {
                     if (shouldWrite(event))
                     {
-                        outputStrategy_->write(event);
+                        outputStrategy_->write(model, event);
                     }
                 }
                 break;

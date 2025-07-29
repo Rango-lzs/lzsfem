@@ -5,6 +5,11 @@
 #include "femcore/FEModel.h"
 #include "femcore/FEMesh.h"
 
+#define SPACE2 "  "
+#define SPACE4 "    "
+#define SPACE6 "      "
+#define SPACE8 "        "
+#define SPACE10 "          "
 
 VTUWriter::VTUWriter(FEModel* pModel, std::ostream& out)
     : mp_model(pModel)
@@ -13,34 +18,35 @@ VTUWriter::VTUWriter(FEModel* pModel, std::ostream& out)
 
 }
 
-void VTUWriter::write(const std::string& filename, const std::vector<NodeData>& nodes,
+void VTUWriter::write(const std::vector<NodeData>& nodes,
                       const std::vector<ElementData>& elements)
 {
     // 0. write header
     writeHeader();
 
     // 1. 写入节点坐标
-    writePoints(nodes);
+    writePoints();
 
     // 2. 写入单元信息
-    writeCells(elements);
+    writeCells();
 
     // 3. 写入节点数据（位移、速度、加速度等）
+    const auto& allNode = mp_model->GetMesh().AllNode();
     m_out << "      <PointData>\n";
-    writeVectorData("Displacement", nodes, [](const NodeData& n) { return n.displacement; });
-    writeVectorData("Velocity", nodes, [](const NodeData& n) { return n.velocity; });
-    writeVectorData("Acceleration", nodes, [](const NodeData& n) { return n.acceleration; });
-    writeScalarData("Temperature", nodes, [](const NodeData& n) { return n.temperature; });
+    writeVectorData("Displacement", allNode, [](const FENode& n) { return n.get_vec3d(0, 1, 2); });
+    //writeVectorData("Velocity", nodes, [](const NodeData& n) { return n.velocity; });
+    //writeVectorData("Acceleration", nodes, [](const NodeData& n) { return n.acceleration; });
+    //writeScalarData("Temperature", nodes, [](const NodeData& n) { return n.temperature; });
     m_out << "      </PointData>\n";
 
     // 4. 写入单元数据（应力、应变等）
-    m_out << "      <CellData>\n";
-    writeScalarData("VonMisesStress", elements, [](const ElementData& e) { return e.vonMisesStress; });
-    writeScalarData("PlasticStrain", elements, [](const ElementData& e) { return e.plasticStrain; });
-    m_out << "      </CellData>\n";
+    //m_out << "      <CellData>\n";
+    //writeScalarData("VonMisesStress", elements, [](const ElementData& e) { return e.vonMisesStress; });
+    //writeScalarData("PlasticStrain", elements, [](const ElementData& e) { return e.plasticStrain; });
+    //m_out << "      </CellData>\n";
 
     // 5. 写入节点相关的单元数据（需要特殊处理）
-    writeNodalCellData(elements);
+    //writeNodalCellData(elements);
 
     // 结束文件
     m_out << "    </Piece>\n";
@@ -55,58 +61,68 @@ void VTUWriter::writeHeader()
     int elem = mp_model->GetMesh().Elements();
     m_out << "<?xml version=\"1.0\"?>\n";
     m_out << "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\">\n";
-    m_out << "  <UnstructuredGrid>\n";
-    m_out << "    <Piece NumberOfPoints=\"" << node << "\" NumberOfCells=\"" << elem << "\">\n";
+    m_out <<SPACE2 <<"<UnstructuredGrid>\n";
+    m_out <<SPACE4<<"<Piece NumberOfPoints=\"" << node << "\" NumberOfCells=\"" << elem << "\">\n";
 }
 // 写入节点坐标
-void VTUWriter::writePoints(const std::vector<NodeData>& nodes)
+void VTUWriter::writePoints()
 {
-    m_out << "      <Points>\n";
-    m_out << "        <DataArray type=\"Float64\" NumberOfComponents=\"3\" format=\"ascii\">\n";
-    for (const auto& node : nodes)
+    m_out << SPACE6<< "<Points>\n";
+    m_out << SPACE8<< "<DataArray type=\"Float64\" NumberOfComponents=\"3\" format=\"ascii\">\n";
+    
+    for (int i = 0; i < mp_model->GetMesh().Nodes(); i++)
     {
-        m_out << "          " << node.coordinates[0] << " " << node.coordinates[1] << " " << node.coordinates[2] << "\n";
+        const FENode& node = mp_model->GetMesh().Node(i);
+        m_out << "          " << node.m_r0[0] << " " << node.m_r0[1] << " " << node.m_r0[2] << "\n";
     }
-    m_out << "        </DataArray>\n";
-    m_out << "      </Points>\n";
+    m_out << SPACE8<< "</DataArray>\n";
+    m_out << SPACE6<< "</Points>\n";
 }
 
 // 写入单元信息
-void VTUWriter::writeCells(const std::vector<ElementData>& elements)
+void VTUWriter::writeCells()
 {
-    m_out << "      <Cells>\n";
+    m_out << SPACE6<< "<Cells>\n";
 
     // 连接关系
-    m_out << "        <DataArray type=\"Int32\" Name=\"connectivity\" format=\"ascii\">\n";
-    for (const auto& elem : elements)
+    m_out << SPACE8<<"<DataArray type=\"Int32\" Name=\"connectivity\" format=\"ascii\">\n";
+
+
+    for (int i =0; i< mp_model->GetMesh().Elements();i++)
     {
-        for (int nodeId : elem.nodeIds)
+        m_out << SPACE10; 
+        const FEElement& elem = *mp_model->GetMesh().Element(i);
+        for (int nodeId : elem.getNodeIds())
         {
-            m_out << (nodeId - 1) << " ";  // VTK 使用0-based索引
+            m_out << nodeId << " ";  // VTK 使用0-based索引
         }
         m_out << "\n";
     }
-    m_out << "        </DataArray>\n";
+    m_out << SPACE8<< "</DataArray>\n";
 
     // 偏移量
-    m_out << "        <DataArray type=\"Int32\" Name=\"offsets\" format=\"ascii\">\n";
+    m_out << SPACE8<<"<DataArray type=\"Int32\" Name=\"offsets\" format=\"ascii\">\n";
+    m_out << SPACE10; 
     int offset = 0;
-    for (const auto& elem : elements)
+    for (int i = 0; i < mp_model->GetMesh().Elements(); i++)
     {
-        offset += elem.nodeIds.size();
+        const FEElement& elem = *mp_model->GetMesh().Element(i);
+        offset += elem.NodeSize();
         m_out << offset << " ";
     }
-    m_out << "\n        </DataArray>\n";
+    m_out << "\n" << SPACE8<< "</DataArray>\n";
 
     // 单元类型
-    m_out << "        <DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n";
-    for (const auto& elem : elements)
+    m_out << SPACE8<< "<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n";
+    m_out << SPACE10; 
+    for (int i = 0; i < mp_model->GetMesh().Elements(); i++)
     {
-        m_out << getVTKCellType(elem.type) << " ";
+        const FEElement& elem = *mp_model->GetMesh().Element(i);
+        m_out << 12 << " ";
     }
-    m_out << "\n        </DataArray>\n";
+    m_out << "\n" << SPACE8 <<"</ DataArray >\n ";
 
-    m_out << "      </Cells>\n";
+    m_out << SPACE6<<"</Cells>\n";
 }
 
 
@@ -152,7 +168,7 @@ void VTUWriter::writeNodalCellData(const std::vector<ElementData>& elements)
 int VTUWriter::getVTKCellType(ElementType type) const
 {
     static std::map<ElementType, int> typeMap = {
-        {ElementType::FE_HEX8G8, 10},
+        {ElementType::FE_HEX8G8, 12},
         {ElementType::FE_HEX8G8, 12},
         {ElementType::FE_HEX8G8,  9},
         {ElementType::FE_HEX8G8,  5}

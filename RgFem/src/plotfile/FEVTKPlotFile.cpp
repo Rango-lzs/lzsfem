@@ -1,5 +1,9 @@
 #include "FEVTKPlotFile.h"
+#include <iostream>
+#include "VtuWriter.h"
+#include "femcore/FEModel.h"
 
+#include <vector>
 
 //-----------------------------------------------------------------------------
 bool FEVTKPlotFile::IsValid() const
@@ -11,7 +15,7 @@ bool FEVTKPlotFile::IsValid() const
 //-----------------------------------------------------------------------------
 void FEVTKPlotFile::Close()
 {
-	//m_ar.Close();
+    m_out.close();
 }
 
 
@@ -19,10 +23,18 @@ void FEVTKPlotFile::Close()
 bool FEVTKPlotFile::Open(const char *szfile)
 {
 	FEModel* fem = GetFEModel();
+    if (!fem)
+    {
+        std::cerr << "Error: No FEModel available." << std::endl;
+        return false;
+    }
 
-	// open the archive
-	//m_ar.Create(szfile);
-
+    m_out.open(szfile);
+    if (!m_out.is_open())
+    {
+        std::cerr << "Error: Could not open file " << szfile << std::endl;
+        return false;
+    }   
 	return true;
 }
 
@@ -30,6 +42,8 @@ bool FEVTKPlotFile::Open(const char *szfile)
 bool FEVTKPlotFile::Write(float ftime, int flag)
 {
 	FEModel& fem = *GetFEModel();
+    VTUWriter vtuOut(&fem, m_out);
+    vtuOut.write(std::vector<NodeData>(), std::vector<ElementData>());
 	return true;
 }
 

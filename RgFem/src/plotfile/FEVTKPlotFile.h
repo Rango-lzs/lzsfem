@@ -1,5 +1,6 @@
 #pragma once
 #include "PlotFile.h"
+#include <fstream>
 
 //-----------------------------------------------------------------------------
 //! This class implements the facilities to export FE data in the VTK
@@ -31,4 +32,7 @@ public:
 
 	//! see if the plot file is valid
 	bool IsValid() const override;
+
+private:
+    std::ofstream m_out;
 };

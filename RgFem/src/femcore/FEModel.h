@@ -37,6 +37,7 @@ class Timer;
 class DataStore;
 class DOFS;
 class Logfile;
+class FEModelSubject;
 
 /**
  * 定义整个求解模型. 包含所有的FEM组件，此类可进一步精简，定义每个组件的Manager
@@ -294,8 +295,13 @@ public:
 	void SetUnits(const char* szunits);
 	const char* GetUnits() const;
 
+	void notify();
+
 private:
 	class Impl;
 	std::unique_ptr<Impl> m_imp;
+
+	FEModelSubject* mp_model_sbj;
+
 	DECLARE_PARAM_LIST();
 };

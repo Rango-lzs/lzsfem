@@ -33,7 +33,7 @@ class VTUWriter
 public:
     VTUWriter(FEModel* pModel, std::ostream& out);
 
-    void write(const std::string& filename, const std::vector<NodeData>& nodes,
+    void write(const std::vector<NodeData>& nodes,
                const std::vector<ElementData>& elements);
   
 private:
@@ -41,10 +41,10 @@ private:
     void writeHeader();
    
     // 写入节点坐标
-    void writePoints(const std::vector<NodeData>& nodes);
+    void writePoints();
    
     // 写入单元信息
-    void writeCells(const std::vector<ElementData>& elements);
+    void writeCells();
     
     // 通用标量数据写入
     template <typename T, typename Func>
