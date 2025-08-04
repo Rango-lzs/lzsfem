@@ -24,10 +24,7 @@ enum ElementShape
 {
     // 3D elements
     ET_TET4,
-    ET_TET5,
     ET_TET10,
-    ET_TET15,
-    ET_TET20,
     ET_PENTA6,
     ET_PENTA15,
     ET_HEX8,

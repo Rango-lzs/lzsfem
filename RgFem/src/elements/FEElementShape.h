@@ -15,6 +15,7 @@ public:
     {
         return m_shape;
     }
+
     int nodes() const
     {
         return m_nodes;

@@ -10,7 +10,8 @@ class FEElement;
 class FEMaterialPoint;
 
 //-----------------------------------------------------------------------------
-//! Material point class
+//! Material point class  材料是固有属性，材料点是状态属性， 材料点数据可以有父，子材料点， 例如
+//! ElasticFiber  可以由ElasticmatPoint 和 FiberMatPoint组合， 即下面的prev 和 next
 
 //! This class implements the concept of a material point. This point carries
 //! with it not only information about its location, both in the reference and  
