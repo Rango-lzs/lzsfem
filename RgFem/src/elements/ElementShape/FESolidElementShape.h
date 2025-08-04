@@ -1,6 +1,9 @@
 #pragma once
 #include "elements/FEElementShape.h"
 #include "../RgElemTypeDefine.h"
+#include <vector>
+
+struct NaturalCoord;
 
 //=============================================================================
 // Base class for defining element shape classes for (3D) solid elements
@@ -10,14 +13,17 @@ class FESolidElementShape : public FEElementShape
 public:
 	FESolidElementShape(ElementShape shape, int nodes) : FEElementShape(shape, nodes) {}
 
-	//! values of shape functions
+	//! values of shape functions, size N(number of shape function)
 	virtual void shape_fnc(double* H, double r, double s, double t) = 0;
+    virtual std::vector<double> shape_fnc(const NaturalCoord& coor) = 0;
 
-	//! values of shape function derivatives
+	//! values of shape function derivatives,size 3 x N
 	virtual void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t) = 0;
+    virtual std::vector<std::vector<double>> shape_deriv(const NaturalCoord& coor) = 0;
 	 
-	//! values of shape function second derivatives
+	//! values of shape function second derivatives,size 6 x N
 	virtual void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t) = 0;
+    virtual std::vector<std::vector<double>> shape_deriv2(const NaturalCoord& coor) = 0;
 };
 
 //=============================================================================
@@ -37,21 +43,24 @@ public:
 };
 
 //=============================================================================
-class FETet5 : public FESolidElementShape
+class FETet10 : public FESolidElementShape
 {
 public:
-	FETet5() : FESolidElementShape(ET_TET5, 5) {}
+    FETet10()
+        : FESolidElementShape(ET_TET10, 10)
+    {
+    }
 
-	//! values of shape functions
-	void shape_fnc(double* H, double r, double s, double t);
+    //! values of shape functions
+    void shape_fnc(double* H, double r, double s, double t);
 
-	//! values of shape function derivatives
-	void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
+    //! values of shape function derivatives
+    void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
 
-	//! values of shape function second derivatives
-	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t);
+    //! values of shape function second derivatives
+    void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s,
+                      double t);
 };
-
 
 //=============================================================================
 class FEHex8 : public FESolidElementShape
@@ -71,90 +80,6 @@ public:
 	//! H<6,8>
 	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t);
 };
-
-
-//=============================================================================
-class FEPenta6 : public FESolidElementShape
-{
-public:
-	FEPenta6() : FESolidElementShape(ET_PENTA6, 6) {}
-
-	//! values of shape functions
-	void shape_fnc(double* H, double r, double s, double t);
-
-	//! values of shape function derivatives
-	void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
-
-	//! values of shape function second derivatives
-	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t);
-};
-
-//=============================================================================
-class FEPenta15 : public FESolidElementShape
-{
-public:
-	FEPenta15() : FESolidElementShape(ET_PENTA15, 15) {}
-
-	//! values of shape functions
-	void shape_fnc(double* H, double r, double s, double t);
-
-	//! values of shape function derivatives
-	void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
-
-	//! values of shape function second derivatives
-	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t);
-};
-
-
-//=============================================================================
-class FETet10 : public FESolidElementShape
-{
-public:
-	FETet10() : FESolidElementShape(ET_TET10, 10) {}
-
-	//! values of shape functions
-	void shape_fnc(double* H, double r, double s, double t);
-
-	//! values of shape function derivatives
-	void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
-
-	//! values of shape function second derivatives
-	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t);
-};
-
-
-//=============================================================================
-class FETet15 : public FESolidElementShape
-{
-public:
-	FETet15() : FESolidElementShape(ET_TET15, 15) {}
-
-	//! values of shape functions
-	void shape_fnc(double* H, double r, double s, double t);
-
-	//! values of shape function derivatives
-	void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
-
-	//! values of shape function second derivatives
-	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t);
-};
-
-//=============================================================================
-class FETet20 : public FESolidElementShape
-{
-public:
-	FETet20() : FESolidElementShape(ET_TET20, 20) {}
-
-	//! values of shape functions
-	void shape_fnc(double* H, double r, double s, double t);
-
-	//! values of shape function derivatives
-	void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
-
-	//! values of shape function second derivatives
-	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t);
-};
-
 
 //=============================================================================
 class FEHex20 : public FESolidElementShape
@@ -190,6 +115,45 @@ public:
 	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t);
 };
 
+//=============================================================================
+class FEPenta6 : public FESolidElementShape
+{
+public:
+    FEPenta6()
+        : FESolidElementShape(ET_PENTA6, 6)
+    {
+    }
+
+    //! values of shape functions
+    void shape_fnc(double* H, double r, double s, double t);
+
+    //! values of shape function derivatives
+    void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
+
+    //! values of shape function second derivatives
+    void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s,
+                      double t);
+};
+
+//=============================================================================
+class FEPenta15 : public FESolidElementShape
+{
+public:
+    FEPenta15()
+        : FESolidElementShape(ET_PENTA15, 15)
+    {
+    }
+
+    //! values of shape functions
+    void shape_fnc(double* H, double r, double s, double t);
+
+    //! values of shape function derivatives
+    void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t);
+
+    //! values of shape function second derivatives
+    void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s,
+                      double t);
+};
 
 //=============================================================================
 class FEPyra5 : public FESolidElementShape

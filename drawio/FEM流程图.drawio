@@ -1,0 +1,181 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0" version="27.1.6">
+  <diagram name="第 1 页" id="FSJmwhAKUAGhyt1QSjB7">
+    <mxGraphModel dx="2346" dy="845" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-61" value="" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1050" width="470" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-2" value="开始" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-3" target="O1Iwwx7A2mSVBT3oQAPf-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-3" value="读取求解文件" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="80" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-4" target="O1Iwwx7A2mSVBT3oQAPf-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-4" value="实例化求解模型" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="220" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-6" value="FEModel : Loop 分析步" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="360" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-12" target="O1Iwwx7A2mSVBT3oQAPf-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-12" value="&lt;div data-lake_diagram_content_editor_data=&quot;true&quot;&gt;初始化求解器：&lt;/div&gt;&lt;div data-lake_diagram_content_editor_data=&quot;true&quot;&gt;initEquations&lt;/div&gt;&lt;div data-lake_diagram_content_editor_data=&quot;true&quot;&gt;模型数据初始化&lt;/div&gt;" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="510" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-59" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-14" target="O1Iwwx7A2mSVBT3oQAPf-58">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-14" value="FEAnalysis: While(载荷增量步）" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="780" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-16" target="O1Iwwx7A2mSVBT3oQAPf-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-16" value="While(迭代步)" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1080" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-18" target="O1Iwwx7A2mSVBT3oQAPf-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-18" value="迭代步求解" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1220" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-20" target="O1Iwwx7A2mSVBT3oQAPf-22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-40" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-20" target="O1Iwwx7A2mSVBT3oQAPf-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-20" value="收敛检查" style="rhombus;whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1350" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-22">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="1120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-22" target="O1Iwwx7A2mSVBT3oQAPf-27">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-22" value="是否达到最大迭代步" style="rhombus;whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1080" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-27" target="O1Iwwx7A2mSVBT3oQAPf-31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-27" value="减小载荷步" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-120" y="1090" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-36" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-31" target="O1Iwwx7A2mSVBT3oQAPf-35">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-31" target="O1Iwwx7A2mSVBT3oQAPf-47">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-240" y="1690" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-200" y="810" />
+              <mxPoint x="-200" y="1970" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-31" value="达到最大载荷步减小次数" style="rhombus;whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-100" y="770" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-35" value="缩放载荷步" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="130" y="780" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-42" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-39" target="O1Iwwx7A2mSVBT3oQAPf-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-39" value="当前载荷步求解完毕" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1520" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-44" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-41" target="O1Iwwx7A2mSVBT3oQAPf-14">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="490" y="1530" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="640" y="1670" />
+              <mxPoint x="640" y="810" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-46" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-41" target="O1Iwwx7A2mSVBT3oQAPf-45">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-41" value="载荷步结束" style="rhombus;whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1630" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-48" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-45" target="O1Iwwx7A2mSVBT3oQAPf-47">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-50" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-45" target="O1Iwwx7A2mSVBT3oQAPf-49">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-45" value="分析步结束" style="rhombus;whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1770" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-47" value="求解结束" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1940" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-52" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.998;entryY=0.394;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-49" target="O1Iwwx7A2mSVBT3oQAPf-6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="690" y="740" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="720" y="384" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-49" value="进入下一个分析步" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="640" y="1780" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-54" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="O1Iwwx7A2mSVBT3oQAPf-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="110" as="sourcePoint" />
+            <mxPoint x="210" y="60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-55" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-35" target="O1Iwwx7A2mSVBT3oQAPf-14">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="790" as="sourcePoint" />
+            <mxPoint x="440" y="740" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-56" value="&lt;div data-lake_diagram_body=&quot;[{&amp;quot;type&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;html&amp;quot;:&amp;quot;&lt;div style=\&amp;quot;text-align:center;\&amp;quot;&gt;&amp;amp;nbsp;&lt;/div&gt;&amp;quot;,&amp;quot;shape&amp;quot;:&amp;quot;arrow-2&amp;quot;,&amp;quot;category&amp;quot;:&amp;quot;basic&amp;quot;,&amp;quot;id&amp;quot;:&amp;quot;a6b4888f-7b6a-431a-9117-1e389e4d59f6&amp;quot;,&amp;quot;x&amp;quot;:-646.9935293242522,&amp;quot;y&amp;quot;:1300.8931445226658,&amp;quot;fill&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#FFFFFF&amp;quot;},&amp;quot;stroke&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#585A5A&amp;quot;},&amp;quot;defaultContentStyle&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#262626&amp;quot;},&amp;quot;width&amp;quot;:357.9199516940189,&amp;quot;height&amp;quot;:44.597054683919396,&amp;quot;zIndex&amp;quot;:40,&amp;quot;rotate&amp;quot;:0},{&amp;quot;type&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;shape&amp;quot;:&amp;quot;process&amp;quot;,&amp;quot;x&amp;quot;:-240.0511548643476,&amp;quot;y&amp;quot;:1169.3372055024422,&amp;quot;html&amp;quot;:&amp;quot;&lt;div style=\&amp;quot;text-align:center;\&amp;quot;&gt;迭代步初始化，各变量值为F(t+dt, 0) =F(t)&lt;/a&gt;&lt;br&gt;&lt;/div&gt;&amp;quot;,&amp;quot;id&amp;quot;:&amp;quot;51d8f98e-e83e-4463-afbc-cdea50c891f1&amp;quot;,&amp;quot;width&amp;quot;:160,&amp;quot;height&amp;quot;:60,&amp;quot;defaultContentStyle&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#262626&amp;quot;},&amp;quot;fill&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#FFFFFF&amp;quot;},&amp;quot;stroke&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#585A5A&amp;quot;},&amp;quot;zIndex&amp;quot;:41,&amp;quot;rotate&amp;quot;:0},{&amp;quot;type&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;shape&amp;quot;:&amp;quot;process&amp;quot;,&amp;quot;x&amp;quot;:-255.28313015731646,&amp;quot;y&amp;quot;:1255.507065025108,&amp;quot;html&amp;quot;:&amp;quot;&lt;div style=\&amp;quot;text-align:center;\&amp;quot;&gt;迭代步i ：K(t+dt, i)* du(i+1) = Fext(t+dt) - Fin(t+dt, i)&lt;/div&gt;&amp;quot;,&amp;quot;id&amp;quot;:&amp;quot;072a010f-bc66-41e6-87af-0cfbd8ebf322&amp;quot;,&amp;quot;width&amp;quot;:190.4639505859377,&amp;quot;height&amp;quot;:60,&amp;quot;defaultContentStyle&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#262626&amp;quot;},&amp;quot;fill&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#FFFFFF&amp;quot;},&amp;quot;stroke&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#585A5A&amp;quot;},&amp;quot;rotate&amp;quot;:0,&amp;quot;zIndex&amp;quot;:42},{&amp;quot;type&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;shape&amp;quot;:&amp;quot;process&amp;quot;,&amp;quot;x&amp;quot;:-255.28313015731646,&amp;quot;y&amp;quot;:1343.3627092524423,&amp;quot;html&amp;quot;:&amp;quot;&lt;div style=\&amp;quot;text-align:center;\&amp;quot;&gt;u(t+dt) += du(i+1)&lt;/div&gt;&amp;quot;,&amp;quot;id&amp;quot;:&amp;quot;4eb06785-85a8-46d0-af82-38eff8f4d612&amp;quot;,&amp;quot;width&amp;quot;:190.4639505859377,&amp;quot;height&amp;quot;:60,&amp;quot;defaultContentStyle&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#262626&amp;quot;},&amp;quot;fill&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#FFFFFF&amp;quot;},&amp;quot;stroke&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#585A5A&amp;quot;},&amp;quot;rotate&amp;quot;:0,&amp;quot;zIndex&amp;quot;:43},{&amp;quot;type&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;shape&amp;quot;:&amp;quot;process&amp;quot;,&amp;quot;x&amp;quot;:-255.28313015731646,&amp;quot;y&amp;quot;:1425.7126440516956,&amp;quot;html&amp;quot;:&amp;quot;&lt;div style=\&amp;quot;text-align:center;\&amp;quot;&gt;更新应力应变&lt;/div&gt;&amp;quot;,&amp;quot;id&amp;quot;:&amp;quot;a5d76fc6-23c4-4de3-a8a4-96e3821641d5&amp;quot;,&amp;quot;width&amp;quot;:190.4639505859377,&amp;quot;height&amp;quot;:60,&amp;quot;defaultContentStyle&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#262626&amp;quot;},&amp;quot;fill&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#FFFFFF&amp;quot;},&amp;quot;stroke&amp;quot;:{&amp;quot;color&amp;quot;:&amp;quot;#585A5A&amp;quot;},&amp;quot;rotate&amp;quot;:0,&amp;quot;zIndex&amp;quot;:44}]&quot; data-lake_extra_informations=&quot;{&amp;quot;a6b4888f-7b6a-431a-9117-1e389e4d59f6&amp;quot;:{&amp;quot;x&amp;quot;:-646.9935293242522,&amp;quot;y&amp;quot;:1300.8931445226658,&amp;quot;rootType&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;nth&amp;quot;:0,&amp;quot;hasParent&amp;quot;:false},&amp;quot;51d8f98e-e83e-4463-afbc-cdea50c891f1&amp;quot;:{&amp;quot;x&amp;quot;:-240.0511548643476,&amp;quot;y&amp;quot;:1169.3372055024422,&amp;quot;rootType&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;nth&amp;quot;:0,&amp;quot;hasParent&amp;quot;:false},&amp;quot;072a010f-bc66-41e6-87af-0cfbd8ebf322&amp;quot;:{&amp;quot;x&amp;quot;:-255.28313015731646,&amp;quot;y&amp;quot;:1255.507065025108,&amp;quot;rootType&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;nth&amp;quot;:0,&amp;quot;hasParent&amp;quot;:false},&amp;quot;4eb06785-85a8-46d0-af82-38eff8f4d612&amp;quot;:{&amp;quot;x&amp;quot;:-255.28313015731646,&amp;quot;y&amp;quot;:1343.3627092524423,&amp;quot;rootType&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;nth&amp;quot;:0,&amp;quot;hasParent&amp;quot;:false},&amp;quot;a5d76fc6-23c4-4de3-a8a4-96e3821641d5&amp;quot;:{&amp;quot;x&amp;quot;:-255.28313015731646,&amp;quot;y&amp;quot;:1425.7126440516956,&amp;quot;rootType&amp;quot;:&amp;quot;geometry&amp;quot;,&amp;quot;nth&amp;quot;:0,&amp;quot;hasParent&amp;quot;:false}}&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;&amp;nbsp;t时刻的各种变量为已知，先求解t+d时刻的值&lt;/li&gt;&lt;li&gt;驱动为Fext(t+dt), 外载荷已知&lt;/li&gt;&lt;/ul&gt;&lt;ul&gt;&lt;li&gt;迭代步初始化，各变量值为F(t+dt, 0) =F(t)&lt;/li&gt;&lt;/ul&gt;&lt;ul&gt;&lt;li&gt;迭代步i ：K(t+dt, i)* du(i+1) = Fext(t+dt) - Fin(t+dt, i)&lt;/li&gt;&lt;/ul&gt;&lt;ul&gt;&lt;li&gt;u(t+dt) += du(i+1)&lt;/li&gt;&lt;/ul&gt;&lt;ul&gt;&lt;li&gt;更新应力应变&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="900" width="350" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-57" value="&lt;div data-lake_diagram_content_editor_data=&quot;true&quot;&gt;初始化：x = X，载荷F = 0 ，残差R =0&lt;/div&gt;" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="670" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-60" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="O1Iwwx7A2mSVBT3oQAPf-58" target="O1Iwwx7A2mSVBT3oQAPf-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-58" value="InitStep(初始化载荷增量步)" style="whiteSpace=wrap;html=1;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="920" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-62" value="牛顿迭代步" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1020" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-67" value="T" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="935" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="O1Iwwx7A2mSVBT3oQAPf-68" value="T+dt" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="515" y="935" width="50" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -155,7 +155,7 @@ void VTUWriter::writeCells()
         const FEElement& elem = *mp_model->GetMesh().Element(i);
         m_out << 12 << " ";
     }
-    m_out << "\n" << SPACE8 <<"</ DataArray >\n ";
+    m_out << "\n" << SPACE8 <<"</DataArray >\n ";
 
     m_out << SPACE6<<"</Cells>\n";
 }
