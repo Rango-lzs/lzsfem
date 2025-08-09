@@ -1,85 +1,85 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0" version="27.1.6">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0" version="28.0.7">
   <diagram name="第 1 页" id="YgkcfV60Ojqq10pjQpov">
-    <mxGraphModel dx="1519" dy="845" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1438" dy="887" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-4" value="Element" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-4" value="Element" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="710" y="10" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-5" value="SolidMechElement" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-5" value="SolidMechElement" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="710" y="120" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-8" value="StructureElement" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-8" value="StructureElement" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="400" y="240" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-9" value="ContinueElement" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-9" value="ContinueElement" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="600" y="240" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-10" value="Beam" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-10" value="Beam" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="10" y="360" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-11" value="Shell" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-11" value="Shell" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="150" y="360" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-12" value="Truss" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-12" value="Truss" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="304" y="360" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-13" value="ConnectElement" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="980" y="240" width="110" height="50" as="geometry" />
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-13" value="ConnectElement" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="1090" y="240" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-14" value="InterfaceElement" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="770" y="240" width="110" height="50" as="geometry" />
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-14" value="InterfaceElement" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="900" y="240" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-15" value="Spring" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-15" value="Spring" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="1610" y="350" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-16" value="Cohesive" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-16" value="Cohesive" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="1770" y="350" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-17" value="Hex8(C3D8)" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-17" value="Hex8(C3D8)" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="90" y="490" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-19" value="Hex20(C3D8)" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-19" value="Hex20(C3D8)" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="230" y="490" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-20" value="Tet4" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-20" value="Tet4" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="390" y="490" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-21" value="Tet10" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-21" value="Tet10" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="540" y="490" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-22" value="Wedge6" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-22" value="Wedge6" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="700" y="490" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-23" value="Wedge15" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-23" value="Wedge15" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="850" y="490" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-24" value="Continue3d" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-24" value="Continue3d" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="740" y="360" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-25" value="Continue2d" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-25" value="Continue2d" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="1200" y="350" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-26" value="AxisSymetry" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-26" value="AxisSymetry" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="980" y="490" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-27" value="PlaneStress" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-27" value="PlaneStress" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="1130" y="490" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-28" value="PlaneStrain" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-28" value="PlaneStrain" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="1280" y="490" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-30" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="QTPdsgRYvjniVhm_lAUI-5" target="QTPdsgRYvjniVhm_lAUI-4">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-30" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="QTPdsgRYvjniVhm_lAUI-5" target="QTPdsgRYvjniVhm_lAUI-4" edge="1">
           <mxGeometry width="160" relative="1" as="geometry">
             <mxPoint x="670" y="380" as="sourcePoint" />
             <mxPoint x="830" y="380" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-34" value="FluidElement" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-34" value="FluidElement" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="1100" y="120" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QTPdsgRYvjniVhm_lAUI-35" value="IGAElement" style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="QTPdsgRYvjniVhm_lAUI-35" value="IGAElement" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="1310" y="120" width="110" height="50" as="geometry" />
         </mxCell>
       </root>
