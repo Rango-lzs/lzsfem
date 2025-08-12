@@ -113,7 +113,6 @@ int RgFemApp::RunModel()
 		return 1; 
 	}
 
-	
 	if (!pModel->Solve())
 	{
 		return 1; // should we catch the exception?

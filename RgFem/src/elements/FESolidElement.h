@@ -60,6 +60,12 @@ public:
 
 	void Serialize(DumpStream& ar) override;
 
+	virtual void StiffnessMatrix(Matrix& ke);
+
+	virtual void MaterialStiffness(Matrix& ke);
+	virtual void GeometricalStiffness(Matrix& ke);
+    
+
 public:
 	std::vector<bool>    m_bitfc;    //!< flag for interface nodes
 	std::vector<Matrix3d>	m_J0i;		//!< inverse of reference Jacobian
