@@ -198,6 +198,13 @@ public:  // Filed evalulate
     virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) {}
     virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) {}
 
+    virtual void calculateStiffnessMatrix(Matrix& K) const = 0;
+    virtual void calculateMassMatrix(Matrix& M) const = 0;
+    virtual void calculateDampingMatrix(Matrix& C) const = 0;
+    virtual void calculateInternalForce(const Vector3d& u, Vector3d& F) const = 0;
+    virtual void calculateStrain(const Vector3d& u, Matrix& strain) const = 0;
+    virtual void calculateStress(const Vector3d& u, Matrix& stress) const = 0;
+
     std::vector<NodeId> m_node;      //!< connectivity
     std::vector<NodeId> m_loc_node;  //!< local connectivity
 
@@ -213,3 +220,4 @@ protected:
     FEElementState m_state;
     FEElementTraits* m_pTraits;  //!< pointer to element traits
 };
+

@@ -545,6 +545,18 @@ set(ELEMENT_HEADERS
     elements/FETrussElement.h
     elements/FESurfaceElement.h
     elements/FESurfaceElementShape.h
+    
+    elements/RgElement/RgBeam2dElement.h
+    elements/RgElement/RgBeam3dElement.h
+    elements/RgElement/RgBeamElement.h
+    elements/RgElement/RgElement.h
+    elements/RgElement/RgHex20Element.h
+    elements/RgElement/RgHex8Element.h
+    elements/RgElement/RgShellElement.h
+    elements/RgElement/RgSolidElement.h
+    elements/RgElement/RgTet10Element.h
+    elements/RgElement/RgTet4Element.h
+    elements/RgElement/RgTrussElement.h
 )
 
 set(ELEMENT_SOURCES

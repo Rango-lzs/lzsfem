@@ -169,64 +169,6 @@ void FESolidElementTraits::init()
 			Gtr[n][i] = Hrt[i]; Gts[n][i] = Hst[i]; Gtt[n][i] = Htt[i]; 
 		}
 	}
-
-	// NOTE: Below, is a new interface for dealing with mixed element formulations.
-	//       This is still a work in progress.
-
-	// Get the max interpolation order
-	const int maxOrder = (int) m_shapeP.size() - 1;
-	m_Hp.resize(maxOrder + 1);
-	m_Gr_p.resize(maxOrder + 1);
-	m_Gs_p.resize(maxOrder + 1);
-	m_Gt_p.resize(maxOrder + 1);
-	for (int i = 0; i <= maxOrder; ++i)
-	{
-		FESolidElementShape* shape = m_shapeP[i];
-		Matrix& H = m_Hp[i];
-		Matrix& Gr = m_Gr_p[i];
-		Matrix& Gs = m_Gs_p[i];
-		Matrix& Gt = m_Gt_p[i];
-		if (i == 0)
-		{
-			H.resize(m_nint, 1);
-			Gr.resize(m_nint, 1);
-			Gs.resize(m_nint, 1);
-			Gt.resize(m_nint, 1);
-			for (int n = 0; n < m_nint; ++n)
-			{
-				H[n][0] = 1.0;
-				Gr[n][0] = Gs[n][0] = Gt[n][0] = 0.0;
-			}
-		}
-		else if (m_shapeP[i])
-		{
-			// get the nodes
-			int neln = shape->nodes();
-
-			// shape function values
-			H.resize(m_nint, neln);
-			for (int n = 0; n<m_nint; ++n)
-			{
-				m_shapeP[i]->shape_fnc(N, gr[n], gs[n], gt[n]);
-				for (int j = 0; j<neln; ++j) H[n][j] = N[j];
-			}
-
-			// calculate local derivatives of shape functions at gauss points
-			Gr.resize(m_nint, neln);
-			Gs.resize(m_nint, neln);
-			Gt.resize(m_nint, neln);
-			for (int n = 0; n<m_nint; ++n)
-			{
-				shape->shape_deriv(Hr, Hs, Ht, gr[n], gs[n], gt[n]);
-				for (int j = 0; j<neln; ++j)
-				{
-					Gr[n][j] = Hr[j];
-					Gs[n][j] = Hs[j];
-					Gt[n][j] = Ht[j];
-				}
-			}
-		}
-	}
 }
 
 //! values of shape functions

@@ -20,16 +20,19 @@ public:
 	//! set the element traits
 	void SetTraits(FEElementTraits* pt) override;
 
+	//n : the n-th gauss point
 	double gr(int n) const { return ((FESolidElementTraits*)(m_pTraits))->gr[n]; }	// integration point coordinate r
 	double gs(int n) const { return ((FESolidElementTraits*)(m_pTraits))->gs[n]; }	// integration point coordinate s
 	double gt(int n) const { return ((FESolidElementTraits*)(m_pTraits))->gt[n]; }	// integration point coordinate t
 
 	double* GaussWeights() const { return &((FESolidElementTraits*)(m_pTraits))->gw[0]; }			// weights of integration points
 
+	// dH/dr[n]
 	double* Gr(int n) const { return ((FESolidElementTraits*)(m_pTraits))->m_Gr[n]; }	// shape function derivative to r
 	double* Gs(int n) const { return ((FESolidElementTraits*)(m_pTraits))->m_Gs[n]; }	// shape function derivative to s
 	double* Gt(int n) const { return ((FESolidElementTraits*)(m_pTraits))->m_Gt[n]; }	// shape function derivative to t
 
+	// dH2/dr2[n]
 	double* Grr(int n) const { return ((FESolidElementTraits*)(m_pTraits))->Grr[n]; }	// shape function 2nd derivative to rr
 	double* Gsr(int n) const { return ((FESolidElementTraits*)(m_pTraits))->Gsr[n]; }	// shape function 2nd derivative to sr
 	double* Gtr(int n) const { return ((FESolidElementTraits*)(m_pTraits))->Gtr[n]; }	// shape function 2nd derivative to tr

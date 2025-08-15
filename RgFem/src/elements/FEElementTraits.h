@@ -25,7 +25,7 @@ class FESurfaceElementShape;
 //-----------------------------------------------------------------------------
 //! This class is the base class for all element trait's classes
 //! 定义单元的属性(Traits)、类别、类型、形状函数等, 积分规则，存储现状函数在高斯积分点处的值
-//! 
+//! ElementTraits 是每个单元都有一个实例， 而ElementShape是针对每个单元类的单例
 //ElementSpecify
 class FEM_EXPORT FEElementTraits
 {
@@ -45,7 +45,7 @@ public:
 	//! return the element type
 	ElementType Type() const { return m_spec.etype; }
 
-	// project integration point data to nodes
+	// 积分点的值外插到节点
 	virtual void project_to_nodes(double* ai, double* ao) const {}
 	virtual void project_to_nodes(Vector3d*  ai, Vector3d*  ao) const;
 	virtual void project_to_nodes(Matrix3ds* ai, Matrix3ds* ao) const;
@@ -62,10 +62,6 @@ public:
 	Matrix m_H;	//!< shape function values at gausspoints.
 				//!< The first index refers to the gauss-point,
 				//!< the second index to the shape function
-
-	std::vector<Matrix> m_Hp;	//!< shape function values at gausspoints.
-							//!< The first index refers to the gauss-point,
-							//!< the second index to the shape function
 
 	FE_Element_Spec	m_spec;	//!< element specs
 
@@ -117,14 +113,10 @@ public:
 
 	// element shape class
 	FESolidElementShape*				m_shape;
-	std::vector<FESolidElementShape*>	m_shapeP; // shape classes for different order (some orders can by null)
 
 	// local derivatives of shape functions at gauss points
 	Matrix m_Gr, m_Gs, m_Gt;
-	std::vector<Matrix>	m_Gr_p;
-	std::vector<Matrix>	m_Gs_p;
-	std::vector<Matrix>	m_Gt_p;
-
+	
 	// local second derivatives of shape functions at gauss points
 	Matrix Grr, Gsr, Gtr, Grs, Gss, Gts, Grt, Gst, Gtt;
 };

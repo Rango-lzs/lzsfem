@@ -18,30 +18,46 @@
 int main(int argc, char* argv[])
 {
 #ifdef USE_MPI
-	MPI_Init(&argc, &argv);
+    // RAII for MPI management to ensure proper cleanup
+    struct MPIManager {
+        bool initialized = false;
+        
+        MPIManager(int* argc, char*** argv) {
+            int mpi_initialized;
+            MPI_Initialized(&mpi_initialized);
+            if (!mpi_initialized) {
+                int result = MPI_Init(argc, argv);
+                if (result == MPI_SUCCESS) {
+                    initialized = true;
+                }
+            }
+        }
+        
+        ~MPIManager() {
+            int mpi_finalized;
+            MPI_Finalized(&mpi_finalized);
+            if (!mpi_finalized && initialized) {
+                MPI_Finalize();
+            }
+        }
+    } mpi_manager(&argc, &argv);
 #endif
 
-	RgFemApp* theApp = RgFemApp::Instance();
-	if (!theApp)
-	{
-		return 1;
-	}
+    RgFemApp* theApp = RgFemApp::Instance();
+    if (!theApp) {
+        return 1;
+    }
 
-	// initialize the app
-	if (!theApp->Init(argc, argv))
-	{
-		return 1;
-	}
+    // initialize the app
+    if (!theApp->Init(argc, argv)) {
+        return 1;
+    }
 
-	// start the app
-	int ret = theApp->Run();
+    // start the app
+    int ret = theApp->Run();
 
-	// do some cleanup
+    // do some cleanup
     theApp->Finish();
 
-#ifdef USE_MPI
-	MPI_Finalize();
-#endif
-
-	return ret;
+    return ret;
 }
