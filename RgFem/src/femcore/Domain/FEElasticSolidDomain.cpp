@@ -418,19 +418,14 @@ void FEElasticSolidDomain::StiffnessMatrix(FELinearSystem& ls)
 			ke.resize(ndof, ndof);
 			ke.zero();
 
-			// calculate geometrical stiffness
-			ElementGeometricalStiffness(elem, ke);
+			elem.calculateStiffnessMatrix(ke);
 
-			// calculate material stiffness
-			ElementMaterialStiffness(elem, ke);
+			//// calculate geometrical stiffness
+			//ElementGeometricalStiffness(elem, ke);
 
-/*			// assign symmetic parts
-			// TODO: Can this be omitted by changing the Assemble routine so that it only
-			// grabs elements from the upper diagonal Matrix?
-			for (int i = 0; i < ndof; ++i)
-				for (int j = i + 1; j < ndof; ++j)
-					ke[j][i] = ke[i][j];
-*/
+			//// calculate material stiffness
+			//ElementMaterialStiffness(elem, ke);
+
 			// assemble element Matrix in global stiffness Matrix
 			ls.Assemble(ke);
 		}

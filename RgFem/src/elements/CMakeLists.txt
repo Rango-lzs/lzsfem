@@ -1,30 +1,37 @@
 set(HEADERS
     ElementShape/FEHex8Shape.h
     ElementShape/FESolidElementShape.h
+    ElementShape/FESurfaceElementShape.h
     ElementShape/RgElementShape.h
+    ElementTraits/FE2DElementTraits.h
+    ElementTraits/FEElementTraits.h
+    ElementTraits/FEShellElementTraits.h
+    ElementTraits/FESolidElementTraits.h
+    ElementTraits/FESurfaceElementTraits.h
+    ElementTraits/FETrussElementTraits.h
     FEElemElemList.h
-    FEElement2d.h
     FEElementLibrary.h
     FEElementList.h
     FEElementSet.h
-    FEElementShape.h
     FEElementState.h
-    FEElementTraits.h
-    FEShellElement.h
-    FESolidElement.h
-    FESurfaceElement.h
-    FESurfaceElementShape.h
-    FETrussElement.h
-    RgBeamElement.h
     RgElemTypeDefine.h
-    RgElement.h
+    RgElement/FEElement2d.h
+    RgElement/FEElementShape.h
+    RgElement/FEShellElement.h
+    RgElement/FESolidElement.h
+    RgElement/FEStructureElement.h
+    RgElement/FESurfaceElement.h
+    RgElement/FETrussElement.h
     RgElement/RgBeam2dElement.h
     RgElement/RgBeam3dElement.h
     RgElement/RgBeamElement.h
     RgElement/RgElement.h
     RgElement/RgHex20Element.h
     RgElement/RgHex8Element.h
+    RgElement/RgHex8GeomNLElement.h
     RgElement/RgShellElement.h
+    RgElement/RgSolid2dElement.h
+    RgElement/RgSolid3dElement.h
     RgElement/RgSolidElement.h
     RgElement/RgTet10Element.h
     RgElement/RgTet4Element.h
@@ -33,19 +40,20 @@ set(HEADERS
 )
 
 set(SOURCES
+    ElementShape/FEElementShape.cpp
     ElementShape/FESolidElementShape.cpp
+    ElementShape/FESurfaceElementShape.cpp
+    ElementTraits/FEElementTraits.cpp
     FEElemElemList.cpp
-    FEElement2d.cpp
     FEElementLibrary.cpp
     FEElementList.cpp
     FEElementSet.cpp
-    FEElementShape.cpp
     FEElementState.cpp
-    FEElementTraits.cpp
-    FEShellElement.cpp
-    FESolidElement.cpp
     FESurfaceElement.cpp
-    FESurfaceElementShape.cpp
-    FETrussElement.cpp
-    RgElement.cpp
+    RgElement/FEElement2d.cpp
+    RgElement/FEShellElement.cpp
+    RgElement/FESolidElement.cpp
+    RgElement/FEStructureElement.cpp
+    RgElement/FETrussElement.cpp
+    RgElement/RgElement.cpp
 )

@@ -27,7 +27,7 @@ public:
 
 	double* GaussWeights() const { return &((FESolidElementTraits*)(m_pTraits))->gw[0]; }			// weights of integration points
 
-	// dH/dr[n]£¬the n-th gauss point
+	// dH/dr[n]
 	double* Gr(int n) const { return ((FESolidElementTraits*)(m_pTraits))->m_Gr[n]; }	// shape function derivative to r
 	double* Gs(int n) const { return ((FESolidElementTraits*)(m_pTraits))->m_Gs[n]; }	// shape function derivative to s
 	double* Gt(int n) const { return ((FESolidElementTraits*)(m_pTraits))->m_Gt[n]; }	// shape function derivative to t

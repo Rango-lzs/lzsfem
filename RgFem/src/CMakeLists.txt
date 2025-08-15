@@ -527,54 +527,63 @@ source_group("datastructure" FILES ${DATA_STRUCTURE_HEADERS} ${DATA_STRUCTURE_SO
 set(ELEMENT_HEADERS
     elements/ElementShape/FEHex8Shape.h
     elements/ElementShape/FESolidElementShape.h
+    elements/ElementShape/FESurfaceElementShape.h
     elements/ElementShape/RgElementShape.h
+    elements/ElementTraits/FE2DElementTraits.h
+    elements/ElementTraits/FEElementTraits.h
+    elements/ElementTraits/FEShellElementTraits.h
+    elements/ElementTraits/FESolidElementTraits.h
+    elements/ElementTraits/FESurfaceElementTraits.h
+    elements/ElementTraits/FETrussElementTraits.h
     elements/FEElemElemList.h
     elements/FEElementLibrary.h
     elements/FEElementList.h
     elements/FEElementSet.h
-    elements/FEElementShape.h
-    elements/FEElementTraits.h
-    elements/FEShellElement.h
-    elements/FESolidElement.h
-    elements/RgBeamElement.h
-    elements/RgElemTypeDefine.h
-    elements/RgElement.h
     elements/FEElementState.h
-    elements/RgElementStatus.h
-    elements/FEElement2d.h
-    elements/FETrussElement.h
-    elements/FESurfaceElement.h
-    elements/FESurfaceElementShape.h
-    
+    elements/RgElemTypeDefine.h
+    elements/RgElement/FEElement2d.h
+    elements/RgElement/FEElementShape.h
+    elements/RgElement/FEShellElement.h
+    elements/RgElement/FESolidElement.h
+    elements/RgElement/FEStructureElement.h
+    elements/RgElement/FESurfaceElement.h
+    elements/RgElement/FETrussElement.h
     elements/RgElement/RgBeam2dElement.h
     elements/RgElement/RgBeam3dElement.h
     elements/RgElement/RgBeamElement.h
     elements/RgElement/RgElement.h
     elements/RgElement/RgHex20Element.h
     elements/RgElement/RgHex8Element.h
+    elements/RgElement/RgHex8GeomNLElement.h
     elements/RgElement/RgShellElement.h
+    elements/RgElement/RgSolid2dElement.h
+    elements/RgElement/RgSolid3dElement.h
     elements/RgElement/RgSolidElement.h
     elements/RgElement/RgTet10Element.h
     elements/RgElement/RgTet4Element.h
     elements/RgElement/RgTrussElement.h
+    elements/RgElementStatus.h
+
 )
 
 set(ELEMENT_SOURCES
+    elements/ElementShape/FEElementShape.cpp
     elements/ElementShape/FESolidElementShape.cpp
+    elements/ElementShape/FESurfaceElementShape.cpp
+    elements/ElementTraits/FEElementTraits.cpp
     elements/FEElemElemList.cpp
     elements/FEElementLibrary.cpp
     elements/FEElementList.cpp
     elements/FEElementSet.cpp
-    elements/FEElementShape.cpp
-    elements/FEElementTraits.cpp
-    elements/FEShellElement.cpp
-    elements/FESolidElement.cpp
-    elements/RgElement.cpp
-    elements/FEElement2d.cpp
-    elements/FETrussElement.cpp
     elements/FEElementState.cpp
     elements/FESurfaceElement.cpp
-    elements/FESurfaceElementShape.cpp
+    elements/RgElement/FEElement2d.cpp
+    elements/RgElement/FEShellElement.cpp
+    elements/RgElement/FESolidElement.cpp
+    elements/RgElement/FEStructureElement.cpp
+    elements/RgElement/FETrussElement.cpp
+    elements/RgElement/RgElement.cpp
+
 
 )
 set(PROJECT_SOURCES
