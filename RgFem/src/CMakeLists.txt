@@ -541,13 +541,13 @@ set(ELEMENT_HEADERS
     elements/FEElementSet.h
     elements/FEElementState.h
     elements/RgElemTypeDefine.h
-    elements/RgElement/FEElement2d.h
-    elements/RgElement/FEElementShape.h
-    elements/RgElement/FEShellElement.h
-    elements/RgElement/FESolidElement.h
-    elements/RgElement/FEStructureElement.h
-    elements/RgElement/FESurfaceElement.h
-    elements/RgElement/FETrussElement.h
+
+    #elements/RgElement/RgElement2d.h
+    elements/RgElement/RgShellElement.h
+    elements/RgElement/RgSolidElement.h
+    elements/RgElement/RgStructureElement.h
+    elements/RgElement/RgSurfaceElement.h
+    elements/RgElement/RgTrussElement.h
     elements/RgElement/RgBeam2dElement.h
     elements/RgElement/RgBeam3dElement.h
     elements/RgElement/RgBeamElement.h
@@ -576,12 +576,12 @@ set(ELEMENT_SOURCES
     elements/FEElementList.cpp
     elements/FEElementSet.cpp
     elements/FEElementState.cpp
-    elements/FESurfaceElement.cpp
-    elements/RgElement/FEElement2d.cpp
-    elements/RgElement/FEShellElement.cpp
-    elements/RgElement/FESolidElement.cpp
-    elements/RgElement/FEStructureElement.cpp
-    elements/RgElement/FETrussElement.cpp
+    elements/RgElement/RgSurfaceElement.cpp
+    elements/RgElement/RgSolid2dElement.cpp
+    elements/RgElement/RgShellElement.cpp
+    elements/RgElement/RgSolidElement.cpp
+    elements/RgElement/RgStructureElement.cpp
+    elements/RgElement/RgTrussElement.cpp
     elements/RgElement/RgElement.cpp
 
 

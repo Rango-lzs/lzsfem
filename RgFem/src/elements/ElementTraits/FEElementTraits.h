@@ -30,7 +30,7 @@ class FESurfaceElementShape;
 class FEM_EXPORT FEElementTraits
 {
 public:
-	//! constructor
+	//! constructor , ni 积分点数， ne 节点数
 	FEElementTraits(int ni, int ne, ElementCategory c, ElementShape s, ElementType t);
 
 	//! destructor

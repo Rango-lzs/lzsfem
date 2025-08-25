@@ -1,9 +1,9 @@
 #pragma once
 
 #include "datastructure/Matrix3d.h"
-#include "elements/FEElementLibrary.h"
-#include "elements/FEElementTraits.h"
-#include "elements/FEElementState.h"
+#include "elements/RgElementLibrary.h"
+#include "elements/RgElementTraits.h"
+#include "elements/RgElementState.h"
 #include "femcore/fem_export.h"
 
 #include <vector>
@@ -25,36 +25,34 @@ class DumpStream;
  *@~Chinese
  * @brief brief - description - about - Element.
  * Tasks:
- * µ¥ÔªÏà¹ØµÄÊý¾Ý£¬½Úµã£¬²ÄÁÏµÈ  £º ÊôÐÔÊý¾Ý
- * ¼ÆËãµ¥Ôª¸Õ¶È¾ØÕó£¬ÔØºÉÏòÁ¿	£º ÎïÀíÌØÐÔ
- * ¼ÆËãµ¥ÔªÓ¦Á¦£¬Ó¦±äµÈ½á¹û		£º ½á¹ûÊý¾Ý
- * ½á¹ûÊä³ö
+ * ï¿½ï¿½Ôªï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½Úµã£¬ï¿½ï¿½ï¿½Ïµï¿½  ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ãµ¥Ôªï¿½Õ¶È¾ï¿½ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ãµ¥ÔªÓ¦ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½È½ï¿½ï¿½		ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 
-/* µ¥ÔªÈçºÎ·ÖÀà
- * 1¡¢ÊµÌåµ¥Ôª(Á¬ÐøÌåµ¥Ôª)£¬3D Solid£¬2D Plane,
- * 2¡¢½á¹¹µ¥Ôª, Shell, Beam, Truss
- * 3¡¢Á¬½Óµ¥Ôª, Spring, Cohesive
- * 4¡¢
+/* ï¿½ï¿½Ôªï¿½ï¿½Î·ï¿½ï¿½ï¿½
+ * 1ï¿½ï¿½Êµï¿½åµ¥Ôª(ï¿½ï¿½ï¿½ï¿½ï¿½åµ¥Ôª)ï¿½ï¿½3D Solidï¿½ï¿½2D Plane,
+ * 2ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½Ôª, Shell, Beam, Truss
+ * 3ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ôª, Spring, Cohesive
+ * 4ï¿½ï¿½
  */
 
-class FEM_EXPORT FEElement
+class FEM_EXPORT RgElement
 {
 public:
     static constexpr int MAX_NODES = 28;
     static constexpr int MAX_INTPOINTS = 4;
 
-    FEElement();
-    virtual ~FEElement(){};
+    RgElement();
+    virtual ~RgElement(){};
+    RgElement(const RgElement& other) = default;
+    RgElement& operator=(const RgElement& other) = default;
 
-    FEElement(const FEElement& other) = default;
-    FEElement& operator=(const FEElement& other) = default;
-
-    // µ¥Ôª±àºÅ
+    // ï¿½ï¿½Ôªï¿½ï¿½ï¿½
     int getId() const;
     void setId(int n);
-
-    // ²ÄÁÏ±àºÅ
+    // ï¿½ï¿½ï¿½Ï±ï¿½ï¿½
     int getMatId() const;
     void setMatId(int id);
 
@@ -96,16 +94,16 @@ public:
     //! Set the type of the element and initialize the traits by type
     void setType(int ntype)
     {
-        FEElementLibrary::SetElementTraits(*this, ntype);
+        RgElementLibrary::SetElementTraits(*this, ntype);
     }
 
     virtual int getType() const;
 
     //Set the traits of an element
-    virtual void SetTraits(FEElementTraits* ptraits);
+    virtual void SetTraits(RgElementTraits* ptraits);
 
     //Get the element traits
-    FEElementTraits* GetTraits()
+    RgElementTraits* GetTraits()
     {
         return m_pTraits;
     }
@@ -152,16 +150,8 @@ public:
 
     //return number of integration points
     int GaussPointSize() const;
-
     int ShapeFunctions(int order) const;
 
-    // shape function values of derivations at gauss n
-    double* H(int order, int n);
-
-    //shape function values at gauss n
-    //return value is array contain all the shape functions
-    double* H(int n);
-    const double* H(int n) const;
 
     //! return number of faces
     int Faces() const
@@ -175,7 +165,7 @@ public:
         return 0;
     }
 
-    //¸ù¾Ý½Úµã×ø±ê£¬²åÖµ¼ÆËã¸ßË¹µã×ø±ê
+    //ï¿½ï¿½ï¿½Ý½Úµï¿½ï¿½ï¿½ï¿½ê£¬ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     Vector3d Evaluate(Vector3d* value, int iGauss)
     {
         return Vector3d{0, 0, 0};
@@ -192,32 +182,29 @@ public:
     virtual void Serialize(DumpStream& ar);
 
 public:  // Filed evalulate
-    virtual void stiffnessMatrix(Matrix3d& stiffMat) {}
-    virtual void loadVector(std::vector<double>&) {}
-
-    virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) {}
-    virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) {}
 
     virtual void calculateStiffnessMatrix(Matrix& K) const = 0;
     virtual void calculateMassMatrix(Matrix& M) const = 0;
     virtual void calculateDampingMatrix(Matrix& C) const = 0;
+
     virtual void calculateInternalForce(const Vector3d& u, Vector3d& F) const = 0;
     virtual void calculateStrain(const Vector3d& u, Matrix& strain) const = 0;
     virtual void calculateStress(const Vector3d& u, Matrix& stress) const = 0;
+
+    virtual void calculateStress(FEMaterialPoint& matPt, StressTensor& stress) =0ï¼›
+    virtual void calculateStrain(FEMaterialPoint& matPt, StrainTensor& strain) =0ï¼›
 
     std::vector<NodeId> m_node;      //!< connectivity
     std::vector<NodeId> m_loc_node;  //!< local connectivity
 
 protected:
-    //ÏÂÃæµÄlocalÊÇÖ¸ÔÚÒ»¸öDomainÀïÃæµÄ
+    //ï¿½ï¿½ï¿½ï¿½ï¿½localï¿½ï¿½Ö¸ï¿½ï¿½Ò»ï¿½ï¿½Domainï¿½ï¿½ï¿½ï¿½ï¿½
     ElemId m_id;                     //!< element Id
-    ElemId m_loc_id;                 //!< local Id
+    ElemId m_loc_id;                 //!< local Id in the domain
     MatId m_mat_id;                  //!< material index
-    
-    
+      
     FEMeshPartition* m_part;
-
-    FEElementState m_state;
-    FEElementTraits* m_pTraits;  //!< pointer to element traits
+    RgElementState m_state;
+    RgElementTraits* m_pTraits;  //!< pointer to element traits
 };
 
