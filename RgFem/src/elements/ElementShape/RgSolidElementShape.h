@@ -7,7 +7,7 @@ struct NaturalCoord;
 
 //=============================================================================
 // Base class for defining element shape classes for (3D) solid elements
-// 只状约状然牡
+// 只计算形状函数、以及形状函数对自然坐标的导数
 class FESolidElementShape : public FEElementShape
 {
 public:

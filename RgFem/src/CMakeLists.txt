@@ -525,21 +525,21 @@ source_group("datastructure" FILES ${DATA_STRUCTURE_HEADERS} ${DATA_STRUCTURE_SO
 
 #add element sources
 set(ELEMENT_HEADERS
-    elements/ElementShape/FEHex8Shape.h
-    elements/ElementShape/FESolidElementShape.h
-    elements/ElementShape/FESurfaceElementShape.h
+    elements/ElementShape/RgHex8Shape.h
+    elements/ElementShape/RgSolidElementShape.h
+    elements/ElementShape/RgSurfaceElementShape.h
     elements/ElementShape/RgElementShape.h
-    elements/ElementTraits/FE2DElementTraits.h
-    elements/ElementTraits/FEElementTraits.h
-    elements/ElementTraits/FEShellElementTraits.h
-    elements/ElementTraits/FESolidElementTraits.h
-    elements/ElementTraits/FESurfaceElementTraits.h
-    elements/ElementTraits/FETrussElementTraits.h
-    elements/FEElemElemList.h
-    elements/FEElementLibrary.h
-    elements/FEElementList.h
-    elements/FEElementSet.h
-    elements/FEElementState.h
+    elements/ElementTraits/Rg2DElementTraits.h
+    elements/ElementTraits/RgElementTraits.h
+    elements/ElementTraits/RgShellElementTraits.h
+    elements/ElementTraits/RgSolidElementTraits.h
+    elements/ElementTraits/RgSurfaceElementTraits.h
+    elements/ElementTraits/RgTrussElementTraits.h
+    elements/RgElemElemList.h
+    elements/RgElementLibrary.h
+    elements/RgElementList.h
+    elements/RgElementSet.h
+    elements/RgElementState.h
     elements/RgElemTypeDefine.h
 
     #elements/RgElement/RgElement2d.h
@@ -567,15 +567,15 @@ set(ELEMENT_HEADERS
 )
 
 set(ELEMENT_SOURCES
-    elements/ElementShape/FEElementShape.cpp
-    elements/ElementShape/FESolidElementShape.cpp
-    elements/ElementShape/FESurfaceElementShape.cpp
-    elements/ElementTraits/FEElementTraits.cpp
-    elements/FEElemElemList.cpp
-    elements/FEElementLibrary.cpp
-    elements/FEElementList.cpp
-    elements/FEElementSet.cpp
-    elements/FEElementState.cpp
+    elements/ElementShape/RgElementShape.cpp
+    elements/ElementShape/RgSolidElementShape.cpp
+    elements/ElementShape/RgSurfaceElementShape.cpp
+    elements/ElementTraits/RgElementTraits.cpp
+    elements/RgElemElemList.cpp
+    elements/RgElementLibrary.cpp
+    elements/RgElementList.cpp
+    elements/RgElementSet.cpp
+    elements/RgElementState.cpp
     elements/RgElement/RgSurfaceElement.cpp
     elements/RgElement/RgSolid2dElement.cpp
     elements/RgElement/RgShellElement.cpp
@@ -583,7 +583,6 @@ set(ELEMENT_SOURCES
     elements/RgElement/RgStructureElement.cpp
     elements/RgElement/RgTrussElement.cpp
     elements/RgElement/RgElement.cpp
-
 
 )
 set(PROJECT_SOURCES

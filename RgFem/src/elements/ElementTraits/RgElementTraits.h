@@ -24,8 +24,8 @@ class FESurfaceElementShape;
 
 //-----------------------------------------------------------------------------
 //! This class is the base class for all element trait's classes
-//! 定义单元的属性(Traits)、类别、类型、形状函数等, 积分规则，存储现状函数在高斯积分点处的值
-//! ElementTraits 是每个单元都有一个实例， 而ElementShape是针对每个单元类的单例
+//! 定义单元的属性(Traits)、类别、类型、形状函数等, 积分规则，存储形状函数在高斯积分点处的值
+//! ElementTraits 是每个单元都有一个实例， 而ElementShape是针对每个单元类型的单例
 //ElementSpecify
 class FEM_EXPORT FEElementTraits
 {
