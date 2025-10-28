@@ -15,7 +15,7 @@ namespace RgFem {
  * - Handles material nonlinearity (plasticity, hyperelasticity) and/or geometric nonlinearity (large deformations)
  * - Requires material model with nonlinear stress-strain response
  */
-class RgNLSolidElement : public RgSolid3dElement {
+class RgNLSolidElement : public RgSolidElement {
 public:
     static constexpr int kMaxNodes = 8;  // Default to 8-node hex for illustration
 

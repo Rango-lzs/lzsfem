@@ -8,16 +8,16 @@
 //! A shell element is similar to a surface
 //! element except that it has a thickness. 
 
-class FEM_EXPORT FEShellElement : public FEElement
+class FEM_EXPORT RgShellElement : public RgStructureElement
 {
 public:
-	FEShellElement();
+	RgShellElement();
 
 	//! copy constructor
-	FEShellElement(const FEShellElement& el);
+	RgShellElement(const RgShellElement& el);
 
 	//! assignment operator
-	FEShellElement& operator = (const FEShellElement& el);
+	RgShellElement& operator = (const RgShellElement& el);
 
 	virtual void SetTraits(FEElementTraits* ptraits) override;
 
@@ -60,16 +60,16 @@ public:
 
 //-----------------------------------------------------------------------------
 // Shell element used by old shell formulation
-class FEM_EXPORT FEShellElementOld : public FEShellElement
+class FEM_EXPORT RgShellElementOld : public RgShellElement
 {
 public:
-	FEShellElementOld();
+	RgShellElementOld();
 
 	//! copy constructor
-	FEShellElementOld(const FEShellElementOld& el);
+	RgShellElementOld(const RgShellElementOld& el);
 
 	//! assignment operator
-	FEShellElementOld& operator = (const FEShellElementOld& el);
+	RgShellElementOld& operator = (const RgShellElementOld& el);
 
 	// set the element traits class
 	void SetTraits(FEElementTraits* ptraits) override;
@@ -83,16 +83,16 @@ public:
 
 //-----------------------------------------------------------------------------
 // Shell element used by new shell formulations
-class FEM_EXPORT FEShellElementNew : public FEShellElement
+class FEM_EXPORT RgShellElementNew : public RgShellElement
 {
 public:
-	FEShellElementNew();
+	RgShellElementNew();
 
 	//! copy constructor
-	FEShellElementNew(const FEShellElementNew& el);
+	RgShellElementNew(const RgShellElementNew& el);
 
 	//! assignment operator
-	FEShellElementNew& operator = (const FEShellElementNew& el);
+	RgShellElementNew& operator = (const RgShellElementNew& el);
 
 	// set the element traits class
 	void SetTraits(FEElementTraits* ptraits) override;
@@ -111,4 +111,3 @@ public: // EAS parameters
 	std::vector<Matrix>  m_Kwa;
 	std::vector<Matrix3ds>  m_E;
 };
-

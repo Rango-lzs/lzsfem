@@ -25,17 +25,17 @@ class DumpStream;
  *@~Chinese
  * @brief brief - description - about - Element.
  * Tasks:
- * ��Ԫ��ص����ݣ��ڵ㣬���ϵ�  �� ��������
- * ���㵥Ԫ�նȾ����غ�����	�� ��������
- * ���㵥ԪӦ����Ӧ��Ƚ��		�� �������
- * ������
+ * 单元相关的数据，节点，材料等  ： 属性数据
+ * 计算单元刚度矩阵，载荷向量	： 物理特性
+ * 计算单元应力，应变等结果		： 结果数据
+ * 结果输出
  */
 
-/* ��Ԫ��η���
- * 1��ʵ�嵥Ԫ(�����嵥Ԫ)��3D Solid��2D Plane,
- * 2���ṹ��Ԫ, Shell, Beam, Truss
- * 3�����ӵ�Ԫ, Spring, Cohesive
- * 4��
+/* 单元如何分类
+ * 1、实体单元(连续体单元)，3D Solid，2D Plane,
+ * 2、结构单元, Shell, Beam, Truss
+ * 3、连接单元, Spring, Cohesive
+ * 4、
  */
 
 class FEM_EXPORT RgElement
@@ -49,10 +49,14 @@ public:
     RgElement(const RgElement& other) = default;
     RgElement& operator=(const RgElement& other) = default;
 
-    // ��Ԫ���
+    FEElement(const FEElement& other) = default;
+    FEElement& operator=(const FEElement& other) = default;
+
+    // 单元编号
     int getId() const;
     void setId(int n);
-    // ���ϱ��
+
+    // 材料编号
     int getMatId() const;
     void setMatId(int id);
 
@@ -165,7 +169,7 @@ public:
         return 0;
     }
 
-    //���ݽڵ����꣬��ֵ�����˹������
+    //根据节点坐标，插值计算高斯点坐标
     Vector3d Evaluate(Vector3d* value, int iGauss)
     {
         return Vector3d{0, 0, 0};
@@ -198,7 +202,7 @@ public:  // Filed evalulate
     std::vector<NodeId> m_loc_node;  //!< local connectivity
 
 protected:
-    //�����local��ָ��һ��Domain�����
+    //下面的local是指在一个Domain里面的
     ElemId m_id;                     //!< element Id
     ElemId m_loc_id;                 //!< local Id in the domain
     MatId m_mat_id;                  //!< material index

@@ -2,19 +2,19 @@
 
 #include "elements/RgElement.h"
 //!  This class defines a 2D element
-class FEM_EXPORT FEElement2D : public FEElement
+class FEM_EXPORT RgSolid2dElement : public RgElement
 {
 public:
     //! default constructor
-    FEElement2D()
+    RgSolid2dElement()
     {
     }
 
     //! copy constructor
-    FEElement2D(const FEElement2D& el);
+    RgSolid2dElement(const RgSolid2dElement& el);
 
     //! assignment operator
-    FEElement2D& operator=(const FEElement2D& el);
+    RgSolid2dElement& operator=(const RgSolid2dElement& el);
 
     double* GaussWeights()
     {

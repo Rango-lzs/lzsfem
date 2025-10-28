@@ -14,9 +14,11 @@ class FEMaterialPoint;
 class DumpStream;
 struct vec3d;
 
+//定义了三维单元的行为，坐标维数为3
 class RgSolid3dElement : public FESolidElement
 {
 public:
+    static const int Dim = 3; // 3D element
     // constructors/destructor
     RgSolid3dElement();
     explicit RgSolid3dElement(int ntype);

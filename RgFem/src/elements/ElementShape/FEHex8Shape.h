@@ -1,18 +1,23 @@
 #pragma once
-#include "elements/ElementShape/RgElementShape.h"
+#include "FESolidElementShape.h"
 
-
-class FEHex8 : public RgElementShape
+//=============================================================================
+class FEHex8 : public FESolidElementShape
 {
 public:
-    FEHex8()
-        : RgElementShape(ET_HEX8, 8)
-    {
-    }
+	FEHex8() : FESolidElementShape(ET_HEX8, 8) {}
 
-    std::vector<double> evalH(NaturalCoord coord) override;
-    std::vector<std::vector<double>> evalDeriv(NaturalCoord coord) override;
-    std::vector<std::vector<double>> evalDeriv2(NaturalCoord coord) override;
+	//! values of shape functions
+	//! H<8>
+	void shape_fnc(double* H, double r, double s, double t) override;
+
+	//! values of shape function derivatives
+	//! H<3,8>
+	void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t) override;
+
+	//! values of shape function second derivatives
+	//! H<6,8>
+	void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t) override;
 };
 
 

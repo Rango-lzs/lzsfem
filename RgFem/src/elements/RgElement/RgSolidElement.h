@@ -10,7 +10,8 @@ class FEM_EXPORT RgSolidElement : public RgElement
 {
 public:
 	//! default constructor
-	RgSolidElement() {}
+	RgSolidElement() = default;
+	~RgSolidElement() = default;
 
 	//! copy constructor
 	RgSolidElement(const RgSolidElement& el);
@@ -67,7 +68,6 @@ public:
 	void Serialize(DumpStream& ar) override;
 
 	virtual void StiffnessMatrix(Matrix& ke);
-
 	virtual void MaterialStiffness(Matrix& ke);
 	virtual void GeometricalStiffness(Matrix& ke);
 

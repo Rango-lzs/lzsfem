@@ -3,15 +3,15 @@
 using namespace std;
 
 //=================================================================================================
-// FEShellElement
+// RgShellElement
 //=================================================================================================
 
-FEShellElement::FEShellElement()
+RgShellElement::RgShellElement()
 {
 	m_elem[0] = m_elem[1] = -1;
 }
 
-FEShellElement::FEShellElement(const FEShellElement& el)
+RgShellElement::RgShellElement(const RgShellElement& el)
 {
 	// set the traits of the element
 	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
@@ -34,7 +34,7 @@ FEShellElement::FEShellElement(const FEShellElement& el)
 }
 
 //! assignment operator
-FEShellElement& FEShellElement::operator = (const FEShellElement& el)
+RgShellElement& RgShellElement::operator = (const RgShellElement& el)
 {
 	// set the traits of the element
 	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
@@ -58,7 +58,7 @@ FEShellElement& FEShellElement::operator = (const FEShellElement& el)
 	return (*this);
 }
 
-void FEShellElement::SetTraits(FEElementTraits* ptraits)
+void RgShellElement::SetTraits(FEElementTraits* ptraits)
 {
 	FEElement::SetTraits(ptraits);
 	m_h0.assign(NodeSize(), 0.0);
@@ -82,7 +82,7 @@ void FEShellElement::SetTraits(FEElementTraits* ptraits)
 	m_Gt[2].assign(GaussPointSize(), Vector3d(0, 0, 0));
 }
 
-void FEShellElement::Serialize(DumpStream &ar)
+void RgShellElement::Serialize(DumpStream &ar)
 {
 	FEElement::Serialize(ar);
 	if (ar.IsShallow() == false) {
@@ -99,22 +99,22 @@ void FEShellElement::Serialize(DumpStream &ar)
 }
 
 //=================================================================================================
-// FEShellElementOld
+// RgShellElementOld
 //=================================================================================================
-FEShellElementOld::FEShellElementOld()
+RgShellElementOld::RgShellElementOld()
 {
 }
 
-FEShellElementOld::FEShellElementOld(const FEShellElementOld& el) : FEShellElement(el)
+RgShellElementOld::RgShellElementOld(const RgShellElementOld& el) : RgShellElement(el)
 {
 	m_D0 = el.m_D0;
 }
 
 //! assignment operator
-FEShellElementOld& FEShellElementOld::operator = (const FEShellElementOld& el)
+RgShellElementOld& RgShellElementOld::operator = (const RgShellElementOld& el)
 {
 	// copy base class
-	FEShellElement::operator=(el);
+	RgShellElement::operator=(el);
 
 	// copy this class data
 	m_D0 = el.m_D0;
@@ -122,53 +122,53 @@ FEShellElementOld& FEShellElementOld::operator = (const FEShellElementOld& el)
 	return (*this);
 }
 
-void FEShellElementOld::SetTraits(FEElementTraits* ptraits)
+void RgShellElementOld::SetTraits(FEElementTraits* ptraits)
 {
-	FEShellElement::SetTraits(ptraits);
+	RgShellElement::SetTraits(ptraits);
 	m_D0.resize(NodeSize());
 }
 
-void FEShellElementOld::Serialize(DumpStream& ar)
+void RgShellElementOld::Serialize(DumpStream& ar)
 {
-	FEShellElement::Serialize(ar);
+	RgShellElement::Serialize(ar);
 	if (ar.IsShallow()) return;
 	ar & m_D0;
 }
 
 //=================================================================================================
-// FEShellElementNew
+// RgShellElementNew
 //=================================================================================================
 
-FEShellElementNew::FEShellElementNew()
+RgShellElementNew::RgShellElementNew()
 {
 
 }
 
-FEShellElementNew::FEShellElementNew(const FEShellElementNew& el) : FEShellElement(el)
+RgShellElementNew::RgShellElementNew(const RgShellElementNew& el) : RgShellElement(el)
 {
 	// TODO: What about all the EAS parameters?
 }
 
 //! assignment operator
-FEShellElementNew& FEShellElementNew::operator = (const FEShellElementNew& el)
+RgShellElementNew& RgShellElementNew::operator = (const RgShellElementNew& el)
 {
-	FEShellElement::operator=(el);
+	RgShellElement::operator=(el);
 
 	// TODO: What about all the EAS parameters?
 
 	return (*this);
 }
 
-void FEShellElementNew::SetTraits(FEElementTraits* ptraits)
+void RgShellElementNew::SetTraits(FEElementTraits* ptraits)
 {
-	FEShellElement::SetTraits(ptraits);
+	RgShellElement::SetTraits(ptraits);
 
 	// TODO: What about all the EAS parameters?
 }
 
-void FEShellElementNew::Serialize(DumpStream &ar)
+void RgShellElementNew::Serialize(DumpStream &ar)
 {
-	FEShellElement::Serialize(ar);
+	RgShellElement::Serialize(ar);
 	ar & m_fa;
 	ar & m_Kaai;
 	ar & m_alpha;

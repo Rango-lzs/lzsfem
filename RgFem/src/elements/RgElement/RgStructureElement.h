@@ -4,6 +4,7 @@
 #include "elements/FEElementLibrary.h"
 #include "elements/FEElementTraits.h"
 #include "elements/FEElementState.h"
+#include "elements/RgElement.h"
 #include "femcore/fem_export.h"
 
 #include <vector>
@@ -25,20 +26,20 @@ class DumpStream;
  *@~Chinese
  * @brief brief - description - about - Element.
  * Tasks:
- * µ¥ÔªÏà¹ØµÄÊý¾Ý£¬½Úµã£¬²ÄÁÏµÈ  £º ÊôÐÔÊý¾Ý
- * ¼ÆËãµ¥Ôª¸Õ¶È¾ØÕó£¬ÔØºÉÏòÁ¿	£º ÎïÀíÌØÐÔ
- * ¼ÆËãµ¥ÔªÓ¦Á¦£¬Ó¦±äµÈ½á¹û		£º ½á¹ûÊý¾Ý
- * ½á¹ûÊä³ö
+ * ï¿½ï¿½Ôªï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½Úµã£¬ï¿½ï¿½ï¿½Ïµï¿½  ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ãµ¥Ôªï¿½Õ¶È¾ï¿½ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ãµ¥ÔªÓ¦ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½È½ï¿½ï¿½		ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 
-/* µ¥ÔªÈçºÎ·ÖÀà
- * 1¡¢ÊµÌåµ¥Ôª(Á¬ÐøÌåµ¥Ôª)£¬3D Solid£¬2D Plane,
- * 2¡¢½á¹¹µ¥Ôª, Shell, Beam, Truss
- * 3¡¢Á¬½Óµ¥Ôª, Spring, Cohesive
- * 4¡¢
+/* ï¿½ï¿½Ôªï¿½ï¿½Î·ï¿½ï¿½ï¿½
+ * 1ï¿½ï¿½Êµï¿½åµ¥Ôª(ï¿½ï¿½ï¿½ï¿½ï¿½åµ¥Ôª)ï¿½ï¿½3D Solidï¿½ï¿½2D Plane,
+ * 2ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½Ôª, Shell, Beam, Truss
+ * 3ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ôª, Spring, Cohesive
+ * 4ï¿½ï¿½
  */
 
-class FEM_EXPORT FEElement
+class FEM_EXPORT  RgStructureElement: public RgElement
 {
 public:
     static constexpr int MAX_NODES = 28;
@@ -50,11 +51,11 @@ public:
     FEElement(const FEElement& other) = default;
     FEElement& operator=(const FEElement& other) = default;
 
-    // µ¥Ôª±àºÅ
+    // ï¿½ï¿½Ôªï¿½ï¿½ï¿½
     int getId() const;
     void setId(int n);
 
-    // ²ÄÁÏ±àºÅ
+    // ï¿½ï¿½ï¿½Ï±ï¿½ï¿½
     int getMatId() const;
     void setMatId(int id);
 
@@ -175,7 +176,7 @@ public:
         return 0;
     }
 
-    //¸ù¾Ý½Úµã×ø±ê£¬²åÖµ¼ÆËã¸ßË¹µã×ø±ê
+    //ï¿½ï¿½ï¿½Ý½Úµï¿½ï¿½ï¿½ï¿½ê£¬ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     Vector3d Evaluate(Vector3d* value, int iGauss)
     {
         return Vector3d{0, 0, 0};
@@ -202,7 +203,7 @@ public:  // Filed evalulate
     std::vector<NodeId> m_loc_node;  //!< local connectivity
 
 protected:
-    //ÏÂÃæµÄlocalÊÇÖ¸ÔÚÒ»¸öDomainÀïÃæµÄ
+    //ï¿½ï¿½ï¿½ï¿½ï¿½localï¿½ï¿½Ö¸ï¿½ï¿½Ò»ï¿½ï¿½Domainï¿½ï¿½ï¿½ï¿½ï¿½
     ElemId m_id;                     //!< element Id
     ElemId m_loc_id;                 //!< local Id
     MatId m_mat_id;                  //!< material index
