@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.py": "bat",
         "gausspoint.C": "cpp",
         "gaussintegrationrule.C": "cpp",
         "algorithm": "cpp",
