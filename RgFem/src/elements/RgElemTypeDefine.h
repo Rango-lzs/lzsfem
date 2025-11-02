@@ -153,9 +153,9 @@ enum SHELL_FORMULATION
 //! Helper class for creating domain classes.
 struct FE_Element_Spec
 {
-    ElementCategory eclass;
-    ElementShape eshape;
-    ElementType etype;
+    ElementCategory eclass; //单元的类别
+    ElementShape eshape;    //单元形状
+    ElementType etype;      //单元类型
     bool m_bthree_field;
     int m_shell_formulation;
     bool m_shell_norm_nodal;

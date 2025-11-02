@@ -26,17 +26,17 @@ class DumpStream;
  *@~Chinese
  * @brief brief - description - about - Element.
  * Tasks:
- * ��Ԫ��ص����ݣ��ڵ㣬���ϵ�  �� ��������
- * ���㵥Ԫ�նȾ����غ�����	�� ��������
- * ���㵥ԪӦ����Ӧ��Ƚ��		�� �������
- * ������
+ * 单元相关的数据，节点，材料等  ： 属性数据
+ * 计算单元刚度矩阵，载荷向量	： 物理特性
+ * 计算单元应力，应变等结果		： 结果数据
+ * 结果输出
  */
 
-/* ��Ԫ��η���
- * 1��ʵ�嵥Ԫ(�����嵥Ԫ)��3D Solid��2D Plane,
- * 2���ṹ��Ԫ, Shell, Beam, Truss
- * 3�����ӵ�Ԫ, Spring, Cohesive
- * 4��
+/* 单元如何分类
+ * 1、实体单元(连续体单元)，3D Solid，2D Plane,
+ * 2、结构单元, Shell, Beam, Truss
+ * 3、连接单元, Spring, Cohesive
+ * 4、
  */
 
 class FEM_EXPORT  RgStructureElement: public RgElement

@@ -2,22 +2,23 @@
 #include "femcore/fem_export.h"
 #include <vector>
 
-class FEMaterialPoint;
+class RgMaterialPoint;
 
-class FEM_EXPORT FEElementState
+//记录单元材料点的状态数据
+class FEM_EXPORT RgElementState
 {
 public:
-    FEElementState();
-    ~FEElementState();
+    RgElementState();
+    ~RgElementState();
 
-    FEElementState(const FEElementState& s);
-    FEElementState& operator=(const FEElementState& s);
+    RgElementState(const RgElementState& s);
+    RgElementState& operator=(const RgElementState& s);
 
     void Create(int n);
-    FEMaterialPoint*& operator[](int i);
-    const std::vector<FEMaterialPoint*>& getMatPoints() const;
+    RgMaterialPoint*& operator[](int i);
+    const std::vector<RgMaterialPoint*>& getMatPoints() const;
 
 private:
     void Clear();
-    std::vector<FEMaterialPoint*> m_data;
+    std::vector<RgMaterialPoint*> m_data;
 };

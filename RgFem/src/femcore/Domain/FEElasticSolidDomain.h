@@ -8,7 +8,7 @@
 //-----------------------------------------------------------------------------
 //! domain described by Lagrange-type 3D volumetric elements
 //!
-class FEM_EXPORT FEElasticSolidDomain : public FESolidDomain, public FEElasticDomain
+class FEM_EXPORT FEElasticSolidDomain : public FESolidDomain
 {
 public:
     //! constructor
@@ -109,7 +109,11 @@ protected:
     FEDofList m_dof;    // total dof list
 
     FESolidMaterial* m_pMat;
+
+    FEElasticAssembler* m_pElasticAssem; //!< pointer to elastic assembler
 };
+
+
 
 class FEStandardElasticSolidDomain : public FEElasticSolidDomain
 {
