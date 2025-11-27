@@ -1,5 +1,5 @@
-#ifndef RGHEX20ELEMENT_H
-#define RGHEX20ELEMENT_H
+#ifndef RGTET4ELEMENT_H
+#define RGTET4ELEMENT_H
 
 #include "RgSolid3dElement.h"
 #include <array>
@@ -11,30 +11,29 @@ namespace RgFem {
 class Matrix3ds;
 
 /*
-    RgHex20Element
-    - 20-node serendipity hexahedral solid element (Q2 element)
-    - Isoparametric element with quadratic shape functions
+    RgTet4Element
+    - 4-node linear tetrahedral solid element
+    - Isoparametric element with linear shape functions
     - Derives from RgSolid3dElement
     - Features:
-      * Biquadratic-bilinear interpolation
-      * Full integration (8 Gauss points)
+      * Constant strain element (C0 element)
+      * Full integration (1 Gauss point)
       * Supports small strain analysis
-      * Better accuracy for curved boundaries
-      * Node distribution: 8 corner + 12 mid-edge nodes
+      * Suitable for mesh generation and computational efficiency
 */
-class RgHex20Element : public RgSolid3dElement
+class RgTet4Element : public RgSolid3dElement
 {
 public:
-    static constexpr int kNodeCount = 20;
-    static constexpr int kNumFaces = 6;
-    static constexpr int kNumEdges = 12;
+    static constexpr int kNodeCount = 4;
+    static constexpr int kNumFaces = 4;
+    static constexpr int kNumEdges = 6;
 
     // Constructors and Destructors
-    RgHex20Element();
-    explicit RgHex20Element(const std::array<int, kNodeCount>& nodeIds);
-    RgHex20Element(const RgHex20Element& other);
-    RgHex20Element& operator=(const RgHex20Element& other);
-    virtual ~RgHex20Element();
+    RgTet4Element();
+    explicit RgTet4Element(const std::array<int, kNodeCount>& nodeIds);
+    RgTet4Element(const RgTet4Element& other);
+    RgTet4Element& operator=(const RgTet4Element& other);
+    virtual ~RgTet4Element();
 
     // Element Type Identification
     virtual ElementType elementType() const override;
@@ -62,13 +61,6 @@ public:
                                    std::vector<double>& dN_dr,
                                    std::vector<double>& dN_ds,
                                    std::vector<double>& dN_dt) const;
-    void evaluateShapeDerivatives2(double r, double s, double t,
-                                    std::vector<double>& d2N_drr,
-                                    std::vector<double>& d2N_dss,
-                                    std::vector<double>& d2N_dtt,
-                                    std::vector<double>& d2N_drs,
-                                    std::vector<double>& d2N_dst,
-                                    std::vector<double>& d2N_drt) const;
 
     // Physical field evaluations
     Vector3d evaluateField(const Vector3d* nodeValues, const Vector3d& naturalCoord) const;
@@ -83,9 +75,9 @@ public:
     virtual void calculateStress(FEMaterialPoint& matPt, Matrix3ds& stress) override;
     virtual void calculateStrain(FEMaterialPoint& matPt, Matrix3ds& strain) override;
 
-    // Face and Edge Operations (8-node quad faces, 3-node edges)
-    virtual void getFaceNodeIds(int faceId, std::array<int, 8>& faceNodes) const;
-    virtual void getEdgeNodeIds(int edgeId, std::array<int, 3>& edgeNodes) const;
+    // Face and Edge Operations
+    virtual void getFaceNodeIds(int faceId, std::array<int, 3>& faceNodes) const;
+    virtual void getEdgeNodeIds(int edgeId, std::array<int, 2>& edgeNodes) const;
 
     // Loading Operations
     virtual void applyBodyForce(const Vector3d& force, Vector& F) const;
@@ -107,12 +99,9 @@ public:
 protected:
     // Compute B matrix (strain-displacement matrix)
     void computeBMatrix(const Vector3d& naturalCoord, Matrix& B) const;
-    
-    // Initialize Gauss points
-    void initializeGaussPoints();
 
 private:
-    // Gauss point data
+    // Gauss point data (1 point at centroid for linear tet)
     std::vector<double> m_gaussR, m_gaussS, m_gaussT, m_gaussW;
     
     // Cached Jacobian data
@@ -122,4 +111,4 @@ private:
 
 } // namespace RgFem
 
-#endif // RGHEX20ELEMENT_H
+#endif // RGTET4ELEMENT_H

@@ -1,22 +1,21 @@
 #pragma once
-#include "FESolidElementShape.h"
+#include "RgSolidElementShape.h"
 
 //=============================================================================
-class FEPenta15 : public FESolidElementShape
+class FEPenta15 : public RgSolidElementShape
 {
 public:
     FEPenta15()
-        : FESolidElementShape(ET_PENTA15, 15)
+        : RgSolidElementShape(ET_PENTA15, 15)
     {
     }
 
     //! values of shape functions
-    void shape_fnc(double* H, double r, double s, double t) override;
+    std::vector<double> evalH(const NaturalCoord& coord) override;
 
     //! values of shape function derivatives
-    void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t) override;
+    std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
     //! values of shape function second derivatives
-    void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s,
-                      double t) override;
+    std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
 };

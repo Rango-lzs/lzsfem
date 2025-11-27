@@ -1,17 +1,17 @@
-#include "elements/FEElementState.h"
-#include "materials/FEMaterialPoint.h"
+#include "elements/RgElementState.h"
+#include "materials/RgMaterialPoint.h"
 
 
-FEElementState::FEElementState()
+RgElementState::RgElementState()
 {
 }
 
-FEElementState::~FEElementState()
+RgElementState::~RgElementState()
 {
-    Clear();
+    destroy();
 }
 
-FEElementState::FEElementState(const FEElementState& s)
+RgElementState::RgElementState(const RgElementState& s)
 {
     m_data.resize(s.m_data.size());
     for (size_t i = 0; i < m_data.size(); ++i)
@@ -23,7 +23,7 @@ FEElementState::FEElementState(const FEElementState& s)
     }
 }
 
-FEElementState& FEElementState::operator=(const FEElementState& s)
+RgElementState& RgElementState::operator=(const RgElementState& s)
 {
     Clear();
     m_data.resize(s.m_data.size());
@@ -37,18 +37,18 @@ FEElementState& FEElementState::operator=(const FEElementState& s)
     return (*this);
 }
 
-const std::vector<FEMaterialPoint*>& FEElementState::getMatPoints() const
+const std::vector<FEMaterialPoint*>& RgElementState::getMatPoints() const
 {
     return m_data;
 }
 
-FEMaterialPoint*& FEElementState::operator[](int i)
+FEMaterialPoint*& RgElementState::operator[](int i)
 {
     return m_data[i];
 }
 
 
-void FEElementState::Clear()
+void RgElementState::destroy()
 {
     for (size_t i = 0; i < m_data.size(); ++i)
         delete m_data[i];
@@ -56,7 +56,7 @@ void FEElementState::Clear()
 }
 
 //! create
-void FEElementState::Create(int n)
+void RgElementState::init(int n)
 {
     m_data.assign(n, static_cast<FEMaterialPoint*>(0));
 }

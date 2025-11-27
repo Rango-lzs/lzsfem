@@ -2,7 +2,7 @@
 
 #include "datastructure/Matrix3d.h"
 #include "elements/RgElementLibrary.h"
-#include "elements/RgElementTraits.h"
+#include "elements/ElementTraits/RgElementTraits.h"
 #include "elements/RgElementState.h"
 #include "femcore/fem_export.h"
 
@@ -49,8 +49,8 @@ public:
     RgElement(const RgElement& other) = default;
     RgElement& operator=(const RgElement& other) = default;
 
-    FEElement(const FEElement& other) = default;
-    FEElement& operator=(const FEElement& other) = default;
+    RgElement(const RgElement& other) = default;
+    RgElement& operator=(const RgElement& other) = default;
 
     // 单元编号
     int getId() const;
@@ -95,19 +95,12 @@ public:
         return nullptr;
     }
 
-    //! Set the type of the element and initialize the traits by type
-    void setType(int ntype)
-    {
-        RgElementLibrary::SetElementTraits(*this, ntype);
-    }
-
-    virtual int getType() const;
 
     //Set the traits of an element
-    virtual void SetTraits(RgElementTraits* ptraits);
+    virtual void initTraits();
 
     //Get the element traits
-    RgElementTraits* GetTraits()
+    RgElementTraits* getTraits()
     {
         return m_pTraits;
     }
@@ -128,15 +121,6 @@ public:
         return ElementCategory::FE_ELEM_SOLID;
     }
 
-    bool HasNode(int i) const
-    {
-        return false;
-    }
-
-    bool HasNodes(int* node, int size) const
-    {
-        return false;
-    }
 
     //! clear material point data
     void ClearData()
@@ -157,24 +141,11 @@ public:
     int ShapeFunctions(int order) const;
 
 
-    //! return number of faces
-    int Faces() const
-    {
-        return m_pTraits->Faces();
-    }
-
-    //! return the nodes of the face
-    int GetFace(int nface, int* nodeList) const
-    {
-        return 0;
-    }
-
     //根据节点坐标，插值计算高斯点坐标
     Vector3d Evaluate(Vector3d* value, int iGauss)
     {
         return Vector3d{0, 0, 0};
     }
-
 
 public:
     //Get the material point data
@@ -191,12 +162,8 @@ public:  // Filed evalulate
     virtual void calculateMassMatrix(Matrix& M) const = 0;
     virtual void calculateDampingMatrix(Matrix& C) const = 0;
 
-    virtual void calculateInternalForce(const Vector3d& u, Vector3d& F) const = 0;
-    virtual void calculateStrain(const Vector3d& u, Matrix& strain) const = 0;
-    virtual void calculateStress(const Vector3d& u, Matrix& stress) const = 0;
-
-    virtual void calculateStress(FEMaterialPoint& matPt, StressTensor& stress) =0；
-    virtual void calculateStrain(FEMaterialPoint& matPt, StrainTensor& strain) =0；
+    virtual void calculateStress(FEMaterialPoint& matPt, StressTensor& stress) = 0;
+    virtual void calculateStrain(FEMaterialPoint& matPt, StrainTensor& strain) = 0;
 
     std::vector<NodeId> m_node;      //!< connectivity
     std::vector<NodeId> m_loc_node;  //!< local connectivity
@@ -205,8 +172,7 @@ protected:
     //下面的local是指在一个Domain里面的
     ElemId m_id;                     //!< element Id
     ElemId m_loc_id;                 //!< local Id in the domain
-    MatId m_mat_id;                  //!< material index
-      
+    MatId m_mat_id;                  //!< material index  
     FEMeshPartition* m_part;
     RgElementState m_state;
     RgElementTraits* m_pTraits;  //!< pointer to element traits

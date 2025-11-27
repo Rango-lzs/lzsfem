@@ -1,12 +1,12 @@
 #pragma once
-#include "elements/ElementShape/RgElementShape.h"
+#include "elements/ElementShape/RgSolidElementShape.h"
 #include <stdexcept>
 
-class RgHex20Shape : public RgElementShape
+class RgHex20Shape : public RgSolidElementShape
 {
 public:
     RgHex20Shape()
-        : RgElementShape(ET_HEX20, 20)
+        : RgSolidElementShape(ET_HEX20, 20)
     {
     }
 

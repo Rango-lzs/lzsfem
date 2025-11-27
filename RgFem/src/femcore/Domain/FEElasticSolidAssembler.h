@@ -13,7 +13,7 @@ class FESolidElement;
 
 //-----------------------------------------------------------------------------
 //! Abstract interface class for elastic solid assemblers.
-class FEM_EXPORT FEElasticSolidAssembler : public FEAssembler
+class FEM_EXPORT FEElasticSolidAssembler : public FEElasticAssembler
 {
 public:
     FEElasticSolidAssembler(FEModel* pfem);

@@ -1,4 +1,6 @@
 #include "FEHex27Shape.h"
+#include <vector>
+#include <stdexcept>
 
 //=============================================================================
 //              H E X 2 7
@@ -37,8 +39,19 @@ static int HEX27_LUT[27][3] = {
 
 //-----------------------------------------------------------------------------
 //! values of shape functions
-void FEHex27::shape_fnc(double* H, double r, double s, double t)
+std::vector<double> FEHex27::evalH(const NaturalCoord& coord)
 {
+	const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
+	if (!coord3d) {
+		throw std::invalid_argument("FEHex27 requires NaturalCoord3d coordinates");
+	}
+
+	double r = coord3d->getR();
+	double s = coord3d->getS();
+	double t = coord3d->getT();
+
+	std::vector<double> H(27);
+
 	double R[3] = { 0.5*r*(r - 1.0), 0.5*r*(r + 1.0), 1.0 - r*r };
 	double S[3] = { 0.5*s*(s - 1.0), 0.5*s*(s + 1.0), 1.0 - s*s };
 	double T[3] = { 0.5*t*(t - 1.0), 0.5*t*(t + 1.0), 1.0 - t*t };
@@ -70,12 +83,27 @@ void FEHex27::shape_fnc(double* H, double r, double s, double t)
 	H[24] = R[2] * S[2] * T[0];
 	H[25] = R[2] * S[2] * T[1];
 	H[26] = R[2] * S[2] * T[2];
+
+	return H;
 }
 
 //-----------------------------------------------------------------------------
 //! values of shape function derivatives
-void FEHex27::shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t)
+std::vector<std::vector<double>> FEHex27::evalDeriv(const NaturalCoord& coord)
 {
+	const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
+	if (!coord3d) {
+		throw std::invalid_argument("FEHex27 requires NaturalCoord3d coordinates");
+	}
+
+	double r = coord3d->getR();
+	double s = coord3d->getS();
+	double t = coord3d->getT();
+
+	// Return derivatives in the format [dH/dr, dH/ds, dH/dt]
+	// Each derivative is a vector of size 27 (one for each node)
+	std::vector<std::vector<double>> deriv(3, std::vector<double>(27));
+
 	double R[3] = { 0.5*r*(r - 1.0), 0.5*r*(r + 1.0), 1.0 - r*r };
 	double S[3] = { 0.5*s*(s - 1.0), 0.5*s*(s + 1.0), 1.0 - s*s };
 	double T[3] = { 0.5*t*(t - 1.0), 0.5*t*(t + 1.0), 1.0 - t*t };
@@ -84,39 +112,55 @@ void FEHex27::shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s
 	double DS[3] = { s - 0.5, s + 0.5, -2.0*s };
 	double DT[3] = { t - 0.5, t + 0.5, -2.0*t };
 
-	Hr[0] = DR[0] * S[0] * T[0]; Hs[0] = R[0] * DS[0] * T[0]; Ht[0] = R[0] * S[0] * DT[0];
-	Hr[1] = DR[1] * S[0] * T[0]; Hs[1] = R[1] * DS[0] * T[0];	Ht[1] = R[1] * S[0] * DT[0];
-	Hr[2] = DR[1] * S[1] * T[0]; Hs[2] = R[1] * DS[1] * T[0];	Ht[2] = R[1] * S[1] * DT[0];
-	Hr[3] = DR[0] * S[1] * T[0]; Hs[3] = R[0] * DS[1] * T[0];	Ht[3] = R[0] * S[1] * DT[0];
-	Hr[4] = DR[0] * S[0] * T[1]; Hs[4] = R[0] * DS[0] * T[1];	Ht[4] = R[0] * S[0] * DT[1];
-	Hr[5] = DR[1] * S[0] * T[1]; Hs[5] = R[1] * DS[0] * T[1];	Ht[5] = R[1] * S[0] * DT[1];
-	Hr[6] = DR[1] * S[1] * T[1]; Hs[6] = R[1] * DS[1] * T[1];	Ht[6] = R[1] * S[1] * DT[1];
-	Hr[7] = DR[0] * S[1] * T[1]; Hs[7] = R[0] * DS[1] * T[1];	Ht[7] = R[0] * S[1] * DT[1];
-	Hr[8] = DR[2] * S[0] * T[0]; Hs[8] = R[2] * DS[0] * T[0];	Ht[8] = R[2] * S[0] * DT[0];
-	Hr[9] = DR[1] * S[2] * T[0]; Hs[9] = R[1] * DS[2] * T[0];	Ht[9] = R[1] * S[2] * DT[0];
-	Hr[10] = DR[2] * S[1] * T[0]; Hs[10] = R[2] * DS[1] * T[0];	Ht[10] = R[2] * S[1] * DT[0];
-	Hr[11] = DR[0] * S[2] * T[0]; Hs[11] = R[0] * DS[2] * T[0];	Ht[11] = R[0] * S[2] * DT[0];
-	Hr[12] = DR[2] * S[0] * T[1]; Hs[12] = R[2] * DS[0] * T[1];	Ht[12] = R[2] * S[0] * DT[1];
-	Hr[13] = DR[1] * S[2] * T[1]; Hs[13] = R[1] * DS[2] * T[1];	Ht[13] = R[1] * S[2] * DT[1];
-	Hr[14] = DR[2] * S[1] * T[1]; Hs[14] = R[2] * DS[1] * T[1];	Ht[14] = R[2] * S[1] * DT[1];
-	Hr[15] = DR[0] * S[2] * T[1]; Hs[15] = R[0] * DS[2] * T[1];	Ht[15] = R[0] * S[2] * DT[1];
-	Hr[16] = DR[0] * S[0] * T[2]; Hs[16] = R[0] * DS[0] * T[2];	Ht[16] = R[0] * S[0] * DT[2];
-	Hr[17] = DR[1] * S[0] * T[2]; Hs[17] = R[1] * DS[0] * T[2];	Ht[17] = R[1] * S[0] * DT[2];
-	Hr[18] = DR[1] * S[1] * T[2]; Hs[18] = R[1] * DS[1] * T[2];	Ht[18] = R[1] * S[1] * DT[2];
-	Hr[19] = DR[0] * S[1] * T[2]; Hs[19] = R[0] * DS[1] * T[2];	Ht[19] = R[0] * S[1] * DT[2];
-	Hr[20] = DR[2] * S[0] * T[2]; Hs[20] = R[2] * DS[0] * T[2];	Ht[20] = R[2] * S[0] * DT[2];
-	Hr[21] = DR[1] * S[2] * T[2]; Hs[21] = R[1] * DS[2] * T[2];	Ht[21] = R[1] * S[2] * DT[2];
-	Hr[22] = DR[2] * S[1] * T[2]; Hs[22] = R[2] * DS[1] * T[2];	Ht[22] = R[2] * S[1] * DT[2];
-	Hr[23] = DR[0] * S[2] * T[2]; Hs[23] = R[0] * DS[2] * T[2];	Ht[23] = R[0] * S[2] * DT[2];
-	Hr[24] = DR[2] * S[2] * T[0]; Hs[24] = R[2] * DS[2] * T[0];	Ht[24] = R[2] * S[2] * DT[0];
-	Hr[25] = DR[2] * S[2] * T[1]; Hs[25] = R[2] * DS[2] * T[1];	Ht[25] = R[2] * S[2] * DT[1];
-	Hr[26] = DR[2] * S[2] * T[2]; Hs[26] = R[2] * DS[2] * T[2];	Ht[26] = R[2] * S[2] * DT[2];
+	deriv[0][0] = DR[0] * S[0] * T[0]; deriv[1][0] = R[0] * DS[0] * T[0]; deriv[2][0] = R[0] * S[0] * DT[0];
+	deriv[0][1] = DR[1] * S[0] * T[0]; deriv[1][1] = R[1] * DS[0] * T[0]; deriv[2][1] = R[1] * S[0] * DT[0];
+	deriv[0][2] = DR[1] * S[1] * T[0]; deriv[1][2] = R[1] * DS[1] * T[0]; deriv[2][2] = R[1] * S[1] * DT[0];
+	deriv[0][3] = DR[0] * S[1] * T[0]; deriv[1][3] = R[0] * DS[1] * T[0]; deriv[2][3] = R[0] * S[1] * DT[0];
+	deriv[0][4] = DR[0] * S[0] * T[1]; deriv[1][4] = R[0] * DS[0] * T[1]; deriv[2][4] = R[0] * S[0] * DT[1];
+	deriv[0][5] = DR[1] * S[0] * T[1]; deriv[1][5] = R[1] * DS[0] * T[1]; deriv[2][5] = R[1] * S[0] * DT[1];
+	deriv[0][6] = DR[1] * S[1] * T[1]; deriv[1][6] = R[1] * DS[1] * T[1]; deriv[2][6] = R[1] * S[1] * DT[1];
+	deriv[0][7] = DR[0] * S[1] * T[1]; deriv[1][7] = R[0] * DS[1] * T[1]; deriv[2][7] = R[0] * S[1] * DT[1];
+	deriv[0][8] = DR[2] * S[0] * T[0]; deriv[1][8] = R[2] * DS[0] * T[0]; deriv[2][8] = R[2] * S[0] * DT[0];
+	deriv[0][9] = DR[1] * S[2] * T[0]; deriv[1][9] = R[1] * DS[2] * T[0]; deriv[2][9] = R[1] * S[2] * DT[0];
+	deriv[0][10] = DR[2] * S[1] * T[0]; deriv[1][10] = R[2] * DS[1] * T[0]; deriv[2][10] = R[2] * S[1] * DT[0];
+	deriv[0][11] = DR[0] * S[2] * T[0]; deriv[1][11] = R[0] * DS[2] * T[0]; deriv[2][11] = R[0] * S[2] * DT[0];
+	deriv[0][12] = DR[2] * S[0] * T[1]; deriv[1][12] = R[2] * DS[0] * T[1]; deriv[2][12] = R[2] * S[0] * DT[1];
+	deriv[0][13] = DR[1] * S[2] * T[1]; deriv[1][13] = R[1] * DS[2] * T[1]; deriv[2][13] = R[1] * S[2] * DT[1];
+	deriv[0][14] = DR[2] * S[1] * T[1]; deriv[1][14] = R[2] * DS[1] * T[1]; deriv[2][14] = R[2] * S[1] * DT[1];
+	deriv[0][15] = DR[0] * S[2] * T[1]; deriv[1][15] = R[0] * DS[2] * T[1]; deriv[2][15] = R[0] * S[2] * DT[1];
+	deriv[0][16] = DR[0] * S[0] * T[2]; deriv[1][16] = R[0] * DS[0] * T[2]; deriv[2][16] = R[0] * S[0] * DT[2];
+	deriv[0][17] = DR[1] * S[0] * T[2]; deriv[1][17] = R[1] * DS[0] * T[2]; deriv[2][17] = R[1] * S[0] * DT[2];
+	deriv[0][18] = DR[1] * S[1] * T[2]; deriv[1][18] = R[1] * DS[1] * T[2]; deriv[2][18] = R[1] * S[1] * DT[2];
+	deriv[0][19] = DR[0] * S[1] * T[2]; deriv[1][19] = R[0] * DS[1] * T[2]; deriv[2][19] = R[0] * S[1] * DT[2];
+	deriv[0][20] = DR[2] * S[0] * T[2]; deriv[1][20] = R[2] * DS[0] * T[2]; deriv[2][20] = R[2] * S[0] * DT[2];
+	deriv[0][21] = DR[1] * S[2] * T[2]; deriv[1][21] = R[1] * DS[2] * T[2]; deriv[2][21] = R[1] * S[2] * DT[2];
+	deriv[0][22] = DR[2] * S[1] * T[2]; deriv[1][22] = R[2] * DS[1] * T[2]; deriv[2][22] = R[2] * S[1] * DT[2];
+	deriv[0][23] = DR[0] * S[2] * T[2]; deriv[1][23] = R[0] * DS[2] * T[2]; deriv[2][23] = R[0] * S[2] * DT[2];
+	deriv[0][24] = DR[2] * S[2] * T[0]; deriv[1][24] = R[2] * DS[2] * T[0]; deriv[2][24] = R[2] * S[2] * DT[0];
+	deriv[0][25] = DR[2] * S[2] * T[1]; deriv[1][25] = R[2] * DS[2] * T[1]; deriv[2][25] = R[2] * S[2] * DT[1];
+	deriv[0][26] = DR[2] * S[2] * T[2]; deriv[1][26] = R[2] * DS[2] * T[2]; deriv[2][26] = R[2] * S[2] * DT[2];
+
+	return deriv;
 }
 
 //-----------------------------------------------------------------------------
 //! values of shape function second derivatives
-void FEHex27::shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s, double t)
+std::vector<std::vector<double>> FEHex27::evalDeriv2(const NaturalCoord& coord)
 {
+	const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
+	if (!coord3d) {
+		throw std::invalid_argument("FEHex27 requires NaturalCoord3d coordinates");
+	}
+
+	double r = coord3d->getR();
+	double s = coord3d->getS();
+	double t = coord3d->getT();
+
+	// Return second derivatives in the format:
+	// [d2H/dr2, d2H/ds2, d2H/dt2, d2H/drds, d2H/dsdt, d2H/drdt]
+	// Each derivative is a vector of size 27 (one for each node)
+	std::vector<std::vector<double>> deriv2(6, std::vector<double>(27));
+
 	double NR[3] = { 0.5*r*(r - 1.0), 0.5*r*(r + 1.0), 1.0 - r*r };
 	double NS[3] = { 0.5*s*(s - 1.0), 0.5*s*(s + 1.0), 1.0 - s*s };
 	double NT[3] = { 0.5*t*(t - 1.0), 0.5*t*(t + 1.0), 1.0 - t*t };
@@ -129,18 +173,19 @@ void FEHex27::shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, d
 	double HS[3] = { 1.0, 1.0, -2.0 };
 	double HT[3] = { 1.0, 1.0, -2.0 };
 
-	for (int a = 0; a<27; ++a)
+	for (int a = 0; a < 27; ++a)
 	{
 		int i = HEX27_LUT[a][0];
 		int j = HEX27_LUT[a][1];
 		int k = HEX27_LUT[a][2];
 
-		Hrr[a] = HR[i] * NS[j] * NT[k];
-		Hss[a] = NR[i] * HS[j] * NT[k];
-		Htt[a] = NR[i] * NS[j] * HT[k];
-
-		Hrs[a] = DR[i] * DS[j] * NT[k];
-		Hst[a] = NR[i] * DS[j] * DT[k];
-		Hrt[a] = DR[i] * NS[j] * DT[k];
+		deriv2[0][a] = HR[i] * NS[j] * NT[k];  // Hrr
+		deriv2[1][a] = NR[i] * HS[j] * NT[k];  // Hss
+		deriv2[2][a] = NR[i] * NS[j] * HT[k];  // Htt
+		deriv2[3][a] = DR[i] * DS[j] * NT[k];  // Hrs
+		deriv2[4][a] = NR[i] * DS[j] * DT[k];  // Hst
+		deriv2[5][a] = DR[i] * NS[j] * DT[k];  // Hrt
 	}
+
+	return deriv2;
 }

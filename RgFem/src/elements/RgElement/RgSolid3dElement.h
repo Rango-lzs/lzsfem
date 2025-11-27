@@ -5,7 +5,7 @@
 // Minimal interface derived from FESolidElement.
 // Add/adjust methods to match your project's FE core.
 
-#include "FESolidElement.h"
+#include "RgSolidElement.h"
 #include <vector>
 
 class FEElementMatrix;
@@ -15,71 +15,116 @@ class DumpStream;
 struct vec3d;
 
 //定义了三维单元的行为，坐标维数为3
-class RgSolid3dElement : public FESolidElement
+class RgSolid3dElement : public RgSolidElement
 {
 public:
-    static const int Dim = 3; // 3D element
-    // constructors/destructor
-    RgSolid3dElement();
-    explicit RgSolid3dElement(int ntype);
-    virtual ~RgSolid3dElement();
+	// default constructor / destructor
+	RgSolid3dElement() = default;
+	virtual ~RgSolid3dElement() = default;
 
-    // initialization / lifecycle
-    virtual bool Init() override;
-    virtual void Reset() override;
-    virtual void Cleanup();
+	// copy
+	RgSolid3dElement(const RgSolid3dElement& el) = default;
+	RgSolid3dElement& operator=(const RgSolid3dElement& el) = default;
 
-    // persistence
-    virtual void Serialize(DumpStream& ar) override;
+	// return spatial dimension (3 for 3D solids)
+	int dim() override { return 3; }
 
-    // element calculations (high-level interfaces)
-    // assemble element stiffness matrix
-    virtual void AssembleStiffness(FEElementMatrix& ke);
+    // 高斯点的形函数相关计算
+    // n : the n-th gauss point
+    std::vector<double> gaussPoint(int n)
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->gaussPoint(n);
+    }
+    
+    // returns weights of integration points as a vector
+    std::vector<double> GaussWeights() const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->gw;
+    }
 
-    // assemble element mass matrix (consistent or lumped inside)
-    virtual void AssembleMass(FEElementMatrix& me);
+    // dH/dr[n] -- return shape function derivative arrays as vectors
+    // n : the n-th gauss point
+    // return : N shape function derivative
+    std::vector<double> Gr(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->m_Gr[n];
+    } 
 
-    // assemble internal (material) forces for the element
-    virtual void AssembleInternalForces(FEElementVector& fe);
+    // shape function derivative to r
+    std::vector<double> Gs(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->m_Gs[n];
+    }  
+    
+    // shape function derivative to s
+    std::vector<double> Gt(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->m_Gt[n];
+    }  // shape function derivative to t
 
-    // assemble external body forces (gravity, etc.)
-    virtual void AssembleBodyForces(FEElementVector& fe, const vec3d& bodyForce);
+    // dH2/dr2[n] -- second derivatives as vectors
+    std::vector<double> Grr(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->Grr[n];
+    }  
 
-    // update element state (called each step / load increment)
-    virtual void Update();
+    std::vector<double> Gsr(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->Gsr[n];
+    }  
 
-    // query element result at integration point
-    // stress/strain stored per integration point
-    virtual void GetGaussPointStress(int ip, std::vector<double>& stress) const;
-    virtual void GetGaussPointStrain(int ip, std::vector<double>& strain) const;
+    std::vector<double> Gtr(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->Gtr[n];
+    }  
+  
+    std::vector<double> Grs(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->Grs[n];
+    }  
 
-    // convenience utilities for subclasses or external callers
-    // compute B-matrix (strain-displacement) at integration point
-    virtual void CalculateBMatrix(int ip, std::vector<double>& B) const;
+    std::vector<double> Gss(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->Gss[n];
+    }  
 
-    // compute shape functions and derivatives at integration point
-    virtual void ShapeFunctions(int ip, std::vector<double>& H) const;
-    virtual void ShapeDerivatives(int ip, std::vector<std::vector<double>>& dH) const;
+    std::vector<double> Gts(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->Gts[n];
+    }  
 
-protected:
-    // number of integration points used by this element
-    int m_nint; 
+    std::vector<double> Grt(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->Grt[n];
+    }  
 
-    // cached shape functions and derivatives per integration point
-    // layout: m_SH[ip][a] -> shape function a at ip
-    std::vector<std::vector<double>> m_SH;
-    // layout: m_dSH[ip][a][i] -> derivative of shape a wrt xi_i at ip
-    std::vector<std::vector<std::vector<double>>> m_dSH;
+    std::vector<double> Gst(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->Gst[n];
+    }  
 
-    // per-integration point storage for strains/stresses (flattened)
-    std::vector<std::vector<double>> m_strain;
-    std::vector<std::vector<double>> m_stress;
+    std::vector<double> Gtt(int n) const
+    {
+        return ((RgSolidElementTraits*)(m_pTraits))->Gtt[n];
+    }  
 
-    // helper: ensure caches sized to current integration rule
-    virtual void ResizeIntegrationData(int nint);
 
-    // low-level helpers used by Assemble* methods
-    virtual void ElementStiffness(int ip, FEElementMatrix& ke_local);
-    virtual void ElementMass(int ip, FEElementMatrix& me_local);
-    virtual void ElementInternalForce(int ip, FEElementVector& fe_local);
+    //! values of shape functions (unchanged API)  这些接口计算任意点的形函数
+    void shape_fnc(double* H, double r, double s, double t) const
+    {
+        ((RgSolidElementTraits*)(m_pTraits))->shape_fnc(H, r, s, t);
+    }
+
+    //! values of shape function derivatives (unchanged API)
+    void shape_deriv(double* Hr, double* Hs, double* Ht, double r, double s, double t) const
+    {
+        ((RgSolidElementTraits*)(m_pTraits))->shape_deriv(Hr, Hs, Ht, r, s, t);
+    }
+
+    //! values of shape function second derivatives (unchanged API)
+    void shape_deriv2(double* Hrr, double* Hss, double* Htt, double* Hrs, double* Hst, double* Hrt, double r, double s,
+                      double t) const
+    {
+        ((RgSolidElementTraits*)(m_pTraits))->shape_deriv2(Hrr, Hss, Htt, Hrs, Hst, Hrt, r, s, t);
+    }
 };

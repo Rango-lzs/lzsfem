@@ -109,11 +109,8 @@ protected:
     FEDofList m_dof;    // total dof list
 
     FESolidMaterial* m_pMat;
-
     FEElasticAssembler* m_pElasticAssem; //!< pointer to elastic assembler
 };
-
-
 
 class FEStandardElasticSolidDomain : public FEElasticSolidDomain
 {

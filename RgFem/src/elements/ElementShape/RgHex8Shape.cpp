@@ -1,7 +1,7 @@
 #include "elements/ElementShape/RgHex8Shape.h"
 #include <cassert>
 
-std::vector<double> RgHex8shape::evalH(const NaturalCoord& coord)
+std::vector<double> RgHex8Shape::evalH(const NaturalCoord& coord)
 {
     // Cast to NaturalCoord3d to access r, s, t coordinates
     const NaturalCoord3d& coord3d = static_cast<const NaturalCoord3d&>(coord);
@@ -23,7 +23,7 @@ std::vector<double> RgHex8shape::evalH(const NaturalCoord& coord)
     return H;
 }
 
-std::vector<std::vector<double>> RgHex8shape::evalDeriv(const NaturalCoord& coord)
+std::vector<std::vector<double>> RgHex8Shape::evalDeriv(const NaturalCoord& coord)
 {
     const NaturalCoord3d& coord3d = static_cast<const NaturalCoord3d&>(coord);
     double r = coord3d.getR();
@@ -67,7 +67,7 @@ std::vector<std::vector<double>> RgHex8shape::evalDeriv(const NaturalCoord& coor
     return deriv;
 }
 
-std::vector<std::vector<double>> RgHex8shape::evalDeriv2(const NaturalCoord& coord)
+std::vector<std::vector<double>> RgHex8Shape::evalDeriv2(const NaturalCoord& coord)
 {
     const NaturalCoord3d& coord3d = static_cast<const NaturalCoord3d&>(coord);
     double r = coord3d.getR();

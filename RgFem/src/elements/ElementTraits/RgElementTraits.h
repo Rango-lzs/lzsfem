@@ -1,5 +1,5 @@
 /*********************************************************************
- * \file   FEElementTraits.h
+ * \file   RgElementTraits.h
  * \brief  
  * 
  * \author Leizs
@@ -25,16 +25,16 @@ class FESurfaceElementShape;
 //-----------------------------------------------------------------------------
 //! This class is the base class for all element trait's classes
 //! 定义单元的属性(Traits)、类别、类型、形状函数等, 积分规则，存储形状函数在高斯积分点处的值
-//! ElementTraits 是每个单元都有一个实例， 而ElementShape是针对每个单元类型的单例
+//! ElementTraits和ElementShape是针对每种单元类型的单例
 //ElementSpecify
-class FEM_EXPORT FEElementTraits
+class FEM_EXPORT RgElementTraits
 {
 public:
 	//! constructor , ni 积分点数， ne 节点数
-	FEElementTraits(int ni, int ne, ElementCategory c, ElementShape s, ElementType t);
+	RgElementTraits(int ni, int ne, ElementCategory c, ElementShape s, ElementType t);
 
 	//! destructor
-	virtual ~FEElementTraits(){}
+	virtual ~RgElementTraits(){}
 
 	//! return the element class
 	ElementCategory Class() const { return m_spec.eclass; }
@@ -45,13 +45,7 @@ public:
 	//! return the element type
 	ElementType Type() const { return m_spec.etype; }
 
-	// 积分点的值外插到节点
-	virtual void project_to_nodes(double* ai, double* ao) const {}
-	virtual void project_to_nodes(Vector3d*  ai, Vector3d*  ao) const;
-	virtual void project_to_nodes(Matrix3ds* ai, Matrix3ds* ao) const;
-	virtual void project_to_nodes(Matrix3d*  ai, Matrix3d*  ao) const;
-
-	virtual int ShapeFunctions(int order) { return m_neln; }
+	virtual int shapeSize(int order) { return m_neln; }
 
 	int Faces() const { return m_faces; }
 

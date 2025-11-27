@@ -8,92 +8,143 @@
 
 namespace RgFem {
 
-// forward declarations for project types (adjust to real names in your codebase)
+// forward declarations for project types
 class RgMatrix;
 class RgVector;
 class RgMaterial;
+class FEMaterialPoint;
+class DumpStream;
+class Matrix3ds;
 
 /*
     RgHex8Element
-    - 8-node linear hexahedral solid element
-    - derives from RgSolid3dElement
-    - provides shape functions, jacobian, B-matrix helpers and standard element interfaces:
-            * stiffness and mass computation (Gauss integration)
-            * shape function evaluation and derivatives (dN/dxi)
-            * conversion dN/dxi -> dN/dx
-            * integration point access
-    - All method signatures are kept generic (use your project's matrix/vector types).
+    - 8-node linear hexahedral solid element (Q1 element)
+    - Isoparametric element with trilinear shape functions
+    - Derivatives from RgSolid3dElement
+    - Features:
+      * Reduced integration (1 Gauss point) or full integration (8 Gauss points)
+      * Supports small strain and geometrically nonlinear analysis
+      * Suitable for 3D continuum mechanics problems
 */
 class RgHex8Element : public RgSolid3dElement {
 public:
-        static constexpr int kNodeCount = 8;
+    static constexpr int kNodeCount = 8;
+    static constexpr int kNumFaces = 6;
+    static constexpr int kNumEdges = 12;
 
-        RgHex8Element();
-        explicit RgHex8Element(const std::array<int, kNodeCount>& nodeIds);
-        RgHex8Element(const RgHex8Element& other);
-        virtual ~RgHex8Element();
+    // Constructors and Destructors
+    RgHex8Element();
+    explicit RgHex8Element(const std::array<int, kNodeCount>& nodeIds);
+    RgHex8Element(const RgHex8Element& other);
+    RgHex8Element& operator=(const RgHex8Element& other);
+    virtual ~RgHex8Element();
 
-        // RgElement / RgSolid3dElement overrides
-        virtual RgElement* clone() const override;
-        virtual std::string typeName() const override;
-        virtual int nodeCount() const override { return kNodeCount; }
+    // Element Type Identification
+    virtual ElementType elementType() const override;
+    virtual ElementShape elementShape() const;
+    virtual ElementCategory elementClass() const;
+    
+    // Element Properties
+    virtual int getNumberOfNodes() const override { return kNodeCount; }
+    virtual int getNumberOfGaussPoints() const;
+    virtual int getNumberOfFaces() const { return kNumFaces; }
+    virtual int getNumberOfEdges() const { return kNumEdges; }
 
-        // N_i(xi,eta,zeta) for xi,eta,zeta in [-1,1]
-        // N is filled with length kNodeCount
-        virtual void shapeFunctions(double xi, double eta, double zeta, std::array<double, kNodeCount>& N) const;
+    // Initialize element traits (shape functions, integration rules)
+    virtual void initTraits() override;
 
-        // dN/dxi (derivatives with respect to local coordinates xi,eta,zeta)
-        // dN_dxi[i] = {dNi/dxi, dNi/deta, dNi/dzeta}
-        virtual void shapeFunctionDerivatives(double xi, double eta, double zeta,
-                                                                                    std::array<std::array<double,3>, kNodeCount>& dN_dxi) const;
+    // Geometric operations
+    virtual Vector3d evaluateCoordinates(const Vector3d& naturalCoord) const;
+    virtual Matrix3d evaluateJacobian(const Vector3d& naturalCoord) const;
+    double evaluateJacobianDeterminant(const Vector3d& naturalCoord) const;
+    virtual Matrix3d evaluateJacobianInverse(const Vector3d& naturalCoord) const;
 
-        // Compute Jacobian J = [dx/dxi] (3x3), returns det(J)
-        // coords: nodal coordinates as coords[node][{x,y,z}]
-        virtual double jacobian(const std::array<std::array<double,3>, kNodeCount>& coords,
-                                                        const std::array<std::array<double,3>, kNodeCount>& dN_dxi,
-                                                        std::array<std::array<double,3>,3>& J,
-                                                        std::array<std::array<double,3>,3>* invJ = nullptr) const;
+    // Shape function evaluations
+    // Evaluate shape functions at natural coordinates (r, s, t) in [-1, 1]^3
+    void evaluateShapeFunctions(double r, double s, double t, std::vector<double>& N) const;
+    
+    // Evaluate shape function derivatives with respect to natural coordinates
+    void evaluateShapeDerivatives(double r, double s, double t,
+                                   std::vector<double>& dN_dr,
+                                   std::vector<double>& dN_ds,
+                                   std::vector<double>& dN_dt) const;
+    
+    // Evaluate shape function second derivatives
+    void evaluateShapeDerivatives2(double r, double s, double t,
+                                    std::vector<double>& d2N_drr,
+                                    std::vector<double>& d2N_dss,
+                                    std::vector<double>& d2N_dtt,
+                                    std::vector<double>& d2N_drs,
+                                    std::vector<double>& d2N_dst,
+                                    std::vector<double>& d2N_drt) const;
 
-        // Convert dN/dxi -> dN/dx using precomputed invJ (or compute inside if invJ==nullptr).
-        // Fills dN_dx[node][{d/dx,d/dy,d/dz}] and returns detJ.
-        virtual double computeDNdx(const std::array<std::array<double,3>, kNodeCount>& coords,
-                                                             const std::array<std::array<double,3>, kNodeCount>& dN_dxi,
-                                                             std::array<std::array<double,3>, kNodeCount>& dN_dx) const;
+    // Physical field evaluations at arbitrary point
+    Vector3d evaluateField(const Vector3d* nodeValues, const Vector3d& naturalCoord) const;
+    double evaluateScalarField(const double* nodeValues, const Vector3d& naturalCoord) const;
 
-        // Build strain-displacement matrix B (3D small-strain linear elasticity)
-        // B is expected to be a 6 x (3*kNodeCount) matrix (project type: RgMatrix)
-        virtual void buildBMatrix(const std::array<std::array<double,3>, kNodeCount>& dN_dx, RgMatrix& B) const;
+    // Stiffness and Mass Matrices
+    virtual void calculateStiffnessMatrix(Matrix& K) const override;
+    virtual void calculateMassMatrix(Matrix& M) const override;
+    virtual void calculateDampingMatrix(Matrix& C) const override;
+    
+    // Tangent stiffness for nonlinear analysis
+    virtual void calculateTangentStiffnessMatrix(Matrix& Kt) const;
 
-        // Element stiffness and consistent mass computation using Gauss integration
-        // Ke and Me must be of appropriate size (3*kNodeCount square)
-        virtual void computeStiffness(RgMatrix& Ke, const RgMaterial& material, int integrationOrder = 2) const override;
-        virtual void computeMass(RgMatrix& Me, double density, int integrationOrder = 2) const override;
+    // Internal force vector (residual)
+    virtual void calculateInternalForceVector(Vector& F) const;
 
-        // Given nodal displacement vector (length 3*kNodeCount), compute strains (6) and stresses (6) at one gauss point
-        virtual void computeStrainStressAtGauss(const std::array<std::array<double,3>, kNodeCount>& coords,
-                                                                                        const std::array<std::array<double,3>, kNodeCount>& dN_dxi,
-                                                                                        const std::array<double, 3*kNodeCount>& nodalDisp,
-                                                                                        const RgMaterial& material,
-                                                                                        std::array<double,6>& strain,
-                                                                                        std::array<double,6>& stress) const;
+    // Strain and Stress Calculations
+    virtual void calculateStress(FEMaterialPoint& matPt, Matrix3ds& stress) override;
+    virtual void calculateStrain(FEMaterialPoint& matPt, Matrix3ds& strain) override;
+    
+    // Strain energy calculation
+    virtual double calculateStrainEnergy() const;
+    
+    // Kinetic energy calculation
+    virtual double calculateKineticEnergy() const;
 
-        // Integration point description
-        struct GaussPoint {
-                double xi, eta, zeta;
-                double weight;
-        };
-        // Returns standard 2x2x2 Gauss points when order==2. Higher orders optional.
-        static std::vector<GaussPoint> gaussPoints(int order = 2);
+    // Face and Edge Operations
+    virtual void getFaceNodeIds(int faceId, std::array<int, 4>& faceNodes) const;
+    virtual void getEdgeNodeIds(int edgeId, std::array<int, 2>& edgeNodes) const;
 
-        // Accessors for node ids stored by element
-        const std::array<int, kNodeCount>& nodeIds() const { return m_nodeIds; }
-        void setNodeIds(const std::array<int, kNodeCount>& ids) { m_nodeIds = ids; }
+    // Loading Operations
+    virtual void applyBodyForce(const Vector3d& force, Vector& F) const;
+    virtual void applyDistributedLoad(int faceId, const Vector3d& traction, Vector& F) const;
+    virtual void applyPointLoad(int nodeId, const Vector3d& force, Vector& F) const;
+
+    // Material point access
+    virtual FEMaterialPoint* getMaterialPoint(int gaussPtId);
+    virtual const FEMaterialPoint* getMaterialPoint(int gaussPtId) const;
+
+    // State management
+    virtual void updateState(double timeStep);
+    virtual void commitState();
+    virtual void resetState();
+
+    // Serialization
+    virtual void Serialize(DumpStream& ar) override;
+
+    // Utility functions
+    bool isValidNaturalCoordinate(const Vector3d& naturalCoord) const;
+    double getCharacteristicLength() const;
 
 protected:
-        std::array<int, kNodeCount> m_nodeIds;
+    // Initialize Gauss quadrature points and weights
+    void initializeGaussPoints();
+    
+    // Compute B matrix (strain-displacement matrix) at natural coordinates
+    void computeBMatrix(const Vector3d& naturalCoord, Matrix& B) const;
+    
+    // Compute geometric stiffness matrix for large deformations
+    void computeGeometricStiffness(Matrix& Kg) const;
 
-        // small helpers that may be reused in cpp implementation
-        static double shape1D(double xi, int nodeLocalIndex); // returns shape factor for one direction
+private:
+    // Gauss point data
+    std::vector<double> m_gaussR, m_gaussS, m_gaussT, m_gaussW;
+    
+    // Cached Jacobian data
+    mutable std::vector<Matrix3d> m_jacobianInverse;
+    mutable std::vector<double> m_jacobianDet;
 };
 
 } // namespace RgFem

@@ -8,7 +8,7 @@
 //=============================================================================
 // This class defines the traits for 2D elements and serves as a
 // base class for the specific 2D element formulations.
-class FE2DElementTraits : public FEElementTraits
+class FE2DElementTraits : public RgElementTraits
 {
 public:
     FE2DElementTraits(int ni, int ne, ElementShape es, ElementType et);

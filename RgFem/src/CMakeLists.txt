@@ -22,13 +22,13 @@ message(status "cmake module****${CMAKE_MODULE_PATH}")
 message(status "cmake source****${CMAKE_SOURCE_DIR}")
 
 
-# ÉèÖÃÄ£¿éËÑË÷Â·¾¶
+# ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakes")
 
-# ÕÒµ½Eigen¿â
+# ï¿½Òµï¿½Eigenï¿½ï¿½
 find_package(Eigen3 REQUIRED)
  
-# Èç¹ûÕÒµ½Eigen¿â£¬Ôò½«Æä°üº¬Ä¿Â¼Ìí¼Óµ½ÄãµÄÏîÄ¿ÖÐ
+# ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½Eigenï¿½â£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
 if(Eigen3_FOUND)
   message(status "Eigen3 found****")
   include_directories(${Eigen3_INCLUDE_DIR})
@@ -84,12 +84,12 @@ set(FEMCORE_HEADERS
     #femcore/Domain/FE3FieldElasticSolidDomain.h
     femcore/Domain/FEBeamDomain.h
     femcore/Domain/FEDomain.h
-    femcore/Domain/FEDomain2D.h
+    #femcore/Domain/FEDomain2D.h
     femcore/Domain/FEDomainList.h
     femcore/Domain/FEDomainMap.h
     femcore/Domain/FEDomainParameter.h
     femcore/Domain/FEElasticANSShellDomain.h
-    femcore/Domain/FEElasticDomain.h
+    #femcore/Domain/FEElasticDomain.h
     femcore/Domain/FEElasticEASShellDomain.h
     femcore/Domain/FEElasticShellDomain.h
     femcore/Domain/FEElasticShellDomainOld.h
@@ -287,12 +287,12 @@ set(FEMCORE_SOURCES
     #femcore/Domain/FE3FieldElasticSolidDomain.cpp
     femcore/Domain/FEBeamDomain.cpp
     femcore/Domain/FEDomain.cpp
-    femcore/Domain/FEDomain2D.cpp
+    #femcore/Domain/FEDomain2D.cpp
     femcore/Domain/FEDomainList.cpp
     femcore/Domain/FEDomainMap.cpp
     femcore/Domain/FEDomainParameter.cpp
     #femcore/Domain/FEElasticANSShellDomain.cpp
-    femcore/Domain/FEElasticDomain.cpp
+    #femcore/Domain/FEElasticDomain.cpp
     #femcore/Domain/FEElasticEASShellDomain.cpp
     #femcore/Domain/FEElasticShellDomain.cpp
     #femcore/Domain/FEElasticShellDomainOld.cpp
@@ -529,6 +529,15 @@ set(ELEMENT_HEADERS
     elements/ElementShape/RgSolidElementShape.h
     elements/ElementShape/RgSurfaceElementShape.h
     elements/ElementShape/RgElementShape.h
+    elements/ElementShape/FEHex27Shape.h
+    elements/ElementShape/FEPenta15Shape.h
+    elements/ElementShape/FEPenta6Shape.h
+    elements/ElementShape/FEPyra13Shape.h
+    elements/ElementShape/FEPyra5Shape.h
+    elements/ElementShape/FETet10Shape.h
+    elements/ElementShape/FETet4Shape.h
+    elements/ElementShape/RgHex20Shape.h
+
     elements/ElementTraits/Rg2DElementTraits.h
     elements/ElementTraits/RgElementTraits.h
     elements/ElementTraits/RgShellElementTraits.h
@@ -570,6 +579,12 @@ set(ELEMENT_SOURCES
     elements/ElementShape/RgElementShape.cpp
     elements/ElementShape/RgSolidElementShape.cpp
     elements/ElementShape/RgSurfaceElementShape.cpp
+    elements/ElementShape/FEHex27Shape.cpp
+    elements/ElementShape/FETet10Shape.cpp
+    elements/ElementShape/FETet4Shape.cpp
+    elements/ElementShape/RgHex20Shape.cpp
+    elements/ElementShape/RgHex8Shape.cpp
+
     elements/ElementTraits/RgElementTraits.cpp
     elements/RgElemElemList.cpp
     elements/RgElementLibrary.cpp

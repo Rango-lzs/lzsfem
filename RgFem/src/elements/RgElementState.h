@@ -14,11 +14,11 @@ public:
     RgElementState(const RgElementState& s);
     RgElementState& operator=(const RgElementState& s);
 
-    void Create(int n);
+    void init(int n);
     RgMaterialPoint*& operator[](int i);
     const std::vector<RgMaterialPoint*>& getMatPoints() const;
 
 private:
-    void Clear();
+    void destroy();
     std::vector<RgMaterialPoint*> m_data;
 };

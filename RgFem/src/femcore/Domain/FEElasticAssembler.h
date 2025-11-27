@@ -11,13 +11,13 @@ class FELinearSystem;
 
 //-----------------------------------------------------------------------------
 //! Abstract interface class for elastic domains.
-// 1¡¢×é×°¾ØÕó
-// 2¡¢¼ÆËã²Ð²î
-class FEM_EXPORT FEElasticDomain
+// 1ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½
+// 2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð²ï¿½
+class FEM_EXPORT FEElasticAssembler
 {
 public:
-	FEElasticDomain(FEModel* pfem);
-	virtual ~FEElasticDomain(){}
+	FEElasticAssembler(FEModel* pfem);
+	virtual ~FEElasticAssembler(){}
 
 	virtual void InternalForces(FEGlobalVector& R) = 0;
 	virtual void BodyForce(FEGlobalVector& R, FEBodyForce& bf) = 0;
