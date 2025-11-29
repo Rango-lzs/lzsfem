@@ -69,16 +69,3 @@ private:
     FEDomainList m_domList;                   //!< list of domains that use this material
     DECLARE_PARAM_LIST();
 };
-
-//-----------------------------------------------------------------------------
-// Material properties are classes that can only be defined as properties of other materials
-class FEM_EXPORT FEMaterialProperty : public FEMaterialBase
-{
-public:
-    FEMaterialProperty();
-
-    // evaluate local coordinate system at material point
-    Matrix3d GetLocalCS(const FEMaterialPoint& mp) override;
-
-    DECLARE_PARAM_LIST();
-};

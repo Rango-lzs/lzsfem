@@ -80,8 +80,8 @@ set(FEMCORE_HEADERS
 
     #femcore/DataRecord.h
     #femcore/Domain/DomainDataRecord.h
-    #femcore/Domain/FE3FieldElasticShellDomain.h
-    #femcore/Domain/FE3FieldElasticSolidDomain.h
+    femcore/Domain/FE3FieldElasticShellDomain.h
+    femcore/Domain/FE3FieldElasticSolidDomain.h
     femcore/Domain/FEBeamDomain.h
     femcore/Domain/FEDomain.h
     #femcore/Domain/FEDomain2D.h
@@ -287,23 +287,23 @@ set(FEMCORE_SOURCES
     #femcore/Domain/FE3FieldElasticSolidDomain.cpp
     femcore/Domain/FEBeamDomain.cpp
     femcore/Domain/FEDomain.cpp
-    #femcore/Domain/FEDomain2D.cpp
     femcore/Domain/FEDomainList.cpp
     femcore/Domain/FEDomainMap.cpp
     femcore/Domain/FEDomainParameter.cpp
-    #femcore/Domain/FEElasticANSShellDomain.cpp
-    #femcore/Domain/FEElasticDomain.cpp
-    #femcore/Domain/FEElasticEASShellDomain.cpp
-    #femcore/Domain/FEElasticShellDomain.cpp
-    #femcore/Domain/FEElasticShellDomainOld.cpp
+    femcore/Domain/FE3FieldElasticShellDomain.cpp
+    femcore/Domain/FE3FieldElasticSolidDomain.cpp
+    femcore/Domain/FEElasticANSShellDomain.cpp
+    femcore/Domain/FEElasticDomain.cpp
+    femcore/Domain/FEElasticEASShellDomain.cpp
+    femcore/Domain/FEElasticShellDomain.cpp
+    femcore/Domain/FEElasticShellDomainOld.cpp
     femcore/Domain/FEElasticSolidDomain.cpp
-    #femcore/Domain/FEElasticTrussDomain.cpp
-    #femcore/Domain/FELinearTrussDomain.cpp
-    #femcore/Domain/FEShellDomain.cpp
+    femcore/Domain/FEElasticTrussDomain.cpp
+    femcore/Domain/FELinearTrussDomain.cpp
+    femcore/Domain/FEShellDomain.cpp
     femcore/Domain/FESolidDomain.cpp
-    #femcore/Domain/FESolidDomainFactory.cpp
-    #femcore/Domain/FETrussDomain.cpp
-    #femcore/Domain/FESSIShellDomain.h
+    femcore/Domain/FESolidDomainFactory.cpp
+    femcore/Domain/FETrussDomain.cpp
 
     #femcore/DomainDataRecord.cpp
     #femcore/ElementDataRecord.cpp
@@ -571,7 +571,7 @@ set(ELEMENT_HEADERS
     elements/RgElement/RgTet10Element.h
     elements/RgElement/RgTet4Element.h
     elements/RgElement/RgTrussElement.h
-    elements/RgElementStatus.h
+    #elements/RgElementStatus.h
 
 )
 
