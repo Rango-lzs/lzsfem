@@ -1,7 +1,7 @@
 #ifndef RGBEAM3DELEMENT_H
 #define RGBEAM3DELEMENT_H
 
-#include "RgBeamElement.h"
+#include "RgLinearBeamElement.h"
 #include <array>
 #include <vector>
 
@@ -16,7 +16,7 @@ class Matrix3ds;
     RgBeam3dElement
     - 2-node linear Timoshenko beam element in 3D
     - 1D isoparametric element with 6 DOFs per node (3 translations + 3 rotations)
-    - Derives from RgBeamElement
+    - Derives from RgLinearBeamElement
     - Features:
       * Linear shape functions for displacement
       * Accounts for shear deformation (Timoshenko formulation)
@@ -26,7 +26,7 @@ class Matrix3ds;
       * Total DOF: 12 (6 per node: ux, uy, uz, rx, ry, rz)
       * Full 3D bending in any orientation
 */
-class RgBeam3dElement : public RgBeamElement
+class RgBeam3dElement : public RgLinearBeamElement
 {
 public:
     static constexpr int kNodeCount = 2;

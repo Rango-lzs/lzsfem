@@ -1,150 +1,126 @@
-#include "RgHex8GeomNLElement.h"
+#ifndef RGHEX8GEOMNLELEMENT_H
+#define RGHEX8GEOMNLELEMENT_H
+
+#include "RgNLSolid3dElement.h"
 #include "RgFemTypedefs.h"
+#include <array>
+#include <vector>
 
 namespace RgFem {
 
-RgHex8GeomNLElement::RgHex8GeomNLElement() : RgHex8Element() {}
+// Forward declarations
+class RgMaterial;
 
-RgHex8GeomNLElement::RgHex8GeomNLElement(const std::array<int, kNodeCount>& nodeIds)
-    : RgHex8Element(nodeIds) {}
-
-RgHex8GeomNLElement::RgHex8GeomNLElement(const RgHex8GeomNLElement& other)
-    : RgHex8Element(other), m_currentDisplacement(other.m_currentDisplacement) {}
-
-RgHex8GeomNLElement::~RgHex8GeomNLElement() {}
-
-RgElement* RgHex8GeomNLElement::clone() const {
-    return new RgHex8GeomNLElement(*this);
-}
-
-std::string RgHex8GeomNLElement::typeName() const {
-    return "RgHex8GeomNLElement";
-}
-
-void RgHex8GeomNLElement::computeStiffness(RgMatrix& Ke, const RgMaterial& material, int integrationOrder) const {
-    // Implementation for nonlinear stiffness matrix
-    // Typically calls computeTangentStiffnessMatrix internally
-    computeTangentStiffnessMatrix(Ke, coords, dN_dx, material, integrationOrder);
-}
-
-void RgHex8GeomNLElement::computeTangentStiffness(RgMatrix& Kt, const RgMaterial& material, int integrationOrder) const {
-    // Compute the full tangent stiffness matrix
-    // Combines material stiffness and geometric (initial stress) stiffness
-    // Implementation details depend on material model
-}
-
-void RgHex8GeomNLElement::computeStrainStressAtGauss(
-    const std::array<std::array<double, 3>, kNodeCount>& coords,
-    const std::array<std::array<double, 3>, kNodeCount>& dN_dxi,
-    const std::array<double, 3 * kNodeCount>& nodalDisp,
-    const RgMaterial& material,
-    std::array<double, 6>& strain,
-    std::array<double, 6>& stress) const 
+/*
+    RgHex8GeomNLElement
+    - 8-node linear hexahedral element with geometric nonlinearity
+    - Derives from RgNLSolid3dElement (nonlinear 3D solid element base)
+    - Used for large deformation and large displacement analysis
+    - Accounts for large deformations and rotations
+    - Features:
+      * Own shape function implementations (8-node linear hex)
+      * 8-point Gauss quadrature (2×2×2)
+      * Deformation gradient F computation
+      * Green-Lagrange strain (material description)
+      * Cauchy stress (spatial description)
+      * Geometric (initial stress) stiffness matrix
+      * Supports hyperelastic and elastoplastic materials
+*/
+class RgHex8GeomNLElement : public RgNLSolid3dElement
 {
-    // Compute deformation gradient
-    std::array<std::array<double, 3>, 3> F;
-    computeDeformationGradient(coords, dN_dxi, nodalDisp, F);
+public:
+    static constexpr int kNodeCount = 8;
 
-    // Compute Green-Lagrange strain
-    std::array<std::array<double, 3>, 3> E;
-    computeGreenLagrangeStrain(F, E);
+    // Constructors and Destructors
+    RgHex8GeomNLElement();
+    explicit RgHex8GeomNLElement(const std::array<int, kNodeCount>& nodeIds);
+    RgHex8GeomNLElement(const RgHex8GeomNLElement& other);
+    RgHex8GeomNLElement& operator=(const RgHex8GeomNLElement& other);
+    virtual ~RgHex8GeomNLElement();
 
-    // Flatten 3x3 strain to 6-component vector (Voigt notation)
-    strain[0] = E[0][0];          // ε_xx
-    strain[1] = E[1][1];          // ε_yy
-    strain[2] = E[2][2];          // ε_zz
-    strain[3] = 2.0 * E[1][2];    // γ_yz
-    strain[4] = 2.0 * E[0][2];    // γ_xz
-    strain[5] = 2.0 * E[0][1];    // γ_xy
+    // Element identification
+    virtual RgElement* clone() const override;
+    virtual std::string typeName() const override;
 
-    // Compute second Piola-Kirchhoff stress
-    std::array<std::array<double, 3>, 3> S;
-    computeSecondPiolaKirchhoffStress(E, material, S);
+    // ========== Shape Function Methods (Own Implementation) ==========
+    // Shape function N_i
+    virtual double shapeFunction(int nodeId, double r, double s, double t) const override;
+    
+    // Natural derivatives ∂N_i/∂r, ∂N_i/∂s, ∂N_i/∂t
+    virtual void shapeDerivatives(int nodeId, double r, double s, double t,
+                                   double& dNdr, double& dNds, double& dNdt) const override;
 
-    // Flatten 3x3 stress to 6-component vector (Voigt notation)
-    stress[0] = S[0][0];
-    stress[1] = S[1][1];
-    stress[2] = S[2][2];
-    stress[3] = S[1][2];
-    stress[4] = S[0][2];
-    stress[5] = S[0][1];
-}
+    // ========== Coordinate/Jacobian Methods (Own Implementation) ==========
+    // Evaluate coordinates at natural point: x = sum(N_i * x_i)
+    virtual void evaluateCoordinates(double r, double s, double t,
+                                      std::array<double, 3>& coord) const override;
 
-void RgHex8GeomNLElement::computeDeformationGradient(
-    const std::array<std::array<double, 3>, kNodeCount>& coords,
-    const std::array<std::array<double, 3>, kNodeCount>& dN_dx,
-    const std::array<double, 3 * kNodeCount>& nodalDisp,
-    std::array<std::array<double, 3>, 3>& F) const 
-{
-    // Initialize F as identity
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            F[i][j] = (i == j) ? 1.0 : 0.0;
-        }
-    }
+    // Evaluate Jacobian matrix: J[i][j] = ∂x_i/∂ξ_j
+    virtual void evaluateJacobian(double r, double s, double t,
+                                   std::array<std::array<double, 3>, 3>& J) const override;
 
-    // Compute gradient of displacement field
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            double grad_u_ij = 0.0;
-            for (int k = 0; k < kNodeCount; ++k) {
-                grad_u_ij += nodalDisp[3 * k + j] * dN_dx[k][i];
-            }
-            F[i][j] += grad_u_ij;
-        }
-    }
-}
+    // Evaluate Jacobian determinant
+    virtual double evaluateJacobianDeterminant(double r, double s, double t) const override;
 
-void RgHex8GeomNLElement::computeGreenLagrangeStrain(
-    const std::array<std::array<double, 3>, 3>& F,
-    std::array<std::array<double, 3>, 3>& E) const 
-{
-    // Compute F^T * F
-    std::array<std::array<double, 3>, 3> FTF;
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            FTF[i][j] = 0.0;
-            for (int k = 0; k < 3; ++k) {
-                FTF[i][j] += F[k][i] * F[k][j];
-            }
-        }
-    }
+    // Evaluate inverse of Jacobian matrix
+    virtual void evaluateJacobianInverse(double r, double s, double t,
+                                         std::array<std::array<double, 3>, 3>& Jinv) const override;
 
-    // Compute E = 0.5*(F^T*F - I)
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            E[i][j] = 0.5 * (FTF[i][j] - ((i == j) ? 1.0 : 0.0));
-        }
-    }
-}
+    // ========== Strain/Stress Calculation Methods ==========
+    // Compute deformation gradient F = I + ∂u/∂X
+    virtual void computeDeformationGradient(
+        int gaussPointIndex,
+        const std::vector<double>& displacement,
+        std::array<std::array<double, 3>, 3>& F) const override;
 
-void RgHex8GeomNLElement::computeSecondPiolaKirchhoffStress(
-    const std::array<std::array<double, 3>, 3>& E,
-    const RgMaterial& material,
-    std::array<std::array<double, 3>, 3>& S) const 
-{
-    // Material-specific implementation (e.g., hyperelasticity)
-    // Example: Linearized St. Venant-Kirchhoff material
-    double lambda = material.getLameLambda();
-    double mu = material.getLameMu();
+    // Compute Green-Lagrange strain E = 0.5(C - I) where C = F^T * F
+    virtual void computeGreenLagrangeStrain(
+        const std::array<std::array<double, 3>, 3>& F,
+        std::array<std::array<double, 3>, 3>& E) const override;
 
-    double traceE = E[0][0] + E[1][1] + E[2][2];
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            S[i][j] = lambda * traceE * ((i == j) ? 1.0 : 0.0) + 2.0 * mu * E[i][j];
-        }
-    }
-}
+    // Compute Cauchy (true) stress from deformation and material
+    virtual void computeCauchyStress(
+        const std::array<std::array<double, 3>, 3>& F,
+        const RgMaterial& material,
+        std::array<std::array<double, 3>, 3>& sigma) const override;
 
-void RgHex8GeomNLElement::computeTangentStiffnessMatrix(
-    RgMatrix& Kt,
-    const std::array<std::array<double, 3>, kNodeCount>& coords,
-    const std::array<std::array<double, 3>, kNodeCount>& dN_dx,
-    const RgMaterial& material,
-    int integrationOrder) const 
-{
-    // Implementation depends on material model and integration scheme
-    // Typically combines material stiffness and geometric stiffness
-}
+    // ========== Matrix Assembly Methods ==========
+    // Calculate tangent stiffness matrix (for nonlinear iteration)
+    virtual void calculateTangentStiffnessMatrix(RgMatrix& Kt) const override;
+
+    // Calculate mass matrix (nonlinear, constant in Lagrangian)
+    virtual void calculateMassMatrix(RgMatrix& M) const override;
+
+    // Calculate internal force vector (nonlinear case)
+    virtual void calculateInternalForceVector(RgVector& F) const override;
+
+    // Calculate geometric (initial stress) stiffness
+    virtual void calculateGeometricStiffnessMatrix(RgMatrix& Kg) const override;
+
+    // ========== State Management ==========
+    // Update displacement state for geometric nonlinearity tracking
+    virtual void updateDisplacementState(const std::vector<double>& displacement) override;
+
+private:
+    // Hex-specific shape function helpers
+    double N_linear(int nodeId, double r, double s, double t) const;
+    void dN_linear(int nodeId, double r, double s, double t,
+                   double& dNdr, double& dNds, double& dNdt) const;
+
+    // Utility: matrix determinant and inverse
+    static double matrixDeterminant(const std::array<std::array<double, 3>, 3>& A);
+    static void matrixInverse(const std::array<std::array<double, 3>, 3>& A,
+                              std::array<std::array<double, 3>, 3>& Ainv);
+
+    // Gauss quadrature points and weights (8-point for hex)
+    static constexpr int kGaussPoints = 8;
+    static constexpr int kGaussPointsPerDir = 2;
+    
+    // Local gauss quadrature data
+    static const std::array<double, 2> gaussPoints_1D;  // {-1/√3, 1/√3}
+    static const std::array<double, 2> gaussWeights_1D; // {1, 1}
+};
 
 } // namespace RgFem
+
+#endif // RGHEX8GEOMNLELEMENT_H

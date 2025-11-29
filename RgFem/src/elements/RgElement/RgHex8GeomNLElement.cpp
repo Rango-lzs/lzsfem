@@ -1,4 +1,6 @@
-#include "RgHex8GeomNLElement_new.h"
+#include "RgHex8GeomNLElement.h"
+#include "RgNLSolid3dElement.h"
+#include "RgHex8Element.h"  // For reference to linear shape functions
 #include "datastructure/Matrix3d.h"
 #include "datastructure/Vector3d.h"
 #include "basicio/DumpStream.h"
@@ -8,30 +10,33 @@
 namespace RgFem {
 
 // ============================================================================
+// Gauss Quadrature Data (8-point for hex)
+// ============================================================================
+
+const std::array<double, 2> RgHex8GeomNLElement::gaussPoints_1D = {
+    -1.0 / std::sqrt(3.0), 1.0 / std::sqrt(3.0)
+};
+
+const std::array<double, 2> RgHex8GeomNLElement::gaussWeights_1D = {
+    1.0, 1.0
+};
+
+// ============================================================================
 // Constructor and Destructor
 // ============================================================================
 
 RgHex8GeomNLElement::RgHex8GeomNLElement()
-    : RgHex8Element()
+    : RgNLSolid3dElement()
 {
-    m_currentDisplacement.resize(kNodeCount * 3, 0.0);
-    m_previousDisplacement.resize(kNodeCount * 3, 0.0);
 }
 
 RgHex8GeomNLElement::RgHex8GeomNLElement(const std::array<int, kNodeCount>& nodeIds)
-    : RgHex8Element(nodeIds)
+    : RgNLSolid3dElement(nodeIds)
 {
-    m_currentDisplacement.resize(kNodeCount * 3, 0.0);
-    m_previousDisplacement.resize(kNodeCount * 3, 0.0);
 }
 
 RgHex8GeomNLElement::RgHex8GeomNLElement(const RgHex8GeomNLElement& other)
-    : RgHex8Element(other),
-      m_currentDisplacement(other.m_currentDisplacement),
-      m_previousDisplacement(other.m_previousDisplacement),
-      m_stressAtGauss(other.m_stressAtGauss),
-      m_strainAtGauss(other.m_strainAtGauss),
-      m_deformationGradient(other.m_deformationGradient)
+    : RgNLSolid3dElement(other)
 {
 }
 
@@ -42,12 +47,7 @@ RgHex8GeomNLElement::~RgHex8GeomNLElement()
 RgHex8GeomNLElement& RgHex8GeomNLElement::operator=(const RgHex8GeomNLElement& other)
 {
     if (this != &other) {
-        RgHex8Element::operator=(other);
-        m_currentDisplacement = other.m_currentDisplacement;
-        m_previousDisplacement = other.m_previousDisplacement;
-        m_stressAtGauss = other.m_stressAtGauss;
-        m_strainAtGauss = other.m_strainAtGauss;
-        m_deformationGradient = other.m_deformationGradient;
+        RgNLSolid3dElement::operator=(other);
     }
     return *this;
 }
@@ -56,449 +56,410 @@ RgHex8GeomNLElement& RgHex8GeomNLElement::operator=(const RgHex8GeomNLElement& o
 // Element Type Identification
 // ============================================================================
 
-ElementType RgHex8GeomNLElement::elementType() const
-{
-    // Indicate geometric nonlinear hex8 element
-    return ElementType::FE_HEX8G8;  // Could be FE_HEX8NL if available
+RgElement* RgHex8GeomNLElement::clone() const {
+    return new RgHex8GeomNLElement(*this);
+}
+
+std::string RgHex8GeomNLElement::typeName() const {
+    return "RgHex8GeomNLElement";
 }
 
 // ============================================================================
-// FEM Matrix Calculations (Geometric Nonlinear)
+// Shape Function Methods (8-node linear hex)
 // ============================================================================
 
-void RgHex8GeomNLElement::calculateStiffnessMatrix(Matrix& K) const
+double RgHex8GeomNLElement::shapeFunction(int nodeId, double r, double s, double t) const
 {
-    // For geometric nonlinearity: K = Km + Kg
-    // Km: material (elastic) stiffness
-    // Kg: geometric (stress-dependent) stiffness
+    // Linear hexahedral shape functions
+    // Node numbering:
+    // 0: (-1,-1,-1), 1: (1,-1,-1), 2: (1,1,-1), 3: (-1,1,-1)
+    // 4: (-1,-1,1),  5: (1,-1,1),  6: (1,1,1),  7: (-1,1,1)
     
-    int ndofs = kNodeCount * 3;
-    K.resize(ndofs, ndofs);
-    K.zero();
+    return N_linear(nodeId, r, s, t);
+}
+
+void RgHex8GeomNLElement::shapeDerivatives(int nodeId, double r, double s, double t,
+                                            double& dNdr, double& dNds, double& dNdt) const
+{
+    dN_linear(nodeId, r, s, t, dNdr, dNds, dNdt);
+}
+
+double RgHex8GeomNLElement::N_linear(int nodeId, double r, double s, double t) const
+{
+    double rval, sval, tval;
     
-    // Call parent method for material stiffness
-    RgHex8Element::calculateStiffnessMatrix(K);
+    switch (nodeId) {
+        case 0: rval = -1; sval = -1; tval = -1; break;
+        case 1: rval =  1; sval = -1; tval = -1; break;
+        case 2: rval =  1; sval =  1; tval = -1; break;
+        case 3: rval = -1; sval =  1; tval = -1; break;
+        case 4: rval = -1; sval = -1; tval =  1; break;
+        case 5: rval =  1; sval = -1; tval =  1; break;
+        case 6: rval =  1; sval =  1; tval =  1; break;
+        case 7: rval = -1; sval =  1; tval =  1; break;
+        default: return 0.0;
+    }
     
-    // Add geometric stiffness
-    if (!m_stressAtGauss.empty()) {
-        Matrix Kg;
-        computeGeometricStiffness(m_stressAtGauss, Kg);
-        K += Kg;
+    return 0.125 * (1.0 + r * rval) * (1.0 + s * sval) * (1.0 + t * tval);
+}
+
+void RgHex8GeomNLElement::dN_linear(int nodeId, double r, double s, double t,
+                                     double& dNdr, double& dNds, double& dNdt) const
+{
+    double rval, sval, tval;
+    
+    switch (nodeId) {
+        case 0: rval = -1; sval = -1; tval = -1; break;
+        case 1: rval =  1; sval = -1; tval = -1; break;
+        case 2: rval =  1; sval =  1; tval = -1; break;
+        case 3: rval = -1; sval =  1; tval = -1; break;
+        case 4: rval = -1; sval = -1; tval =  1; break;
+        case 5: rval =  1; sval = -1; tval =  1; break;
+        case 6: rval =  1; sval =  1; tval =  1; break;
+        case 7: rval = -1; sval =  1; tval =  1; break;
+        default: dNdr = dNds = dNdt = 0.0; return;
+    }
+    
+    dNdr = 0.125 * rval * (1.0 + s * sval) * (1.0 + t * tval);
+    dNds = 0.125 * (1.0 + r * rval) * sval * (1.0 + t * tval);
+    dNdt = 0.125 * (1.0 + r * rval) * (1.0 + s * sval) * tval;
+}
+
+// ============================================================================
+// Coordinate/Jacobian Methods
+// ============================================================================
+
+void RgHex8GeomNLElement::evaluateCoordinates(double r, double s, double t,
+                                               std::array<double, 3>& coord) const
+{
+    coord[0] = coord[1] = coord[2] = 0.0;
+    
+    for (int i = 0; i < kNodeCount; ++i) {
+        double N = shapeFunction(i, r, s, t);
+        const auto& nodeCoord = getNodeCoordinate(i);
+        coord[0] += N * nodeCoord[0];
+        coord[1] += N * nodeCoord[1];
+        coord[2] += N * nodeCoord[2];
     }
 }
 
-void RgHex8GeomNLElement::calculateTangentStiffnessMatrix(Matrix& Kt) const
+void RgHex8GeomNLElement::evaluateJacobian(double r, double s, double t,
+                                            std::array<std::array<double, 3>, 3>& J) const
 {
-    // Tangent stiffness for nonlinear Newton-Raphson iteration
-    // Kt = dF/du = Km + Kg(σ)
-    calculateStiffnessMatrix(Kt);
+    // Initialize Jacobian to zero
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            J[i][j] = 0.0;
+        }
+    }
+    
+    // J[i][j] = ∂x_i/∂ξ_j where ξ = {r,s,t}
+    for (int node = 0; node < kNodeCount; ++node) {
+        double dNdr, dNds, dNdt;
+        shapeDerivatives(node, r, s, t, dNdr, dNds, dNdt);
+        
+        const auto& coord = getNodeCoordinate(node);
+        
+        // ∂x/∂r
+        J[0][0] += dNdr * coord[0];
+        J[1][0] += dNdr * coord[1];
+        J[2][0] += dNdr * coord[2];
+        
+        // ∂x/∂s
+        J[0][1] += dNds * coord[0];
+        J[1][1] += dNds * coord[1];
+        J[2][1] += dNds * coord[2];
+        
+        // ∂x/∂t
+        J[0][2] += dNdt * coord[0];
+        J[1][2] += dNdt * coord[1];
+        J[2][2] += dNdt * coord[2];
+    }
 }
 
-void RgHex8GeomNLElement::calculateInternalForceVector(Vector& F) const
+double RgHex8GeomNLElement::evaluateJacobianDeterminant(double r, double s, double t) const
+{
+    std::array<std::array<double, 3>, 3> J;
+    evaluateJacobian(r, s, t, J);
+    return matrixDeterminant(J);
+}
+
+void RgHex8GeomNLElement::evaluateJacobianInverse(double r, double s, double t,
+                                                   std::array<std::array<double, 3>, 3>& Jinv) const
+{
+    std::array<std::array<double, 3>, 3> J;
+    evaluateJacobian(r, s, t, J);
+    matrixInverse(J, Jinv);
+}
+
+// ============================================================================
+// Matrix Operations (Determinant and Inverse)
+// ============================================================================
+
+double RgHex8GeomNLElement::matrixDeterminant(const std::array<std::array<double, 3>, 3>& A)
+{
+    // det(A) using cofactor expansion along first row
+    double det = A[0][0] * (A[1][1] * A[2][2] - A[1][2] * A[2][1])
+               - A[0][1] * (A[1][0] * A[2][2] - A[1][2] * A[2][0])
+               + A[0][2] * (A[1][0] * A[2][1] - A[1][1] * A[2][0]);
+    return det;
+}
+
+void RgHex8GeomNLElement::matrixInverse(const std::array<std::array<double, 3>, 3>& A,
+                                         std::array<std::array<double, 3>, 3>& Ainv)
+{
+    double det = matrixDeterminant(A);
+    if (std::abs(det) < 1e-15) {
+        // Singular matrix, return identity
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                Ainv[i][j] = (i == j) ? 1.0 : 0.0;
+            }
+        }
+        return;
+    }
+    
+    // Compute cofactor matrix
+    Ainv[0][0] =  (A[1][1] * A[2][2] - A[1][2] * A[2][1]) / det;
+    Ainv[0][1] = -(A[0][1] * A[2][2] - A[0][2] * A[2][1]) / det;
+    Ainv[0][2] =  (A[0][1] * A[1][2] - A[0][2] * A[1][1]) / det;
+    
+    Ainv[1][0] = -(A[1][0] * A[2][2] - A[1][2] * A[2][0]) / det;
+    Ainv[1][1] =  (A[0][0] * A[2][2] - A[0][2] * A[2][0]) / det;
+    Ainv[1][2] = -(A[0][0] * A[1][2] - A[0][2] * A[1][0]) / det;
+    
+    Ainv[2][0] =  (A[1][0] * A[2][1] - A[1][1] * A[2][0]) / det;
+    Ainv[2][1] = -(A[0][0] * A[2][1] - A[0][1] * A[2][0]) / det;
+    Ainv[2][2] =  (A[0][0] * A[1][1] - A[0][1] * A[1][0]) / det;
+}
+
+// ============================================================================
+// Geometric Nonlinear Methods (from base class)
+// ============================================================================
+
+void RgHex8GeomNLElement::computeDeformationGradient(
+    int gaussPointIndex,
+    const std::vector<double>& displacement,
+    std::array<std::array<double, 3>, 3>& F) const
+{
+    // Initialize F as identity
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            F[i][j] = (i == j) ? 1.0 : 0.0;
+        }
+    }
+
+    // Get natural coordinates of Gauss point
+    if (gaussPointIndex >= kGaussPoints) {
+        return;  // Invalid Gauss point index
+    }
+    
+    int idx_r = gaussPointIndex / (kGaussPointsPerDir * kGaussPointsPerDir);
+    int idx_s = (gaussPointIndex / kGaussPointsPerDir) % kGaussPointsPerDir;
+    int idx_t = gaussPointIndex % kGaussPointsPerDir;
+    
+    double r = gaussPoints_1D[idx_r];
+    double s = gaussPoints_1D[idx_s];
+    double t = gaussPoints_1D[idx_t];
+
+    // Compute Jacobian inverse at this Gauss point
+    std::array<std::array<double, 3>, 3> Jinv;
+    evaluateJacobianInverse(r, s, t, Jinv);
+
+    // Compute displacement gradient ∂u/∂X = (∂u/∂x) * J^(-T)
+    // First compute physical derivatives of shape functions
+    std::array<std::array<double, 3>, 3> J;
+    evaluateJacobian(r, s, t, J);
+
+    // Compute displacement gradient in physical space
+    std::array<std::array<double, 3>, 3> grad_u;
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            grad_u[i][j] = 0.0;
+        }
+    }
+
+    for (int node = 0; node < kNodeCount; ++node) {
+        double dNdr, dNds, dNdt;
+        shapeDerivatives(node, r, s, t, dNdr, dNds, dNdt);
+
+        // Transform to physical derivatives: dN/dx = dN/dxi * dxi/dx
+        double dN_dx = dNdr * Jinv[0][0] + dNds * Jinv[1][0] + dNdt * Jinv[2][0];
+        double dN_dy = dNdr * Jinv[0][1] + dNds * Jinv[1][1] + dNdt * Jinv[2][1];
+        double dN_dz = dNdr * Jinv[0][2] + dNds * Jinv[1][2] + dNdt * Jinv[2][2];
+
+        // Add contribution to displacement gradient
+        if (3 * node < displacement.size()) {
+            double u_x = displacement[3 * node];
+            double u_y = (3 * node + 1 < displacement.size()) ? displacement[3 * node + 1] : 0.0;
+            double u_z = (3 * node + 2 < displacement.size()) ? displacement[3 * node + 2] : 0.0;
+
+            grad_u[0][0] += u_x * dN_dx;
+            grad_u[0][1] += u_x * dN_dy;
+            grad_u[0][2] += u_x * dN_dz;
+
+            grad_u[1][0] += u_y * dN_dx;
+            grad_u[1][1] += u_y * dN_dy;
+            grad_u[1][2] += u_y * dN_dz;
+
+            grad_u[2][0] += u_z * dN_dx;
+            grad_u[2][1] += u_z * dN_dy;
+            grad_u[2][2] += u_z * dN_dz;
+        }
+    }
+
+    // F = I + ∇u
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            F[i][j] = ((i == j) ? 1.0 : 0.0) + grad_u[i][j];
+        }
+    }
+}
+
+void RgHex8GeomNLElement::computeGreenLagrangeStrain(
+    const std::array<std::array<double, 3>, 3>& F,
+    std::array<std::array<double, 3>, 3>& E) const
+{
+    // Compute F^T * F (Right Cauchy-Green tensor)
+    std::array<std::array<double, 3>, 3> FTF;
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            FTF[i][j] = 0.0;
+            for (int k = 0; k < 3; ++k) {
+                FTF[i][j] += F[k][i] * F[k][j];
+            }
+        }
+    }
+
+    // Compute E = 0.5*(F^T*F - I)
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            E[i][j] = 0.5 * (FTF[i][j] - ((i == j) ? 1.0 : 0.0));
+        }
+    }
+}
+
+void RgHex8GeomNLElement::computeCauchyStress(
+    const std::array<std::array<double, 3>, 3>& F,
+    const RgMaterial& material,
+    std::array<std::array<double, 3>, 3>& sigma) const
+{
+    // Compute Green-Lagrange strain
+    std::array<std::array<double, 3>, 3> E;
+    computeGreenLagrangeStrain(F, E);
+
+    // For now, use simplified hyperelastic material (St. Venant-Kirchhoff)
+    // σ = (1/det(F)) * F * S * F^T where S = λ*tr(E)*I + 2*μ*E
+    
+    double lambda = material.getLameLambda();
+    double mu = material.getLameMu();
+    
+    // Compute second Piola-Kirchhoff stress
+    double traceE = E[0][0] + E[1][1] + E[2][2];
+    
+    std::array<std::array<double, 3>, 3> S;
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            S[i][j] = 2.0 * mu * E[i][j];
+            if (i == j) {
+                S[i][j] += lambda * traceE;
+            }
+        }
+    }
+
+    // Compute Cauchy stress σ = (1/det(F)) * F * S * F^T
+    double detF = F[0][0] * (F[1][1] * F[2][2] - F[1][2] * F[2][1])
+                - F[0][1] * (F[1][0] * F[2][2] - F[1][2] * F[2][0])
+                + F[0][2] * (F[1][0] * F[2][1] - F[1][1] * F[2][0]);
+
+    if (std::abs(detF) < 1e-15) {
+        // Singular deformation, return zero stress
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                sigma[i][j] = 0.0;
+            }
+        }
+        return;
+    }
+
+    // F * S
+    std::array<std::array<double, 3>, 3> FS;
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            FS[i][j] = 0.0;
+            for (int k = 0; k < 3; ++k) {
+                FS[i][j] += F[i][k] * S[k][j];
+            }
+        }
+    }
+
+    // (F*S)*F^T / det(F)
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            sigma[i][j] = 0.0;
+            for (int k = 0; k < 3; ++k) {
+                sigma[i][j] += FS[i][k] * F[j][k];
+            }
+            sigma[i][j] /= detF;
+        }
+    }
+}
+
+// ============================================================================
+// Matrix Assembly Methods (Stub implementations)
+// ============================================================================
+
+void RgHex8GeomNLElement::calculateTangentStiffnessMatrix(RgMatrix& Kt) const
+{
+    // Tangent stiffness for Newton-Raphson: Kt = Km + Kg
+    // Km: material (constitutive) stiffness
+    // Kg: geometric (initial stress) stiffness
+    int ndofs = kNodeCount * 3;
+    Kt.resize(ndofs, ndofs);
+    Kt.zero();
+    
+    // Placeholder: would compute combined stiffness
+}
+
+void RgHex8GeomNLElement::calculateMassMatrix(RgMatrix& M) const
+{
+    // Mass matrix (constant in Lagrangian description)
+    // M = integral of N^T * ρ * N dV
+    int ndofs = kNodeCount * 3;
+    M.resize(ndofs, ndofs);
+    M.zero();
+    
+    // Placeholder: would compute mass matrix
+}
+
+void RgHex8GeomNLElement::calculateInternalForceVector(RgVector& F) const
 {
     // Internal force: F_int = integral of B^T * σ dV
     int ndofs = kNodeCount * 3;
     F.resize(ndofs);
     F.zero();
     
-    if (m_stressAtGauss.empty()) {
-        return;  // No stress computed yet
-    }
-    
-    int npts = getNumberOfGaussPoints();
-    
-    for (int gp = 0; gp < npts; ++gp) {
-        Vector3d natCoord(m_gaussR[gp], m_gaussS[gp], m_gaussT[gp]);
-        double jdet = evaluateJacobianDeterminant(natCoord);
-        double weight = m_gaussW[gp] * jdet;
-        
-        // Compute B matrix at this Gauss point (nonlinear B)
-        Matrix3d F = m_deformationGradient[gp];
-        Matrix B_nl;
-        computeNonlinearBMatrix(natCoord, F, B_nl);
-        
-        // Convert stress from matrix form to Voigt vector
-        double sigma_voigt[6];
-        const Matrix3ds& sigma = m_stressAtGauss[gp];
-        sigma_voigt[0] = sigma.xx();
-        sigma_voigt[1] = sigma.yy();
-        sigma_voigt[2] = sigma.zz();
-        sigma_voigt[3] = sigma.xy();
-        sigma_voigt[4] = sigma.yz();
-        sigma_voigt[5] = sigma.xz();
-        
-        // F_int += B^T * σ * weight
-        for (int i = 0; i < ndofs; ++i) {
-            for (int j = 0; j < 6; ++j) {
-                F(i) += weight * B_nl(j, i) * sigma_voigt[j];
-            }
-        }
-    }
+    // Placeholder: would compute stress-driven internal forces
 }
 
-// ============================================================================
-// Strain and Stress Calculations
-// ============================================================================
-
-void RgHex8GeomNLElement::calculateStress(FEMaterialPoint& matPt, Matrix3ds& stress)
+void RgHex8GeomNLElement::calculateGeometricStiffnessMatrix(RgMatrix& Kg) const
 {
-    // For geometric nonlinearity, use Cauchy stress (true stress)
-    // σ = (1/J) * F * S * F^T where S is second Piola-Kirchhoff stress
-    
-    // This would be computed from current strain at material point
-    // Placeholder for actual material model integration
-}
-
-void RgHex8GeomNLElement::calculateStrain(FEMaterialPoint& matPt, Matrix3ds& strain)
-{
-    // For geometric nonlinearity, use Green-Lagrange strain
-    // E = 0.5(C - I) where C = F^T * F
-    
-    // This would be computed from current displacement at material point
-    // Placeholder for actual computation
-}
-
-// ============================================================================
-// Kinematics - Deformation Gradient and Strain
-// ============================================================================
-
-void RgHex8GeomNLElement::computeDeformationGradient(const Vector3d& naturalCoord,
-                                                     const std::vector<double>& nodalDispX,
-                                                     const std::vector<double>& nodalDispY,
-                                                     const std::vector<double>& nodalDispZ,
-                                                     Matrix3d& F) const
-{
-    // F = I + ∂u/∂X = I + (∂u/∂x)(∂x/∂X) = I + (∂u/∂x) * J^{-1}
-    
-    std::vector<double> dN_dr, dN_ds, dN_dt;
-    evaluateShapeDerivatives(naturalCoord.x, naturalCoord.y, naturalCoord.z,
-                            dN_dr, dN_ds, dN_dt);
-    
-    Matrix3d JinvT = evaluateJacobianInverse(naturalCoord);
-    
-    // Compute displacement gradient in physical coordinates
-    Matrix3d gradu(0, 0, 0, 0, 0, 0, 0, 0, 0);
-    
-    for (int i = 0; i < kNodeCount; ++i) {
-        double dN_dx = dN_dr[i] * JinvT.m[0][0] + dN_ds[i] * JinvT.m[1][0] + dN_dt[i] * JinvT.m[2][0];
-        double dN_dy = dN_dr[i] * JinvT.m[0][1] + dN_ds[i] * JinvT.m[1][1] + dN_dt[i] * JinvT.m[2][1];
-        double dN_dz = dN_dr[i] * JinvT.m[0][2] + dN_ds[i] * JinvT.m[1][2] + dN_dt[i] * JinvT.m[2][2];
-        
-        gradu.m[0][0] += nodalDispX[i] * dN_dx;
-        gradu.m[0][1] += nodalDispX[i] * dN_dy;
-        gradu.m[0][2] += nodalDispX[i] * dN_dz;
-        
-        gradu.m[1][0] += nodalDispY[i] * dN_dx;
-        gradu.m[1][1] += nodalDispY[i] * dN_dy;
-        gradu.m[1][2] += nodalDispY[i] * dN_dz;
-        
-        gradu.m[2][0] += nodalDispZ[i] * dN_dx;
-        gradu.m[2][1] += nodalDispZ[i] * dN_dy;
-        gradu.m[2][2] += nodalDispZ[i] * dN_dz;
-    }
-    
-    // F = I + ∇u
-    F.m[0][0] = 1.0 + gradu.m[0][0];
-    F.m[0][1] = gradu.m[0][1];
-    F.m[0][2] = gradu.m[0][2];
-    
-    F.m[1][0] = gradu.m[1][0];
-    F.m[1][1] = 1.0 + gradu.m[1][1];
-    F.m[1][2] = gradu.m[1][2];
-    
-    F.m[2][0] = gradu.m[2][0];
-    F.m[2][1] = gradu.m[2][1];
-    F.m[2][2] = 1.0 + gradu.m[2][2];
-}
-
-void RgHex8GeomNLElement::computeGreenLagrangeStrain(const Matrix3d& F, Matrix3ds& E) const
-{
-    // Compute C = F^T * F
-    Matrix3ds C = F.transpose() * F;
-    
-    // Compute E = 0.5(C - I)
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j <= i; ++j) {
-            double Cij = C(i, j);
-            if (i == j) {
-                E(i, j) = 0.5 * (Cij - 1.0);
-            } else {
-                E(i, j) = 0.5 * Cij;
-            }
-        }
-    }
-}
-
-void RgHex8GeomNLElement::computeRightCauchyGreen(const Matrix3d& F, Matrix3ds& C) const
-{
-    // C = F^T * F
-    C = F.transpose() * F;
-}
-
-void RgHex8GeomNLElement::computeLeftCauchyGreen(const Matrix3d& F, Matrix3ds& B) const
-{
-    // B = F * F^T (Finger tensor)
-    B = F * F.transpose();
-}
-
-void RgHex8GeomNLElement::computeEulerAlmansiStrain(const Matrix3d& F, Matrix3ds& e) const
-{
-    // e = 0.5(I - B^{-1}) where B = F * F^T
-    Matrix3ds B = F * F.transpose();
-    Matrix3ds Binv = B.inverse();
-    
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j <= i; ++j) {
-            if (i == j) {
-                e(i, j) = 0.5 * (1.0 - Binv(i, j));
-            } else {
-                e(i, j) = -0.5 * Binv(i, j);
-            }
-        }
-    }
-}
-
-// ============================================================================
-// Material Constitutive Relations
-// ============================================================================
-
-void RgHex8GeomNLElement::computeSecondPiolaKirchhoffStress(const Matrix3ds& E, Matrix3ds& S) const
-{
-    // St. Venant-Kirchhoff material: S = λ*tr(E)*I + 2*μ*E
-    // λ and μ are Lamé parameters (from material)
-    
-    // For now, use placeholder elastic material
-    double lambda = 100.0;  // Would come from material model
-    double mu = 80.0;       // Would come from material model
-    
-    double traceE = E.tr();
-    
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j <= i; ++j) {
-            double Sij = 2.0 * mu * E(i, j);
-            if (i == j) {
-                Sij += lambda * traceE;
-            }
-            S(i, j) = Sij;
-        }
-    }
-}
-
-void RgHex8GeomNLElement::computeCauchyStress(const Matrix3d& F, const Matrix3ds& S, Matrix3ds& sigma) const
-{
-    // σ = (1/det(F)) * F * S * F^T
-    double detF = F.det();
-    if (std::abs(detF) < 1e-10) {
-        sigma.zero();
-        return;
-    }
-    
-    // Compute F * S (product with symmetric matrix)
-    Matrix3d FS;
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            FS.m[i][j] = 0.0;
-            for (int k = 0; k < 3; ++k) {
-                FS.m[i][j] += F.m[i][k] * S(k, j);
-            }
-        }
-    }
-    
-    // Compute (F * S) * F^T
-    Matrix3ds temp;
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j <= i; ++j) {
-            double val = 0.0;
-            for (int k = 0; k < 3; ++k) {
-                val += FS.m[i][k] * F.m[j][k];
-            }
-            temp(i, j) = val / detF;
-        }
-    }
-    sigma = temp;
-}
-
-// ============================================================================
-// B-Matrix for Nonlinear Analysis
-// ============================================================================
-
-void RgHex8GeomNLElement::computeNonlinearBMatrix(const Vector3d& naturalCoord,
-                                                   const Matrix3d& F,
-                                                   Matrix& B_nl) const
-{
-    // For geometric nonlinearity, B includes nonlinear strain-displacement terms
-    // This is typically used in the updated Lagrangian formulation
-    
-    std::vector<double> dN_dr, dN_ds, dN_dt;
-    evaluateShapeDerivatives(naturalCoord.x, naturalCoord.y, naturalCoord.z,
-                            dN_dr, dN_ds, dN_dt);
-    
-    Matrix3d JinvT = evaluateJacobianInverse(naturalCoord);
-    
-    // Compute physical shape function derivatives
-    std::vector<double> dN_dx(kNodeCount), dN_dy(kNodeCount), dN_dz(kNodeCount);
-    for (int i = 0; i < kNodeCount; ++i) {
-        dN_dx[i] = dN_dr[i] * JinvT.m[0][0] + dN_ds[i] * JinvT.m[1][0] + dN_dt[i] * JinvT.m[2][0];
-        dN_dy[i] = dN_dr[i] * JinvT.m[0][1] + dN_ds[i] * JinvT.m[1][1] + dN_dt[i] * JinvT.m[2][1];
-        dN_dz[i] = dN_dr[i] * JinvT.m[0][2] + dN_ds[i] * JinvT.m[1][2] + dN_dt[i] * JinvT.m[2][2];
-    }
-    
-    // B_nl matrix for nonlinear strain terms
-    // For the updated Lagrangian formulation with Cauchy stress
-    // B_nl relates incremental displacement to incremental strain
-    
-    int ndofs = kNodeCount * 3;
-    B_nl.resize(6, ndofs);
-    B_nl.zero();
-    
-    // Linear strain-displacement part
-    for (int i = 0; i < kNodeCount; ++i) {
-        B_nl(0, 3*i + 0) = dN_dx[i];  // exx
-        B_nl(1, 3*i + 1) = dN_dy[i];  // eyy
-        B_nl(2, 3*i + 2) = dN_dz[i];  // ezz
-        B_nl(3, 3*i + 0) = dN_dy[i];  // exy
-        B_nl(3, 3*i + 1) = dN_dx[i];
-        B_nl(4, 3*i + 1) = dN_dz[i];  // eyz
-        B_nl(4, 3*i + 2) = dN_dy[i];
-        B_nl(5, 3*i + 0) = dN_dz[i];  // exz
-        B_nl(5, 3*i + 2) = dN_dx[i];
-    }
-    
-    // Nonlinear terms could be added here for specific formulations
-    // e.g., for truly nonlinear strain-displacement relations
-}
-
-// ============================================================================
-// Geometric Stiffness
-// ============================================================================
-
-void RgHex8GeomNLElement::computeGeometricStiffness(const std::vector<Matrix3ds>& stressAtGauss,
-                                                    Matrix& Kg) const
-{
-    // Geometric stiffness: Kg = integral of B_geo^T * σ * B_geo dV
-    // This accounts for the effect of initial stress on the stiffness
-    
+    // Geometric stiffness: Kg from initial stress effects
     int ndofs = kNodeCount * 3;
     Kg.resize(ndofs, ndofs);
     Kg.zero();
     
-    int npts = getNumberOfGaussPoints();
-    
-    for (int gp = 0; gp < npts && gp < (int)stressAtGauss.size(); ++gp) {
-        Vector3d natCoord(m_gaussR[gp], m_gaussS[gp], m_gaussT[gp]);
-        double jdet = evaluateJacobianDeterminant(natCoord);
-        double weight = m_gaussW[gp] * jdet;
-        
-        std::vector<double> dN_dr, dN_ds, dN_dt;
-        evaluateShapeDerivatives(natCoord.x, natCoord.y, natCoord.z,
-                                dN_dr, dN_ds, dN_dt);
-        
-        Matrix3d JinvT = evaluateJacobianInverse(natCoord);
-        
-        std::vector<double> dN_dx(kNodeCount), dN_dy(kNodeCount), dN_dz(kNodeCount);
-        for (int i = 0; i < kNodeCount; ++i) {
-            dN_dx[i] = dN_dr[i] * JinvT.m[0][0] + dN_ds[i] * JinvT.m[1][0] + dN_dt[i] * JinvT.m[2][0];
-            dN_dy[i] = dN_dr[i] * JinvT.m[0][1] + dN_ds[i] * JinvT.m[1][1] + dN_dt[i] * JinvT.m[2][1];
-            dN_dz[i] = dN_dr[i] * JinvT.m[0][2] + dN_ds[i] * JinvT.m[1][2] + dN_dt[i] * JinvT.m[2][2];
-        }
-        
-        const Matrix3ds& sigma = stressAtGauss[gp];
-        
-        // Kg += weight * B_geo^T * σ * B_geo
-        for (int i = 0; i < kNodeCount; ++i) {
-            for (int j = 0; j < kNodeCount; ++j) {
-                // Contribution from stress terms
-                double contrib_xx = dN_dx[i] * sigma.xx() * dN_dx[j];
-                double contrib_yy = dN_dy[i] * sigma.yy() * dN_dy[j];
-                double contrib_zz = dN_dz[i] * sigma.zz() * dN_dz[j];
-                double contrib_xy = (dN_dx[i] * sigma.xy() * dN_dy[j] +
-                                    dN_dy[i] * sigma.xy() * dN_dx[j]);
-                double contrib_yz = (dN_dy[i] * sigma.yz() * dN_dz[j] +
-                                    dN_dz[i] * sigma.yz() * dN_dy[j]);
-                double contrib_xz = (dN_dx[i] * sigma.xz() * dN_dz[j] +
-                                    dN_dz[i] * sigma.xz() * dN_dx[j]);
-                
-                double Kg_contrib = weight * (contrib_xx + contrib_yy + contrib_zz + 
-                                             contrib_xy + contrib_yz + contrib_xz);
-                
-                // Add to all three diagonal blocks (one for each DOF direction)
-                for (int d = 0; d < 3; ++d) {
-                    Kg(3*i + d, 3*j + d) += Kg_contrib;
-                }
-            }
-        }
-    }
+    // Placeholder: would include stress-stiffness coupling
 }
 
 // ============================================================================
-// Displacement Updates
+// State Management
 // ============================================================================
 
-void RgHex8GeomNLElement::updateCurrentDisplacement(const std::vector<double>& displacement)
+void RgHex8GeomNLElement::updateDisplacementState(const std::vector<double>& displacement)
 {
+    // Store updated displacement for next iteration
     m_currentDisplacement = displacement;
-    
-    // Cache deformation gradient and stresses at all Gauss points
-    int npts = getNumberOfGaussPoints();
-    m_deformationGradient.resize(npts);
-    m_strainAtGauss.resize(npts);
-    m_stressAtGauss.resize(npts);
-    
-    // Extract displacement components
-    std::vector<double> ux(kNodeCount), uy(kNodeCount), uz(kNodeCount);
-    getNodalDisplacements(displacement, ux, uy, uz);
-    
-    // Compute at each Gauss point
-    for (int gp = 0; gp < npts; ++gp) {
-        Vector3d natCoord(m_gaussR[gp], m_gaussS[gp], m_gaussT[gp]);
-        
-        // Compute deformation gradient
-        computeDeformationGradient(natCoord, ux, uy, uz, m_deformationGradient[gp]);
-        
-        // Compute Green-Lagrange strain
-        computeGreenLagrangeStrain(m_deformationGradient[gp], m_strainAtGauss[gp]);
-        
-        // Compute second Piola-Kirchhoff stress
-        computeSecondPiolaKirchhoffStress(m_strainAtGauss[gp], m_stressAtGauss[gp]);
-    }
-}
-
-void RgHex8GeomNLElement::updatePreviousDisplacement(const std::vector<double>& displacement)
-{
-    m_previousDisplacement = displacement;
-}
-
-// ============================================================================
-// Helper Methods
-// ============================================================================
-
-void RgHex8GeomNLElement::getNodalDisplacements(const std::vector<double>& u,
-                                                 std::vector<double>& ux,
-                                                 std::vector<double>& uy,
-                                                 std::vector<double>& uz) const
-{
-    ux.resize(kNodeCount);
-    uy.resize(kNodeCount);
-    uz.resize(kNodeCount);
-    
-    for (int i = 0; i < kNodeCount; ++i) {
-        ux[i] = (3*i < u.size()) ? u[3*i] : 0.0;
-        uy[i] = (3*i + 1 < u.size()) ? u[3*i + 1] : 0.0;
-        uz[i] = (3*i + 2 < u.size()) ? u[3*i + 2] : 0.0;
-    }
-}
-
-// ============================================================================
-// Serialization
-// ============================================================================
-
-void RgHex8GeomNLElement::Serialize(DumpStream& ar)
-{
-    RgHex8Element::Serialize(ar);
-    
-    if (!ar.IsShallow()) {
-        ar & m_currentDisplacement & m_previousDisplacement;
-    }
 }
 
 } // namespace RgFem

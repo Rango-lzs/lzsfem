@@ -25,10 +25,18 @@ set(HEADERS
     RgElement/RgBeam2dElement.h
     RgElement/RgBeam3dElement.h
     RgElement/RgBeamElement.h
+    RgElement/RgLinearBeamElement.h
+    RgElement/RgNLBeamElement.h
+    RgElement/RgBeam2dGeomNLElement.h
+    RgElement/RgBeam3dGeomNLElement.h
     RgElement/RgElement.h
     RgElement/RgHex20Element.h
     RgElement/RgHex8Element.h
     RgElement/RgHex8GeomNLElement.h
+    RgElement/RgLinearShellElement.h
+    RgElement/RgNLShellElement.h
+    RgElement/RgShell3Element.h
+    RgElement/RgShell4Element.h
     RgElement/RgShellElement.h
     RgElement/RgSolid2dElement.h
     RgElement/RgSolid3dElement.h
@@ -56,4 +64,12 @@ set(SOURCES
     RgElement/FEStructureElement.cpp
     RgElement/FETrussElement.cpp
     RgElement/RgElement.cpp
+    RgElement/RgLinearBeamElement.cpp
+    RgElement/RgNLBeamElement.cpp
+    RgElement/RgBeam2dGeomNLElement.cpp
+    RgElement/RgBeam3dGeomNLElement.cpp
+    RgElement/RgLinearShellElement.cpp
+    RgElement/RgNLShellElement.cpp
+    RgElement/RgShell3Element.cpp
+    RgElement/RgShell4Element.cpp
 )

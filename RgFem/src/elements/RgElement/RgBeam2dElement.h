@@ -1,7 +1,7 @@
 #ifndef RGBEAM2DELEMENT_H
 #define RGBEAM2DELEMENT_H
 
-#include "RgBeamElement.h"
+#include "RgLinearBeamElement.h"
 #include <array>
 #include <vector>
 
@@ -15,7 +15,7 @@ class Vector3d;
     RgBeam2dElement
     - 2-node linear Timoshenko beam element
     - 1D isoparametric element with 3 DOFs per node (2 displacements + 1 rotation)
-    - Derives from RgBeamElement
+    - Derives from RgLinearBeamElement
     - Features:
       * Linear shape functions for displacement
       * Accounts for shear deformation (Timoshenko formulation)
@@ -24,7 +24,7 @@ class Vector3d;
       * Node distribution: 2 nodes at element ends
       * Total DOF: 6 (3 per node)
 */
-class RgBeam2dElement : public RgBeamElement
+class RgBeam2dElement : public RgLinearBeamElement
 {
 public:
     static constexpr int kNodeCount = 2;

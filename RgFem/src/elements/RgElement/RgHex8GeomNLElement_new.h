@@ -24,7 +24,7 @@ class Matrix3d;
       * Geometric (initial stress) stiffness matrix
       * Supports hyperelastic and elastoplastic materials
 */
-class RgHex8GeomNLElement : public RgHex8Element
+class RgHex8GeomNLElement : public RgNLSolid3dElement
 {
 public:
     static constexpr int kNodeCount = 8;
