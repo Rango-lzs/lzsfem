@@ -22,6 +22,7 @@ enum ElementCategory
 // Do not change the order of these enums!
 enum ElementShape
 {
+    ET_INVALID,
     // 3D elements
     ET_TET4,
     ET_TET10,

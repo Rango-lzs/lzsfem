@@ -17,6 +17,7 @@ public:
     void init(int n);
     RgMaterialPoint*& operator[](int i);
     const std::vector<RgMaterialPoint*>& getMatPoints() const;
+    int size() const;
 
 private:
     void destroy();

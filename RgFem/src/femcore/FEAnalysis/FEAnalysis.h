@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 class FEModel;
 class FESolver;
-class FEDomain;
+class RgDomain;
 class DumpStream;
 class FEStepComponent;
 class FETimeStepController;
@@ -65,7 +65,7 @@ public:
 	int Domains() { return (int)m_Dom.size(); }
 
 	//! Get active domain
-	FEDomain* Domain(int i);
+	RgDomain* Domain(int i);
 
 	//! Add a domain
 	void AddDomain(int i) { m_Dom.push_back(i); }

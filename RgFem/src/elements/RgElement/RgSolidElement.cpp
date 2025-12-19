@@ -1,81 +1,208 @@
+#include "RgSolidElement.h"
+#include "materials/FEMaterialPoint.h"
 
-#include "FESolidElement.h"
-#include "basicio/DumpStream.h"
-
-
-//ʵ�嵥Ԫ
-FESolidElement::FESolidElement(const FESolidElement& el)
+RgSolidElement::RgSolidElement(const RgSolidElement& el) 
+    : RgElement(el)
 {
-	// set the traits of the element
-	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
-
-	// copy base class data
-    m_mat_id = el.m_mat_id;
-    m_id = el.m_id;
-    m_loc_id = el.m_loc_id;
-	m_node = el.m_node;
-    m_loc_node = el.m_loc_node;
-    /*m_lm = el.m_lm;
-    m_val = el.m_val;*/
-    m_state = el.m_state;
 }
 
-FESolidElement& FESolidElement::operator = (const FESolidElement& el)
+RgSolidElement& RgSolidElement::operator=(const RgSolidElement& el)
 {
-	// set the traits of the element
-	if (el.m_pTraits) { SetTraits(el.m_pTraits); m_state = el.m_state; }
-
-	// copy base class data
-    m_mat_id = el.m_mat_id;
-	m_id = el.m_id;
-	m_loc_id = el.m_loc_id;
-	m_node = el.m_node;
-	m_loc_node = el.m_loc_node;
-    /*m_lm = el.m_lm;
-    m_val = el.m_val;*/
-	m_state = el.m_state;
-
-	return (*this);
+    if (this != &el) {
+        RgElement::operator=(el);
+    }
+    return *this;
 }
 
-void FESolidElement::SetTraits(FEElementTraits* pt)
+int RgSolidElement::dim()
 {
-	FEElement::SetTraits(pt);
-
-	int ni = GaussPointSize();
-	m_J0i.resize(ni);
+    // 默认返回3，因为这是三维实体单元
+    return 3;
 }
 
-Vector3d FESolidElement::evaluate(Vector3d* v, double r, double s, double t) const
+RgFem::RgGaussPoint RgSolidElement::gaussPoint(int n) const
 {
-	double H[FEElement::MAX_NODES];
-	shape_fnc(H, r, s, t);
-    int neln = NodeSize();
-	Vector3d p(0, 0, 0);
-	for (int i = 0; i<neln; ++i) p += v[i] * H[i];
-	return p;
+    static_cast<RgSolidElementTraits*>(m_pTraits)->gaussPoints(n);
 }
 
-double FESolidElement::evaluate(double* v, double r, double s, double t) const
+// --- assembly interfaces (common to all solid elements) ---
+void RgSolidElement::calculateStiffnessMatrix(Matrix& K) const
 {
-	double H[FEElement::MAX_NODES];
-	shape_fnc(H, r, s, t);
-	int neln = NodeSize();
-	double p = 0.0;
-	for (int i = 0; i<neln; ++i) p += v[i] * H[i];
-	return p;
+    // 默认实现，具体单元类型需要重写此方法
+    K.setZero();
 }
 
-double* FESolidElement::Gr(int order, int n) const { return (order >= 0 ? ((FESolidElementTraits*)(m_pTraits))->m_Gr_p[order][n] : ((FESolidElementTraits*)(m_pTraits))->m_Gr[n]); }	// shape function derivative to r
-double* FESolidElement::Gs(int order, int n) const { return (order >= 0 ? ((FESolidElementTraits*)(m_pTraits))->m_Gs_p[order][n] : ((FESolidElementTraits*)(m_pTraits))->m_Gs[n]); }	// shape function derivative to s
-double* FESolidElement::Gt(int order, int n) const { return (order >= 0 ? ((FESolidElementTraits*)(m_pTraits))->m_Gt_p[order][n] : ((FESolidElementTraits*)(m_pTraits))->m_Gt[n]); }	// shape function derivative to t
-
-void FESolidElement::Serialize(DumpStream& ar)
+void RgSolidElement::calculateTangentStiffnessMatrix(Matrix& Kt) const
 {
-	FEElement::Serialize(ar);
-	if (ar.IsShallow() == false)
-	{
-		ar & m_J0i;
-		ar & m_bitfc;
-	}
+    // 默认实现，具体单元类型需要重写此方法
+    Kt.setZero();
+}
+
+void RgSolidElement::calculateMassMatrix(Matrix& M) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    M.setZero();
+}
+
+void RgSolidElement::calculateDampingMatrix(Matrix& C) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    C.setZero();
+}
+
+void RgSolidElement::calculateInternalForceVector(Vector& F) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    F.setZero();
+}
+
+// --- geometric / nonlinear hooks ---
+void RgSolidElement::computeGeometricStiffness(Matrix& Kg) const
+{
+    // 默认实现：零几何刚度矩阵
+    Kg.setZero();
+}
+
+void RgSolidElement::computeDeformationGradient(int gp, Matrix3d& F) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    F = Matrix3d(); // Zero matrix
+}
+
+// --- integration / material point ---
+FEMaterialPoint* RgSolidElement::getMaterialPoint(int gp)
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return nullptr;
+}
+
+const FEMaterialPoint* RgSolidElement::getMaterialPoint(int gp) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return nullptr;
+}
+
+// --- utilities ---
+double RgSolidElement::elementVolume() const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return 0.0;
+}
+
+void RgSolidElement::updateState(double dt)
+{
+    // override: 更新材料点状态，具体单元类型需要重写此方法
+}
+
+void RgSolidElement::commitState()
+{
+    // override: 提交当前状态至下一时间步，具体单元类型需要重写此方法
+}
+
+void RgSolidElement::resetState()
+{
+    // override: 重置状态到初始条件，具体单元类型需要重写此方法
+}
+
+// Protected helper methods
+void RgSolidElement::computeBMatrixAtGauss(int gp, Matrix& B) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    B.setZero();
+}
+
+void RgSolidElement::getConstitutiveTangentAtGauss(int gp, Matrix& D) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    D.setZero();
+}
+
+int RgSolidElement::getNumberOfFaces() const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return 0;
+}
+
+int RgSolidElement::getNumberOfEdges() const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return 0;
+}
+
+void RgSolidElement::getFaceNodeIds(int faceId, std::vector<int>& faceNodes) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    faceNodes.clear();
+}
+
+void RgSolidElement::getEdgeNodeIds(int edgeId, std::vector<int>& edgeNodes) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    edgeNodes.clear();
+}
+
+Vector3d RgSolidElement::evaluateCoordinates(const Vector3d& naturalCoord) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return Vector3d(0, 0, 0);
+}
+
+Matrix3d RgSolidElement::evaluateJacobian(const Vector3d& naturalCoord) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return Matrix3d();
+}
+
+double RgSolidElement::evaluateJacobianDeterminant(const Vector3d& naturalCoord) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return 0.0;
+}
+
+Matrix3d RgSolidElement::evaluateJacobianInverse(const Vector3d& naturalCoord) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return Matrix3d();
+}
+
+bool RgSolidElement::isValidNaturalCoordinate(const Vector3d& naturalCoord) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return false;
+}
+
+double RgSolidElement::getCharacteristicLength() const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return 0.0;
+}
+
+void RgSolidElement::applyBodyForce(const Vector3d& force, Vector& F) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    // F向量大小应该在派生类中调整
+}
+
+void RgSolidElement::applyDistributedLoad(int faceId, const Vector3d& traction, Vector& F) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    // F向量大小应该在派生类中调整
+}
+
+void RgSolidElement::applyPointLoad(int nodeId, const Vector3d& force, Vector& F) const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    // F向量大小应该在派生类中调整
+}
+
+double RgSolidElement::calculateStrainEnergy() const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return 0.0;
+}
+
+double RgSolidElement::calculateKineticEnergy() const
+{
+    // 默认实现，具体单元类型需要重写此方法
+    return 0.0;
 }

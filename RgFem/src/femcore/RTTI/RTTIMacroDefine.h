@@ -11,7 +11,7 @@
 #define DECLARE_META_CLASS(DERIVE_CLASS, BASE_CLASS)                                                                   \
 public:                                                                                                                \
     using BaseClass = BASE_CLASS;                                                                                      \
-    virtual const const MetaClass* meta() const;                                                                       \
+    virtual const MetaClass* meta() const;                                                                       \
     static const MetaClass* static_meta();                                                                             \
     static std::string class_name();                                                                                   \
     static std::string alias_name();                                                                                   \

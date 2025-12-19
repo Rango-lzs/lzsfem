@@ -7,14 +7,19 @@
 #include "femcore/fem_export.h"
 
 #include <vector>
+#include <Eigen/Dense>
 
 using NodeId = int;
 using ElemId = int;
 using MatId = int;
 
+// Type aliases for matrices and vectors
+using StressTensor = Matrix3ds;
+using StrainTensor = Matrix3ds;
+
 class FEMaterialPoint;
 class FENode;
-class FEMeshPartition;
+class RgDomain;
 class DumpStream;
 
 /**
@@ -49,132 +54,75 @@ public:
     RgElement(const RgElement& other) = default;
     RgElement& operator=(const RgElement& other) = default;
 
-    RgElement(const RgElement& other) = default;
-    RgElement& operator=(const RgElement& other) = default;
-
-    // 单元编号
+    // --- Element Identification ---
     int getId() const;
     void setId(int n);
 
-    // 材料编号
     int getMatId() const;
     void setMatId(int id);
 
-    // Get the mesh partition that contains this element
-    FEMeshPartition* GetMeshPartition() const
-    {
-        return m_part;
-    }
-
-    // Set the mesh partition that contains this element
-    void SetMeshPartition(FEMeshPartition* part)
-    {
-        m_part = part;
-    }
-
     void setLocalId(int lid);
     int getLocalId() const;
-    const std::vector<NodeId>& getNodeIds() const;
 
-    virtual ElementType elementType() const
-    {
-        return ElementType::FE_ELEM_INVALID_TYPE;
-    }
-    
+    // --- Mesh Partition ---
+    RgDomain* getDomain() const;
+    void setDomain(RgDomain* dom);
+
+    // --- Node Connectivity ---
+    const std::vector<NodeId>& getNodeIds() const;
     virtual NodeId getNodeId(int idx) const;
     virtual NodeId getLocNodeId(int idx) const;
-
     void setNodeId(int idx, int id);
 
-    virtual void setNode(FENode* n, int i)
-    {
-    }
+    virtual void setNode(FENode* n, int i);
+    virtual FENode* getNode(int idx) const;
 
-    virtual FENode* getNode(int idx) const
-    {
-        return nullptr;
-    }
+    // --- Element Properties ---
+    virtual ElementType elementType() const;
+    virtual ElementCategory Class() const;
+    virtual ElementShape Shape() const;
 
-
-    //Set the traits of an element
+    // --- Traits Management ---
     virtual void initTraits();
+    RgElementTraits* getTraits();
 
-    //Get the element traits
-    RgElementTraits* getTraits()
-    {
-        return m_pTraits;
-    }
-
-    //return number of nodes
-    int NodeSize() const
-    {
-        return m_pTraits->m_neln;
-    }
-
-    bool isActive() const
-    {
-        return true;
-    }
-
-    ElementCategory Class() const
-    {
-        return ElementCategory::FE_ELEM_SOLID;
-    }
-
-
-    //! clear material point data
-    void ClearData()
-    {
-    
-    }
-
-public: 
-
-    //! return the element shape
-    ElementShape Shape() const
-    {
-        return m_pTraits->Shape();
-    }
-
-    //return number of integration points
+    int NodeSize() const;
     int GaussPointSize() const;
     int ShapeFunctions(int order) const;
 
+    // --- Material Point Data ---
+    RgMaterialPoint* getMaterialPoint(int n);
+    void setMaterialPointData(RgMaterialPoint* pmp, int n);
 
-    //根据节点坐标，插值计算高斯点坐标
-    Vector3d Evaluate(Vector3d* value, int iGauss)
-    {
-        return Vector3d{0, 0, 0};
-    }
-
-public:
-    //Get the material point data
-    FEMaterialPoint* GetMaterialPoint(int n);
-    void SetMaterialPointData(FEMaterialPoint* pmp, int n);
-
-    //! serialize
-    //! NOTE: state data is not serialized by the element. This has to be done by the domains.
+    // --- Serialization ---
     virtual void Serialize(DumpStream& ar);
 
-public:  // Filed evalulate
+    // --- Field Evaluation ---
+    Vector3d Evaluate(Vector3d* value, int iGauss);
 
+    // --- Core Finite Element Methods ---
     virtual void calculateStiffnessMatrix(Matrix& K) const = 0;
     virtual void calculateMassMatrix(Matrix& M) const = 0;
     virtual void calculateDampingMatrix(Matrix& C) const = 0;
+    virtual void calculateInternalForceVector(std::vector<double>& F) const = 0;
 
     virtual void calculateStress(FEMaterialPoint& matPt, StressTensor& stress) = 0;
     virtual void calculateStrain(FEMaterialPoint& matPt, StrainTensor& strain) = 0;
 
-    std::vector<NodeId> m_node;      //!< connectivity
-    std::vector<NodeId> m_loc_node;  //!< local connectivity
+    bool isActive() const;
+    void ClearData();
 
 protected:
-    //下面的local是指在一个Domain里面的
+    // Element data
     ElemId m_id;                     //!< element Id
     ElemId m_loc_id;                 //!< local Id in the domain
     MatId m_mat_id;                  //!< material index  
-    FEMeshPartition* m_part;
+    RgDomain* m_part;
+
     RgElementState m_state;
-    RgElementTraits* m_pTraits;  //!< pointer to element traits
+    RgElementTraits* m_pTraits;      //!< pointer to element traits
+    
+    std::vector<NodeId> m_node;      //!< connectivity
+    std::vector<NodeId> m_loc_node;  //!< local connectivity
 };
 

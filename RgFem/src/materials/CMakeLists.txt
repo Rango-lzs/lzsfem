@@ -1,19 +1,68 @@
-set(HEADERS
-    ElastoPlasticMaterial.h
-    FEElasticMaterial.h
-    FEElasticMaterialPoint.h
-    FEIsotropicElastic.h
-    FEMaterial.h
-    FEMaterialPoint.h
-    FESolidMaterial.h
+set(MATERIAL_HEADERS
+    materials/FEMaterial.h
+    materials/FEMaterialPoint.h
+    materials/FESolidMaterial.h
+    materials/LargeDeformation/RgElasticMaterialPoint.h
+    materials/LargeDeformation/RgHyperElasticMaterial.h
+    materials/LargeDeformation/RgIsotropicElastic.h
+    materials/LargeDeformation/RgLargeDefMaterial.h
+    materials/LargeDeformation/RgNeoHookean.h
+    materials/MaterialPointData.h
+    materials/RgMaterial.h
+    materials/SmallDeformation/RgElastoPlasticMaterial.h
+    materials/SmallDeformation/RgElastoPlasticMaterialPoint.h
+    materials/SmallDeformation/RgSmallDefMaterial.h
+    materials/SmallDeformation/RgLinearElasticMaterial.h
+    PARENT_SCOPE
 )
 
-set(SOURCES
-    ElastoPlasticMaterial.cpp
-    FEElasticMaterial.cpp
-    FEElasticMaterialPoint.cpp
-    FEIsotropicElastic.cpp
-    FEMaterial.cpp
-    FEMaterialPoint.cpp
-    FESolidMaterial.cpp
+set(MATERIAL_SOURCES
+    materials/FEMaterial.cpp
+    materials/FEMaterialPoint.cpp
+    materials/FESolidMaterial.cpp
+    materials/LargeDeformation/RgElasticMaterialPoint.cpp
+    materials/LargeDeformation/RgHyperElasticMaterial.cpp
+    materials/LargeDeformation/RgIsotropicElastic.cpp
+    materials/LargeDeformation/RgLargeDefMaterial.cpp
+    materials/LargeDeformation/RgNeoHookean.cpp
+    materials/MaterialPointData.cpp
+    materials/RgMaterial.cpp
+    materials/SmallDeformation/RgElastoPlasticMaterial.cpp
+    materials/SmallDeformation/RgElastoPlasticMaterialPoint.cpp
+    materials/SmallDeformation/RgSmallDefMaterial.cpp
+    materials/SmallDeformation/RgLinearElasticMaterial.cpp
+    PARENT_SCOPE
+)
+
+# Define file groups for materials subdirectories
+set(LARGE_DEF_HEADERS
+    materials/LargeDeformation/RgElasticMaterialPoint.h
+    materials/LargeDeformation/RgHyperElasticMaterial.h
+    materials/LargeDeformation/RgIsotropicElastic.h
+    materials/LargeDeformation/RgLargeDefMaterial.h
+    materials/LargeDeformation/RgNeoHookean.h
+    PARENT_SCOPE
+)
+set(LARGE_DEF_SOURCES
+    materials/LargeDeformation/RgElasticMaterialPoint.cpp
+    materials/LargeDeformation/RgHyperElasticMaterial.cpp
+    materials/LargeDeformation/RgIsotropicElastic.cpp
+    materials/LargeDeformation/RgLargeDefMaterial.cpp
+    materials/LargeDeformation/RgNeoHookean.cpp
+    PARENT_SCOPE
+)
+
+set(SMALL_DEF_HEADERS
+    materials/SmallDeformation/RgElastoPlasticMaterial.h
+    materials/SmallDeformation/RgElastoPlasticMaterialPoint.h
+    materials/SmallDeformation/RgSmallDefMaterial.h
+    materials/SmallDeformation/RgLinearElasticMaterial.h
+    PARENT_SCOPE
+)
+set(SMALL_DEF_SOURCES
+    materials/SmallDeformation/RgElastoPlasticMaterial.cpp
+    materials/SmallDeformation/RgElastoPlasticMaterialPoint.cpp
+    materials/SmallDeformation/RgSmallDefMaterial.cpp
+    materials/SmallDeformation/RgLinearElasticMaterial.cpp
+    PARENT_SCOPE
 )

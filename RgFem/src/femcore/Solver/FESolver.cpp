@@ -10,7 +10,7 @@
 
 #include "basicio/DumpStream.h"
 #include "femcore/FELinearConstraintManager.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "femcore/FEMesh.h"
 #include "femcore/FEModel.h"
 #include "femcore/FENode.h"

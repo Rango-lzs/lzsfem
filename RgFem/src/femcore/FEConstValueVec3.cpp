@@ -170,8 +170,8 @@ Vector3d FELocalVectorGenerator::operator () (const FEMaterialPoint& mp)
 	FEElement* el = mp.m_elem; assert(el);
 
 	FEMeshPartition* dom = el->GetMeshPartition();
-	Vector3d r0 = dom->Node(el->m_loc_node[m_n[0]-1]).m_r0;
-	Vector3d r1 = dom->Node(el->m_loc_node[m_n[1]-1]).m_r0;
+	Vector3d r0 = dom->Node(el->getLocNodeId(m_n[0]-1)).m_r0;
+	Vector3d r1 = dom->Node(el->getLocNodeId(m_n[1]-1)).m_r0;
 
 	Vector3d n = r1 - r0;
 	n.unit();

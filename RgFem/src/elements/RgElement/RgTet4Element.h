@@ -21,7 +21,7 @@ class Matrix3ds;
       * Supports small strain analysis
       * Suitable for mesh generation and computational efficiency
 */
-class RgTet4Element : public RgSolid3dElement
+class RgTet4Element : public RgLinearSolid3dElement
 {
 public:
     static constexpr int kNodeCount = 4;

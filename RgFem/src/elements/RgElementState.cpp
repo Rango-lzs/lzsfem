@@ -42,6 +42,11 @@ const std::vector<FEMaterialPoint*>& RgElementState::getMatPoints() const
     return m_data;
 }
 
+int RgElementState::size() const
+{
+    return m_data.size();
+}
+
 FEMaterialPoint*& RgElementState::operator[](int i)
 {
     return m_data[i];

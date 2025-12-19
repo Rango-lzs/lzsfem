@@ -17,7 +17,7 @@
 #include "femcore/FEParamValidator.h"
 #include "femcore/RTTI/MetaClass.h"
 #include "../FEProperty.h"
-#include "../Domain/FEDomain.h"
+#include "../Domain/RgDomain.h"
 
 DEFINE_META_CLASS(FEAnalysis, FEObjectBase, "");
 
@@ -129,7 +129,7 @@ void FEAnalysis::CopyFrom(FEAnalysis* step)
 
 //-----------------------------------------------------------------------------
 //! Return a domain
-FEDomain* FEAnalysis::Domain(int i)
+RgDomain* FEAnalysis::Domain(int i)
 {
     return &(GetFEModel()->GetMesh().Domain(m_Dom[i]));
 }
@@ -626,16 +626,16 @@ bool FEAnalysis::Activate()
     // Activate all domains
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FEDomain& dom = mesh.Domain(i);
+        /*RgDomain& dom = mesh.Domain(i);
         if (dom.Class() != FE_DOMAIN_SHELL)
-            dom.Activate();
+            dom.Activate();*/
     }
     // but activate shell domains last (to deal with sandwiched shells)
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FEDomain& dom = mesh.Domain(i);
+        /*RgDomain& dom = mesh.Domain(i);
         if (dom.Class() == FE_DOMAIN_SHELL)
-            dom.Activate();
+            dom.Activate();*/
     }
 
     // active the linear constraints

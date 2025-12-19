@@ -9,19 +9,21 @@
 #pragma once
 #include "datastructure/FEBoundingBox.h"
 #include "FEDiscreteSet.h"
-#include "elements/FEElementSet.h"
+#include "elements/RgElementSet.h"
 #include "FEFacetSet.h"
 #include "FENode.h"
 #include "FENodeElemList.h"
 #include "femcore/FENodeSet.h"
 //#include "elements/FEShellElement.h"
-#include "elements/FESolidElement.h"
+#include "elements/RgElementSet.h"
 #include "FESurfacePair.h"
+#include <vector>
+#include <string>
 
 //-----------------------------------------------------------------------------
 class FEEdge;
 class FESurface;
-class FEDomain;
+class RgDomain;
 class FEModel;
 class FETimeInfo;
 class FEDataMap;
@@ -80,10 +82,7 @@ public:
     FENode& Node(int i);
     const FENode& Node(int i) const;
 
-    const std::vector<FENode>& AllNode() const
-    {
-        return m_Node;
-    }
+    const std::vector<FENode>& AllNode() const;
 
     //! Set the number of degrees of freedom on this mesh
     void SetDOFS(int n);
@@ -92,10 +91,7 @@ public:
     void UpdateBox();
 
     //! retrieve the bounding box
-    FEBoundingBox& GetBoundingBox()
-    {
-        return m_box;
-    }
+    FEBoundingBox& GetBoundingBox();
 
     //! remove isolated vertices
     int RemoveIsolatedVertices();
@@ -118,68 +114,42 @@ public:
     //! Finds an element from a given ID
     FEElement* FindElementFromID(int nid);
 
-    FENodeElemList& NodeElementList()
-    {
-        if (m_NEL.Size() != m_Node.size())
-            m_NEL.Create(*this);
-        return m_NEL;
-    }
+    FENodeElemList& NodeElementList();
 
     //! See if all elements are of a particular shape
     bool IsType(ElementShape eshape);
 
     // --- NODESETS ---
     //! adds a node set to the mesh
-    void AddNodeSet(FENodeSet* pns)
-    {
-        m_NodeSet.push_back(pns);
-    }
+    void AddNodeSet(FENodeSet* pns);
 
     //! number of nodesets
-    int NodeSets()
-    {
-        return (int)m_NodeSet.size();
-    }
+    int NodeSets() const;
 
     //! return a node set
-    FENodeSet* NodeSet(int i)
-    {
-        return m_NodeSet[i];
-    }
+    FENodeSet* NodeSet(int i);
 
     //! Find a nodeset by name
     FENodeSet* FindNodeSet(const std::string& name);
 
     // --- ELEMENT SETS ---
-    int ElementSets()
-    {
-        return (int)m_ElemSet.size();
-    }
-    FEElementSet& ElementSet(int n)
-    {
-        return *m_ElemSet[n];
-    }
-    void AddElementSet(FEElementSet* pg)
-    {
-        m_ElemSet.push_back(pg);
-    }
+    int ElementSets() const;
+    RgElementSet& ElementSet(int n);
+    void AddElementSet(RgElementSet* pg);
 
     //! Find a element set by name
-    FEElementSet* FindElementSet(const std::string& name);
+    RgElementSet* FindElementSet(const std::string& name);
 
     // --- DOMAINS ---
-    int Domains();
-    FEDomain& Domain(int n);
-    const std::vector<FEDomain*>& AllDomain()
-    {
-        return m_Domain;
-    }
+    int Domains() const;
+    RgDomain& Domain(int n);
+    const std::vector<RgDomain*>& AllDomain() const;
 
-    void AddDomain(FEDomain* pd);
+    void AddDomain(RgDomain* pd);
 
-    FEDomain* FindDomain(const std::string& name);
+    RgDomain* FindDomain(const std::string& name);
     int FindDomainIndex(const std::string& name);
-    FEDomain* FindDomain(int domId);
+    RgDomain* FindDomain(int domId);
 
     //! clear all domains
     void ClearDomains();
@@ -188,18 +158,9 @@ public:
     void RebuildLUT();
 
     // --- SURFACES ---
-    int Surfaces()
-    {
-        return (int)m_Surf.size();
-    }
-    FESurface& Surface(int n)
-    {
-        return *m_Surf[n];
-    }
-    void AddSurface(FESurface* ps)
-    {
-        m_Surf.push_back(ps);
-    }
+    int Surfaces() const;
+    FESurface& Surface(int n);
+    void AddSurface(FESurface* ps);
     FESurface* FindSurface(const std::string& name);
     int FindSurfaceIndex(const std::string& name);
 
@@ -207,47 +168,20 @@ public:
     FESurface* CreateSurface(FEFacetSet& facetSet);
 
     // --- EDGES ---
-    int Edges()
-    {
-        return (int)m_Edge.size();
-    }
-    FEEdge& Edge(int n)
-    {
-        return *m_Edge[n];
-    }
-    void AddEdge(FEEdge* ps)
-    {
-        m_Edge.push_back(ps);
-    }
+    int Edges() const;
+    FEEdge& Edge(int n);
+    void AddEdge(FEEdge* ps);
 
     // --- FACETSETS ---
-    int FacetSets()
-    {
-        return (int)m_FaceSet.size();
-    }
-    FEFacetSet& FacetSet(int n)
-    {
-        return *m_FaceSet[n];
-    }
-    void AddFacetSet(FEFacetSet* ps)
-    {
-        m_FaceSet.push_back(ps);
-    }
+    int FacetSets() const;
+    FEFacetSet& FacetSet(int n);
+    void AddFacetSet(FEFacetSet* ps);
     FEFacetSet* FindFacetSet(const std::string& name);
 
     // --- surface pairs ---
-    int SurfacePairs()
-    {
-        return (int)m_SurfPair.size();
-    }
-    FESurfacePair& SurfacePair(int n)
-    {
-        return *m_SurfPair[n];
-    }
-    void AddSurfacePair(FESurfacePair* ps)
-    {
-        m_SurfPair.push_back(ps);
-    }
+    int SurfacePairs() const;
+    FESurfacePair& SurfacePair(int n);
+    void AddSurfacePair(FESurfacePair* ps);
     FESurfacePair* FindSurfacePair(const std::string& name);
 
 public:
@@ -270,8 +204,8 @@ public:
     //! domains  : a list of which domains to create the surface from
     //! boutside : include all exterior facets
     //! binside  : include all interior facets
-    FESurface* ElementBoundarySurface(std::vector<FEDomain*> domains, bool boutside = true, bool binside = false);
-    FEFacetSet* DomainBoundary(std::vector<FEDomain*> domains, bool boutside = true, bool binside = false);
+    FESurface* ElementBoundarySurface(std::vector<RgDomain*> domains, bool boutside = true, bool binside = false);
+    FEFacetSet* DomainBoundary(std::vector<RgDomain*> domains, bool boutside = true, bool binside = false);
 
     //! get the nodal coordinates in reference configuration
     void GetInitialNodalCoordinates(const FEElement& el, Vector3d* node);
@@ -280,10 +214,7 @@ public:
     void GetNodalCoordinates(const FEElement& el, Vector3d* node);
 
     // Get the FE model
-    FEModel* GetFEModel() const
-    {
-        return m_fem;
-    }
+    FEModel* GetFEModel() const;
 
     // update the domains of the mesh
     void Update(const FETimeInfo& tp);
@@ -298,60 +229,10 @@ public:  // data maps
 
 private:
     std::vector<FENode> m_Node;              //!< nodes
-    std::vector<FEDomain*> m_Domain;         //!< list of domains
+    std::vector<RgDomain*> m_Domain;         //!< list of domains
     std::vector<FESurface*> m_Surf;          //!< surfaces
     std::vector<FEEdge*> m_Edge;             //!< Edges
- 
+
     std::vector<FENodeSet*> m_NodeSet;       //!< node sets
-    std::vector<FEElementSet*> m_ElemSet;    //!< element sets
-    std::vector<FEDiscreteSet*> m_DiscSet;   //!< discrete element sets， 离散节点对
-    std::vector<FEFacetSet*> m_FaceSet;      //!< facet sets  ， 实体单元的表面网格
-    std::vector<FESurfacePair*> m_SurfPair;  //!< facet set pairs
-
-    std::vector<FEDataMap*> m_DataMap;       //!< all data maps
-
-    FEBoundingBox m_box;                //!< bounding box
-
-    FENodeElemList m_NEL;
-    FEElementLUT* m_LUT;
-
-    FEModel* m_fem;
-
-private:
-    //! hide the copy constructor
-    FEMesh(FEMesh& m)
-    {
-    }
-
-    //! hide assignment operator
-    void operator=(FEMesh& m)
-    {
-    }
-};
-
-class FEM_EXPORT FEElementIterator
-{
-public:
-    FEElementIterator(FEMesh* mesh, FEElementSet* elemSet = nullptr);
-
-    FEElement& operator*()
-    {
-        return *m_el;
-    }
-
-    bool isValid()
-    {
-        return (m_el != nullptr);
-    }
-
-    void operator++();
-
-    void reset();
-
-private:
-    FEElement* m_el;
-    FEMesh* m_mesh;
-    FEElementSet* m_eset;
-    int m_index;
-    int m_dom;
+    std::vector<RgElementSet*> m_ElemSet;    //!< element sets
 };

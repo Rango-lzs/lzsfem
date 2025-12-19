@@ -742,7 +742,7 @@ double FESurface::FacePointing(FESurfaceElement& se, FEElement& el)
     }
     else if (shl) {
         for (int i=0; i<sel->NodeSize(); ++i) {
-            FENode& node = mesh.Node(sel->m_node[i]);
+            FENode& node = mesh.Node(sel->getNodeId(i));
             c += node.m_rt;
             c += node.st();
         }

@@ -52,7 +52,7 @@ SOFTWARE.*/
 #include "JFNKStrategy.h"
 #include "FENodeSet.h"
 #include "FEFacetSet.h"
-#include "FEElementSet.h"
+#include "RgElementSet.h"
 #include "FEConstValueVec3.h"
 #include "NodeDataRecord.h"
 #include "FaceDataRecord.h"

@@ -3,6 +3,7 @@
 #include "femcore/FEException.h"
 #include "elements/ElementShape/FESolidElementShape.h"
 #include "elements/FESurfaceElementShape.h"
+#include "elements/RgGaussPoint.h"
 using namespace std;
 
 #ifndef SQR
@@ -66,11 +67,9 @@ void FEElementTraits::project_to_nodes(Vector3d* si, Vector3d* so) const
 FESolidElementTraits::FESolidElementTraits(int ni, int ne, ElementShape eshape, ElementType etype) : FEElementTraits(ni, ne, FE_ELEM_SOLID, eshape, etype) 
 {
 	m_shape = nullptr;
-
-	gr.resize(ni);
-	gs.resize(ni);
-	gt.resize(ni);
-	gw.resize(ni);
+        
+        // Resize gaussPoints vector
+        gaussPoints.resize(ni);
 
 	m_Gr.resize(ni, ne);
 	m_Gs.resize(ni, ne);
@@ -140,7 +139,7 @@ void FESolidElementTraits::init()
 	double N[NELN];
 	for (int n=0; n<m_nint; ++n)
 	{
-		m_shape->shape_fnc(N, gr[n], gs[n], gt[n]);
+		m_shape->shape_fnc(N, gaussPoints[n].getR(), gaussPoints[n].getS(), gaussPoints[n].getT());
 		for (int i=0; i<m_neln; ++i) m_H[n][i] = N[i];
 	}
 
@@ -148,7 +147,7 @@ void FESolidElementTraits::init()
 	double Hr[NELN], Hs[NELN], Ht[NELN];
 	for (int n=0; n<m_nint; ++n)
 	{
-		m_shape->shape_deriv(Hr, Hs, Ht, gr[n], gs[n], gt[n]);
+		m_shape->shape_deriv(Hr, Hs, Ht, gaussPoints[n].getR(), gaussPoints[n].getS(), gaussPoints[n].getT());
 		for (int i=0; i<m_neln; ++i)
 		{
 			m_Gr[n][i] = Hr[i];
@@ -161,7 +160,7 @@ void FESolidElementTraits::init()
 	double Hrr[NELN], Hss[NELN], Htt[NELN], Hrs[NELN], Hst[NELN], Hrt[NELN];
 	for (int n=0; n<m_nint; ++n)
 	{
-		m_shape->shape_deriv2(Hrr, Hss, Htt, Hrs, Hst, Hrt, gr[n], gs[n], gt[n]);
+		m_shape->shape_deriv2(Hrr, Hss, Htt, Hrs, Hst, Hrt, gaussPoints[n].getR(), gaussPoints[n].getS(), gaussPoints[n].getT());
 		for (int i=0; i<m_neln; ++i)
 		{
 			Grr[n][i] = Hrr[i]; Grs[n][i] = Hrs[i]; Grt[n][i] = Hrt[i]; 
@@ -188,11 +187,6 @@ void FESolidElementTraits::shape_deriv2(double* Hrr, double* Hss, double* Htt, d
 {
 	return m_shape->shape_deriv2(Hrr, Hss, Htt, Hrs, Hst, Hrt, r, s, t);
 }
-
-//=============================================================================
-//                                F E H E X 8
-//=============================================================================
-
 void FEHex8_::init()
 {
 	// allocate shape classes
@@ -276,6 +270,27 @@ FEHex8G1::FEHex8G1() : FEHex8_(NINT, FE_HEX8G1)
 }
 
 //-----------------------------------------------------------------------------
+
+//*****************************************************************************
+//                          H E X 8 G 8 
+//*****************************************************************************
+
+FEHex8G8::FEHex8G8() : FEHex8_(NINT, FE_HEX8G8)
+{
+	// integration point coordinates
+	const double a = 1.0 / sqrt(3.0);
+        gaussPoints[0] = RgFem::RgGaussPoint(-a, -a, -a, 1);
+        gaussPoints[1] = RgFem::RgGaussPoint(a, -a, -a, 1);
+        gaussPoints[2] = RgFem::RgGaussPoint(a, a, -a, 1);
+        gaussPoints[3] = RgFem::RgGaussPoint(-a, a, -a, 1);
+        gaussPoints[4] = RgFem::RgGaussPoint(-a, -a, a, 1);
+        gaussPoints[5] = RgFem::RgGaussPoint(a, -a, a, 1);
+        gaussPoints[6] = RgFem::RgGaussPoint(a, a, a, 1);
+        gaussPoints[7] = RgFem::RgGaussPoint(-a, a, a, 1);
+	init();
+	m_Hi = m_H.inverse();
+}
+
 void FEHex8G1::project_to_nodes(double* ai, double* ao) const
 {
 	ao[0] = ai[0];

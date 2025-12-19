@@ -22,7 +22,7 @@ class Matrix3ds;
       * Good accuracy for stress analysis
       * Node distribution: 4 corner + 6 mid-edge nodes
 */
-class RgTet10Element : public RgSolid3dElement
+class RgTet10Element : public RgLinearSolid3dElement
 {
 public:
     static constexpr int kNodeCount = 10;

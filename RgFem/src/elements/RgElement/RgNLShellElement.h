@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RgElement.h"
+#include "RgShellElement.h"
 #include <array>
 #include <vector>
 
@@ -25,7 +25,7 @@ namespace RgFem {
  * - RgShell3GeomNLElement: 3-node triangular shell with geometric nonlinearity
  * - RgShell4GeomNLElement: 4-node bilinear shell with geometric nonlinearity
  */
-class FEM_EXPORT RgNLShellElement : public RgElement
+class FEM_EXPORT RgNLShellElement : public RgShellElement
 {
 public:
     /// Default constructor

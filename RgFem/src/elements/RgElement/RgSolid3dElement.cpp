@@ -8,7 +8,7 @@ int RgSolid3dElement::dim()
 
 // 高斯点的形函数相关计算
 // n : the n-th gauss point
-std::vector<double> RgSolid3dElement::gaussPoint(int n)
+std::vector<double> RgSolid3dElement::gaussPoint(int n) 
 {
     return ((RgSolidElementTraits*)(m_pTraits))->gaussPoint(n);
 }
@@ -102,4 +102,29 @@ void RgSolid3dElement::shape_deriv2(double* Hrr, double* Hss, double* Htt, doubl
                                      double t) const
 {
     ((RgSolidElementTraits*)(m_pTraits))->shape_deriv2(Hrr, Hss, Htt, Hrs, Hst, Hrt, r, s, t);
+}
+                                    
+// Additional virtual methods for 3D solid elements
+int RgSolid3dElement::getNumberOfGaussPoints() const
+{
+    return m_pTraits ? m_pTraits->m_nint : 0;
+}
+
+void RgSolid3dElement::initTraits() 
+{
+    RgSolidElement::initTraits();
+}
+
+// Tangent stiffness matrix calculation
+void RgSolid3dElement::calculateTangentStiffnessMatrix(Matrix& Kt) const
+{
+    // For linear elements, tangent stiffness equals regular stiffness
+    calculateStiffnessMatrix(Kt);
+}
+
+// Geometric stiffness matrix calculation
+void RgSolid3dElement::computeGeometricStiffness(Matrix& Kg) const
+{
+    // Default implementation: zero geometric stiffness matrix
+    Kg.setZero();
 }

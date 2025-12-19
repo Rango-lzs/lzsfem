@@ -135,7 +135,7 @@ void ElementDataRecord::SelectAllItems()
 
 //-----------------------------------------------------------------------------
 // This sets the item list based on a element set.
-void ElementDataRecord::SetElementSet(FEElementSet* pg)
+void ElementDataRecord::SetElementSet(RgElementSet* pg)
 {
 	int n = pg->Elements();
 	assert(n);
@@ -146,7 +146,7 @@ void ElementDataRecord::SetElementSet(FEElementSet* pg)
 //-----------------------------------------------------------------------------
 void ElementDataRecord::SetItemList(FEItemList* itemList, const std::vector<int>& selection)
 {
-	FEElementSet* pg = dynamic_cast<FEElementSet*>(itemList);
+	RgElementSet* pg = dynamic_cast<RgElementSet*>(itemList);
 	assert(selection.empty());
 	SetElementSet(pg);
 }

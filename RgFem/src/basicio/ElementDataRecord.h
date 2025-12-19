@@ -2,7 +2,7 @@
 #include "basicio/DataRecord.h"
 
 class FEElement;
-class FEElementSet;
+class RgElementSet;
 
 //-----------------------------------------------------------------------------
 //! Base class for element log data
@@ -32,7 +32,7 @@ public:
     void SetData(const char* sz) override;
     void SelectAllItems();
     int Size() const;
-    void SetElementSet(FEElementSet* pg);
+    void SetElementSet(RgElementSet* pg);
 
     void SetItemList(FEItemList* itemList, const std::vector<int>& selection) override;
 

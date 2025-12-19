@@ -185,7 +185,7 @@ double FESurfaceMap::value(const FEMaterialPoint& pt)
 					int ne = pe->NodeSize();
 					for (int i = 0; i < ne; ++i)
 					{
-						double vi = value<double>(pe->m_loc_node[i], 0);
+						double vi = value<double>(pe->getLocNodeId(i), 0);
 						v += vi * H[i];
 					}
 				}
@@ -193,7 +193,8 @@ double FESurfaceMap::value(const FEMaterialPoint& pt)
 				{
 					// element node
 					int n = pt.m_index - 0x10000;
-					v = value<double>(pe->m_loc_node[n], 0);
+					v = value<double>(pe->getLocNodeId(n), 0);
+
 				}
 				return v;
 			}

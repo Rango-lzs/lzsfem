@@ -253,7 +253,7 @@ void FENodeElemTree::Create(FESurface* ps, int k)
 	{
 		FESurfaceElement* pe = &ps->Element(i);
 		int ne = pe->NodeSize();
-		for (int j=0; j<ne; ++j) nel[pe->m_loc_node[j]].push_back(i);
+		for (int j=0; j<ne; ++j) nel[pe->getLocNodeId(j)].push_back(i);
 	}
 
 	// build the other levels

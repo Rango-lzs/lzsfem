@@ -1,21 +1,21 @@
 #include "FEMesh.h"
 #include "FEException.h"
 //#include "femcore/Domain/FEDiscreteDomain.h"
-#include "femcore/Domain/FETrussDomain.h"
+#include "femcore/Domain/RgTrussDomain.h"
 //#include "femcore/Domain/FEShellDomain.h"
-#include "femcore/Domain/FESolidDomain.h"
-#include "femcore/Domain/FEDomain2D.h"
+#include "femcore/Domain/RgSolidDomain.h"
+#include "femcore/Domain/RgDomain2D.h"
 #include "femcore/DOFS.h"
-#include "elements/FEElemElemList.h"
-#include "elements/FEElementList.h"
+#include "elements/RgElemElemList.h"
+#include "elements/RgElementList.h"
 #include "femcore/FESurface.h"
 #include "FEDataArray.h"
-#include "femcore/Domain/FEDomainMap.h"
+#include "femcore/Domain/RgDomainMap.h"
 #include "FESurfaceMap.h"
 #include "FENodeDataMap.h"
 #include "basicio/DumpStream.h"
 #include <algorithm>
-#include "Domain/FEDomain.h"
+#include "Domain/RgDomain.h"
 
 //-----------------------------------------------------------------------------
 FEDataMap* CreateDataMap(int mapType)
@@ -24,7 +24,7 @@ FEDataMap* CreateDataMap(int mapType)
 	switch (mapType)
 	{
 	case FE_NODE_DATA_MAP: map = new FENodeDataMap; break;
-	case FE_DOMAIN_MAP   : map = new FEDomainMap; break;
+	case FE_DOMAIN_MAP   : map = new RgDomainMap; break;
 	case FE_SURFACE_MAP  : map = new FESurfaceMap; break;
 	default:
 		assert(false);
@@ -52,6 +52,66 @@ FEMesh::~FEMesh()
 int FEMesh::Nodes() const 
 { 
 	return (int)m_Node.size(); 
+}
+
+//-----------------------------------------------------------------------------
+const std::vector<FENode>& FEMesh::AllNode() const
+{
+	return m_Node;
+}
+
+//-----------------------------------------------------------------------------
+void FEMesh::GetBoundingBox()
+{
+	return m_box;
+}
+
+//-----------------------------------------------------------------------------
+int FEMesh::NodeSets() const
+{
+	return (int)m_NodeSet.size();
+}
+
+//-----------------------------------------------------------------------------
+int FEMesh::ElementSets() const
+{
+	return (int)m_ElemSet.size();
+}
+
+//-----------------------------------------------------------------------------
+int FEMesh::Domains() const
+{
+	return (int)m_Domain.size();
+}
+
+//-----------------------------------------------------------------------------
+const std::vector<RgDomain*>& FEMesh::AllDomain() const
+{
+	return m_Domain;
+}
+
+//-----------------------------------------------------------------------------
+int FEMesh::Surfaces() const
+{
+	return (int)m_Surf.size();
+}
+
+//-----------------------------------------------------------------------------
+int FEMesh::Edges() const
+{
+	return (int)m_Edge.size();
+}
+
+//-----------------------------------------------------------------------------
+int FEMesh::FacetSets() const
+{
+	return (int)m_FaceSet.size();
+}
+
+//-----------------------------------------------------------------------------
+int FEMesh::SurfacePairs() const
+{
+	return (int)m_SurfPair.size();
 }
 
 //-----------------------------------------------------------------------------
@@ -264,7 +324,7 @@ int FEMesh::Elements(int ndom_type) const
 	int N = 0;
 	for (int i=0; i<(int) m_Domain.size(); ++i) 
 	{
-		FEDomain& dom = *m_Domain[i];
+		RgDomain& dom = *m_Domain[i];
 		if (dom.Class() == ndom_type) N += m_Domain[i]->Elements();
 	}
 	return N;
@@ -304,7 +364,7 @@ int FEMesh::RemoveIsolatedVertices()
 	// count the nodal valences
 	for (i=0; i<(int) m_Domain.size(); ++i)
 	{
-		FEDomain& d = Domain(i);
+		RgDomain& d = Domain(i);
 		for (j=0; j<d.Elements(); ++j)
 		{
 			FEElement& el = d.ElementRef(j);
@@ -333,7 +393,7 @@ void FEMesh::InitMaterialPoints()
 {
     for (int i = 0; i<Domains(); ++i)
     {
-        FEDomain& dom = Domain(i);
+        RgDomain& dom = Domain(i);
         dom.InitMaterialPoints();
     }
 }
@@ -529,10 +589,82 @@ FESurfacePair* FEMesh::FindSurfacePair(const std::string& name)
 int FEMesh::Domains() { return (int)m_Domain.size(); }
 
 //-----------------------------------------------------------------------------
-FEDomain& FEMesh::Domain(int n) { return *m_Domain[n]; }
+RgDomain& FEMesh::Domain(int n) { return *m_Domain[n]; }
+
+FEModel* FEMesh::GetFEModel() const
+{
+	return m_fem;
+}
+
+void FEMesh::AddNodeSet(FENodeSet* pns)
+{
+	m_NodeSet.push_back(pns);
+}
+
+FENodeSet* FEMesh::NodeSet(int i)
+{
+	return m_NodeSet[i];
+}
+
+void FEMesh::AddElementSet(FEElementSet* pg)
+{
+	m_ElemSet.push_back(pg);
+}
+
+FEElementSet& FEMesh::ElementSet(int n)
+{
+	return *m_ElemSet[n];
+}
+
+FESurface& FEMesh::Surface(int n)
+{
+	return *m_Surf[n];
+}
+
+void FEMesh::AddSurface(FESurface* ps)
+{
+	m_Surf.push_back(ps);
+}
+
+FEEdge& FEElementIterator::Edge(int n)
+{
+	return *m_Edge[n];
+}
+
+void FEMesh::AddEdge(FEEdge* ps)
+{
+	m_Edge.push_back(ps);
+}
+
+FEFacetSet& FEMesh::FacetSet(int n)
+{
+	return *m_FaceSet[n];
+}
+
+void FEMesh::AddFacetSet(FEFacetSet* ps)
+{
+	m_FaceSet.push_back(ps);
+}
+
+FESurfacePair& FEMesh::SurfacePair(int n)
+{
+	return *m_SurfPair[n];
+}
+
+void FEMesh::AddSurfacePair(FESurfacePair* ps)
+{
+	m_SurfPair.push_back(ps);
+}
+
+FENodeElemList& FEMesh::NodeElementList()
+{
+	if (m_NEL.Size() != m_Node.size())
+		m_NEL.Create(*this);
+	return m_NEL;
+}
 
 //-----------------------------------------------------------------------------
-void FEMesh::AddDomain(FEDomain* pd)
+void FEMesh::AddDomain(RgDomain* pd)
 { 
 	int N = (int)m_Domain.size();
 	pd->SetID(N);
@@ -543,7 +675,7 @@ void FEMesh::AddDomain(FEDomain* pd)
 //-----------------------------------------------------------------------------
 //! Find a domain
 
-FEDomain* FEMesh::FindDomain(const std::string& name)
+RgDomain* FEMesh::FindDomain(const std::string& name)
 {
 	for (size_t i = 0; i<m_Domain.size(); ++i) if (m_Domain[i]->GetName() == name) return m_Domain[i];
 	return 0;
@@ -555,7 +687,7 @@ int FEMesh::FindDomainIndex(const std::string& name)
 	return -1;
 }
 
-FEDomain* FEMesh::FindDomain(int domId)
+RgDomain* FEMesh::FindDomain(int domId)
 {
 	for (size_t i = 0; i<m_Domain.size(); ++i) if (m_Domain[i]->GetID() == domId) return m_Domain[i];
 	return 0;
@@ -568,7 +700,7 @@ FEElement* FEMesh::Element(int n)
 	if (n < 0) return nullptr;
 	for (int i = 0; i < Domains(); ++i)
 	{
-		FEDomain& dom = Domain(i);
+		RgDomain& dom = Domain(i);
 		int NEL = dom.Elements();
 		if (n < NEL) return &dom.ElementRef(n); 
 		else n -= NEL;
@@ -605,7 +737,7 @@ FEElement* FEMesh::FindElementFromID(int nid)
 
 	for (int i=0; i<Domains(); ++i)
 	{
-		FEDomain& d = Domain(i);
+		RgDomain& d = Domain(i);
 		pe = d.FindElementFromID(nid);
 		if (pe) return pe;
 	}
@@ -747,7 +879,7 @@ FESurface* FEMesh::ElementBoundarySurface(bool boutside, bool binside)
 	return ps;
 }
 
-FESurface* FEMesh::ElementBoundarySurface(std::vector<FEDomain*> domains, bool boutside, bool binside)
+FESurface* FEMesh::ElementBoundarySurface(std::vector<RgDomain*> domains, bool boutside, bool binside)
 {
 	if ((boutside == false) && (binside == false)) return nullptr;
 
@@ -835,7 +967,7 @@ FESurface* FEMesh::ElementBoundarySurface(std::vector<FEDomain*> domains, bool b
 	return ps;
 }
 
-FEFacetSet* FEMesh::DomainBoundary(std::vector<FEDomain*> domains, bool boutside, bool binside)
+FEFacetSet* FEMesh::DomainBoundary(std::vector<RgDomain*> domains, bool boutside, bool binside)
 {
 	if ((boutside == false) && (binside == false)) return nullptr;
 
@@ -939,7 +1071,7 @@ FEElementLUT::FEElementLUT(FEMesh& mesh)
 	int NDOM = mesh.Domains();
 	for (int i=0; i<NDOM; ++i)
 	{
-		FEDomain& dom = mesh.Domain(i);
+		RgDomain& dom = mesh.Domain(i);
 		int NE = dom.Elements();
 		for (int j=0; j<NE; ++j)
 		{
@@ -957,7 +1089,7 @@ FEElementLUT::FEElementLUT(FEMesh& mesh)
 	// fill the table
 	for (int i = 0; i<NDOM; ++i)
 	{
-		FEDomain& dom = mesh.Domain(i);
+		RgDomain& dom = mesh.Domain(i);
 		int NE = dom.Elements();
 		for (int j = 0; j<NE; ++j)
 		{
@@ -980,7 +1112,7 @@ void FEMesh::Update(const FETimeInfo& tp)
 {
 	for (int i = 0; i<Domains(); ++i)
 	{
-		FEDomain& dom = Domain(i);
+		RgDomain& dom = Domain(i);
 		if (dom.IsActive()) dom.Update(tp);
 	}
 }
@@ -1043,7 +1175,7 @@ void FEElementIterator::reset()
 	}
 	else if (m_mesh && (m_mesh->Domains() > 0))
 	{
-		FEDomain& dom = m_mesh->Domain(0);
+		RgDomain& dom = m_mesh->Domain(0);
 		if (dom.Elements())
 		{
 			m_dom = 0;
@@ -1076,13 +1208,13 @@ void FEElementIterator::operator++()
 	else if (m_mesh)
 	{
 		m_index++;
-		FEDomain& dom = m_mesh->Domain(m_dom);
+		RgDomain& dom = m_mesh->Domain(m_dom);
 		if (m_index >= dom.Elements())
 		{
 			m_dom++;
 			if (m_dom < m_mesh->Domains())
 			{
-				FEDomain& dom2 = m_mesh->Domain(m_dom);
+				RgDomain& dom2 = m_mesh->Domain(m_dom);
 				if (dom2.Elements())
 				{
 					m_index = 0;
@@ -1107,6 +1239,16 @@ void FEElementIterator::operator++()
 	}
 }
 
+FEElement& FEElementIterator::operator*()
+{
+	return *m_el;
+}
+
+bool FEElementIterator::isValid()
+{
+	return (m_el != nullptr);
+}
+
 // create a copy of this mesh
 void FEMesh::CopyFrom(FEMesh& mesh)
 {
@@ -1123,18 +1265,18 @@ void FEMesh::CopyFrom(FEMesh& mesh)
 	ClearDomains();
 	for (int i = 0; i < mesh.Domains(); ++i)
 	{
-		FEDomain& dom = mesh.Domain(i);
+		RgDomain& dom = mesh.Domain(i);
 		const std::string& sz = dom.GetTypeStr();
 
 		// create a new domain
 		// create a new domain
-		FEDomain* pd = nullptr;
+		RgDomain* pd = nullptr;
 		switch (dom.Class())
 		{
 		case FE_DOMAIN_SOLID   : pd = RANGO_NEW<FESolidDomain   >(nullptr,sz); break;
 		//case FE_DOMAIN_SHELL: pd = RANGO_NEW<FEShellDomain   >(nullptr,sz); break;
 		case FE_DOMAIN_BEAM: pd = RANGO_NEW<FEBeamDomain    >(nullptr,sz); break;
-		case FE_DOMAIN_2D: pd = RANGO_NEW<FEDomain2D      >(nullptr,sz); break;
+		case FE_DOMAIN_2D: pd = RANGO_NEW<RgDomain2D      >(nullptr,sz); break;
 		//case FE_DOMAIN_DISCRETE: pd = RANGO_NEW<FEDiscreteDomain>(nullptr,sz); break;
 		}
 		assert(pd);

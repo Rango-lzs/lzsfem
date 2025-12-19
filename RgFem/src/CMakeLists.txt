@@ -80,27 +80,25 @@ set(FEMCORE_HEADERS
 
     #femcore/DataRecord.h
     #femcore/Domain/DomainDataRecord.h
-    femcore/Domain/FE3FieldElasticShellDomain.h
-    femcore/Domain/FE3FieldElasticSolidDomain.h
-    femcore/Domain/FEBeamDomain.h
-    femcore/Domain/FEDomain.h
-    #femcore/Domain/FEDomain2D.h
-    femcore/Domain/FEDomainList.h
-    femcore/Domain/FEDomainMap.h
-    femcore/Domain/FEDomainParameter.h
-    femcore/Domain/FEElasticANSShellDomain.h
-    #femcore/Domain/FEElasticDomain.h
-    femcore/Domain/FEElasticEASShellDomain.h
-    femcore/Domain/FEElasticShellDomain.h
-    femcore/Domain/FEElasticShellDomainOld.h
-    femcore/Domain/FEElasticSolidDomain.h
-    femcore/Domain/FEElasticTrussDomain.h
-    femcore/Domain/FELinearTrussDomain.h
-    femcore/Domain/FEShellDomain.h
-    femcore/Domain/FESolidDomain.h
-    femcore/Domain/FESolidDomainFactory.h
-    femcore/Domain/FETrussDomain.h
-    femcore/Domain/FESSIShellDomain.h
+    #femcore/Domain/Rg3FieldElasticShellDomain.h
+    #femcore/Domain/Rg3FieldElasticSolidDomain.h
+    femcore/Domain/RgAssembler.h
+    femcore/Domain/RgBeamDomain.h
+    femcore/Domain/RgDomain.h
+    #femcore/Domain/RgDomain2D.h
+    femcore/Domain/RgDomainList.h
+    femcore/Domain/RgDomainMap.h
+    femcore/Domain/RgDomainParameter.h
+    femcore/Domain/RgElasticAssembler.h
+    femcore/Domain/RgElasticDomain.h
+    femcore/Domain/RgElasticSolidDomain.h
+    #femcore/Domain/RgElasticShellDomain.h
+    #femcore/Domain/RgElasticTrussDomain.h
+    #femcore/Domain/RgLinearTrussDomain.h
+    femcore/Domain/RgShellDomain.h
+    femcore/Domain/RgSolidDomain.h
+    #femcore/Domain/RgSolidDomainFactory.h
+    femcore/Domain/RgTrussDomain.h
     #femcore/DomainDataRecord.h
     #femcore/ElementDataRecord.h
     #femcore/FE3FieldElasticSolidDomain.h
@@ -131,7 +129,6 @@ set(FEMCORE_HEADERS
     femcore/FEMat3dValuator.h
     femcore/FEMat3dsValuator.h
     femcore/FEMesh.h
-    femcore/FEMeshPartition.h
     femcore/FEModel.h
     femcore/FEModelComponent.h
     #femcore/FEModelDataRecord.h
@@ -202,9 +199,6 @@ set(FEMCORE_HEADERS
 
     femcore/MetaObject.h
     femcore/MetaObjectDemo.h
-    #femcore/NLConstraintDataRecord.h
-    #femcore/NodeDataRecord.h
-    #femcore/ObjectDataRecord.h
     femcore/PointCurve.h
     femcore/RTTI/MetaClass.h
     femcore/RTTI/MetaClassStore.h
@@ -219,8 +213,8 @@ set(FEMCORE_HEADERS
     #femcore/Solver/FEGlobalData.h
     femcore/Solver/FELineSearch.h
     femcore/Solver/FELinearSolver.h
-    #femcore/Solver/FEModifiedNewtonStrategy.h
-    femcore/Solver/FENewtonSolver.h
+    #femcore/Solver/FEModifiedNewtonStrategy.cpp
+    femcore/Solver/FENewtonSolver.cpp
     femcore/Solver/FENewtonStrategy.h
     femcore/Solver/FENodeReorder.h
     #femcore/Solver/FERigidSolver.h
@@ -232,7 +226,6 @@ set(FEMCORE_HEADERS
     femcore/Solver/SkylineSolver.h
     femcore/Solver/FELevelStructure.h
 
-    #femcore/SurfaceDataRecord.h
     femcore/TimeStep/FETimeInfo.h
     femcore/TimeStep/FETimeStepController.h
     femcore/Timer.h
@@ -275,6 +268,7 @@ set(FEMCORE_HEADERS
     femcore/FEPrescribedDisplacement.h
 
     femcore/FESolidModule.h
+    femcore/RgElementTraitsStore.h
 )
 
 set(FEMCORE_SOURCES
@@ -283,31 +277,23 @@ set(FEMCORE_SOURCES
     #femcore/DataRecord.cpp
 
     #femcore/Domain/DomainDataRecord.cpp
-    #femcore/Domain/FE3FieldElasticShellDomain.cpp
-    #femcore/Domain/FE3FieldElasticSolidDomain.cpp
-    femcore/Domain/FEBeamDomain.cpp
-    femcore/Domain/FEDomain.cpp
-    femcore/Domain/FEDomainList.cpp
-    femcore/Domain/FEDomainMap.cpp
-    femcore/Domain/FEDomainParameter.cpp
-    femcore/Domain/FE3FieldElasticShellDomain.cpp
-    femcore/Domain/FE3FieldElasticSolidDomain.cpp
-    femcore/Domain/FEElasticANSShellDomain.cpp
-    femcore/Domain/FEElasticDomain.cpp
-    femcore/Domain/FEElasticEASShellDomain.cpp
-    femcore/Domain/FEElasticShellDomain.cpp
-    femcore/Domain/FEElasticShellDomainOld.cpp
-    femcore/Domain/FEElasticSolidDomain.cpp
-    femcore/Domain/FEElasticTrussDomain.cpp
-    femcore/Domain/FELinearTrussDomain.cpp
-    femcore/Domain/FEShellDomain.cpp
-    femcore/Domain/FESolidDomain.cpp
-    femcore/Domain/FESolidDomainFactory.cpp
-    femcore/Domain/FETrussDomain.cpp
+    femcore/Domain/RgAssembler.cpp
+    femcore/Domain/RgBeamDomain.cpp
+    femcore/Domain/RgDomain.cpp
+    femcore/Domain/RgDomainList.cpp
+    femcore/Domain/RgDomainMap.cpp
+    femcore/Domain/RgDomainParameter.cpp
+    femcore/Domain/RgElasticAssembler.cpp
+    femcore/Domain/RgElasticDomain.cpp
+    femcore/Domain/RgElasticSolidDomain.cpp
+    #femcore/Domain/RgElasticShellDomain.cpp
+    #femcore/Domain/RgElasticTrussDomain.cpp
+    #femcore/Domain/RgLinearTrussDomain.cpp
+    femcore/Domain/RgShellDomain.cpp
+    femcore/Domain/RgSolidDomain.cpp
+    #femcore/Domain/RgSolidDomainFactory.cpp
+    femcore/Domain/RgTrussDomain.cpp
 
-    #femcore/DomainDataRecord.cpp
-    #femcore/ElementDataRecord.cpp
-    #femcore/FE3FieldElasticSolidDomain.cpp
     femcore/FEAnalysis/FEAnalysis.cpp
     femcore/FEBodyLoad.cpp
     femcore/FEBoundaryCondition.cpp
@@ -333,7 +319,6 @@ set(FEMCORE_SOURCES
     femcore/FEMat3dValuator.cpp
     femcore/FEMat3dsValuator.cpp
     femcore/FEMesh.cpp
-    femcore/FEMeshPartition.cpp
     femcore/FEModel.cpp
     #femcore/FEModelDataRecord.cpp
     femcore/FEModelLoad.cpp
@@ -350,7 +335,6 @@ set(FEMCORE_SOURCES
     femcore/FEParam.cpp
     femcore/FEParamValidator.cpp
     femcore/FEParameterList.cpp
-    #femcore/FEPlotDataStore.cpp
     femcore/FEPointFunction.cpp
     femcore/FEProperty.cpp
     femcore/FERgModel.cpp
@@ -381,28 +365,10 @@ set(FEMCORE_SOURCES
     femcore/Matrix/SkylineMatrix.cpp
     femcore/Matrix/SparseMatrix.cpp  
     
-    #femcore/MatrixSolver/AccelerateSparseSolver.cpp
-    #femcore/MatrixSolver/BIPNSolver.cpp
-    #femcore/MatrixSolver/BiCGStabSolver.cpp
-    #femcore/MatrixSolver/BlockSolver.cpp
-    #femcore/MatrixSolver/BoomerAMGSolver.cpp
-    #femcore/MatrixSolver/FEASTEigenSolver.cpp
-    #femcore/MatrixSolver/FGMRESSolver.cpp
-    #femcore/MatrixSolver/HypreGMRESsolver.cpp
-    #femcore/MatrixSolver/MKLDSSolver.cpp
-    #femcore/MatrixSolver/PardisoProjectSolver.cpp
-    #femcore/MatrixSolver/PardisoSolver.cpp
-    #femcore/MatrixSolver/RCICGSolver.cpp
-    #femcore/MatrixSolver/SchurSolver.cpp
-    #femcore/MatrixSolver/StrategySolver.cpp
-    #femcore/MatrixSolver/TestSolver.cpp
 
 
     femcore/MetaObject.cpp
     femcore/MetaObjectDemo.cpp
-    #femcore/NLConstraintDataRecord.cpp
-    #femcore/NodeDataRecord.cpp
-    #femcore/ObjectDataRecord.cpp
     femcore/PointCurve.cpp
     femcore/RTTI/MetaClass.cpp
     femcore/RTTI/MetaClassStore.cpp
@@ -429,7 +395,6 @@ set(FEMCORE_SOURCES
     femcore/Solver/SkylineSolver.cpp
     femcore/Solver/FELevelStructure.cpp
 
-    #femcore/SurfaceDataRecord.cpp
     femcore/TimeStep/FETimeInfo.cpp
     femcore/TimeStep/FETimeStepController.cpp
     femcore/Timer.cpp
@@ -465,7 +430,10 @@ set(FEMCORE_SOURCES
     femcore/FESolidModule.cpp
 
     femcore/colsol.cpp
+
+    femcore/RgElementTraitsStore.cpp
 )
+
 
 
 set(PROJECT_SOURCES
@@ -523,83 +491,8 @@ set(PROJECT_SOURCES
 )
 source_group("datastructure" FILES ${DATA_STRUCTURE_HEADERS} ${DATA_STRUCTURE_SOURCES})
 
-#add element sources
-set(ELEMENT_HEADERS
-    elements/ElementShape/RgHex8Shape.h
-    elements/ElementShape/RgSolidElementShape.h
-    elements/ElementShape/RgSurfaceElementShape.h
-    elements/ElementShape/RgElementShape.h
-    elements/ElementShape/FEHex27Shape.h
-    elements/ElementShape/FEPenta15Shape.h
-    elements/ElementShape/FEPenta6Shape.h
-    elements/ElementShape/FEPyra13Shape.h
-    elements/ElementShape/FEPyra5Shape.h
-    elements/ElementShape/FETet10Shape.h
-    elements/ElementShape/FETet4Shape.h
-    elements/ElementShape/RgHex20Shape.h
-
-    elements/ElementTraits/Rg2DElementTraits.h
-    elements/ElementTraits/RgElementTraits.h
-    elements/ElementTraits/RgShellElementTraits.h
-    elements/ElementTraits/RgSolidElementTraits.h
-    elements/ElementTraits/RgSurfaceElementTraits.h
-    elements/ElementTraits/RgTrussElementTraits.h
-    elements/RgElemElemList.h
-    elements/RgElementLibrary.h
-    elements/RgElementList.h
-    elements/RgElementSet.h
-    elements/RgElementState.h
-    elements/RgElemTypeDefine.h
-
-    #elements/RgElement/RgElement2d.h
-    elements/RgElement/RgShellElement.h
-    elements/RgElement/RgSolidElement.h
-    elements/RgElement/RgStructureElement.h
-    elements/RgElement/RgSurfaceElement.h
-    elements/RgElement/RgTrussElement.h
-    elements/RgElement/RgBeam2dElement.h
-    elements/RgElement/RgBeam3dElement.h
-    elements/RgElement/RgBeamElement.h
-    elements/RgElement/RgElement.h
-    elements/RgElement/RgHex20Element.h
-    elements/RgElement/RgHex8Element.h
-    elements/RgElement/RgHex8GeomNLElement.h
-    elements/RgElement/RgShellElement.h
-    elements/RgElement/RgSolid2dElement.h
-    elements/RgElement/RgSolid3dElement.h
-    elements/RgElement/RgSolidElement.h
-    elements/RgElement/RgTet10Element.h
-    elements/RgElement/RgTet4Element.h
-    elements/RgElement/RgTrussElement.h
-    #elements/RgElementStatus.h
-
-)
-
-set(ELEMENT_SOURCES
-    elements/ElementShape/RgElementShape.cpp
-    elements/ElementShape/RgSolidElementShape.cpp
-    elements/ElementShape/RgSurfaceElementShape.cpp
-    elements/ElementShape/FEHex27Shape.cpp
-    elements/ElementShape/FETet10Shape.cpp
-    elements/ElementShape/FETet4Shape.cpp
-    elements/ElementShape/RgHex20Shape.cpp
-    elements/ElementShape/RgHex8Shape.cpp
-
-    elements/ElementTraits/RgElementTraits.cpp
-    elements/RgElemElemList.cpp
-    elements/RgElementLibrary.cpp
-    elements/RgElementList.cpp
-    elements/RgElementSet.cpp
-    elements/RgElementState.cpp
-    elements/RgElement/RgSurfaceElement.cpp
-    elements/RgElement/RgSolid2dElement.cpp
-    elements/RgElement/RgShellElement.cpp
-    elements/RgElement/RgSolidElement.cpp
-    elements/RgElement/RgStructureElement.cpp
-    elements/RgElement/RgTrussElement.cpp
-    elements/RgElement/RgElement.cpp
-
-)
+# add element sources from subdirectory
+add_subdirectory(elements)
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
     ${ELEMENT_HEADERS}
@@ -748,7 +641,6 @@ set(INPUT_SOURCES
     input/febio/FEBioStepSection.cpp
     input/febio/FEBioStepSection4.cpp
     input/febio/FEModelBuilder.cpp
-    #input/febio/FEPlotDataStore.cpp
     input/febio/FERestartImport.cpp
     input/febio/FileImport.cpp
     input/febio/xmltool.cpp
@@ -766,6 +658,7 @@ set(PROJECT_SOURCES
     ${INPUT_SOURCES}
 )
 source_group("input" FILES ${INPUT_HEADERS} ${INPUT_SOURCES})
+
 
 #add logger sources
 set(LOGGER_HEADERS
@@ -793,32 +686,20 @@ set(PROJECT_SOURCES
 )
 source_group("logger" FILES ${LOGGER_HEADERS} ${LOGGER_SOURCES})
 
-#add material sources
-set(MATERIAL_HEADERS
-    #materials/ElastoPlasticMaterial.h
-    materials/FEElasticMaterial.h
-    materials/FEElasticMaterialPoint.h
-    materials/FEIsotropicElastic.h
-    materials/FEMaterial.h
-    materials/FEMaterialPoint.h
-    materials/FESolidMaterial.h
-)
 
-set(MATERIAL_SOURCES
-    #materials/ElastoPlasticMaterial.cpp
-    materials/FEElasticMaterial.cpp
-    materials/FEElasticMaterialPoint.cpp
-    materials/FEIsotropicElastic.cpp
-    materials/FEMaterial.cpp
-    materials/FEMaterialPoint.cpp
-    materials/FESolidMaterial.cpp
-)
+#add material sources
+add_subdirectory(materials)
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
     ${MATERIAL_HEADERS}
     ${MATERIAL_SOURCES}
 )
+
+
+source_group("materials\\LargeDeformation" FILES ${LARGE_DEF_HEADERS} ${LARGE_DEF_SOURCES})
+source_group("materials\\SmallDeformation" FILES ${SMALL_DEF_HEADERS} ${SMALL_DEF_SOURCES})
 source_group("materials" FILES ${MATERIAL_HEADERS} ${MATERIAL_SOURCES})
+
 
 #add plotfile sources
 set(PLOT_FILE_HEADERS
@@ -863,8 +744,6 @@ set(VTU_SOURCES
 
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
-#    ${VTU_HEADERS}
-#    ${VTU_SOURCES}
 )
 source_group("vtuwriter" FILES ${VTU_HEADERS} ${VTU_SOURCES})
 

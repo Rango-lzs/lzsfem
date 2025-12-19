@@ -14,6 +14,7 @@
 #include "elements/ElementTraits/RgElementTraits.h"
 #include "elements/RgElemTypeDefine.h"
 #include "femcore/fem_export.h"
+#include "elements/RgGaussPoint.h"
 
 #include <vector>
 
@@ -57,11 +58,8 @@ public:
     int shapeSize(int order) override;
 
 public:
-    // gauss-point coordinates and weights
-    std::vector<double> gr;
-    std::vector<double> gs;
-    std::vector<double> gt;
-    std::vector<double> gw;
+    // gauss-points
+    std::vector<RgGaussPoint> gaussPoints;
 
     // element shape class
     FESolidElementShape* m_shape;

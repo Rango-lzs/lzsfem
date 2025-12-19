@@ -22,7 +22,7 @@ class Matrix3ds;
       * Better accuracy for curved boundaries
       * Node distribution: 8 corner + 12 mid-edge nodes
 */
-class RgHex20Element : public RgSolid3dElement
+class RgHex20Element : public RgLinearSolid3dElement
 {
 public:
     static constexpr int kNodeCount = 20;

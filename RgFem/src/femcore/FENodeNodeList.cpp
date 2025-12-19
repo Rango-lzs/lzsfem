@@ -55,7 +55,7 @@ void FENodeNodeList::Create(FEMesh& mesh)
 		{
 			FEElement* pel = pe[j];
 			m = pel->NodeSize();
-			en = &pel->m_node[0];
+			en = &pel->getNodeIds()[0];
 			for (k=0; k<m; ++k)
 				if ((en[k] != i) && (tag[ en[k] ] == 0))
 				{
@@ -94,7 +94,7 @@ void FENodeNodeList::Create(FEMesh& mesh)
 		{
 			FEElement* pel = pe[j];
 			m = pel->NodeSize();
-			en = &pel->m_node[0];
+			en = &pel->getNodeIds()[0];
 			for (k=0; k<m; ++k)
 				if ((en[k] != i) && (tag[ en[k] ] == 0))
 				{
@@ -148,7 +148,7 @@ void FENodeNodeList::Create(FEDomain& dom)
 		{
 			FEElement* pel = pe[j];
 			m = pel->NodeSize();
-			en = &pel->m_node[0];
+			en = &pel->getNodeIds()[0];
 			for (k=0; k<m; ++k)
 				if ((en[k] != i) && (tag[ en[k] ] == 0))
 				{
@@ -187,7 +187,7 @@ void FENodeNodeList::Create(FEDomain& dom)
 		{
 			FEElement* pel = pe[j];
 			m = pel->NodeSize();
-			en = &pel->m_node[0];
+			en = &pel->getNodeIds()[0];
 			for (k=0; k<m; ++k)
 				if ((en[k] != i) && (tag[ en[k] ] == 0))
 				{

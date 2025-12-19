@@ -1,4 +1,4 @@
-#include "FEElementSet.h"
+#include "RgElementSet.h"
 #include "elements/RgElement.h"
 #include "femcore/FEMesh.h"
 #include "femcore/Domain/FEDomain.h"
@@ -6,20 +6,20 @@
 #include "femcore/FEModel.h"
 
 //-----------------------------------------------------------------------------
-FEElementSet::FEElementSet(FEModel* fem) : FEItemList(&fem->GetMesh())
+RgElementSet::RgElementSet(FEModel* fem) : FEItemList(&fem->GetMesh())
 {
 	m_minID = -1;
 	m_maxID = -1;
 }
 
-FEElementSet::FEElementSet(FEMesh* mesh) : FEItemList(mesh)
+RgElementSet::RgElementSet(FEMesh* mesh) : FEItemList(mesh)
 {
 	m_minID = -1;
 	m_maxID = -1;
 }
 
 //-----------------------------------------------------------------------------
-void FEElementSet::Create(const std::vector<int>& elemList)
+void RgElementSet::Create(const std::vector<int>& elemList)
 {
 	m_dom.Clear();
 	m_Elem = elemList;
@@ -27,7 +27,7 @@ void FEElementSet::Create(const std::vector<int>& elemList)
 }
 
 //-----------------------------------------------------------------------------
-void FEElementSet::Create(FEDomain* dom, const std::vector<int>& elemList)
+void RgElementSet::Create(FEDomain* dom, const std::vector<int>& elemList)
 {
 	m_dom.Clear();
 	m_dom.AddDomain(dom);
@@ -36,7 +36,7 @@ void FEElementSet::Create(FEDomain* dom, const std::vector<int>& elemList)
 }
 
 //-----------------------------------------------------------------------------
-void FEElementSet::CopyFrom(FEElementSet& eset)
+void RgElementSet::CopyFrom(RgElementSet& eset)
 {
 	SetName(eset.GetName());
 
@@ -57,7 +57,7 @@ void FEElementSet::CopyFrom(FEElementSet& eset)
 }
 
 //-----------------------------------------------------------------------------
-void FEElementSet::Create(FEDomain* dom)
+void RgElementSet::Create(FEDomain* dom)
 {
 	m_dom.Clear();
 	m_dom.AddDomain(dom);
@@ -76,7 +76,7 @@ void FEElementSet::Create(FEDomain* dom)
 
 //-----------------------------------------------------------------------------
 // add another element set
-void FEElementSet::Add(const FEElementSet& set)
+void RgElementSet::Add(const RgElementSet& set)
 {
 	// add the domain list
 	m_dom.AddDomainList(set.GetDomainList());
@@ -88,7 +88,7 @@ void FEElementSet::Add(const FEElementSet& set)
 }
 
 //-----------------------------------------------------------------------------
-void FEElementSet::Create(FEDomainList& domList)
+void RgElementSet::Create(FEDomainList& domList)
 {
 	int NT = 0;
 	m_dom.Clear();
@@ -117,7 +117,7 @@ void FEElementSet::Create(FEDomainList& domList)
 }
 
 //-----------------------------------------------------------------------------
-void FEElementSet::BuildLUT()
+void RgElementSet::BuildLUT()
 {
 	FEMesh* mesh = GetMesh();
 	int N = (int)m_Elem.size();
@@ -142,21 +142,21 @@ void FEElementSet::BuildLUT()
 }
 
 //-----------------------------------------------------------------------------
-FEElement& FEElementSet::Element(int i)
+FEElement& RgElementSet::Element(int i)
 {
 	FEMesh* mesh = GetMesh();
 	return *mesh->FindElementFromID(m_Elem[i]);
 }
 
 //-----------------------------------------------------------------------------
-const FEElement& FEElementSet::Element(int i) const
+const FEElement& RgElementSet::Element(int i) const
 {
 	FEMesh* mesh = GetMesh();
 	return *mesh->FindElementFromID(m_Elem[i]);
 }
 
 //-----------------------------------------------------------------------------
-void FEElementSet::Serialize(DumpStream& ar)
+void RgElementSet::Serialize(DumpStream& ar)
 {
 	FEItemList::Serialize(ar);
 	if (ar.IsShallow()) return;
@@ -165,16 +165,16 @@ void FEElementSet::Serialize(DumpStream& ar)
 	ar & m_minID & m_maxID;
 }
 
-void FEElementSet::SaveClass(DumpStream& ar, FEElementSet* p) {}
-FEElementSet* FEElementSet::LoadClass(DumpStream& ar, FEElementSet* p)
+void RgElementSet::SaveClass(DumpStream& ar, RgElementSet* p) {}
+RgElementSet* RgElementSet::LoadClass(DumpStream& ar, RgElementSet* p)
 {
-	p = new FEElementSet(&ar.GetFEModel());
+	p = new RgElementSet(&ar.GetFEModel());
 	return p;
 }
 
 //-----------------------------------------------------------------------------
 // create node list from this element set
-FENodeList FEElementSet::GetNodeList() const
+FENodeList RgElementSet::GetNodeList() const
 {
 	FEMesh* mesh = GetMesh();
 	FENodeList set(mesh);

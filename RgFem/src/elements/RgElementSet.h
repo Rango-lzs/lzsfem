@@ -1,8 +1,8 @@
 #pragma once
 
 #include "femcore/FEItemList.h"
-#include "elements/RgElement.h"
-#include "femcore/Domain/FEDomainList.h"
+#include "elements/RgElement/RgElement.h"
+#include "femcore/Domain/RgDomainList.h"
 #include "femcore/FENodeList.h"
 #include <vector>
 #include <string>
@@ -14,27 +14,27 @@ class FEModel;
 
 //-----------------------------------------------------------------------------
 // This class defines a set of elements
-class FEM_EXPORT FEElementSet : public FEItemList
+class FEM_EXPORT RgElementSet : public FEItemList
 {
 public:
 	//! constructor
-	FEElementSet(FEModel* fem);	// TODO: remove!
-	FEElementSet(FEMesh* fem);
+	RgElementSet(FEModel* fem);	// TODO: remove!
+	RgElementSet(FEMesh* fem);
 
 	// Create the element set
 	void Create(const std::vector<int>& elemList);
-	void Create(FEDomain* dom, const std::vector<int>& elemList);
+	void Create(RgDomain* dom, const std::vector<int>& elemList);
 
-	void CopyFrom(FEElementSet& eset);
+	void CopyFrom(RgElementSet& eset);
 
 	// add another element set
-	void Add(const FEElementSet& set);
+	void Add(const RgElementSet& set);
 
 	// Create the element set from a domain
-	void Create(FEDomain* dom);
+	void Create(RgDomain* dom);
 
 	// Create the element set from a domain
-	void Create(FEDomainList& dom);
+	void Create(RgDomainList& dom);
 
 	// Return number of elements in the set
 	int Elements() const { return (int)m_Elem.size(); }
@@ -43,15 +43,15 @@ public:
 
 	// return the local index of an element into the element set
 	// returns -1 if the element is not part of element set
-	int GetLocalIndex(const FEElement& el) const;
-	bool Contains(const FEElement& el) const;
+	int GetLocalIndex(const RgElement& el) const;
+	bool Contains(const RgElement& el) const;
 
 	// Get the element ID list
 	const std::vector<int>& GetElementIDList() const { return m_Elem; }
 
 	// get the domain list that generated the element set
-	FEDomainList& GetDomainList() { return m_dom; }
-	const FEDomainList& GetDomainList() const { return m_dom; }
+	RgDomainList& GetDomainList() { return m_dom; }
+	const RgDomainList& GetDomainList() const { return m_dom; }
 
 	// Get an element
 	FEElement& Element(int i);
@@ -63,8 +63,8 @@ public:
 public:
 	void Serialize(DumpStream& ar);
 
-	static void SaveClass(DumpStream& ar, FEElementSet* p);
-	static FEElementSet* LoadClass(DumpStream& ar, FEElementSet* p);
+	static void SaveClass(DumpStream& ar, RgElementSet* p);
+	static RgElementSet* LoadClass(DumpStream& ar, RgElementSet* p);
 
 private:
 	// Build the lookup table
@@ -73,14 +73,14 @@ private:
 protected:
 	std::vector<int>	m_Elem;		//!< list of elements' global ID
 
-	FEDomainList		m_dom;	//!< domain list that generated the element set
+	RgDomainList		m_dom;	//!< domain list that generated the element set
 
 	// used for fast lookup in GetLocalIndex
 	std::vector<int>	m_LUT;
 	int					m_minID, m_maxID;
 };
 
-inline int FEElementSet::GetLocalIndex(const FEElement& el) const
+inline int RgElementSet::GetLocalIndex(const RgElement& el) const
 {
     int eid = el.getId();
 	if ((eid < m_minID) || (eid > m_maxID)) return -1;
@@ -88,7 +88,7 @@ inline int FEElementSet::GetLocalIndex(const FEElement& el) const
         return m_LUT[el.getId() - m_minID];
 }
 
-inline bool FEElementSet::Contains(const FEElement& el) const
+inline bool RgElementSet::Contains(const RgElement& el) const
 {
 	return (GetLocalIndex(el) != -1);
 }

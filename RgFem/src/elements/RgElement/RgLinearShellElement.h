@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RgElement.h"
+#include "RgShellElement.h"
 
 namespace RgFem {
 
@@ -21,7 +21,7 @@ namespace RgFem {
  * - RgShell3Element: 3-node triangular shell
  * - RgShell4Element: 4-node bilinear shell
  */
-class FEM_EXPORT RgLinearShellElement : public RgElement
+class FEM_EXPORT RgLinearShellElement : public RgShellElement
 {
 public:
     /// Default constructor
