@@ -2,15 +2,16 @@
 #include <map>
 #include "fecore_enum.h"
 #include "fecore_api.h"
+#include "elements/RgElemTypeDefine.h"
 
 // Forward declarations
 class FEElement;
-class FEElementTraits;
+class RgElementTraits;
 
 //-----------------------------------------------------------------------------
 //! This class stores the different element traits classes
 
-class FECORE_API RgElementTraitsStore
+class FEM_EXPORT RgElementTraitsStore
 {
 public:
     //! destructor
@@ -23,16 +24,13 @@ public:
     static void SetElementTraits(FEElement& el, int id);
 
     //! return element traits data
-    FEElementTraits* GetElementTraits(int ntype);
-
-    //! return the element class of a given element type
-    FE_Element_Class GetElementClass(int ntype);
+    RgElementTraits* GetElementTraits(int ntype);
 
     //! checks if the element spec is valid
     bool IsValid(const FE_Element_Spec& c);
 
     //! get the element spec from the type
-    FE_Element_Spec GetElementSpecFromType(FE_Element_Type elemType);
+    FE_Element_Spec GetElementSpecFromType(ElementType elemType);
 
     //! initialize library
     static void Initialize();
@@ -43,9 +41,9 @@ private:
     RgElementTraitsStore(const RgElementTraitsStore&) {}
 
     //! Function to register an element traits class
-    void RegisterTraits(FE_Element_Type traitType, FEElementTraits* ptrait);
+    void RegisterTraits(ElementType traitType, RgElementTraits* ptrait);
 
 private:
-    std::map<FE_Element_Type, FEElementTraits*> m_TraitsMap; //!< map of element traits by type enum
+    std::map<ElementType, RgElementTraits*> m_TraitsMap; //!< map of element traits by type enum
     static RgElementTraitsStore* m_pThis;
 };

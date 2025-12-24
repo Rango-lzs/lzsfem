@@ -121,9 +121,9 @@ int RgElement::GaussPointSize() const
     return m_pTraits ? m_pTraits->m_nint : 0;
 }
 
-int RgElement::ShapeFunctions(int order) const
+int RgElement::ShapeFunctions() const
 {
-    return (order == -1) ? NodeSize() : (m_pTraits ? m_pTraits->ShapeFunctions(order) : 0);
+    return m_pTraits ? m_pTraits->shapeSize() : 0;
 }
 
 // --- Material Point Data ---
@@ -132,11 +132,11 @@ RgMaterialPoint* RgElement::getMaterialPoint(int n)
     return (n >= 0 && n < m_state.size()) ? m_state[n] : nullptr;
 }
 
-void RgElement::setMaterialPointData(FEMaterialPoint* pmp, int n)
+void RgElement::setMaterialPointData(RgMaterialPoint* pmp, int n)
 {
     if (pmp && n >= 0 && n < m_state.size()) {
-        pmp->m_elem = this;
-        pmp->m_index = n;
+        /* pmp->m_elem = this;
+         pmp->m_index = n;*/
         m_state[n] = pmp;
     }
 }

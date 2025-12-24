@@ -1,34 +1,7 @@
-/*This file is part of the FEBio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
-
-#include "stdafx.h"
 #include "RgElementTraitsStore.h"
-#include "FEElement.h"
-#include "FESolidElementShape.h"
-#include "FESurfaceElementShape.h"
+#include "elements/RgElement/RgElement.h"
+#include "elements/ElementTraits/RgSolidElementTraits.h"
+#include "elements/ElementTraits/RgSurfaceElementTraits.h"
 
 RgElementTraitsStore* RgElementTraitsStore::m_pThis = 0;
 
@@ -125,7 +98,7 @@ RgElementTraitsStore::~RgElementTraitsStore()
     m_TraitsMap.clear();
 }
 
-void RgElementTraitsStore::RegisterTraits(FE_Element_Type traitType, FEElementTraits* ptrait)
+void RgElementTraitsStore::RegisterTraits(ElementType traitType, FEElementTraits* ptrait)
 {
     m_TraitsMap[traitType] = ptrait;
 }
@@ -142,24 +115,15 @@ void RgElementTraitsStore::SetElementTraits(FEElement& el, int nid)
 }
 
 //! return element traits data
-FEElementTraits* RgElementTraitsStore::GetElementTraits(int ntype)
+RgElementTraits* RgElementTraitsStore::GetElementTraits(int ntype)
 {
-    auto it = m_TraitsMap.find((FE_Element_Type)ntype);
+    auto it = m_TraitsMap.find((ElementType)ntype);
     if (it != m_TraitsMap.end()) {
         return it->second;
     }
     return nullptr;
 }
 
-//! return the element class of a given element type
-FE_Element_Class RgElementTraitsStore::GetElementClass(int ntype)
-{
-    auto it = m_TraitsMap.find((FE_Element_Type)ntype);
-    if (it != m_TraitsMap.end()) {
-        return it->second->Class();
-    }
-    return FE_ELEM_INVALID_CLASS;
-}
 
 bool RgElementTraitsStore::IsValid(const FE_Element_Spec& c)
 {
@@ -167,7 +131,7 @@ bool RgElementTraitsStore::IsValid(const FE_Element_Spec& c)
     if (c.eshape == FE_ELEM_INVALID_SHAPE) return false;
     if (c.etype == FE_ELEM_INVALID_TYPE) return false;
     
-    auto it = m_TraitsMap.find(c.etype);
+    auto it = m_TraitsMap.find((ElementType)c.etype);
     if (it == m_TraitsMap.end()) return false;
     
     if (c.eclass != it->second->Class()) return false;
@@ -176,7 +140,7 @@ bool RgElementTraitsStore::IsValid(const FE_Element_Spec& c)
 }
 
 //! get the element spec from the type
-FE_Element_Spec RgElementTraitsStore::GetElementSpecFromType(FE_Element_Type elemType)
+FE_Element_Spec RgElementTraitsStore::GetElementSpecFromType(ElementType elemType)
 {
     FE_Element_Spec espec;
     espec.etype = elemType;

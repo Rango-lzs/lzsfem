@@ -1,7 +1,6 @@
 #pragma once
 
 #include "datastructure/Matrix3d.h"
-#include "elements/RgElementLibrary.h"
 #include "elements/ElementTraits/RgElementTraits.h"
 #include "elements/RgElementState.h"
 #include "femcore/fem_export.h"
@@ -16,6 +15,7 @@ using MatId = int;
 // Type aliases for matrices and vectors
 using StressTensor = Matrix3ds;
 using StrainTensor = Matrix3ds;
+using Vector = std::vector<double>;
 
 class FEMaterialPoint;
 class FENode;
@@ -88,7 +88,7 @@ public:
 
     int NodeSize() const;
     int GaussPointSize() const;
-    int ShapeFunctions(int order) const;
+    int ShapeFunctions() const;
 
     // --- Material Point Data ---
     RgMaterialPoint* getMaterialPoint(int n);

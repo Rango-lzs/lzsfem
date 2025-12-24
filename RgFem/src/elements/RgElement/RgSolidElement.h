@@ -8,6 +8,11 @@
 //! Forward declarations
 class RgSolidElementTraits;
 
+namespace RgFem
+{
+    class NaturalCoord;
+}
+
 //! Corresponds to Abaqus Continuum(Solid) elements, which are multidimensional (3D)
 class FEM_EXPORT RgSolidElement : public RgElement
 {
@@ -25,16 +30,16 @@ public:
     // n : the n-th gauss point
     virtual RgFem::RgGaussPoint gaussPoint(int n) const;
 
-    virtual std::vector<double> evalH(int n){};
+    virtual std::vector<double> evalH(int n);
     // [3,N] (2,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv(int n){};
+    virtual std::vector<std::vector<double>> evalDeriv(int n);
     //[6,N] (3,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv2(int n){};
+    virtual std::vector<std::vector<double>> evalDeriv2(int n);
 
     //! 这些接口计算任意点的形函数
-    virtual std::vector<double> evalH(const NaturalCoord& coord){};
-    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord){};
-    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord){};
+    virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord);
+    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord);
+    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord);
  
 	virtual void calculateStiffnessMatrix(Matrix& K) const override;         // Km = ∫ B^T D B dV (default linear assembly)
 	virtual void calculateMassMatrix(Matrix& M) const override;
@@ -43,8 +48,8 @@ public:
 
 	virtual void computeBMatrix(const Vector3d& xi, Matrix& B) const = 0;
 
-    virtual void calculateStress(FEMaterialPoint& matPt, StressTensor& stress) override {}
-    virtual void calculateStrain(FEMaterialPoint& matPt, StrainTensor& strain) override {}
+    virtual void calculateStress(FEMaterialPoint& matPt, StressTensor& stress) override;
+    virtual void calculateStrain(FEMaterialPoint& matPt, StrainTensor& strain) override;
 
     virtual double calculateStrainEnergy() const;
     virtual double calculateKineticEnergy() const;

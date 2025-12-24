@@ -85,6 +85,7 @@ RgHex8Element::RgHex8Element(bool fullInt)
     if (fullInt)
     {
         m_pTraits = RgHex8Element::fullIntTraits();
+        //m_pTraits = RgElementTraitsStore::GetInstance()->GetElementTraits(FE_HEX8G8);
     }
     else
     {

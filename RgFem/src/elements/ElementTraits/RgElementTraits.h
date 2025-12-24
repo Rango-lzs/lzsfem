@@ -45,7 +45,7 @@ public:
 	//! return the element type
 	ElementType Type() const { return m_spec.etype; }
 
-	virtual int shapeSize(int order) { return m_neln; }
+	virtual int shapeSize() { return m_neln; }
 
 	int Faces() const { return m_faces; }
 

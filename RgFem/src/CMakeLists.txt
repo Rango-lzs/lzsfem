@@ -22,13 +22,13 @@ message(status "cmake module****${CMAKE_MODULE_PATH}")
 message(status "cmake source****${CMAKE_SOURCE_DIR}")
 
 
-# ����ģ������·��
+# ģ·
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakes")
 
-# �ҵ�Eigen��
+# ҵEigen
 find_package(Eigen3 REQUIRED)
  
-# �����ҵ�Eigen�⣬����������Ŀ¼���ӵ�������Ŀ��
+# ҵEigen⣬Ŀ¼ӵĿ
 if(Eigen3_FOUND)
   message(status "Eigen3 found****")
   include_directories(${Eigen3_INCLUDE_DIR})
@@ -70,6 +70,7 @@ set(PROJECT_SOURCES
     ${APP_SOURCES}
 )
 source_group("app" FILES ${APP_HEADERS} ${APP_SOURCES})
+
 
 
 # add femcore sources
@@ -269,6 +270,7 @@ set(FEMCORE_HEADERS
 
     femcore/FESolidModule.h
     femcore/RgElementTraitsStore.h
+    femcore/RgElementShapeStore.h
 )
 
 set(FEMCORE_SOURCES
@@ -366,7 +368,6 @@ set(FEMCORE_SOURCES
     femcore/Matrix/SparseMatrix.cpp  
     
 
-
     femcore/MetaObject.cpp
     femcore/MetaObjectDemo.cpp
     femcore/PointCurve.cpp
@@ -432,8 +433,8 @@ set(FEMCORE_SOURCES
     femcore/colsol.cpp
 
     femcore/RgElementTraitsStore.cpp
+    femcore/RgElementShapeStore.cpp
 )
-
 
 
 set(PROJECT_SOURCES
@@ -497,8 +498,11 @@ set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
     ${ELEMENT_HEADERS}
     ${ELEMENT_SOURCES}
+
 )
 source_group("elements" FILES ${ELEMENT_HEADERS} ${ELEMENT_SOURCES})
+
+
 
 set(BASICIO_HEADERS
     basicio/DataRecord.h

@@ -1,3 +1,19 @@
+set(ELEMENT_TRAITS_HEADER
+    elements/ElementTraits/RgElementTraits.h
+    elements/ElementTraits/RgSolidElementTraits.h
+    elements/ElementTraits/Rg2DElementTraits.h
+    elements/ElementTraits/RgShellElementTraits.h
+    elements/ElementTraits/RgSurfaceElementTraits.h
+    elements/ElementTraits/RgTrussElementTraits.h
+    PARENT_SCOPE
+)
+
+set(ELEMENT_TRAITS_SOURCE
+    elements/ElementTraits/RgElementTraits.cpp
+    elements/ElementTraits/RgSolidElementTraits.cpp
+    #PARENT_SCOPE
+)
+
 set(ELEMENT_HEADERS
     elements/ElementShape/RgElementShape.h
     elements/ElementShape/RgHex8Shape.h
@@ -24,6 +40,8 @@ set(ELEMENT_HEADERS
     elements/ElementTraits/RgSolidElementTraits.h
     elements/ElementTraits/RgSurfaceElementTraits.h
     elements/ElementTraits/RgTrussElementTraits.h
+    elements/NaturalCoord.h
+    elements/RgGaussPoint.h
     elements/RgElemElemList.h
     elements/RgElementLibrary.h
     elements/RgElementList.h
@@ -91,11 +109,13 @@ set(ELEMENT_SOURCES
     elements/ElementShape/FETet10Shape.cpp
     elements/ElementShape/FETet4Shape.cpp
     elements/ElementTraits/RgElementTraits.cpp
+    elements/NaturalCoord.cpp
     elements/RgElemElemList.cpp
     elements/RgElementLibrary.cpp
     elements/RgElementList.cpp
     elements/RgElementSet.cpp
     elements/RgElementState.cpp
+    elements/RgGaussPoint.cpp
     elements/RgElement/RgBeam2dElement.cpp
     elements/RgElement/RgBeam2dGeomNLElement.cpp
     elements/RgElement/RgBeam3dElement.cpp
@@ -133,20 +153,5 @@ set(ELEMENT_SOURCES
     elements/RgElement/RgTrussElement.cpp
     elements/RgElement/RgWedge6Element.cpp
     ${ELEMENT_TRAITS_SOURCE}
-    PARENT_SCOPE
-)
-
-set(ELEMENT_TRAITS_HEADER
-    ElementTraits/RgElementTraits.h
-    ElementTraits/RgSolidElementTraits.h
-    ElementTraits/Rg2DElementTraits.h
-    ElementTraits/RgShellElementTraits.h
-    ElementTraits/RgSurfaceElementTraits.h
-    ElementTraits/RgTrussElementTraits.h
-    PARENT_SCOPE
-)
-
-set(ELEMENT_TRAITS_SOURCE
-    ElementTraits/RgElementTraits.cpp
     PARENT_SCOPE
 )

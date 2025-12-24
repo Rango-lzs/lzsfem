@@ -3,11 +3,11 @@
 #include "fecore_enum.h"
 #include "fecore_api.h"
 
-class FEElementShape;
+class RgElementShape;
 
 //-----------------------------------------------------------------------------
 //! This class stores the different element shape classes
-class FECORE_API RgElementShapeStore
+class FEM_EXPORT RgElementShapeStore
 {
 public:
     //! destructor
@@ -17,7 +17,7 @@ public:
     static RgElementShapeStore* GetInstance();
 
     //! return element shape class
-    FEElementShape* GetElementShapeClass(FE_Element_Shape eshape);
+    RgElementShape* GetElementShape(ElementShape eshape);
 
     //! initialize library
     static void Initialize();
@@ -28,9 +28,9 @@ private:
     RgElementShapeStore(const RgElementShapeStore&) {}
 
     //! Function to register an element shape class
-    void RegisterShape(FE_Element_Shape shapeType, FEElementShape* pshape);
+    void RegisterShape(ElementShape shapeType, RgElementShape* pshape);
 
 private:
-    std::map<FE_Element_Shape, FEElementShape*> m_ShapeMap; //!< map of element shapes by shape enum
+    std::map<ElementShape, RgElementShape*> m_ShapeMap; //!< map of element shapes by shape enum
     static RgElementShapeStore* m_pThis;
 };

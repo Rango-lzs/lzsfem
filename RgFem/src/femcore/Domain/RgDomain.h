@@ -4,6 +4,7 @@
 #include "femcore/FEMesh.h"
 #include <functional>
 #include <assert.h>
+#include "femcore/FEObjectBase.h"
 
 //-----------------------------------------------------------------------------
 // forward declarations
