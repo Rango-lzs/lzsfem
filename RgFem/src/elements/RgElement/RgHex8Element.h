@@ -35,6 +35,9 @@ public:
     RgHex8Element& operator=(const RgHex8Element& other);
     virtual ~RgHex8Element();
 
+    ElementType elementType() const override;
+    ElementShape elementShape() const override;
+
     //使用ElementTraitsStore来管理ElementTraits,
     static RgElementTraits* fullIntTraits();
     static RgElementTraits* reduceIntTraits();

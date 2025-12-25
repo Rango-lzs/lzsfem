@@ -432,6 +432,7 @@ set(FEMCORE_SOURCES
 
     femcore/colsol.cpp
 
+
     femcore/RgElementTraitsStore.cpp
     femcore/RgElementShapeStore.cpp
 )

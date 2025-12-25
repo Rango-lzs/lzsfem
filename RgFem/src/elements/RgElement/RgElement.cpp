@@ -95,7 +95,7 @@ ElementCategory RgElement::Class() const
     return ElementCategory::FE_ELEM_SOLID;
 }
 
-ElementShape RgElement::Shape() const
+ElementShape RgElement::elementShape() const
 {
     return m_pTraits ? m_pTraits->Shape() : ElementShape::ET_INVALID;
 }
@@ -127,7 +127,7 @@ int RgElement::ShapeFunctions() const
 }
 
 // --- Material Point Data ---
-RgMaterialPoint* RgElement::getMaterialPoint(int n)
+RgMaterialPoint* RgElement::getMaterialPoint(int n) const
 {
     return (n >= 0 && n < m_state.size()) ? m_state[n] : nullptr;
 }

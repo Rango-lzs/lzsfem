@@ -1,13 +1,16 @@
 #pragma once
 
 #include "FEMaterial.h"
-#include "FEMaterialPoint.h"
+#include "RgMaterialPoint.h"
 #include "datastructure/Matrix3d.h"
 #include "datastructure/tens4d.h"
 #include "datastructure/Matrix.h"
 #include "femcore/FETimeInfo.h"
 #include <vector>
 #include <memory>
+
+// Forward declarations
+class RgMaterialPointData;
 
 namespace RgFem {
 
@@ -37,9 +40,6 @@ enum class UpdateMode {
     UpdatedLagrangian   ///< Updated Lagrangian formulation
 };
 
-// Forward declarations
-class MaterialPointData;
-
 /// Abstract base class for all material models
 class RgMaterial 
 {
@@ -47,18 +47,18 @@ public:
     virtual ~RgMaterial() = default;
 
     /// Create material point data for this material type
-    virtual FEMaterialPointData* createMaterialPointData() const = 0;
+    virtual RgMaterialPointData* createMaterialPointData() const = 0;
 
     /// Compute constitutive response for given material point
     /// Material uses kinematics stored in MaterialPointData to compute stress
     /// Constitutive matrix D is returned as an output parameter
-    virtual void computeConstitutive(MaterialPointData* mp, Matrix& D) = 0;
+    virtual void computeConstitutive(RgMaterialPointData* mp, Matrix& D) = 0;
 
     /// Commit state variables at material point
-    virtual void commitState(MaterialPointData* mp) = 0;
+    virtual void commitState(RgMaterialPointData* mp) = 0;
 
     /// Revert state variables at material point to last committed state
-    virtual void revertState(MaterialPointData* mp) = 0;
+    virtual void revertState(RgMaterialPointData* mp) = 0;
 
     /// Get human-readable material name
     virtual std::string getName() const = 0;

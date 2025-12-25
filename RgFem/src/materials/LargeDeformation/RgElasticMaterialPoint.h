@@ -1,20 +1,20 @@
 #pragma once
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "datastructure/tens4ds.hpp"
 
 //-----------------------------------------------------------------------------
 //! This class defines material point data for elastic materials.
-class FEM_EXPORT FEElasticMaterialPoint : public FEMaterialPointData
+class FEM_EXPORT FEElasticMaterialPoint : public RgMaterialPointData
 {
 public:
 	//! constructor
-	FEElasticMaterialPoint(FEMaterialPointData* mp = nullptr);
+	FEElasticMaterialPoint(RgMaterialPointData* mp = nullptr);
 
 	//! Initialize material point data
 	void Init() override;
 
 	//! create a shallow copy
-	FEMaterialPointData* Copy() override;
+	RgMaterialPointData* Copy() override;
 
 	//! serialize material point data
 	void Serialize(DumpStream& ar) override;

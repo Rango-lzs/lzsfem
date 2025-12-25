@@ -1,13 +1,13 @@
 set(MATERIAL_HEADERS
-    materials/FEMaterial.h
-    materials/FEMaterialPoint.h
-    materials/FESolidMaterial.h
+    #materials/FEMaterial.h
+    materials/RgMaterialPoint.h
+   # materials/FESolidMaterial.h
     materials/LargeDeformation/RgElasticMaterialPoint.h
     materials/LargeDeformation/RgHyperElasticMaterial.h
     materials/LargeDeformation/RgIsotropicElastic.h
     materials/LargeDeformation/RgLargeDefMaterial.h
     materials/LargeDeformation/RgNeoHookean.h
-    materials/MaterialPointData.h
+    materials/RgMaterialPointData.h
     materials/RgMaterial.h
     materials/SmallDeformation/RgElastoPlasticMaterial.h
     materials/SmallDeformation/RgElastoPlasticMaterialPoint.h
@@ -17,15 +17,15 @@ set(MATERIAL_HEADERS
 )
 
 set(MATERIAL_SOURCES
-    materials/FEMaterial.cpp
-    materials/FEMaterialPoint.cpp
-    materials/FESolidMaterial.cpp
+    #materials/FEMaterial.cpp
+    materials/RgMaterialPoint.cpp
+    #materials/FESolidMaterial.cpp
     materials/LargeDeformation/RgElasticMaterialPoint.cpp
     materials/LargeDeformation/RgHyperElasticMaterial.cpp
     materials/LargeDeformation/RgIsotropicElastic.cpp
     materials/LargeDeformation/RgLargeDefMaterial.cpp
     materials/LargeDeformation/RgNeoHookean.cpp
-    materials/MaterialPointData.cpp
+    materials/RgMaterialPointData.cpp
     materials/RgMaterial.cpp
     materials/SmallDeformation/RgElastoPlasticMaterial.cpp
     materials/SmallDeformation/RgElastoPlasticMaterialPoint.cpp

@@ -19,7 +19,7 @@ FEElasticMaterial::~FEElasticMaterial()
 }
 
 //-----------------------------------------------------------------------------
-FEMaterialPointData* FEElasticMaterial::CreateMaterialPointData()
+RgMaterialPointData* FEElasticMaterial::CreateMaterialPointData()
 { 
 	return new FEElasticMaterialPoint;
 }

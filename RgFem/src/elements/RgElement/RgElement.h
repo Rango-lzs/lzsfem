@@ -80,7 +80,7 @@ public:
     // --- Element Properties ---
     virtual ElementType elementType() const;
     virtual ElementCategory Class() const;
-    virtual ElementShape Shape() const;
+    virtual ElementShape elementShape() const;
 
     // --- Traits Management ---
     virtual void initTraits();
@@ -91,7 +91,7 @@ public:
     int ShapeFunctions() const;
 
     // --- Material Point Data ---
-    RgMaterialPoint* getMaterialPoint(int n);
+    RgMaterialPoint* getMaterialPoint(int n) const;
     void setMaterialPointData(RgMaterialPoint* pmp, int n);
 
     // --- Serialization ---

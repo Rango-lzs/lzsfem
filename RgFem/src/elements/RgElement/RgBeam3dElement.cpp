@@ -1,7 +1,7 @@
 #include "RgBeam3dElement.h"
 #include "elements/ElementShape/RgElementShape.h"
 #include "elements/ElementTraits/RgSolidElementTraits.h"
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "datastructure/Matrix3d.h"
 #include "datastructure/Vector3d.h"
 #include "basicio/DumpStream.h"
@@ -535,7 +535,7 @@ void RgBeam3dElement::applyMoment(int nodeId, const Vector3d& moment, Vector& F)
 // Material Point Access
 // ============================================================================
 
-FEMaterialPoint* RgBeam3dElement::getMaterialPoint(int gaussPtId)
+RgMaterialPoint* RgBeam3dElement::getMaterialPoint(int gaussPtId)
 {
     if (gaussPtId >= 0 && gaussPtId < kNumGaussPoints && m_MaterialPoint) {
         return m_MaterialPoint + gaussPtId;
@@ -543,7 +543,7 @@ FEMaterialPoint* RgBeam3dElement::getMaterialPoint(int gaussPtId)
     return nullptr;
 }
 
-const FEMaterialPoint* RgBeam3dElement::getMaterialPoint(int gaussPtId) const
+const RgMaterialPoint* RgBeam3dElement::getMaterialPoint(int gaussPtId) const
 {
     if (gaussPtId >= 0 && gaussPtId < kNumGaussPoints && m_MaterialPoint) {
         return m_MaterialPoint + gaussPtId;

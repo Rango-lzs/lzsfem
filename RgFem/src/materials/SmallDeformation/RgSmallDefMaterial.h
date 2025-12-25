@@ -11,7 +11,7 @@ public:
     /// Compute constitutive response for small strain materials
     /// Uses small strain (e) stored in MaterialPointData
     /// Constitutive matrix D is returned as an output parameter
-    virtual void computeConstitutive(MaterialPointData* mp, Matrix& D) override = 0;
+    virtual void computeConstitutive(RgMaterialPointData* mp, Matrix& D) override = 0;
 };
 
 } // namespace SmallDef

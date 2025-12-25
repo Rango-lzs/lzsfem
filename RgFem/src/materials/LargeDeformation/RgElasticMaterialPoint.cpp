@@ -3,7 +3,7 @@
 #include "basicio/DumpStream.h"
 
 //-----------------------------------------------------------------------------
-FEElasticMaterialPoint::FEElasticMaterialPoint(FEMaterialPointData* mp) : FEMaterialPointData(mp)
+FEElasticMaterialPoint::FEElasticMaterialPoint(RgMaterialPointData* mp) : RgMaterialPointData(mp)
 {
 	m_F.unit();
 	m_J = 1;
@@ -15,7 +15,7 @@ FEElasticMaterialPoint::FEElasticMaterialPoint(FEMaterialPointData* mp) : FEMate
 }
 
 //-----------------------------------------------------------------------------
-FEMaterialPointData* FEElasticMaterialPoint::Copy()
+RgMaterialPointData* FEElasticMaterialPoint::Copy()
 {
 	FEElasticMaterialPoint* pt = new FEElasticMaterialPoint(*this);
 	if (m_pNext) pt->m_pNext = m_pNext->Copy();
@@ -39,13 +39,13 @@ void FEElasticMaterialPoint::Init()
     m_p = 0;
     
 	// don't forget to initialize the base class
-    FEMaterialPointData::Init();
+    RgMaterialPointData::Init();
 }
 
 //-----------------------------------------------------------------------------
 void FEElasticMaterialPoint::Serialize(DumpStream& ar)
 {
-	FEMaterialPointData::Serialize(ar);
+	RgMaterialPointData::Serialize(ar);
     ar & m_F & m_J & m_s & m_v & m_a & m_gradJ & m_L & m_Wt & m_Wp & m_p;
 }
 

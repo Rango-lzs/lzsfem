@@ -1,72 +1,72 @@
-#include "materials/LargeDeformation/RgNeoHookean.h"
-#include "datastructure/mathalg.h"
-#include "materials/MaterialPointData.h"
+#include "RgNeoHookean.h"
+#include "datastructure/Matrix3d.h"
+#include "femcore/FEModel.h"
 
-namespace RgFem
+namespace RgFem {
+
+RgNeoHookean::RgNeoHookean()
+    : m_mu(1.0), m_kappa(2.0)
 {
-    namespace LargeDef
-    {
+}
 
-        NeoHookean::NeoHookean(double mu, double lambda)
-            : m_mu(mu)
-            , m_lambda(lambda)
-        {
-        }
+RgMaterialPointData* RgNeoHookean::createMaterialPointData() const
+{
+    // Neo-Hookean doesn't require specialized material point data
+    // beyond what's provided by base class
+    return nullptr;
+}
 
-        FEMaterialPointData* NeoHookean::createMaterialPointData() const
-        {
-            return new MaterialPointData();
-        }
+void RgNeoHookean::computeConstitutive(MaterialPointData* mp, Matrix& D)
+{
+    // Neo-Hookean constitutive equations:
+    //  - strain energy function: W = mu/2 * (tr(C) - 3) - mu*ln(J) + kappa/2 * (J-1)^2
+    //  - stress: cauchy = 1/J * (mu*b - kappa*(J-1)*I)
+    //  - tangent: D = dS/dE (implementation depends on formulation)
 
-        void NeoHookean::computeConstitutive(MaterialPointData* mp, Matrix& D)
-        {
-            // For Neo-Hookean material, the constitutive relationship is nonlinear
-            // So we would typically return the tangent matrix at the current state
-            // This is a simplified implementation - a full implementation would
-            // involve more detailed computation based on the current deformation state
+    // Implementation details would go here
+    // This is a simplified example for demonstration
+    if (mp && mp->F.det() > 0) {
+        // Calculate constitutive response based on deformation gradient in mp
+        Matrix3d F = mp->F;  // deformation gradient from material point
+        Matrix3d C = F.transpose() * F;  // right Cauchy-Green tensor
+        Matrix3d b = F * F.transpose();  // left Cauchy-Green tensor
+        double J = F.det();  // determinant of F
+        Matrix3d I = Matrix3d::identity();  // identity matrix
 
-            // For demonstration purposes, we're returning a zero matrix
-            // A real implementation would compute the spatial tangent stiffness
-            D.resize(6, 6);
-            D.zero();
+        // Calculate Cauchy stress for Neo-Hookean material
+        Matrix3d cauchy = (m_mu/J) * b - (m_mu/J) * I + (m_kappa * (J - 1)) * I;
 
-            // Store computed PK2 stress in material point data
-            // mp->S = computePK2FromF(mp->F, mp->J);
-        }
+        // Store in the material point
+        mp->sigma = cauchy;
 
-        void NeoHookean::commitState(MaterialPointData* mp)
-        {
-            mp->commit();
-        }
+        // Set up the material tangent matrix (simplified)
+        // In a real implementation, this would be the fourth-order elasticity tensor
+        // or a contracted version depending on the formulation
+        D.resize(6, 6);  // Standard 6x6 for 3D stress-strain relationship
+        D.zero();
+        // Fill D with appropriate tangent moduli
+    }
+}
 
-        void NeoHookean::revertState(MaterialPointData* mp)
-        {
-            mp->revert();
-        }
+void RgNeoHookean::commitState(MaterialPointData* mp)
+{
+    if (mp) {
+        // Commit state variables to their current values
+        mp->commit();
+    }
+}
 
-        std::string NeoHookean::getName() const
-        {
-            return "NeoHookean";
-        }
+void RgNeoHookean::revertState(MaterialPointData* mp)
+{
+    if (mp) {
+        // Revert state variables to last committed values
+        mp->revert();
+    }
+}
 
-        Matrix3d NeoHookean::computePK2FromF(const Matrix3d& F, double J) const
-        {
-            // Compute right Cauchy-Green tensor
-            Matrix3d C = F.transpose() * F;
+std::string RgNeoHookean::getName() const
+{
+    return "RgNeoHookean";
+}
 
-            // Compute inverse of C
-            Matrix3d C_inv = C.inverse();
-
-            // Compute PK2 stress for Neo-Hookean material:
-            // S = mu * (I - C^-1) + lambda * (J - 1) * J * C^-1
-            Matrix3d I;
-            I.identity();
-
-            Matrix3d S = m_mu * (I - C_inv);
-            S += m_lambda * (J - 1.0) * J * C_inv;
-
-            return S;
-        }
-
-    }  // namespace LargeDef
-}  // namespace RgFem
+} // namespace RgFem

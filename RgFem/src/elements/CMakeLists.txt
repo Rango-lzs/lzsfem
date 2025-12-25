@@ -43,7 +43,6 @@ set(ELEMENT_HEADERS
     elements/NaturalCoord.h
     elements/RgGaussPoint.h
     elements/RgElemElemList.h
-    elements/RgElementLibrary.h
     elements/RgElementList.h
     elements/RgElementSet.h
     elements/RgElementState.h
@@ -111,7 +110,6 @@ set(ELEMENT_SOURCES
     elements/ElementTraits/RgElementTraits.cpp
     elements/NaturalCoord.cpp
     elements/RgElemElemList.cpp
-    elements/RgElementLibrary.cpp
     elements/RgElementList.cpp
     elements/RgElementSet.cpp
     elements/RgElementState.cpp

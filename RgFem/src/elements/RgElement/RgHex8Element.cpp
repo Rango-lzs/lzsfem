@@ -8,6 +8,8 @@
 #include <cmath>
 #include <algorithm>
 #include <Eigen/Dense>
+#include "femcore/RgElementTraitsStore.h"
+#include "../RgElementState.h"
 
 namespace RgFem {
 
@@ -20,7 +22,7 @@ RgElementTraits* RgHex8Element::fullIntTraits()
     static RgSolidElementTraits* traits = nullptr;
     if (!traits) {
         // Create traits for HEX8 element with 8 Gauss points (full integration)
-        traits = new RgSolidElementTraits(8, kNodeCount, ElementShape::ET_HEX8, ElementType::FE_HEX8G8);
+        //traits = new RgSolidElementTraits(8, kNodeCount, ElementShape::ET_HEX8, ElementType::FE_HEX8G8);
         
         // Set up gauss-point coordinates and weights for hex8 element
         traits->gaussPoints.resize(8);
@@ -50,7 +52,7 @@ RgElementTraits* RgHex8Element::reduceIntTraits()
     static RgSolidElementTraits* traits = nullptr;
     if (!traits) {
         // Create traits for HEX8 element with 1 Gauss point (reduced integration)
-        traits = new RgSolidElementTraits(1, kNodeCount, ElementShape::ET_HEX8, ElementType::FE_HEX8G1);
+        //traits = new RgSolidElementTraits(1, kNodeCount, ElementShape::ET_HEX8, ElementType::FE_HEX8G1);
         
         // Set up gauss-point coordinates and weights for hex8 element
         traits->gaussPoints.resize(1);
@@ -84,12 +86,13 @@ RgHex8Element::RgHex8Element(bool fullInt)
 {
     if (fullInt)
     {
-        m_pTraits = RgHex8Element::fullIntTraits();
-        //m_pTraits = RgElementTraitsStore::GetInstance()->GetElementTraits(FE_HEX8G8);
+        //m_pTraits = RgHex8Element::fullIntTraits();
+        m_pTraits = RgElementTraitsStore::GetInstance()->GetElementTraits(FE_HEX8G8);
     }
     else
     {
-        m_pTraits = RgHex8Element::reduceIntTraits();
+        //m_pTraits = RgHex8Element::reduceIntTraits();
+        m_pTraits = RgElementTraitsStore::GetInstance()->GetElementTraits(FE_HEX8G1);
     }
     m_node.resize(kNodeCount);
     m_loc_node.resize(kNodeCount);
@@ -141,14 +144,14 @@ void RgHex8Element::calculateStiffnessMatrix(Matrix& K) const
     // Get element DOFs (24 DOFs for 8 nodes with 3 DOF per node)
     int ndofs = NodeSize() * 3;
     K.resize(ndofs, ndofs);
-    K.setZero(); // Use setZero() for better performance with Eigen
+    K.zero(); // Use setZero() for better performance with Eigen
     
     // Integrate stiffness matrix using Gauss quadrature
     int npts = GaussPointSize();
     
     for (int gp = 0; gp < npts; ++gp) {
         // Get material point to access constitutive properties at this Gauss point
-        const FEMaterialPoint* matPt = getMaterialPoint(gp);
+        const RgMaterialPoint* matPt = getMaterialPoint(gp);
         if (!matPt || !matPt->m_pMat) continue;
         
         // Get material matrix (D matrix for isotropic linear elasticity)
@@ -156,7 +159,7 @@ void RgHex8Element::calculateStiffnessMatrix(Matrix& K) const
         matPt->m_pMat->getConstitutiveMatrix(matPt, D);
         
         // Get gauss point coordinates
-        RgGaussPoint gaussPt = m_pTraits->gaussPoints[gp];
+        RgGaussPoint gaussPt = m_pTraits->gaussPoint(gp);
         Vector3d natCoord(gaussPt.r, gaussPt.s, gaussPt.t);
         double jdet = evaluateJacobianDeterminant(natCoord);
         double weight = gaussPt.w * jdet;
