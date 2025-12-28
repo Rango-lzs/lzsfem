@@ -1,7 +1,8 @@
+
 set(MATERIAL_HEADERS
-    #materials/FEMaterial.h
+    materials/FEMaterial.h
     materials/RgMaterialPoint.h
-   # materials/FESolidMaterial.h
+    materials/FESolidMaterial.h
     materials/LargeDeformation/RgElasticMaterialPoint.h
     materials/LargeDeformation/RgHyperElasticMaterial.h
     materials/LargeDeformation/RgIsotropicElastic.h
@@ -13,13 +14,14 @@ set(MATERIAL_HEADERS
     materials/SmallDeformation/RgElastoPlasticMaterialPoint.h
     materials/SmallDeformation/RgSmallDefMaterial.h
     materials/SmallDeformation/RgLinearElasticMaterial.h
+    materials/SmallDeformation/RgLinearElasticMatData.h
     PARENT_SCOPE
 )
 
 set(MATERIAL_SOURCES
-    #materials/FEMaterial.cpp
+    materials/FEMaterial.cpp
     materials/RgMaterialPoint.cpp
-    #materials/FESolidMaterial.cpp
+    materials/FESolidMaterial.cpp
     materials/LargeDeformation/RgElasticMaterialPoint.cpp
     materials/LargeDeformation/RgHyperElasticMaterial.cpp
     materials/LargeDeformation/RgIsotropicElastic.cpp
@@ -31,6 +33,7 @@ set(MATERIAL_SOURCES
     materials/SmallDeformation/RgElastoPlasticMaterialPoint.cpp
     materials/SmallDeformation/RgSmallDefMaterial.cpp
     materials/SmallDeformation/RgLinearElasticMaterial.cpp
+    materials/SmallDeformation/RgLinearElasticMatData.cpp
     PARENT_SCOPE
 )
 
@@ -57,6 +60,7 @@ set(SMALL_DEF_HEADERS
     materials/SmallDeformation/RgElastoPlasticMaterialPoint.h
     materials/SmallDeformation/RgSmallDefMaterial.h
     materials/SmallDeformation/RgLinearElasticMaterial.h
+    materials/SmallDeformation/RgLinearElasticMatData.h
     PARENT_SCOPE
 )
 set(SMALL_DEF_SOURCES
@@ -64,5 +68,6 @@ set(SMALL_DEF_SOURCES
     materials/SmallDeformation/RgElastoPlasticMaterialPoint.cpp
     materials/SmallDeformation/RgSmallDefMaterial.cpp
     materials/SmallDeformation/RgLinearElasticMaterial.cpp
+    materials/SmallDeformation/RgLinearElasticMatData.cpp
     PARENT_SCOPE
 )

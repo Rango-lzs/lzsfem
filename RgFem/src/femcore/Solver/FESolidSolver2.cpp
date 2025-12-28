@@ -1,12 +1,9 @@
 #include "FESolidSolver2.h"
 
-//#include "femcore/Domain/FE3FieldElasticShellDomain.h"
-#include "femcore/Domain/FE3FieldElasticSolidDomain.h"
 #include "femcore/FEBodyForce.h"
 //#include "femcore/FEContactInterface.h"
 //#include "femcore/Domain/FEElasticANSShellDomain.h"
 //#include "femcore/Domain/FEElasticEASShellDomain.h"
-#include "femcore/Domain/FELinearTrussDomain.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
 #include "femcore/FEResidualVector.h"
 //#include "femcore/FERigidConnector.h"
@@ -27,17 +24,16 @@
 #include <femcore/FESurfaceLoad.h>
 #include <femcore/sys.h>
 #include "../FEMesh.h"
-#include "../Domain/FEDomain.h"
 #include "datastructure/vector_operator.h"
 #include "../FEException.h"
 #include "../Callback.h"
 #include "../FESolidLinearSystem.h"
-#include "../Domain/FEElasticDomain.h"
 #include "femcore/FESolidAnalysis.h"
 #include "femcore/FEResidualVector.h"
 #include "femcore/FENLConstraint.h"
 #include "femcore/FESurfacePairConstraint.h"
 #include "../FESolidModule.h"
+#include "../Domain/RgSolidDomain.h"
 
 DEFINE_META_CLASS(FESolidSolver2, FENewtonSolver,"solid");
 
@@ -228,12 +224,12 @@ bool FESolidSolver2::Init()
     bool b = (fem.GetCurrentStep()->m_nanalysis == FESolidAnalysis::DYNAMIC ? true : false);
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FEElasticSolidDomain* d = dynamic_cast<FEElasticSolidDomain*>(&mesh.Domain(i));
+        RgSolidDomain* d = dynamic_cast<RgSolidDomain*>(&mesh.Domain(i));
         //FEElasticShellDomain* s = dynamic_cast<FEElasticShellDomain*>(&mesh.Domain(i));
         //FEElasticEASShellDomain* seas = dynamic_cast<FEElasticEASShellDomain*>(&mesh.Domain(i));
         //FEElasticANSShellDomain* sans = dynamic_cast<FEElasticANSShellDomain*>(&mesh.Domain(i));
-        if (d)
-            d->SetDynamicUpdateFlag(b);
+        /*if (d)
+            d->SetDynamicUpdateFlag(b);*/
         /*if (s)
             s->SetDynamicUpdateFlag(b);
         if (seas)
@@ -1136,9 +1132,9 @@ bool FESolidSolver2::StiffnessMatrix()
     // calculate the stiffness Matrix for each domain
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        if (mesh.Domain(i).IsActive())
+        if (mesh.Domain(i).isActive())
         {
-            FEElasticDomain& dom = dynamic_cast<FEElasticDomain&>(mesh.Domain(i));
+            RgSolidDomain& dom = dynamic_cast<RgSolidDomain&>(mesh.Domain(i));
             dom.StiffnessMatrix(ls);
         }
     }
@@ -1164,7 +1160,7 @@ bool FESolidSolver2::StiffnessMatrix()
         // loop over all elastic domains
         for (int i = 0; i < mesh.Domains(); ++i)
         {
-            FEElasticDomain* edom = dynamic_cast<FEElasticDomain*>(&mesh.Domain(i));
+            RgSolidDomain* edom = dynamic_cast<RgSolidDomain*>(&mesh.Domain(i));
             if (edom)
                 edom->MassMatrix(ls, a);
         }
@@ -1342,7 +1338,7 @@ void FESolidSolver2::InternalForces(FEGlobalVector& R)
     FEMesh& mesh = GetFEModel()->GetMesh();
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FEElasticDomain* edom = dynamic_cast<FEElasticDomain*>(&mesh.Domain(i));
+        RgSolidDomain* edom = dynamic_cast<RgSolidDomain*>(&mesh.Domain(i));
         if (edom)
             edom->InternalForces(R);
     }
@@ -1373,7 +1369,7 @@ void FESolidSolver2::ExternalForces(FEGlobalVector& RHS)
         // calculate the inertial forces for all elastic domains
         for (int nd = 0; nd < mesh.Domains(); ++nd)
         {
-            FEElasticDomain* edom = dynamic_cast<FEElasticDomain*>(&mesh.Domain(nd));
+            RgSolidDomain* edom = dynamic_cast<RgSolidDomain*>(&mesh.Domain(nd));
             if (edom)
                 edom->InertialForces(RHS, F);
         }

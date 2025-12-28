@@ -8,7 +8,7 @@
 
 //-----------------------------------------------------------------------------
 // forward declarations
-class FEElement;
+class RgElement;
 class FEMaterial;
 class FENode;
 class FEMesh;
@@ -20,7 +20,7 @@ class FESolver;
 
 struct FETimeInfo;
 //-----------------------------------------------------------------------------
-typedef std::vector<FEElement*> ELEMENT_ITERATOR;
+typedef std::vector<RgElement*> ELEMENT_ITERATOR;
 
 //-----------------------------------------------------------------------------
 //! Base class for defining domains.
@@ -49,8 +49,8 @@ public:
 	virtual int Elements() const = 0;
 
 	//! return a reference to an element
-	virtual FEElement& ElementRef(int n) = 0;
-	virtual const FEElement& ElementRef(int n) const = 0;
+	virtual RgElement& ElementRef(int n) = 0;
+	virtual const RgElement& ElementRef(int n) const = 0;
 
 	//! serialization
 	void Serialize(DumpStream& ar) override;
@@ -96,7 +96,7 @@ public:
 	// --- E L E M E N T   W A L K I N G ---
 
 	//! loop over all elements
-	virtual void ForEachElement(std::function<void(FEElement& el)> f);
+	virtual void ForEachElement(std::function<void(RgElement& el)> f);
 
 	//! return an element iterator
 	ELEMENT_ITERATOR GetElementIterator() { return ELEMENT_ITERATOR(); }
@@ -115,9 +115,12 @@ public:
 
 	//! Activate domain
 	virtual void Activate();
+	bool isActive() { return true; }
 
 	//! Unpack element data
-	virtual void UnpackLM(FEElement& el, std::vector<int>& lm) = 0;
+	virtual void UnpackLM(RgElement& el, std::vector<int>& lm) = 0;
+
+	virtual void BuildMatrixProfile(FEGlobalMatrix& M);
 
 protected:
 	FEModel*		m_pfem;		//!< pointer to model

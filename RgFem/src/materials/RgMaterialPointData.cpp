@@ -190,65 +190,64 @@ void LargeDefMaterialPointData::Serialize(DumpStream& ar)
 
 namespace SmallDef {
 
-SmallDefMaterialPointData::SmallDefMaterialPointData(RgMaterialPointData* ppt)
-    : RgMaterialPointData(ppt)
+SmallDefMaterialPointData::SmallDefMaterialPointData(RgMaterialPointData* ppt) 
+    : RgMaterialPointData(ppt), gradU(0), strain(0), strain_prev(0), 
+      stress(0), stress_prev(0), C(0) 
 {
-    strain.zero();
-    stress.zero();
-    strain_prev.zero();
-    
-    elastic_strain.zero();
-    plastic_strain.zero();
-    eq_plastic_strain = 0.0;
-    
-    temperature = 0.0;
-    damage = 0.0;
-    
-    state_vars.clear();
-    state_vars_prev.clear();
 }
 
-void SmallDefMaterialPointData::Init()
+void SmallDefMaterialPointData::updateKinematicsFromGradU(const Matrix3d& gradU_new)
 {
-    RgMaterialPointData::Init();
+    gradU = gradU_new;
     
-    // Initialize small deformation specific data
-    strain.zero();          // Initialize strain to zero
-    stress.zero();          // Initialize stress to zero
-    strain_prev.zero();     // Initialize previous strain to zero
-    
-    elastic_strain.zero();      // Initialize elastic strain to zero
-    plastic_strain.zero();      // Initialize plastic strain to zero
-    eq_plastic_strain = 0.0;    // Initialize equivalent plastic strain to zero
-    
-    temperature = 0.0;      // Initialize temperature to reference value
-    damage = 0.0;           // Initialize damage to zero (undamaged state)
-    
-    // Initialize state variables if needed
-    state_vars.clear();
-    state_vars_prev.clear();
+    // Calculate infinitesimal strain: ε = 1/2(∇u + ∇u^T)
+    Matrix3d temp_strain = 0.5 * (gradU + gradU.transpose());
+    // Convert to symmetric tensor
+    strain = temp_strain.sym();
 }
 
-void SmallDefMaterialPointData::Update(const FETimeInfo& timeInfo)
+void SmallDefMaterialPointData::commit()
 {
-    RgMaterialPointData::Update(timeInfo);
-    
-    // Update any time-dependent state variables here
-    // For small deformation, we might update strain_prev from strain
-    // and update state variable history
     strain_prev = strain;
-    state_vars_prev = state_vars;
+    stress_prev = stress;
+    ivar_committed = ivar_trial;
 }
 
-void SmallDefMaterialPointData::Serialize(DumpStream& ar)
+void SmallDefMaterialPointData::revert()
 {
-    RgMaterialPointData::Serialize(ar);
+    strain = strain_prev;
+    stress = stress_prev;
+    ivar_trial = ivar_committed;
+}
+
+void SmallDefMaterialPointData::init()
+{
+    // Initialize to zero or identity as appropriate
+    Matrix3d zero_matrix(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Matrix3ds zero_sym_matrix(0, 0, 0, 0, 0, 0);  // xx, yy, zz, xy, yz, xz
     
-    // Serialize small deformation specific variables
-    ar & strain & stress & strain_prev;
-    ar & state_vars & state_vars_prev;
-    ar & elastic_strain & plastic_strain & eq_plastic_strain;
-    ar & temperature & damage;
+    gradU = zero_matrix;
+    strain = zero_sym_matrix;
+    strain_prev = zero_sym_matrix;
+    stress = zero_sym_matrix;
+    stress_prev = zero_sym_matrix;
+    C = tens4d(0);  // Initialize fourth-order tensor to zero
+    
+    ivar_committed.clear();
+    ivar_trial.clear();
+    
+    RgMaterialPointData::init();
+}
+
+void SmallDefMaterialPointData::update(const FETimeInfo& timeInfo)
+{
+    RgMaterialPointData::update(timeInfo);
+}
+
+void SmallDefMaterialPointData::serialize(DumpStream& ar)
+{
+    ar & gradU & strain & strain_prev & stress & stress_prev & ivar_committed & ivar_trial & C;
+    RgMaterialPointData::serialize(ar);
 }
 
 } // namespace SmallDef

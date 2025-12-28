@@ -5,8 +5,8 @@
 namespace RgFem {
 namespace SmallDef {
 
-RgElastoPlasticMaterialPoint::RgElastoPlasticMaterialPoint(MaterialPointData* mp) 
-    : MaterialPointData(mp), m_ep_bar(0.0), m_bPlastic(false), m_yield_stress(0.0)
+RgElastoPlasticMaterialPoint::RgElastoPlasticMaterialPoint(RgMaterialPointData* mp) 
+    : SmallDefMaterialPointData(mp), m_ep_bar(0.0), m_bPlastic(false), m_yield_stress(0.0)
 {
     // Initialize matrices to zero
     m_e.resize(6, 1);
@@ -22,10 +22,10 @@ RgElastoPlasticMaterialPoint::RgElastoPlasticMaterialPoint(MaterialPointData* mp
     m_stress.zero();
 }
 
-void RgElastoPlasticMaterialPoint::Init()
+void RgElastoPlasticMaterialPoint::init()
 {
     // Initialize base class
-    MaterialPointData::Init();
+    SmallDefMaterialPointData::init();
     
     // Reset all data
     m_e.zero();
@@ -37,7 +37,7 @@ void RgElastoPlasticMaterialPoint::Init()
     m_yield_stress = 0.0;
 }
 
-MaterialPointData* RgElastoPlasticMaterialPoint::copy()
+RgMaterialPointData* RgElastoPlasticMaterialPoint::copy()
 {
     return new RgElastoPlasticMaterialPoint(*this);
 }
@@ -45,7 +45,7 @@ MaterialPointData* RgElastoPlasticMaterialPoint::copy()
 void RgElastoPlasticMaterialPoint::serialize(DumpStream& ar)
 {
     // Serialize base class
-    MaterialPointData::serialize(ar);
+    RgMaterialPointData::serialize(ar);
     
     // Serialize plasticity data
     if (ar.isSaving()) {

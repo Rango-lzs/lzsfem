@@ -3,6 +3,7 @@
 #include "FEMesh.h"
 #include "tools.h"
 #include "log.h"
+#include "../Matrix/FEGlobalMatrix.h"
 
 BEGIN_META_CLASS(RgDomain, 0)
 	ADD_PROPERTY("name", &RgDomain::m_szname);
@@ -93,6 +94,19 @@ void RgDomain::PreSolveUpdate(const FETimeInfo& timeInfo)
 //-----------------------------------------------------------------------------
 void RgDomain::Activate()
 {
+}
+
+
+void RgDomain::BuildMatrixProfile(FEGlobalMatrix& M)
+{
+    std::vector<int> elm;
+    const int NE = Elements();
+    for (int j = 0; j < NE; ++j)
+    {
+        FEElement& el = ElementRef(j);
+        UnpackLM(el, elm);
+        M.build_add(elm);
+    }
 }
 
 //-----------------------------------------------------------------------------

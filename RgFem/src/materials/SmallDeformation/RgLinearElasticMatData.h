@@ -21,16 +21,16 @@ public:
     virtual ~RgLinearElasticMatData() = default;
 
     /// Initialize material point data
-    void Init() override;
+    void init() override;
 
     /// Update material point data
-    void Update(const FETimeInfo& timeInfo) override;
+    void update(const FETimeInfo& timeInfo) override;
 
     /// Copy material point data
-    RgMaterialPointData* Copy() override;
+    RgMaterialPointData* copy() override;
 
     /// Serialize material point data
-    void Serialize(DumpStream& ar) override;
+    void serialize(DumpStream& ar) override;
 
 public:
     // For linear elastic materials, we can reuse the basic small deformation

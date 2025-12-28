@@ -28,8 +28,8 @@ SOFTWARE.*/
 
 #pragma once
 #include "FEModelLoad.h"
-#include "femcore/Domain/FEDomain.h"
-#include "femcore/Domain/FEDomainList.h"
+#include "femcore/Domain/RgDomain.h"
+#include "femcore/Domain/RgDomainList.h"
 #include "FESurface.h"
 
 //-----------------------------------------------------------------------------
@@ -61,11 +61,11 @@ public:
 	FEDomain* Domain(int i);
 
 	//! add a domain to which to apply this load
-	void SetDomainList(FEElementSet* elset);
+	void SetDomainList(RgElementSet* elset);
 
 	//! get the domain list
-	FEDomainList& GetDomainList();
+	RgDomainList& GetDomainList();
     
 private:
-	FEDomainList	m_dom;	//!< list of domains to which to apply the body load
+	RgDomainList	m_dom;	//!< list of domains to which to apply the body load
 };

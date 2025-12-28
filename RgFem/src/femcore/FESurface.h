@@ -1,15 +1,14 @@
 #pragma once
 
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "datastructure/Matrix.h"
 #include "datastructure/Matrix2d.h"
 #include "datastructure/Vector2d.h"
 #include "FEDofList.h"
-#include "FEMeshPartition.h"
 #include "FENode.h"
 #include "FENodeSet.h"
-#include "elements/FESurfaceElement.h"
 #include "basicio/DumpStream.h"
+#include "elements/RgElement/RgSurfaceElement.h"
 
 //-----------------------------------------------------------------------------
 class FEMesh;
@@ -19,20 +18,20 @@ class FELinearSystem;
 class FEGlobalVector;
 
 //-----------------------------------------------------------------------------
-class FEM_EXPORT FESurfaceMaterialPoint : public FEMaterialPoint
+class FEM_EXPORT RgSurfaceMaterialPoint : public RgMaterialPoint
 {
 public:
     Vector3d dxr, dxs;  // tangent vectors at Material point
 
     // return the surface element
-    FESurfaceElement* SurfaceElement()
+    RgSurfaceElement* SurfaceElement()
     {
-        return (FESurfaceElement*)m_elem;
+        return (RgSurfaceElement*)m_elem;
     }
 
     void Serialize(DumpStream& ar) override
     {
-        FEMaterialPoint::Serialize(ar);
+        RgMaterialPoint::Serialize(ar);
         ar& dxr& dxs;
     }
 };
@@ -52,10 +51,10 @@ struct FEM_EXPORT FESurfaceDofShape
 // it the val vector. The size of the vector is determined by the field variable
 // that is being integrated and is already set when the integrand is called.
 // This is used in the FESurface::LoadVector function.
-typedef std::function<void(FESurfaceMaterialPoint& mp, const FESurfaceDofShape& node_a, std::vector<double>& val)>
+typedef std::function<void(RgSurfaceMaterialPoint& mp, const FESurfaceDofShape& node_a, std::vector<double>& val)>
     FESurfaceVectorIntegrand;
 
-typedef std::function<void(FESurfaceMaterialPoint& mp, const FESurfaceDofShape& node_a, const FESurfaceDofShape& node_b,
+typedef std::function<void(RgSurfaceMaterialPoint& mp, const FESurfaceDofShape& node_a, const FESurfaceDofShape& node_b,
                            Matrix& val)>
     FESurfaceMatrixIntegrand;
 
@@ -65,16 +64,16 @@ typedef std::function<void(FESurfaceMaterialPoint& mp, const FESurfaceDofShape& 
 //! This class implements the basic functionality for an FE surface.
 //! More specialized surfaces are derived from this class
 
-class FEM_EXPORT FESurface : public FEMeshPartition
+class FEM_EXPORT RgSurfaceDomain : public RgDomain
 {
-    DECLARE_META_CLASS(FESurface, FEMeshPartition);
+    DECLARE_META_CLASS(RgSurfaceDomain, RgDomain);
 
 public:
     //! default constructor
-    FESurface();
+    RgSurfaceDomain();
 
     //! destructor
-    virtual ~FESurface();
+    virtual ~RgSurfaceDomain();
 
     //! initialize surface data structure
     bool Init() override;
@@ -90,7 +89,7 @@ public:
     void Serialize(DumpStream& ar) override;
 
     //! unpack an LM vector from a dof list
-    void UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, std::vector<int>& lm);
+    void UnpackLM(const RgSurfaceElement& el, const FEDofList& dofList, std::vector<int>& lm);
 
     //! Extract a node set from this surface
     FENodeList GetNodeList();
@@ -113,97 +112,97 @@ public:
     }
 
     //! return an element of the surface
-    FESurfaceElement& Element(int i)
+    RgSurfaceElement& Element(int i)
     {
         return *m_el[i];
     }
 
     //! return an element of the surface
-    const FESurfaceElement& Element(int i) const
+    const RgSurfaceElement& Element(int i) const
     {
         return *m_el[i];
     }
 
     //! returns reference to element
-    FEElement& ElementRef(int n) override
+    RgElement& ElementRef(int n)
     {
         return *m_el[n];
     }
-    const FEElement& ElementRef(int n) const override
+    const RgElement& ElementRef(int n) const
     {
         return *m_el[n];
     }
 
     //! find the solid or shell element of a surface element
-    FEElement* FindElement(FESurfaceElement& el);
+    RgElement* FindElement(RgSurfaceElement& el);
 
     //! for interface surfaces, find the index of both solid elements
     //! on either side of the interface
-    void FindElements(FESurfaceElement& el);
+    void FindElements(RgSurfaceElement& el);
 
     //! loop over all elements
-    void ForEachSurfaceElement(std::function<void(FESurfaceElement& el)> f);
+    void ForEachSurfaceElement(std::function<void(RgSurfaceElement& el)> f);
 
 public:
     // Create Material point data for this surface
     virtual FEMaterialPoint* CreateMaterialPoint();
 
     // update surface data
-    void Update(const FETimeInfo& tp) override;
+    //void update(const FETimeInfo& tp) override;
 
 public:
     //! Project a node onto a surface element
-    Vector3d ProjectToSurface(FESurfaceElement& el, Vector3d x, double& r, double& s);
+    Vector3d ProjectToSurface(RgSurfaceElement& el, Vector3d x, double& r, double& s);
 
     //! check to see if a point is on element
-    bool IsInsideElement(FESurfaceElement& el, double r, double s, double tol = 0);
+    bool IsInsideElement(RgSurfaceElement& el, double r, double s, double tol = 0);
 
     //! See if a ray intersects an element
-    bool Intersect(FESurfaceElement& el, Vector3d r, Vector3d n, double rs[2], double& g, double eps);
+    bool Intersect(RgSurfaceElement& el, Vector3d r, Vector3d n, double rs[2], double& g, double eps);
 
     //! Invert the surface
     void Invert();
 
     //! Get the spatial position given natural coordinates
-    Vector3d Position(FESurfaceElement& el, double r, double s);
+    Vector3d Position(RgSurfaceElement& el, double r, double s);
 
     //! Get the spatial position of an integration point
-    Vector3d Position(FESurfaceElement& el, int n);
+    Vector3d Position(RgSurfaceElement& el, int n);
 
     //! Get the nodal coordinates of an element
-    void NodalCoordinates(FESurfaceElement& el, Vector3d* re);
+    void NodalCoordinates(RgSurfaceElement& el, Vector3d* re);
 
     //! Determine if a face on this surface is pointing away or into a specified element
-    double FacePointing(FESurfaceElement& se, FEElement& el);
+    double FacePointing(RgSurfaceElement& se, RgElement& el);
 
 
 public:
     //! calculate the reference surface area of a surface element
-    double FaceArea(FESurfaceElement& el);
+    double FaceArea(RgSurfaceElement& el);
 
     //! calculate the current surface area of a surface element
-    double CurrentFaceArea(FESurfaceElement& el);
+    double CurrentFaceArea(RgSurfaceElement& el);
 
     //! return the max element size
     double MaxElementSize();
 
     //! calculate the metric tensor in the current configuration
-    Matrix2d Metric(FESurfaceElement& el, double r, double s);
+    Matrix2d Metric(RgSurfaceElement& el, double r, double s);
 
     //! calculate the metric tensor at an integration point
-    Matrix2d Metric(const FESurfaceElement& el, int n) const;
+    Matrix2d Metric(const RgSurfaceElement& el, int n) const;
 
     //! calculate the metric tensor at an integration point at previous time
-    Matrix2d MetricP(FESurfaceElement& el, int n);
+    Matrix2d MetricP(RgSurfaceElement& el, int n);
 
     //! calculate the metric tensor in the reference configuration
-    Matrix2d Metric0(FESurfaceElement& el, double r, double s);
+    Matrix2d Metric0(RgSurfaceElement& el, double r, double s);
 
     //! calculate the surface normal
-    Vector3d SurfaceNormal(FESurfaceElement& el, double r, double s) const;
+    Vector3d SurfaceNormal(RgSurfaceElement& el, double r, double s) const;
 
     //! calculate the surface normal at an integration point
-    Vector3d SurfaceNormal(const FESurfaceElement& el, int n) const;
+    Vector3d SurfaceNormal(const RgSurfaceElement& el, int n) const;
 
     //! calculate the nodal normals
     void UpdateNodeNormals();
@@ -215,53 +214,53 @@ public:
     }
 
     //! calculate the global position of a point on the surface
-    Vector3d Local2Global(FESurfaceElement& el, double r, double s);
+    Vector3d Local2Global(RgSurfaceElement& el, double r, double s);
 
     //! calculate the global position of an integration point
-    Vector3d Local2Global(FESurfaceElement& el, int n);
+    Vector3d Local2Global(RgSurfaceElement& el, int n);
 
     //! calculate the global position of a point on the surface at previous time
-    Vector3d Local2GlobalP(FESurfaceElement& el, double r, double s);
+    Vector3d Local2GlobalP(RgSurfaceElement& el, double r, double s);
 
     //! calculate the global position of an integration point at previous time
-    Vector3d Local2GlobalP(FESurfaceElement& el, int n);
+    Vector3d Local2GlobalP(RgSurfaceElement& el, int n);
 
     //! calculates the covariant base vectors of a surface at an integration point
-    void CoBaseVectors(const FESurfaceElement& el, int j, Vector3d t[2]) const;
+    void CoBaseVectors(const RgSurfaceElement& el, int j, Vector3d t[2]) const;
 
     //! calculates the covariant base vectors of a surface
-    void CoBaseVectors(FESurfaceElement& el, double r, double s, Vector3d t[2]);
+    void CoBaseVectors(RgSurfaceElement& el, double r, double s, Vector3d t[2]);
 
     //! calculates covariant base vectors of a surface
-    void CoBaseVectors0(FESurfaceElement& el, double r, double s, Vector3d t[2]);
+    void CoBaseVectors0(RgSurfaceElement& el, double r, double s, Vector3d t[2]);
 
     //! calculates the covariant base vectors of a surface at an integration point at previoust time step
-    void CoBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2]);
+    void CoBaseVectorsP(RgSurfaceElement& el, int j, Vector3d t[2]);
 
     //! calculates contravariant base vectors of a surface  at an integration point
-    void ContraBaseVectors(const FESurfaceElement& el, int j, Vector3d t[2]) const;
+    void ContraBaseVectors(const RgSurfaceElement& el, int j, Vector3d t[2]) const;
 
     //! calculates the contravariant base vectors of a surface at an integration point at previoust time step
-    void ContraBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2]);
+    void ContraBaseVectorsP(RgSurfaceElement& el, int j, Vector3d t[2]);
 
     //! calculates the parametric derivatives of covariant basis of a surface  at an integration point
-    void CoBaseVectorDerivatives(const FESurfaceElement& el, int j, Vector3d dg[2][2]) const;
+    void CoBaseVectorDerivatives(const RgSurfaceElement& el, int j, Vector3d dg[2][2]) const;
 
     //! calculates the the parametric derivatives of covariant basis of a surface at an integration point at previoust
     //! time step
-    void CoBaseVectorDerivativesP(FESurfaceElement& el, int j, Vector3d dg[2][2]);
+    void CoBaseVectorDerivativesP(RgSurfaceElement& el, int j, Vector3d dg[2][2]);
 
     //! calculates contravariant base vectors of a surface
-    void ContraBaseVectors(FESurfaceElement& el, double r, double s, Vector3d t[2]);
+    void ContraBaseVectors(RgSurfaceElement& el, double r, double s, Vector3d t[2]);
 
     //! calculates contravariant base vectors of a surface
-    void ContraBaseVectors0(FESurfaceElement& el, double r, double s, Vector3d t[2]);
+    void ContraBaseVectors0(RgSurfaceElement& el, double r, double s, Vector3d t[2]);
 
     //! Jacobian in reference configuration for integration point n
-    double jac0(FESurfaceElement& el, int n);
+    double jac0(RgSurfaceElement& el, int n);
 
     //! Jacobian in reference configuration for integration point n (and returns normal)
-    double jac0(const FESurfaceElement& el, int n, Vector3d& nu);
+    double jac0(const RgSurfaceElement& el, int n, Vector3d& nu);
 
     //! Interface status
     void SetInterfaceStatus(const bool bitfc)
@@ -281,13 +280,13 @@ public:
 
 public:
     // Get nodal reference coordinates
-    void GetReferenceNodalCoordinates(FESurfaceElement& el, Vector3d* r0);
+    void GetReferenceNodalCoordinates(RgSurfaceElement& el, Vector3d* r0);
 
     // Get current coordinates
-    void GetNodalCoordinates(FESurfaceElement& el, Vector3d* rt);
+    void GetNodalCoordinates(RgSurfaceElement& el, Vector3d* rt);
 
     // Get current coordinates at intermediate configuration
-    void GetNodalCoordinates(FESurfaceElement& el, double alpha, Vector3d* rt);
+    void GetNodalCoordinates(RgSurfaceElement& el, double alpha, Vector3d* rt);
 
     // Get the shell bottom flag
     bool IsShellBottom() const
@@ -303,7 +302,7 @@ public:
 
 public:
     // Evaluate field variables
-    double Evaluate(FESurfaceMaterialPoint& mp, int dof);
+    double Evaluate(RgSurfaceMaterialPoint& mp, int dof);
     double Evaluate(int nface, int dof);
 
 public:
@@ -325,7 +324,7 @@ public:
 
 protected:
     FEFacetSet* m_surf;             //!< the facet set from which this surface is built
-    std::vector<FESurfaceElement*> m_el;  //!< surface elements
+    std::vector<RgSurfaceElement*> m_el;  //!< surface elements
     std::vector<Vector3d> m_nn;          //!< node normals
     bool m_bitfc;                   //!< interface status
     double m_alpha;                 //!< intermediate time fraction

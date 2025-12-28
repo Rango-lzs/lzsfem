@@ -1,5 +1,5 @@
 #pragma once
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "femcore/FEBodyLoad.h"
 
 //-----------------------------------------------------------------------------

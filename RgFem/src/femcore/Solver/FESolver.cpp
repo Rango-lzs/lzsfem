@@ -224,7 +224,7 @@ void FESolver::BuildMatrixProfile(FEGlobalMatrix& G, bool breset)
         // Loop over all active domains
         for (int nd = 0; nd < mesh.Domains(); ++nd)
         {
-            FEDomain& d = mesh.Domain(nd);
+            RgDomain& d = mesh.Domain(nd);
             d.BuildMatrixProfile(G);
         }
 
@@ -485,8 +485,8 @@ bool FESolver::Augment()
     FEMesh& mesh = fem.GetMesh();
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FEDomain& dom = mesh.Domain(i);
-        bconv = dom.Augment(m_naug) && bconv;
+        //RgDomain& dom = mesh.Domain(i);
+        //bconv = dom.Augment(m_naug) && bconv;
     }
 
     fem.GetTime().augmentation++;

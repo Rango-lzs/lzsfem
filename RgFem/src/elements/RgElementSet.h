@@ -11,6 +11,7 @@
 class FEMesh;
 class DumpStream;
 class FEModel;
+class RgDomainList;
 
 //-----------------------------------------------------------------------------
 // This class defines a set of elements
@@ -50,8 +51,8 @@ public:
 	const std::vector<int>& GetElementIDList() const { return m_Elem; }
 
 	// get the domain list that generated the element set
-	RgDomainList& GetDomainList() { return m_dom; }
-	const RgDomainList& GetDomainList() const { return m_dom; }
+	RgDomainList* GetDomainList() { return m_dom; }
+	const RgDomainList* GetDomainList() const { return m_dom; }
 
 	// Get an element
 	FEElement& Element(int i);
@@ -73,7 +74,7 @@ private:
 protected:
 	std::vector<int>	m_Elem;		//!< list of elements' global ID
 
-	RgDomainList		m_dom;	//!< domain list that generated the element set
+	RgDomainList*		m_dom;	//!< domain list that generated the element set
 
 	// used for fast lookup in GetLocalIndex
 	std::vector<int>	m_LUT;

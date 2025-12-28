@@ -6,6 +6,9 @@
 #include "femcore/FETimeInfo.h"
 #include <vector>
 
+class RgMaterialPointData;
+class RgElement;
+
 //-----------------------------------------------------------------------------
 class FEM_EXPORT RgMaterialPoint
 {
@@ -36,7 +39,7 @@ public:
 	Vector3d		m_rt;		//!< current point position
 	double		m_J0;		//!< reference Jacobian
 	double		m_Jt;		//!< current Jacobian
-	FEElement* m_elem;		//!< Element where this material point is
+	RgElement* m_elem;		//!< Element where this material point is
 	int			m_index;	//!< local integration point index 
 
 	// pointer to element's shape function values
@@ -46,64 +49,17 @@ protected:
 	RgMaterialPointData* m_data;
 };
 
-//-----------------------------------------------------------------------------
-template <class T> inline T* RgMaterialPointData::ExtractData()
-{
-	// first see if this is the correct type
-	T* p = dynamic_cast<T*>(this);
-	if (p) return p;
-
-	// check all the child classes 
-	for (auto child : m_child) {
-		p = dynamic_cast<T*>(child);
-		if (p) return p;
-	}
-
-	// search up to parent
-	RgMaterialPointData* parent = m_parent;
-	while (parent) {
-		p = dynamic_cast<T*>(parent);
-		if (p) return p;
-		parent = parent->m_parent;
-	}
-
-	// Everything has failed. Material point data can not be found
-	return nullptr;
-}
 
 //-----------------------------------------------------------------------------
-template <class T> inline const T* RgMaterialPointData::ExtractData() const
-{
-	// first see if this is the correct type
-	const T* p = dynamic_cast<const T*>(this);
-	if (p) return p;
-
-	// check all the child classes 
-	for (auto child : m_child) {
-		p = dynamic_cast<const T*>(child);
-		if (p) return p;
-	}
-
-	// search up to parent
-	const RgMaterialPointData* parent = m_parent;
-	while (parent) {
-		p = dynamic_cast<const T*>(parent);
-		if (p) return p;
-		parent = parent->m_parent;
-	}
-
-	// Everything has failed. Material point data can not be found
-	return nullptr;
-}
-
-//-----------------------------------------------------------------------------
-template <class T> inline T* RgMaterialPoint::ExtractData()
+template <class T> 
+inline T* RgMaterialPoint::ExtractData()
 {
 	return (m_data ? m_data->ExtractData<T>() : nullptr);
 }
 
 //-----------------------------------------------------------------------------
-template <class T> inline const T* RgMaterialPoint::ExtractData() const
+template <class T> 
+inline const T* RgMaterialPoint::ExtractData() const
 {
 	return (m_data ? m_data->ExtractData<T>() : nullptr);
 }

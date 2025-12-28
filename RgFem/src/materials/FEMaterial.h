@@ -1,6 +1,6 @@
 #pragma once
-#include "femcore/Domain/FEDomainList.h"
-#include "femcore/Domain/FEDomainParameter.h"
+#include "femcore/Domain/RgDomainList.h"
+#include "femcore/Domain/RgDomainParameter.h"
 #include "femcore/FEModelComponent.h"
 #include "femcore/FEModelParam.h"
 #include "datastructure/Matrix3d.h"
@@ -60,12 +60,12 @@ public:
     void AddDomain(FEDomain* dom);
 
     //! get the domaint list
-    FEDomainList& GetDomainList()
+    RgDomainList& GetDomainList()
     {
         return m_domList;
     }
 
 private:
-    FEDomainList m_domList;                   //!< list of domains that use this material
+    RgDomainList m_domList;                   //!< list of domains that use this material
     DECLARE_PARAM_LIST();
 };

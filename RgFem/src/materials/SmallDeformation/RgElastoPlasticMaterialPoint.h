@@ -1,21 +1,22 @@
 #pragma once
 #include "materials/SmallDeformation/RgSmallDefMaterial.h"
 #include "datastructure/Matrix.h"
+#include "materials/RgMaterialPointData.h"
 
 namespace RgFem {
 namespace SmallDef {
 
 /// This class defines material point data for elastic-plastic materials.
-class RgElastoPlasticMaterialPoint : public MaterialPointData {
+class RgElastoPlasticMaterialPoint : public SmallDefMaterialPointData {
 public:
     //! constructor
-    RgElastoPlasticMaterialPoint(MaterialPointData* mp = nullptr);
+    RgElastoPlasticMaterialPoint(RgMaterialPointData* mp = nullptr);
 
     //! Initialize material point data
-    void Init() override;
+    void init() override;
 
     //! create a shallow copy
-    MaterialPointData* copy() override;
+    RgMaterialPointData* copy() override;
 
     //! serialize material point data
     void serialize(DumpStream& ar) override;

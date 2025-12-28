@@ -10,25 +10,25 @@ RgLinearElasticMatData::RgLinearElasticMatData(RgMaterialPointData* ppt)
     // The base SmallDef::SmallDefMaterialPointData already initializes strain, stress, etc.
 }
 
-void RgLinearElasticMatData::Init()
+void RgLinearElasticMatData::init()
 {
     // Call parent initialization which handles the basic fields
-    SmallDefMaterialPointData::Init();
+    SmallDefMaterialPointData::init();
     
     // For linear elastic materials, no additional initialization is required
     // as the base SmallDef::SmallDefMaterialPointData handles all necessary fields
 }
 
-void RgLinearElasticMatData::Update(const FETimeInfo& timeInfo)
+void RgLinearElasticMatData::update(const FETimeInfo& timeInfo)
 {
     // Call parent update
-    SmallDefMaterialPointData::Update(timeInfo);
+    SmallDefMaterialPointData::update(timeInfo);
     
     // For linear elastic materials, no special update behavior is needed
     // The base class handles updating of history-dependent variables
 }
 
-RgMaterialPointData* RgLinearElasticMatData::Copy()
+RgMaterialPointData* RgLinearElasticMatData::copy()
 {
     // Create a new instance of this class
     RgLinearElasticMatData* newData = new RgLinearElasticMatData(*this);
@@ -38,10 +38,10 @@ RgMaterialPointData* RgLinearElasticMatData::Copy()
     return newData;
 }
 
-void RgLinearElasticMatData::Serialize(DumpStream& ar)
+void RgLinearElasticMatData::serialize(DumpStream& ar)
 {
     // Serialize parent data
-    SmallDefMaterialPointData::Serialize(ar);
+    SmallDefMaterialPointData::serialize(ar);
     
     // For linear elastic materials, no additional serialization is needed
     // as all required data is handled by the base SmallDef::SmallDefMaterialPointData

@@ -1,63 +1,7 @@
 #include "materials/RgMaterialPoint.h"
 #include "basicio/DumpStream.h"
 #include <string.h>
-
-RgMaterialPointData::RgMaterialPointData(RgMaterialPointData* ppt)
-{
-	m_parent = nullptr;
-	if (ppt) {
-		ppt->addChild(this);
-	}
-}
-
-RgMaterialPointData::~RgMaterialPointData()
-{ 
-	// Clean up child data
-	for (auto child : m_child) {
-		delete child;
-	}
-	m_child.clear();
-}
-
-void RgMaterialPointData::setParent(RgMaterialPointData* pt)
-{
-	m_parent = pt;
-}
-
-void RgMaterialPointData::addChild(RgMaterialPointData* pt)
-{
-	if (pt != nullptr) {
-		m_child.push_back(pt);
-		pt->setParent(this);
-	}
-}
-
-void RgMaterialPointData::Init()
-{
-	// Initialize this data
-	// Then initialize all children
-	for (auto child : m_child) {
-		child->Init();
-	}
-}
-
-void RgMaterialPointData::Update(const FETimeInfo& timeInfo)
-{
-	// Update this data
-	// Then update all children
-	for (auto child : m_child) {
-		child->Update(timeInfo);
-	}
-}
-
-void RgMaterialPointData::Serialize(DumpStream& ar)
-{
-	// Serialize this data
-	// Then serialize all children
-	for (auto child : m_child) {
-		child->Serialize(ar);
-	}
-}
+#include "RgMaterialPointData.h"
 
 //=================================================================================================
 RgMaterialPoint::RgMaterialPoint(RgMaterialPointData* data)
@@ -82,7 +26,7 @@ RgMaterialPoint::~RgMaterialPoint()
 
 void RgMaterialPoint::Init()
 {
-	if (m_data) m_data->Init();
+	if (m_data) m_data->init();
 }
 
 RgMaterialPoint* RgMaterialPoint::Copy()
@@ -92,7 +36,7 @@ RgMaterialPoint* RgMaterialPoint::Copy()
 		// For a complete copy implementation, we would need to implement
 		// a deep copy of the data chain, but the base Copy() returns nullptr
 		// by default, so we respect that behavior here
-		RgMaterialPointData* copiedData = m_data->Copy();
+		RgMaterialPointData* copiedData = m_data->copy();
 		if (copiedData) {
 			mp->m_data = copiedData;
 		}
@@ -104,7 +48,7 @@ RgMaterialPoint* RgMaterialPoint::Copy()
 
 void RgMaterialPoint::Update(const FETimeInfo& timeInfo)
 {
-	if (m_data) m_data->Update(timeInfo);
+	if (m_data) m_data->update(timeInfo);
 }
 
 void RgMaterialPoint::Serialize(DumpStream& ar)
@@ -116,7 +60,7 @@ void RgMaterialPoint::Serialize(DumpStream& ar)
 		// Note: Serializing pointers directly might not be appropriate
 		// This would depend on the DumpStream implementation
 	}
-	if (m_data) m_data->Serialize(ar);
+	if (m_data) m_data->serialize(ar);
 }
 
 void RgMaterialPoint::Append(RgMaterialPointData* pt)
