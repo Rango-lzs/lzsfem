@@ -1,10 +1,12 @@
 #include "RgElasticAssembler.h"
-#include "FEModel.h"
-#include "FEGlobalVector.h"
-#include "FELinearSystem.h"
+#include "femcore/FEModel.h"
+#include "femcore/FEGlobalVector.h"
+#include "femcore/FELinearSystem.h"
 #include "elements/RgElement/RgSolidElement.h"
-#include "FENode.h"
-#include "tools.h"
+#include "femcore/FENode.h"
+#include "femcore/tools.h"
+#include "femcore/Matrix/FEGlobalMatrix.h"
+
 
 //-----------------------------------------------------------------------------
 RgElasticAssembler::RgElasticAssembler(FEModel* pfem) : RgAssembler(pfem), m_domain(nullptr)
@@ -15,7 +17,7 @@ RgElasticAssembler::RgElasticAssembler(FEModel* pfem) : RgAssembler(pfem), m_dom
 void RgElasticAssembler::InternalForces(FEGlobalVector& R)
 {
     // Clear the global vector
-    R.Zero();
+    //R.Zero();
     
     // Check if we have a domain
     if (!m_domain) return;
@@ -24,20 +26,20 @@ void RgElasticAssembler::InternalForces(FEGlobalVector& R)
     std::vector<int> lm;
     
     // Loop over all elements using domain's ForEachElement method
-    m_domain->ForEachElement([&](FEElement& el) {
+    m_domain->ForEachElement([&](RgElement& el) {
         // Cast to RgSolidElement
-        RgSolidElement* pse = dynamic_cast<RgSolidElement*>(&el);
-        if (pse) {
+        RgSolidElement* pElem = dynamic_cast<RgSolidElement*>(&el);
+        if (pElem) {
             // get the element force vector
             std::vector<double> fe;
-            fe.resize(pse->Dofs());
-            ElementInternalForce(*pse, fe);
+            fe.resize(pElem->dofs());
+            ElementInternalForce(*pElem, fe);
             
             // get the element's LM vector
-            UnpackLM(*pse, lm);
+            UnpackLM(*pElem, lm);
             
             // add element force vector to global force vector
-            R.Assemble(pse->m_node, lm, fe);
+            R.Assemble(pElem->getNodeIds(), lm, fe);
         }
     });
 }
@@ -52,20 +54,20 @@ void RgElasticAssembler::BodyForce(FEGlobalVector& R, FEBodyForce& bf)
     std::vector<int> lm;
     
     // Loop over all elements using domain's ForEachElement method
-    m_domain->ForEachElement([&](FEElement& el) {
+    m_domain->ForEachElement([&](RgElement& el) {
         // Cast to RgSolidElement
-        RgSolidElement* pse = dynamic_cast<RgSolidElement*>(&el);
-        if (pse) {
+        RgSolidElement* pElem = dynamic_cast<RgSolidElement*>(&el);
+        if (pElem) {
             // get the element force vector
             std::vector<double> fe;
-            fe.resize(pse->Dofs());
-            ElementBodyForce(bf, *pse, fe);
+            fe.resize(pElem->dofs());
+            ElementBodyForce(bf, *pElem, fe);
             
             // get the element's LM vector
-            UnpackLM(*pse, lm);
+            UnpackLM(*pElem, lm);
             
             // add element force vector to global force vector
-            R.Assemble(pse->m_node, lm, fe);
+            R.Assemble(pElem->getNodeIds(), lm, fe);
         }
     });
 }
@@ -74,7 +76,7 @@ void RgElasticAssembler::BodyForce(FEGlobalVector& R, FEBodyForce& bf)
 void RgElasticAssembler::InertialForces(FEGlobalVector& R, std::vector<double>& F)
 {
     // Clear the global vector
-    R.Zero();
+    //R.Zero();
     
     // Check if we have a domain
     if (!m_domain) return;
@@ -83,22 +85,22 @@ void RgElasticAssembler::InertialForces(FEGlobalVector& R, std::vector<double>& 
     std::vector<int> lm;
     
     // Loop over all elements using domain's ForEachElement method
-    m_domain->ForEachElement([&](FEElement& el) {
+    m_domain->ForEachElement([&](RgElement& el) {
         // Cast to RgSolidElement
-        RgSolidElement* pse = dynamic_cast<RgSolidElement*>(&el);
-        if (pse) {
+        RgSolidElement* pElem = dynamic_cast<RgSolidElement*>(&el);
+        if (pElem) {
             // get the element force vector
             std::vector<double> fe;
-            fe.resize(pse->Dofs());
+            fe.resize(pElem->dofs());
             
             // Note: This would require an additional virtual method in derived classes
             // to actually compute the inertial forces
             
             // get the element's LM vector
-            UnpackLM(*pse, lm);
+            UnpackLM(*pElem, lm);
             
             // add element force vector to global force vector
-            R.Assemble(pse->m_node, lm, fe);
+            R.Assemble(pElem->getNodeIds(), lm, fe);
         }
     });
 }
@@ -113,16 +115,16 @@ void RgElasticAssembler::StiffnessMatrix(FELinearSystem& LS)
     std::vector<int> lm;
     
     // Loop over all elements using domain's ForEachElement method
-    m_domain->ForEachElement([&](FEElement& el) {
+    m_domain->ForEachElement([&](RgElement& el) {
         // Cast to RgSolidElement
-        RgSolidElement* pse = dynamic_cast<RgSolidElement*>(&el);
-        if (pse) {
+        RgSolidElement* pElem = dynamic_cast<RgSolidElement*>(&el);
+        if (pElem) {
             // element stiffness matrix
-            Matrix ke;
-            ElementStiffness(pse->GetID(), ke);
+            FEElementMatrix ke;
+            ElementStiffness(pElem->getId(), ke);
             
             // get the element's LM vector
-            UnpackLM(*pse, lm);
+            UnpackLM(*pElem, lm);
             ke.SetIndices(lm);
             
             // assemble element matrix in global stiffness matrix
@@ -144,18 +146,18 @@ void RgElasticAssembler::BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf)
     std::vector<int> lm;
     
     // Loop over all elements using domain's ForEachElement method
-    m_domain->ForEachElement([&](FEElement& el) {
+    m_domain->ForEachElement([&](RgElement& el) {
         // Cast to RgSolidElement
-        RgSolidElement* pse = dynamic_cast<RgSolidElement*>(&el);
-        if (pse) {
+        RgSolidElement* pElem = dynamic_cast<RgSolidElement*>(&el);
+        if (pElem) {
             // element stiffness matrix
-            Matrix ke;
-            ke.resize(pse->Dofs(), pse->Dofs());
+            FEElementMatrix ke;
+            ke.resize(pElem->dofs(), pElem->dofs());
             // Normally body force stiffness would be computed here
             ke.zero();
             
             // get the element's LM vector
-            UnpackLM(*pse, lm);
+            UnpackLM(*pElem, lm);
             ke.SetIndices(lm);
             
             // assemble element matrix in global stiffness matrix
@@ -174,16 +176,16 @@ void RgElasticAssembler::MassMatrix(FELinearSystem& LS, double scale)
     std::vector<int> lm;
     
     // Loop over all elements using domain's ForEachElement method
-    m_domain->ForEachElement([&](FEElement& el) {
+    m_domain->ForEachElement([&](RgElement& el) {
         // Cast to RgSolidElement
-        RgSolidElement* pse = dynamic_cast<RgSolidElement*>(&el);
-        if (pse) {
+        RgSolidElement* pElem = dynamic_cast<RgSolidElement*>(&el);
+        if (pElem) {
             // element mass matrix
-            Matrix ke;
-            ElementMassMatrix(pse->GetID(), ke, scale);
+            FEElementMatrix ke;
+            ElementMassMatrix(pElem->getId(), ke, scale);
             
             // get the element's LM vector
-            UnpackLM(*pse, lm);
+            UnpackLM(*pElem, lm);
             ke.SetIndices(lm);
             
             // assemble element matrix in global mass matrix

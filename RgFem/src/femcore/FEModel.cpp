@@ -4,7 +4,7 @@
 #include "basicio/DumpMemStream.h"
 #include "basicio/DumpStream.h"
 #include "basicio/FEPlotDataStore.h"
-#include "Domain/FEDomain.h"
+#include "Domain/RgDomain.h"
 #include "FEBoundaryCondition.h"
 #include "FEException.h"
 #include "FEGlobalData.h"
@@ -913,20 +913,20 @@ bool FEModel::InitMesh()
     // initialize all domains
     // Initialize shell domains first (in order to establish SSI)
     // TODO: I'd like to move the initialization of the SSI to InitShells, but I can't
-    //       do that because FESSIShellDomain::FindSSI depends on the FEDomain::m_Node array which is
-    //       initialized in FEDomain::Init.
+    //       do that because FESSIShellDomain::FindSSI depends on the RgDomain::m_Node array which is
+    //       initialized in RgDomain::Init.
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FEDomain& dom = mesh.Domain(i);
-        if (dom.Class() == FE_DOMAIN_SHELL)
+        RgDomain& dom = mesh.Domain(i);
+        if (dom.domType() == FE_DOMAIN_SHELL)
             if (dom.Init() == false)
                 return false;
     }
 
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FEDomain& dom = mesh.Domain(i);
-        if (dom.Class() != FE_DOMAIN_SHELL)
+        RgDomain& dom = mesh.Domain(i);
+        if (dom.domType() != FE_DOMAIN_SHELL)
             if (dom.Init() == false)
                 return false;
     }

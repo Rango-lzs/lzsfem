@@ -8,13 +8,6 @@
 namespace RgFem {
 namespace SmallDef {
 
-/// Material mode enum to distinguish between 3D, 2D plane stress and 2D plane strain
-enum class MaterialMode {
-    THREE_D,        ///< 3D analysis
-    PLANE_STRESS,   ///< 2D plane stress analysis
-    PLANE_STRAIN    ///< 2D plane strain analysis
-};
-
 /// Linear elastic material model for small strain analysis
 class RgLinearElastic : public RgSmallDefMaterial {
 private:
@@ -23,10 +16,9 @@ private:
     double m_lambda; ///< Lame's first parameter
     double m_mu;     ///< Lame's second parameter (shear modulus)
     Matrix m_Ce;     ///< Elastic matrix in Voigt notation (6x6)
-    MaterialMode m_materialMode; ///< Type of material mode (3D, plane stress, or plane strain)
 
 public:
-    RgLinearElastic(double E, double nu, MaterialMode mode = MaterialMode::THREE_D);
+    RgLinearElastic(double E, double nu);
 
     /// Create material point data
     RgMaterialPointData* createMaterialPointData() const override;
@@ -49,23 +41,17 @@ public:
     /// Set Poisson's ratio
     void setPoissonsRatio(double nu);
 
-    /// Set material mode
-    void setMaterialMode(MaterialMode mode);
-
     /// Get Young's modulus
     double getYoungsModulus() const;
 
     /// Get Poisson's ratio
     double getPoissonsRatio() const;
 
-    /// Get material mode
-    MaterialMode getMaterialMode() const;
-
 private:
     /// Update Lame parameters based on E and nu
     void updateLameParameters();
 
-    /// Compute elastic matrix based on material properties and material mode
+    /// Compute elastic matrix based on material properties
     void computeElasticMatrix();
 };
 

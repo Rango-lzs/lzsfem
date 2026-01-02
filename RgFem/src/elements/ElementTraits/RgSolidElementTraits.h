@@ -22,15 +22,6 @@
 // Forward declaration of the FEElement class
 class RgElement;
 class RgSolidElementShape;
-class RgSurfaceElementShape;
-
-namespace RgFem{
-
-    class NaturalCoord;
-
-}
-
-
 //=============================================================================
 //      S O L I D   E L E M E N T
 //
@@ -52,15 +43,15 @@ public:
     void init() override;
 
     // values of shape functions with size N
-    virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) = 0;
+    virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord);
 
     // values of shape function derivatives with size 3,N (2,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) = 0;
+    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord);
 
     // values of shape function second derivatives with size 6,N (3,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) = 0;
+    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord);
 
-    virtual void project_to_nodes(double* ai, double* ao) const {}
+    virtual void project_to_nodes(double* ai, double* ao) const;
 
     const RgFem::RgGaussPoint gaussPoint(int n);
 
@@ -79,7 +70,7 @@ public:
 
 //=============================================================================
 //! Base class for 8-node hexahedral elements
-class RgHex8_ : public RgSolidElementTraits
+class FEM_EXPORT RgHex8_ : public RgSolidElementTraits
 {
 public:
     enum { NELN = 8 };
@@ -94,7 +85,7 @@ public:
 //=============================================================================
 // 8-node hexahedral elements with 8-point gaussian quadrature
 //
-class RgHex8G8 : public RgHex8_
+class FEM_EXPORT RgHex8G8 : public RgHex8_
 {
 public:
     enum { NINT = 8 };
@@ -111,7 +102,7 @@ protected:
 //=============================================================================
 // 8-node hexahedral elements with 6-point reduced integration rule
 //
-class RgHex8RI : public RgHex8_
+class FEM_EXPORT RgHex8RI : public RgHex8_
 {
 public:
     enum { NINT = 6 };
@@ -125,7 +116,7 @@ public:
 //=============================================================================
 // 8-node hexahedral element with uniform deformation gradient
 
-class RgHex8G1 : public RgHex8_
+class FEM_EXPORT RgHex8G1 : public RgHex8_
 {
 public:
     enum { NINT = 1 };
@@ -138,7 +129,7 @@ public:
 
 //=============================================================================
 //! Base class for 4-node linear tetrahedrons
-class RgTet4_ : public RgSolidElementTraits
+class FEM_EXPORT RgTet4_ : public RgSolidElementTraits
 {
 public:
     enum { NELN = 4 };
@@ -152,7 +143,7 @@ public:
 
 //=============================================================================
 // single Gauss point integrated tet element
-class RgTet4G1 : public RgTet4_
+class FEM_EXPORT RgTet4G1 : public RgTet4_
 {
 public:
     enum { NINT = 1};
@@ -165,7 +156,7 @@ public:
 
 //=============================================================================
 // 4-node tetrahedral element using a 4-node Gaussian integration rule
-class RgTet4G4 : public RgTet4_
+class FEM_EXPORT RgTet4G4 : public RgTet4_
 {
 public:
     enum { NINT = 4 };
@@ -187,7 +178,7 @@ protected:
 
 //=============================================================================
 //! Base class for 6-node pentahedral "wedge" elements
-class RgPenta6_ : public RgSolidElementTraits
+class FEM_EXPORT RgPenta6_ : public RgSolidElementTraits
 {
 public:
     enum { NELN = 6 };
@@ -201,7 +192,7 @@ public:
 
 //=============================================================================
 // 6-node pentahedral elements with 6-point gaussian quadrature 
-class RgPenta6G6 : public RgPenta6_
+class FEM_EXPORT RgPenta6G6 : public RgPenta6_
 {
 public:
     enum { NINT = 6 };
@@ -223,7 +214,7 @@ protected:
 
 //=============================================================================
 //! Base class for 15-node quadratic pentahedral "wedge" elements
-class RgPenta15_ : public RgSolidElementTraits
+class FEM_EXPORT RgPenta15_ : public RgSolidElementTraits
 {
 public:
     enum { NELN = 15 };
@@ -237,7 +228,7 @@ public:
 
 //=============================================================================
 // 15-node pentahedral elements with 21-point gaussian quadrature 
-class RgPenta15G21 : public RgPenta15_
+class FEM_EXPORT RgPenta15G21 : public RgPenta15_
 {
 public:
     enum { NINT = 21 };
@@ -261,13 +252,13 @@ protected:
 
 //=============================================================================
 //! Base class for 20-node quadratic hexahedral element
-class RgHex20_ : public RgSolidElementTraits
+class FEM_EXPORT RgHex20_ : public RgSolidElementTraits
 {
 public:
     enum { NELN = 20 };
 
 public:
-    RgHex20_(int ni, ElementType et) : RgSolidElementTraits(ni, NELN, ET_HEX20, et){}
+    RgHex20_(int ni, ElementType et);
 
     //! initialize element traits data
     void init() override;
@@ -277,7 +268,7 @@ public:
 
 //=============================================================================
 // 20-node hexahedral element using a 2x2x2 Gaussian integration rule
-class RgHex20G8 : public RgHex20_
+class FEM_EXPORT RgHex20G8 : public RgHex20_
 {
 public:
     enum { NINT = 8 };
@@ -297,7 +288,7 @@ protected:
 
 //=============================================================================
 // 20-node hexahedral element using a 3x3x3 Gaussian integration rule
-class RgHex20G27 : public RgHex20_
+class FEM_EXPORT RgHex20G27 : public RgHex20_
 {
 public:
     enum { NINT = 27 };
@@ -323,7 +314,7 @@ protected:
 
 //=============================================================================
 //! Base class for 27-node quadratic hexahedral element
-class RgHex27_ : public RgSolidElementTraits
+class FEM_EXPORT RgHex27_ : public RgSolidElementTraits
 {
 public:
     enum { NELN = 27 };
@@ -334,7 +325,7 @@ public:
 
 //=============================================================================
 // 27-node hexahedral element using a 3x3x3 Gaussian integration rule
-class RgHex27G27 : public RgHex27_
+class FEM_EXPORT RgHex27G27 : public RgHex27_
 {
 public:
     enum { NINT = 27 };
@@ -356,7 +347,7 @@ protected:
 
 //=============================================================================
 //! Base class for 5-node pyramid element
-class RgPyra5_ : public RgSolidElementTraits
+class FEM_EXPORT RgPyra5_ : public RgSolidElementTraits
 {
 public:
     enum { NELN = 5 };
@@ -367,7 +358,7 @@ public:
 
 //=============================================================================
 // 5-node pyramid element using a 2x2x2 Gaussian integration rule
-class RgPyra5G8: public RgPyra5_
+class FEM_EXPORT RgPyra5G8: public RgPyra5_
 {
 public:
     enum { NINT = 8 };
@@ -389,7 +380,7 @@ protected:
 
 //=============================================================================
 //! Base class for 13-node pyramid element
-class RgPyra13_ : public RgSolidElementTraits
+class FEM_EXPORT RgPyra13_ : public RgSolidElementTraits
 {
 public:
     enum { NELN = 13 };
@@ -400,7 +391,7 @@ public:
 
 //=============================================================================
 // 13-node pyramid element using a 2x2x2 Gaussian integration rule
-class RgPyra13G8: public RgPyra13_
+class FEM_EXPORT RgPyra13G8: public RgPyra13_
 {
 public:
     enum { NINT = 8 };

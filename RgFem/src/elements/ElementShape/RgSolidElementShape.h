@@ -10,7 +10,9 @@ namespace RgFem
 
 //=============================================================================
 // Base class for defining element shape classes for (3D) solid elements
-// 只计算形状函数、以及形状函数对自然坐标的导数
+
+namespace RgFem {
+
 class RgSolidElementShape : public RgElementShape
 {
 public:
@@ -25,3 +27,5 @@ public:
     // values of shape function second derivatives with size 6,N (3,N for 2d)
     virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) {};
 };
+
+} // namespace RgFem

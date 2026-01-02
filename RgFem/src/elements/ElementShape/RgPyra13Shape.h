@@ -2,7 +2,9 @@
 #include "elements/ElementShape/RgElementShape.h"
 #include <stdexcept>
 
-class RgPyra13Shape : public RgElementShape
+namespace RgFem {
+
+class RgPyra13Shape : public RgSolidElementShape
 {
 public:
     RgPyra13Shape()
@@ -10,7 +12,9 @@ public:
     {
     }
 
-    std::vector<double> evalH(const NaturalCoord& coord) override;
-    std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
-    std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
+    std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+    std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
 };
+
+} // namespace RgFem

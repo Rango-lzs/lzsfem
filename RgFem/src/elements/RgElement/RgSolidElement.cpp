@@ -30,6 +30,11 @@ int RgSolidElement::dim()
     return 3;
 }
 
+int RgSolidElement::dofs() const
+{
+    return 3 * NodeSize();
+}
+
 RgFem::RgGaussPoint RgSolidElement::gaussPoint(int n) const
 {
     // Get the element traits for this element

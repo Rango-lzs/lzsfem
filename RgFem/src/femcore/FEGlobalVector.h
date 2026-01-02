@@ -19,7 +19,7 @@ public:
     virtual ~FEGlobalVector();
 
     //! Assemble the element vector into this global vector
-    virtual void Assemble(std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe, bool bdom = false);
+    virtual void Assemble(const std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe, bool bdom = false);
 
     //! Assemble into this global vector
     virtual void Assemble(std::vector<int>& lm, std::vector<double>& fe);

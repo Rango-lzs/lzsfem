@@ -5,6 +5,7 @@
 #include <functional>
 #include <assert.h>
 #include "femcore/FEObjectBase.h"
+#include "../Matrix/FEGlobalMatrix.h"
 
 //-----------------------------------------------------------------------------
 // forward declarations
@@ -19,8 +20,6 @@ class FELinearSystem;
 class FESolver;
 
 struct FETimeInfo;
-//-----------------------------------------------------------------------------
-typedef std::vector<RgElement*> ELEMENT_ITERATOR;
 
 //-----------------------------------------------------------------------------
 //! Base class for defining domains.
@@ -44,6 +43,8 @@ public:
 
 	//! Create domain data structures
 	virtual bool Create(int nsize, FE_Element_Spec espec) = 0;
+
+	virtual int domType() { return 1; }
 
 	//! return number of elements
 	virtual int Elements() const = 0;
@@ -97,9 +98,6 @@ public:
 
 	//! loop over all elements
 	virtual void ForEachElement(std::function<void(RgElement& el)> f);
-
-	//! return an element iterator
-	ELEMENT_ITERATOR GetElementIterator() { return ELEMENT_ITERATOR(); }
 
 public:
 	// --- S U B C L A S S   I N T E R F A C E ---

@@ -1,5 +1,40 @@
 
 #include "FESurfaceElementShape.h"
+#include "elements/NaturalCoord.h"
+#include <vector>
+
+// Implementation of the new virtual methods for FESurfaceElementShape
+std::vector<double> FESurfaceElementShape::evalH(const RgFem::NaturalCoord& coord)
+{
+    // Default implementation using the legacy interface
+    std::vector<double> result(this->nodes());
+    double r = coord.getR();
+    double s = coord.getS();
+    shape_fnc(result.data(), r, s);
+    return result;
+}
+
+std::vector<std::vector<double>> FESurfaceElementShape::evalDeriv(const RgFem::NaturalCoord& coord)
+{
+    // Default implementation using the legacy interface
+    int nNodes = this->nodes();
+    std::vector<std::vector<double>> result(2, std::vector<double>(nNodes)); // 2 for d/dr, d/ds
+    double r = coord.getR();
+    double s = coord.getS();
+    shape_deriv(result[0].data(), result[1].data(), r, s);
+    return result;
+}
+
+std::vector<std::vector<double>> FESurfaceElementShape::evalDeriv2(const RgFem::NaturalCoord& coord)
+{
+    // Default implementation using the legacy interface
+    int nNodes = this->nodes();
+    std::vector<std::vector<double>> result(3, std::vector<double>(nNodes)); // 3 for d2/dr2, d2/ds2, d2/drdt
+    double r = coord.getR();
+    double s = coord.getS();
+    shape_deriv2(result[0].data(), result[1].data(), result[2].data(), r, s);
+    return result;
+}
 
 //=============================================================================
 //              Q U A D 4

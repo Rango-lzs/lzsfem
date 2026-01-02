@@ -2,6 +2,8 @@
 #include "elements/ElementShape/RgSolidElementShape.h"
 #include <stdexcept>
 
+namespace RgFem {
+
 class RgHex20Shape : public RgSolidElementShape
 {
 public:
@@ -10,7 +12,9 @@ public:
     {
     }
 
-    std::vector<double> evalH(const NaturalCoord& coord) override;
-    std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
-    std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
+    std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+    std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
 };
+
+} // namespace RgFem

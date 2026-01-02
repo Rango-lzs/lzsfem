@@ -5,6 +5,6 @@ RgElementShape::RgElementShape(ElementShape shape, int nodes) : mShpType(shape),
 {
 }
 
-ElementShape::~RgElementShape() 
+RgElementShape::~RgElementShape()
 {
 }

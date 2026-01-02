@@ -7,7 +7,8 @@
 class FEGlobalVector;
 class FEBodyForce;
 class FELinearSystem;
-class FESolidElement;
+class RgSolidElement;
+class FEElementMatrix;
 
 //-----------------------------------------------------------------------------
 //! Interface class for elastic domain assemblers.
@@ -27,13 +28,13 @@ public:
 
 protected:
     // Virtual functions that derived classes must implement
-    virtual void ElementInternalForce(FESolidElement& el, std::vector<double>& fe) = 0;
-    virtual void ElementBodyForce(FEBodyForce& BF, FESolidElement& el, std::vector<double>& fe) = 0;
-    virtual void ElementStiffness(int iel, Matrix& ke) = 0;
-    virtual void ElementMassMatrix(int iel, Matrix& ke, double scale) = 0;
+    virtual void ElementInternalForce(RgSolidElement& el, std::vector<double>& fe) = 0;
+    virtual void ElementBodyForce(FEBodyForce& BF, RgSolidElement& el, std::vector<double>& fe) = 0;
+    virtual void ElementStiffness(int iel, FEElementMatrix& ke) = 0;
+    virtual void ElementMassMatrix(int iel, FEElementMatrix& ke, double scale) = 0;
     
     // Helper functions that derived classes can override
-    virtual void UnpackLM(FESolidElement& el, std::vector<int>& lm);
+    virtual void UnpackLM(RgSolidElement& el, std::vector<int>& lm);
     
 protected:
     // Data members

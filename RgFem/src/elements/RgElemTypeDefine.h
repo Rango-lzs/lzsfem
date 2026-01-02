@@ -34,7 +34,7 @@ enum ElementShape
     ET_PYRA5,
     ET_PYRA13,
 
-    // 2.5D elements
+    // 2D elements (plane , shell, surface)
     ET_QUAD4,
     ET_QUAD8,
     ET_QUAD9,

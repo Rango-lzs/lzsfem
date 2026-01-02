@@ -11,6 +11,7 @@ set(ELEMENT_TRAITS_HEADER
 set(ELEMENT_TRAITS_SOURCE
     elements/ElementTraits/RgElementTraits.cpp
     elements/ElementTraits/RgSolidElementTraits.cpp
+    elements/ElementTraits/RgShellElementTraits.cpp
     #PARENT_SCOPE
 )
 
@@ -24,16 +25,10 @@ set(ELEMENT_HEADERS
     elements/ElementShape/RgPyra5Shape.h
     elements/ElementShape/RgPyra13Shape.h
     elements/ElementShape/RgSolidElementShape.h
-    elements/ElementShape/RgSurfaceElementShape.h
+    elements/ElementShape/Rg2DElementShape.h
+    elements/ElementShape/Rg1DElementShape.h
     elements/ElementShape/RgTet4Shape.h
-    elements/ElementShape/RgTet10Shape.h
-    elements/ElementShape/FEHex27Shape.h
-    elements/ElementShape/FEPenta15Shape.h
-    elements/ElementShape/FEPenta6Shape.h
-    elements/ElementShape/FEPyra13Shape.h
-    elements/ElementShape/FEPyra5Shape.h
-    elements/ElementShape/FETet10Shape.h
-    elements/ElementShape/FETet4Shape.h
+    elements/ElementShape/RgTet10Shape.h  
     elements/ElementTraits/Rg2DElementTraits.h
     elements/ElementTraits/RgElementTraits.h
     elements/ElementTraits/RgShellElementTraits.h
@@ -97,17 +92,14 @@ set(ELEMENT_SOURCES
     elements/ElementShape/RgPyra5Shape.cpp
     elements/ElementShape/RgPyra13Shape.cpp
     elements/ElementShape/RgSolidElementShape.cpp
-    elements/ElementShape/RgSurfaceElementShape.cpp
+    elements/ElementShape/Rg2DElementShape.cpp
+    elements/ElementShape/Rg1DElementShape.cpp
     elements/ElementShape/RgTet4Shape.cpp
     elements/ElementShape/RgTet10Shape.cpp
-    elements/ElementShape/FEHex27Shape.cpp
-    elements/ElementShape/FEPenta15Shape.cpp
-    elements/ElementShape/FEPenta6Shape.cpp
-    elements/ElementShape/FEPyra13Shape.cpp
-    elements/ElementShape/FEPyra5Shape.cpp
-    elements/ElementShape/FETet10Shape.cpp
-    elements/ElementShape/FETet4Shape.cpp
     elements/ElementTraits/RgElementTraits.cpp
+    elements/ElementTraits/RgShellElementTraits.cpp
+    elements/ElementTraits/Rg2DElementTraits.cpp
+    elements/ElementTraits/RgSurfaceElementTraits.cpp
     elements/NaturalCoord.cpp
     elements/RgElemElemList.cpp
     elements/RgElementList.cpp

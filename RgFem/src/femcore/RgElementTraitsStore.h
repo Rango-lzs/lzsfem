@@ -5,7 +5,7 @@
 #include "elements/RgElemTypeDefine.h"
 
 // Forward declarations
-class FEElement;
+class RgElement;
 class RgElementTraits;
 
 //-----------------------------------------------------------------------------
@@ -21,7 +21,7 @@ public:
     static RgElementTraitsStore* GetInstance();
 
     //! Assign a traits class to an element
-    static void SetElementTraits(FEElement& el, int id);
+    void SetElementTraits(RgElement& el, int id);
 
     //! return element traits data
     RgElementTraits* GetElementTraits(int ntype);

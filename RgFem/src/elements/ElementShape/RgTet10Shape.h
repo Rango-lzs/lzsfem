@@ -1,16 +1,20 @@
 #pragma once
-#include "elements/ElementShape/RgElementShape.h"
+#include "elements/ElementShape/RgSolidElementShape.h"
 #include <stdexcept>
 
-class RgTet10Shape : public RgElementShape
+namespace RgFem {
+
+class RgTet10Shape : public RgSolidElementShape
 {
 public:
     RgTet10Shape()
-        : RgElementShape(ET_TET10, 10)
+        : RgSolidElementShape(ET_TET10, 10)
     {
     }
 
-    std::vector<double> evalH(const NaturalCoord& coord) override;
-    std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
-    std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
+    std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+    std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
 };
+
+} // namespace RgFem

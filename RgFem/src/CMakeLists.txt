@@ -36,7 +36,6 @@ endif()
 
 set(PROJECT_SOURCES "")
 
-
 # add app sources
 #set(APP_SOURCES "")
 #add_subdirectory(app)
@@ -63,6 +62,7 @@ set(APP_SOURCES
     app/RgFemApp.cpp
     app/main.cpp
 )
+
 
 set(PROJECT_SOURCES
     ${PROJECT_SOURCES}
@@ -91,8 +91,8 @@ set(FEMCORE_HEADERS
     femcore/Domain/RgDomainMap.h
     femcore/Domain/RgDomainParameter.h
     femcore/Domain/RgElasticAssembler.h
-    femcore/Domain/RgElasticDomain.h
-    femcore/Domain/RgElasticSolidDomain.h
+    #femcore/Domain/RgElasticDomain.h
+    #femcore/Domain/RgElasticSolidDomain.h
     #femcore/Domain/RgElasticShellDomain.h
     #femcore/Domain/RgElasticTrussDomain.h
     #femcore/Domain/RgLinearTrussDomain.h
@@ -286,8 +286,8 @@ set(FEMCORE_SOURCES
     femcore/Domain/RgDomainMap.cpp
     femcore/Domain/RgDomainParameter.cpp
     femcore/Domain/RgElasticAssembler.cpp
-    femcore/Domain/RgElasticDomain.cpp
-    femcore/Domain/RgElasticSolidDomain.cpp
+    #femcore/Domain/RgElasticDomain.cpp
+    #femcore/Domain/RgElasticSolidDomain.cpp
     #femcore/Domain/RgElasticShellDomain.cpp
     #femcore/Domain/RgElasticTrussDomain.cpp
     #femcore/Domain/RgLinearTrussDomain.cpp

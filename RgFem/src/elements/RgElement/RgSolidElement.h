@@ -26,6 +26,7 @@ public:
 
 	//! return spatial dimension (3 for 3D solids)
 	virtual int dim() = 0;
+    virtual int dofs() const;
 
     // n : the n-th gauss point
     virtual RgFem::RgGaussPoint gaussPoint(int n) const;

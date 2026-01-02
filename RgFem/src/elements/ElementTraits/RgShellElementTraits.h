@@ -14,13 +14,9 @@
 #include "datastructure/Vector3d.h"
 #include "datastructure/Matrix3d.h"
 #include "elements/RgElemTypeDefine.h"
+#include "elements/NaturalCoord.h"
 #include <vector>
-
-//-----------------------------------------------------------------------------
-// Forward declaration of the FEElement class
-class FEElement;
-class FESolidElementShape;
-class FESurfaceElementShape;
+#include "RgElementTraits.h"
 
 //=============================================================================
 //     S H E L L   E L E M E N T S
@@ -33,61 +29,51 @@ class FESurfaceElementShape;
 // This class defines the specific for shell elements and serves as a base class
 // for specific shell formulations
 //
-class FEShellElementTraits : public FEElementTraits
+class FEM_EXPORT RgShellElementTraits : public RgElementTraits
 {
 public:
-	FEShellElementTraits(int ni, int ne, ElementShape es, ElementType et);
+    RgShellElementTraits(int ni, int ne, ElementShape es, ElementType et);
 
-    void init();
+    void init() override;
     
-    //! values of shape functions
-    virtual void shape_fnc(double* H, double r, double s) = 0;
+    // values of shape functions with size N
+    virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+
+    // values of shape function derivatives with size 3,N (2,N for 2d)
+    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+
+    // values of shape function second derivatives with size 6,N (3,N for 2d)
+    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override ;
     
-    //! values of shape function derivatives
-    virtual void shape_deriv(double* Hr, double* Hs, double r, double s) = 0;
-    
-public:
-	// gauss-point coordinates and weights
-	std::vector<double> gr;
-	std::vector<double> gs;
-	std::vector<double> gt;
-	std::vector<double> gw;
+ protected:
 
 	// local derivatives of shape functions at gauss points
 	Matrix Hr, Hs;
-    
+    //Matrix Hrr, Hsr, Grs, Hss;
 };
 
 //=============================================================================
 // 4-node quadrilateral elements
 //
-class FEShellQuad4_ : public FEShellElementTraits
+class FEM_EXPORT RgShellQuad4_ : public RgShellElementTraits
 {
 public:
     enum { NELN = 4 };
     
 public:
-    FEShellQuad4_(int ni, ElementType et) : FEShellElementTraits(ni, NELN, ET_QUAD4, et) {}
-    
-public:
-    //! values of shape functions
-    void shape_fnc(double* H, double r, double s);
-    
-    //! values of shape function derivatives
-    void shape_deriv(double* Hr, double* Hs, double r, double s);
-    
+    RgShellQuad4_(int ni, ElementType et);   
 };
 
 //=============================================================================
 // 4-node quadrilateral elements with 4*2-point gaussian quadrature
 //
-class FEShellQuad4G8 : public FEShellQuad4_
+class FEM_EXPORT RgShellQuad4G8 : public RgShellQuad4_
 {
 public:
     enum { NINT = 8 };
     
 public:
-    FEShellQuad4G8();
+    RgShellQuad4G8();
     
     void project_to_nodes(double* ai, double* ao) const override;
     
@@ -101,13 +87,13 @@ protected:
 //=============================================================================
 // 4-node quadrilateral elements with 4*3-point gaussian quadrature
 //
-class FEShellQuad4G12 : public FEShellQuad4_
+class FEM_EXPORT RgShellQuad4G12 : public RgShellQuad4_
 {
 public:
     enum { NINT = 12 };
     
 public:
-    FEShellQuad4G12();
+    RgShellQuad4G12();
     
     void project_to_nodes(double* ai, double* ao) const override;
     
@@ -121,33 +107,25 @@ protected:
 //=============================================================================
 // 3-node triangular elements
 //
-class FEShellTri3_ : public FEShellElementTraits
+class FEM_EXPORT RgShellTri3_ : public RgShellElementTraits
 {
 public:
     enum { NELN = 3 };
     
 public:
-    FEShellTri3_(int ni, ElementType et) : FEShellElementTraits(ni, NELN, ET_TRI3, et) {}
-    
-public:
-    //! values of shape functions
-    void shape_fnc(double* H, double r, double s);
-    
-    //! values of shape function derivatives
-    void shape_deriv(double* Hr, double* Hs, double r, double s);
-    
+    RgShellTri3_(int ni, ElementType et);
 };
 
 //=============================================================================
 // 3-node triangular elements with 3*2-point gaussian quadrature
 //
-class FEShellTri3G6 : public FEShellTri3_
+class FEM_EXPORT RgShellTri3G6 : public RgShellTri3_
 {
 public:
     enum { NINT = 6 };
     
 public:
-    FEShellTri3G6();
+    RgShellTri3G6();
     
     void project_to_nodes(double* ai, double* ao) const override;
     
@@ -161,13 +139,13 @@ protected:
 //=============================================================================
 // 3-node triangular elements with 3*3-point gaussian quadrature
 //
-class FEShellTri3G9 : public FEShellTri3_
+class FEM_EXPORT RgShellTri3G9 : public RgShellTri3_
 {
 public:
     enum { NINT = 9 };
     
 public:
-    FEShellTri3G9();
+    RgShellTri3G9();
     
     void project_to_nodes(double* ai, double* ao) const override;
     
@@ -181,33 +159,25 @@ protected:
 //=============================================================================
 // 8-node quadrilateral elements
 //
-class FEShellQuad8_ : public FEShellElementTraits
+class FEM_EXPORT RgShellQuad8_ : public RgShellElementTraits
 {
 public:
     enum { NELN = 8 };
     
 public:
-    FEShellQuad8_(int ni, ElementType et) : FEShellElementTraits(ni, NELN, ET_QUAD8, et) {}
-    
-public:
-    //! values of shape functions
-    void shape_fnc(double* H, double r, double s);
-    
-    //! values of shape function derivatives
-    void shape_deriv(double* Hr, double* Hs, double r, double s);
-    
+    RgShellQuad8_(int ni, ElementType et);  
 };
 
 //=============================================================================
 // 8-node quadrilateral elements with 9*2-point gaussian quadrature
 //
-class FEShellQuad8G18 : public FEShellQuad8_
+class FEM_EXPORT RgShellQuad8G18 : public RgShellQuad8_
 {
 public:
     enum { NINT = 18 };
     
 public:
-    FEShellQuad8G18();
+    RgShellQuad8G18();
     
     void project_to_nodes(double* ai, double* ao) const override;
     
@@ -221,13 +191,13 @@ protected:
 //=============================================================================
 // 8-node quadrilateral elements with 9*3-point gaussian quadrature
 //
-class FEShellQuad8G27 : public FEShellQuad8_
+class FEM_EXPORT RgShellQuad8G27 : public RgShellQuad8_
 {
 public:
     enum { NINT = 27 };
     
 public:
-    FEShellQuad8G27();
+    RgShellQuad8G27();
     
     void project_to_nodes(double* ai, double* ao) const override;
     
@@ -241,33 +211,25 @@ protected:
 //=============================================================================
 // 6-node triangular elements
 //
-class FEShellTri6_ : public FEShellElementTraits
+class FEM_EXPORT RgShellTri6_ : public RgShellElementTraits
 {
 public:
     enum { NELN = 6 };
     
 public:
-    FEShellTri6_(int ni, ElementType et) : FEShellElementTraits(ni, NELN, ET_TRI6, et) {}
-    
-public:
-    //! values of shape functions
-    void shape_fnc(double* H, double r, double s);
-    
-    //! values of shape function derivatives
-    void shape_deriv(double* Hr, double* Hs, double r, double s);
-    
+    RgShellTri6_(int ni, ElementType et);       
 };
 
 //=============================================================================
 // 6-node triangular elements with 7*2-point gaussian quadrature
 //
-class FEShellTri6G14 : public FEShellTri6_
+class FEM_EXPORT RgShellTri6G14 : public RgShellTri6_
 {
 public:
     enum { NINT = 14 };
     
 public:
-    FEShellTri6G14();
+    RgShellTri6G14();
     
     void project_to_nodes(double* ai, double* ao) const override;
     
@@ -281,13 +243,13 @@ protected:
 //=============================================================================
 // 6-node triangular elements with 7*3-point gaussian quadrature
 //
-class FEShellTri6G21 : public FEShellTri6_
+class FEM_EXPORT RgShellTri6G21 : public RgShellTri6_
 {
 public:
     enum { NINT = 21 };
     
 public:
-    FEShellTri6G21();
+    RgShellTri6G21();
     
     void project_to_nodes(double* ai, double* ao) const override;
     
@@ -297,4 +259,3 @@ protected:
 
     Matrix m_Hi;	//!< inverse of H; useful for projection integr. point data to nodal data
 };
-

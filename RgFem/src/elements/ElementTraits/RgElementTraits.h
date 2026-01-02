@@ -9,28 +9,29 @@
 #pragma once
 
 #include "femcore/fem_export.h"
-
 #include "datastructure/Matrix.h"
 #include "datastructure/Vector3d.h"
 #include "datastructure/Matrix3d.h"
 #include "elements/RgElemTypeDefine.h"
 #include <vector>
+#include "elements/RgGaussPoint.h"
 
-//-----------------------------------------------------------------------------
-// Forward declaration of the FEElement class
-class FEElement;
-class FESolidElementShape;
-class FESurfaceElementShape;
+namespace RgFem
+{
+	class NaturalCoord;
+}
+
+class RgElementShape;
 
 //-----------------------------------------------------------------------------
 //! This class is the base class for all element trait's classes
-//! ¶¨Òåµ¥ÔªµÄÊôÐÔ(Traits)¡¢Àà±ð¡¢ÀàÐÍ¡¢ÐÎ×´º¯ÊýµÈ, »ý·Ö¹æÔò£¬´æ´¢ÐÎ×´º¯ÊýÔÚ¸ßË¹»ý·Öµã´¦µÄÖµ
-//! ElementTraitsºÍElementShapeÊÇÕë¶ÔÃ¿ÖÖµ¥ÔªÀàÐÍµÄµ¥Àý
+//! ï¿½ï¿½ï¿½åµ¥Ôªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(Traits)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¡ï¿½ï¿½ï¿½×´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ò£¬´æ´¢ï¿½ï¿½×´ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½Ë¹ï¿½ï¿½ï¿½Öµã´¦ï¿½ï¿½Öµ
+//! ElementTraitsï¿½ï¿½ElementShapeï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½Öµï¿½Ôªï¿½ï¿½ï¿½ÍµÄµï¿½ï¿½ï¿½
 //ElementSpecify
 class FEM_EXPORT RgElementTraits
 {
 public:
-	//! constructor , ni »ý·ÖµãÊý£¬ ne ½ÚµãÊý
+	//! constructor , ni ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ ne ï¿½Úµï¿½ï¿½ï¿½
 	RgElementTraits(int ni, int ne, ElementCategory c, ElementShape s, ElementType t);
 
 	//! destructor
@@ -47,11 +48,32 @@ public:
 
 	virtual int shapeSize() { return m_neln; }
 
+	virtual void project_to_nodes(double* ai, double* ao) const {}
+
 	int Faces() const { return m_faces; }
 
-public:
+	// values of shape functions with size N
+    virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) = 0;
+
+    // values of shape function derivatives with size 3,N (2,N for 2d)
+    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) = 0;
+
+    // values of shape function second derivatives with size 6,N (3,N for 2d)
+    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) = 0;
+
+protected:
+
+	//! function to allocate storage for integration point data
+	virtual void init() = 0;
+
 	int m_nint;	//!< number of integration points
 	int	m_neln;	//!< number of element nodes
+
+	// gauss-points
+    std::vector<RgFem::RgGaussPoint> gaussPoints;
+
+    // element shape class
+    RgElementShape* m_shape = nullptr;
 
 	Matrix m_H;	//!< shape function values at gausspoints.
 				//!< The first index refers to the gauss-point,
@@ -59,10 +81,8 @@ public:
 
 	FE_Element_Spec	m_spec;	//!< element specs
 
-protected:
 	// number of faces of element
 	int	m_faces;
 
-	//! function to allocate storage for integration point data
-	virtual void init() = 0;
+	
 };

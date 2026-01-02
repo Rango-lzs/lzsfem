@@ -2,7 +2,7 @@
 #include "femcore/Solver/FESolver.h"
 #include "FEStepComponent.h"
 #include "FEGlobalVector.h"
-#include "FEGlobalMatrix.h"
+#include "femcore/Matrix/FEGlobalMatrix.h"
 #include "FETimeInfo.h"
 #include <vector>
 

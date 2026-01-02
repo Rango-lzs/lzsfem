@@ -5,7 +5,7 @@
 //=============================================================================
 
 //=============================================================================
-class FETrussElementTraits : public FEElementTraits
+class RgTrussElementTraits : public RgElementTraits
 {
 public:
     enum
@@ -18,8 +18,8 @@ public:
     };
 
 public:
-    FETrussElementTraits()
-        : FEElementTraits(NINT, NELN, FE_ELEM_TRUSS, ET_TRUSS2, FE_TRUSS)
+    RgTrussElementTraits()
+        : RgElementTraits(NINT, NELN, FE_ELEM_TRUSS, ET_TRUSS2, FE_TRUSS)
     {
         init();
     }
@@ -34,7 +34,7 @@ public:
 //=============================================================================
 
 //=============================================================================
-class FEDiscreteElementTraits : public FEElementTraits
+class RgDiscreteElementTraits : public RgElementTraits
 {
 public:
     enum
@@ -47,8 +47,8 @@ public:
     };
 
 public:
-    FEDiscreteElementTraits()
-        : FEElementTraits(NINT, NELN, FE_ELEM_DISCRETE, ET_DISCRETE, FE_DISCRETE)
+    RgDiscreteElementTraits()
+        : RgElementTraits(NINT, NELN, FE_ELEM_DISCRETE, ET_DISCRETE, FE_DISCRETE)
     {
         init();
     }

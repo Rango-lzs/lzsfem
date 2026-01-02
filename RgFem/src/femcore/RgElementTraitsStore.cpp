@@ -23,14 +23,14 @@ RgElementTraitsStore* RgElementTraitsStore::GetInstance()
         m_pThis = new RgElementTraitsStore;
 
         // register element types
-        m_pThis->RegisterTraits(FE_HEX8G8, new FEHex8G8);
-        m_pThis->RegisterTraits(FE_HEX8RI, new FEHex8RI);
-        m_pThis->RegisterTraits(FE_HEX8G1, new FEHex8G1);
-        m_pThis->RegisterTraits(FE_TET4G1, new FETet4G1);
-        m_pThis->RegisterTraits(FE_TET4G4, new FETet4G4);
-        m_pThis->RegisterTraits(FE_TET5G4, new FETet5G4);
-        m_pThis->RegisterTraits(FE_PENTA6G6, new FEPenta6G6);
-        m_pThis->RegisterTraits(FE_TET10G1, new FETet10G1);
+        m_pThis->RegisterTraits(FE_HEX8G8, new RgHex8G8);
+        m_pThis->RegisterTraits(FE_HEX8RI, new RgHex8RI);
+        m_pThis->RegisterTraits(FE_HEX8G1, new RgHex8G1);
+        m_pThis->RegisterTraits(FE_TET4G1, new RgTet4G1);
+        m_pThis->RegisterTraits(FE_TET4G4, new RgTet4G4);
+        //m_pThis->RegisterTraits(FE_TET5G4, new RgTet5G4);
+        m_pThis->RegisterTraits(FE_PENTA6G6, new RgPenta6G6);
+        //m_pThis->RegisterTraits(FE_TET10G1, new RgTet10G1);
         m_pThis->RegisterTraits(FE_TET10G4, new FETet10G4);
         m_pThis->RegisterTraits(FE_TET10G8, new FETet10G8);
         m_pThis->RegisterTraits(FE_TET10GL11, new FETet10GL11);

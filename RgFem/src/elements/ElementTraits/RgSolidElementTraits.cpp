@@ -1,6 +1,5 @@
 #include "RgSolidElementTraits.h"
 #include "RgElementTraits.h"
-#include "elements/RgElementLibrary.h"
 #include <assert.h>
 #include <cmath>
 #include "../RgGaussPoint.h"
@@ -86,12 +85,12 @@ void RgSolidElementTraits::init()
     for (int n=0; n<m_nint; ++n)
     {
         RgFem::NaturalCoord coord(gaussPoints[n]);
-        auto result = m_shape->evalDeriv(coord);
+        auto result = m_shape->evalDeriv(coord); // result is {dN/dr, dN/ds, dN/dt}
         for (int i=0; i<m_neln; ++i)
         {
-            m_Gr[n][i] = result[n][i];
-            m_Gs[n][i] = result[n][i];
-            m_Gt[n][i] = result[n][i];
+            m_Gr[n][i] = result[0][i];
+            m_Gs[n][i] = result[1][i];
+            m_Gt[n][i] = result[2][i];
         }
     }
     
@@ -100,7 +99,7 @@ void RgSolidElementTraits::init()
     for (int n=0; n<m_nint; ++n)
     {
         RgFem::NaturalCoord coord(gaussPoints[n]);
-        auto result = m_shape->evalDeriv2(coord); // 6个导数分量 ， N个形函数,  注意顺序
+        auto result = m_shape->evalDeriv2(coord); // 6  N魏,  注顺
         for (int i=0; i<m_neln; ++i)
         {
             Grr[n][i] = result[0][i]; 
@@ -118,6 +117,35 @@ void RgSolidElementTraits::init()
             
         }
     }
+}
+
+std::vector<double> RgSolidElementTraits::evalH(const RgFem::NaturalCoord& coord)
+{
+    return m_shape->evalH(coord);
+}
+
+std::vector<std::vector<double>> RgSolidElementTraits::evalDeriv(const RgFem::NaturalCoord& coord)
+{
+    return m_shape->evalDeriv(coord);
+}
+
+std::vector<std::vector<double>> RgSolidElementTraits::evalDeriv2(const RgFem::NaturalCoord& coord)
+{
+    return m_shape->evalDeriv2(coord);
+}
+
+void RgSolidElementTraits::project_to_nodes(double* ai, double* ao) const
+{
+    // Default implementation is empty
+}
+
+const RgFem::RgGaussPoint RgSolidElementTraits::gaussPoint(int n)
+{
+    if (n >= 0 && n < static_cast<int>(gaussPoints.size())) {
+        return gaussPoints[n];
+    }
+    // Return a default constructed RgGaussPoint if index is out of bounds
+    return RgFem::RgGaussPoint();
 }
 
 //void RgSolidElementTraits::shape_fnc(double* H, double r, double s, double t)

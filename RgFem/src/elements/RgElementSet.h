@@ -55,8 +55,8 @@ public:
 	const RgDomainList* GetDomainList() const { return m_dom; }
 
 	// Get an element
-	FEElement& Element(int i);
-	const FEElement& Element(int i) const;
+	RgElement& Element(int i);
+	const RgElement& Element(int i) const;
 
 	// create node list from this element set
 	FENodeList GetNodeList() const;

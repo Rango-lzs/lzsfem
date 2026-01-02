@@ -1,16 +1,14 @@
 #include "RgDomain.h"
-#include "FEModel.h"
-#include "FEMesh.h"
-#include "tools.h"
-#include "log.h"
+#include "femcore/FEModel.h"
+#include "femcore/FEMesh.h"
+#include "femcore/FENode.h"
+#include "femcore/tools.h"
+#include "logger/log.h"
 #include "../Matrix/FEGlobalMatrix.h"
 
-BEGIN_META_CLASS(RgDomain, 0)
-	ADD_PROPERTY("name", &RgDomain::m_szname);
-END_META_CLASS();
 
 //-----------------------------------------------------------------------------
-RgDomain::RgDomain(FE_Domain_Class dclass, FEModel* pfem) : m_dclass(dclass), m_pfem(pfem)
+RgDomain::RgDomain(FEModel* pfem) : m_pfem(pfem)
 {
 	m_pMesh = 0;
 	m_pMat = 0;
@@ -23,13 +21,12 @@ RgDomain::~RgDomain()
 }
 
 //-----------------------------------------------------------------------------
-RgDomain::RgDomain(const RgDomain& d) : m_dclass(d.m_dclass), m_pfem(d.m_pfem)
+RgDomain::RgDomain(const RgDomain& d) : m_pfem(d.m_pfem)
 {
 	m_pMesh = d.m_pMesh;
 	m_pMat = d.m_pMat;
 	m_Node = d.m_Node;
 	m_lnode = d.m_lnode;
-	m_espec = d.m_espec;
 	m_szname = d.m_szname;
 }
 
@@ -40,8 +37,6 @@ RgDomain& RgDomain::operator = (const RgDomain& d)
 	m_pMat = d.m_pMat;
 	m_Node = d.m_Node;
 	m_lnode = d.m_lnode;
-	m_espec = d.m_espec;
-	m_dclass = d.m_dclass;
 	m_szname = d.m_szname;
 	return (*this);
 }
@@ -51,7 +46,7 @@ void RgDomain::Serialize(DumpStream& ar)
 {
 	if (ar.IsShallow()) return;
 
-	FECoreBase::Serialize(ar);
+	FEObjectBase::Serialize(ar);
 
 	if (ar.IsSaving())
 	{
@@ -67,7 +62,7 @@ void RgDomain::Serialize(DumpStream& ar)
 bool RgDomain::Init()
 {
 	// get the mesh
-	m_pMesh = m_pfem->GetMesh();
+	m_pMesh = &m_pfem->GetMesh();
 
 	// allocate node list
 	int NN = (int)m_lnode.size();
@@ -103,7 +98,7 @@ void RgDomain::BuildMatrixProfile(FEGlobalMatrix& M)
     const int NE = Elements();
     for (int j = 0; j < NE; ++j)
     {
-        FEElement& el = ElementRef(j);
+        RgElement& el = ElementRef(j);
         UnpackLM(el, elm);
         M.build_add(elm);
     }
@@ -116,12 +111,24 @@ void RgDomain::SetMaterial(FEMaterial* pmat)
 }
 
 //-----------------------------------------------------------------------------
-void RgDomain::ForEachElement(std::function<void(FEElement& el)> f)
+void RgDomain::ForEachElement(std::function<void(RgElement& el)> f)
 {
+    const int n = Elements();
+    for (int i = 0; i < n; ++i)
+    {
+        f(ElementRef(i));
+    }
 }
 
 //-----------------------------------------------------------------------------
 int RgDomain::GetTotalDofs()
 {
-	return 0;
+    int dofs = 0;
+    const int n = Nodes();
+    for (int i = 0; i < n; ++i)
+    {
+        FENode& node = Node(i);
+        dofs += node.dofSize();
+    }
+    return dofs;
 }
