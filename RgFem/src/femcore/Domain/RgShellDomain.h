@@ -19,10 +19,10 @@ public:
 
 	virtual int Elements() const = 0;
 
-	virtual FEElement& ElementRef(int n) = 0;
-	virtual const FEElement& ElementRef(int n) const = 0;
+	virtual RgElement& ElementRef(int n) = 0;
+	virtual const RgElement& ElementRef(int n) const = 0;
 
-	virtual void ForEachElement(std::function<void(FEElement& el)> f);
+	virtual void ForEachElement(std::function<void(RgElement& el)> f);
 
 	virtual void SetMaterial(FEMaterial* pmat);
 	
@@ -43,7 +43,7 @@ public:
 	virtual FEMaterial* GetMaterial();
 
 	//! Unpack shell element data
-	virtual void UnpackLM(FEElement& el, std::vector<int>& lm);
+	virtual void UnpackLM(RgElement& el, std::vector<int>& lm);
 
 	//! update the shell stresses
 	virtual void Update(const FETimeInfo& tp);

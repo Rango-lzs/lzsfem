@@ -4,7 +4,7 @@
 #include "femcore/fem_export.h"
 
 class FEMesh;
-class FEDomain;
+class RgDomain;
 
 //-----------------------------------------------------------------------------
 //! The FENodeNodeList class is a utility class that determines for each node 
@@ -26,7 +26,7 @@ public:
 	void Create(FEMesh& mesh);
 
 	//! create the node-node list for a domain
-	void Create(FEDomain& dom);
+	void Create(RgDomain& dom);
 
 	int Size() const { return (int) m_nval.size(); }
 

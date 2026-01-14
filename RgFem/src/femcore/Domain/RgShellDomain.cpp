@@ -11,7 +11,7 @@ RgShellDomain::RgShellDomain(FEModel* fem) : RgDomain(FE_DOMAIN_SHELL, fem)
 }
 
 //-----------------------------------------------------------------------------
-void RgShellDomain::ForEachElement(std::function<void(FEElement& el)> f)
+void RgShellDomain::ForEachElement(std::function<void(RgElement& el)> f)
 {
 	int NE = Elements();
 	for (int i = 0; i < NE; ++i) f(ElementRef(i));
@@ -51,7 +51,7 @@ FEMaterial* RgShellDomain::GetMaterial()
 }
 
 //-----------------------------------------------------------------------------
-void RgShellDomain::UnpackLM(FEElement& el, std::vector<int>& lm)
+void RgShellDomain::UnpackLM(RgElement& el, std::vector<int>& lm)
 {
 }
 

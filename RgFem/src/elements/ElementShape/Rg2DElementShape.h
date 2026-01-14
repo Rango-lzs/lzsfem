@@ -12,7 +12,7 @@ namespace RgFem
 
 //=============================================================================
 // Base class for defining element shape classes for (3D) solid elements
-namespace RgFem {
+
 
 class FEM_EXPORT Rg2DElementShape : public RgElementShape
 {
@@ -20,13 +20,13 @@ public:
 	Rg2DElementShape(ElementShape shape, int nodes) : RgElementShape(shape, nodes) {}
 
 	//values of shape functions with size N
-	virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+	virtual std::vector<double> evalH(const NaturalCoord& coord) override;
 
 	//values of shape function derivatives with size 2,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
 	//values of shape function second derivatives with size 3,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
 
     ElementShape shapeType() const
     {
@@ -51,13 +51,13 @@ public:
 	FEQuad4() : Rg2DElementShape(ET_QUAD4, 4) {}
 
 	//values of shape functions with size N
-	virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+	virtual std::vector<double> evalH(const NaturalCoord& coord) override;
 
 	//values of shape function derivatives with size 2,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
 	//values of shape function second derivatives with size 3,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
 };
 
 //=============================================================================
@@ -68,13 +68,13 @@ public:
 	FEQuad8() : Rg2DElementShape(ET_QUAD8, 8) {}
 
 	//values of shape functions with size N
-	virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+	virtual std::vector<double> evalH(const NaturalCoord& coord) override;
 
 	//values of shape function derivatives with size 2,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
 	//values of shape function second derivatives with size 3,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
 };
 
 //=============================================================================
@@ -85,13 +85,13 @@ public:
 	FEQuad9() : Rg2DElementShape(ET_QUAD9, 9) {}
 
 	//values of shape functions with size N
-	virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+	virtual std::vector<double> evalH(const NaturalCoord& coord) override;
 
 	//values of shape function derivatives with size 2,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
 	//values of shape function second derivatives with size 3,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
 };
 
 //=============================================================================
@@ -102,13 +102,13 @@ public:
 	FETri3() : Rg2DElementShape(ET_TRI3, 3) {}
 
 	//values of shape functions with size N
-	virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+	virtual std::vector<double> evalH(const NaturalCoord& coord) override;
 
 	//values of shape function derivatives with size 2,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
 	//values of shape function second derivatives with size 3,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
 };
 
 //=============================================================================
@@ -119,13 +119,13 @@ public:
 	FETri6() : Rg2DElementShape(ET_TRI6, 6) {}
 
 	//values of shape functions with size N
-	virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+	virtual std::vector<double> evalH(const NaturalCoord& coord) override;
 
 	//values of shape function derivatives with size 2,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
 	//values of shape function second derivatives with size 3,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
 };
 
 //=============================================================================
@@ -136,13 +136,13 @@ public:
 	FETri7() : Rg2DElementShape(ET_TRI7, 7) {}
 
 	//values of shape functions with size N
-	virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+	virtual std::vector<double> evalH(const NaturalCoord& coord) override;
 
 	//values of shape function derivatives with size 2,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
 	//values of shape function second derivatives with size 3,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
 };
 
 //=============================================================================
@@ -153,13 +153,12 @@ public:
 	FETri10() : Rg2DElementShape(ET_TRI10, 10) {}
 
 	//values of shape functions with size N
-	virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+	virtual std::vector<double> evalH(const NaturalCoord& coord) override;
 
 	//values of shape function derivatives with size 2,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
 	//values of shape function second derivatives with size 3,N (for 2D surface elements)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override;
 };
 
-} // namespace RgFem

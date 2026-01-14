@@ -5,7 +5,7 @@
 #include <array>
 #include <vector>
 
-namespace RgFem {
+
 
 // Forward declarations
 class RgMaterial;
@@ -125,6 +125,6 @@ private:
     double L3(double s) const { return s; }
 };
 
-} // namespace RgFem
+
 
 #endif // RGSHELL3ELEMENT_H

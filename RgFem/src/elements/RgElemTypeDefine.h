@@ -1,6 +1,6 @@
 #pragma once
 
-// 单元的类别
+// 鍏冪礌绫诲埆
 enum ElementCategory
 {
     FE_ELEM_INVALID_CLASS,
@@ -46,6 +46,8 @@ enum ElementShape
     // line elements
     ET_TRUSS2,
     ET_LINE2,
+    ET_LINE3,
+    ET_LINE4,  // Add 4-node line element shape
     ET_DISCRETE,
 
     FE_ELEM_INVALID_SHAPE = 999
@@ -154,9 +156,9 @@ enum SHELL_FORMULATION
 //! Helper class for creating domain classes.
 struct FE_Element_Spec
 {
-    ElementCategory eclass; //单元的类别
-    ElementShape eshape;    //单元形状
-    ElementType etype;      //单元类型
+    ElementCategory eclass; //鍏冪礌绫诲埆
+    ElementShape eshape;    //鍏冪礌褰㈢姸
+    ElementType etype;      //鍏冪礌绫诲瀷
     bool m_bthree_field;
     int m_shell_formulation;
     bool m_shell_norm_nodal;

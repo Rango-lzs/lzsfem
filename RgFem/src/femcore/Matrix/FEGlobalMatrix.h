@@ -8,7 +8,7 @@
 class FEModel;
 class FEMesh;
 class FESurface;
-class FEElement;
+class RgElement;
 
 //-----------------------------------------------------------------------------
 //! This class represents an element Matrix, i.e. a Matrix of values and the row and
@@ -19,13 +19,13 @@ public:
 	// default constructor
 	FEElementMatrix(){}
 	FEElementMatrix(int nr, int nc) : Matrix(nr, nc) {}
-	FEElementMatrix(const FEElement& el);
+	FEElementMatrix(const RgElement& el);
 
 	// constructor for symmetric matrices
-	FEElementMatrix(const FEElement& el, const std::vector<int>& lmi);
+	FEElementMatrix(const RgElement& el, const std::vector<int>& lmi);
 
 	// constructor
-	FEElementMatrix(const FEElement& el, std::vector<int>& lmi, std::vector<int>& lmj);
+	FEElementMatrix(const RgElement& el, std::vector<int>& lmi, std::vector<int>& lmj);
 
 	// copy constructor
 	FEElementMatrix(const FEElementMatrix& ke);

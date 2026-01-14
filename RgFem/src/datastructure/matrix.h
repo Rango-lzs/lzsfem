@@ -79,5 +79,8 @@ private:
 
 // 全局函数声明
 std::vector<double> FEM_EXPORT operator/(std::vector<double>& b, Matrix& m);
+
+Matrix FEM_EXPORT operator*(double a, Matrix& m);
+
 // 通过外积构造matrix m(i,j) = a(i)*a(j)
 Matrix FEM_EXPORT outer_product(std::vector<double>& a);

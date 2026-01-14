@@ -3,7 +3,7 @@
 #include "FEModel.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
 #include "basicio/DumpStream.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "FEGlobalMatrix.h"
 #include "femcore/RTTI/MetaClass.h"
 
@@ -128,10 +128,10 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 	// loop over all solid elements
 	for (int nd = 0; nd<pstep->Domains(); ++nd)
 	{
-		FEDomain& dom = *pstep->Domain(nd);
+		RgDomain& dom = *pstep->Domain(nd);
 		for (int i = 0; i<dom.Elements(); ++i)
 		{
-			FEElement& el = dom.ElementRef(i);
+			RgElement& el = dom.ElementRef(i);
 			dom.UnpackLM(el, elm);
 			int ne = (int)elm.size();
 

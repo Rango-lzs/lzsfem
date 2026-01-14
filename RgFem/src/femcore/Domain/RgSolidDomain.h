@@ -24,7 +24,7 @@ public:
 
 	virtual void ForEachElement(std::function<void(RgElement& el)> f);
 
-	virtual void SetMaterial(FEMaterial* pmat);
+	virtual void SetMaterial(RgMaterial* pmat);
 	
 	//! Initialize data
 	virtual bool Init();
@@ -40,7 +40,7 @@ public:
 
 public:
 	//! get the material
-	virtual FEMaterial* GetMaterial();
+	virtual RgMaterial* GetMaterial();
 
 	//! Unpack solid element data
 	virtual void UnpackLM(RgElement& el, std::vector<int>& lm);

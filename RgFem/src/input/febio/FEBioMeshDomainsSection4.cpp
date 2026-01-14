@@ -59,8 +59,8 @@ void FEBioMeshDomainsSection4::Parse(XMLTag& tag)
     FEMesh& mesh = fem.GetMesh();
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        FEDomain& dom = mesh.Domain(i);
-        dom.CreateMaterialPointData();
+        RgDomain& dom = mesh.Domain(i);
+        dom.CreateRgMaterialPointData();
     }
 
     // Now we can allocate the degrees of freedom.
@@ -156,7 +156,7 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
     FE_Element_Spec spec = partDomain->ElementSpec();
 
     // create the domain
-    FEDomain* dom = new FEElasticSolidDomain(GET_FEMODEL);
+    RgDomain* dom = new FEElasticSolidDomain(GET_FEMODEL);
     if (sztype)
     {
         // if the type attribute is defined, try to allocate the domain class directly.
@@ -207,7 +207,7 @@ void FEBioMeshDomainsSection4::ParseSolidDomainSection(XMLTag& tag)
     {
         const FEBModel::ELEMENT& domElement = partDomain->GetElement(j);
 
-        FEElement& el = dom->ElementRef(j);
+        RgElement& el = dom->ElementRef(j);
         el.setId(domElement.id);
 
         int ne = el.NodeSize();
@@ -272,7 +272,7 @@ void FEBioMeshDomainsSection4::ParseShellDomainSection(XMLTag& tag)
     FE_Element_Spec spec = partDomain->ElementSpec();
 
     // create the domain
-    FEDomain* dom = nullptr;
+    RgDomain* dom = nullptr;
     if (sztype)
     {
         // if the type attribute is defined, try to allocate the domain class directly.
@@ -393,7 +393,7 @@ void FEBioMeshDomainsSection4::ParseBeamDomainSection(XMLTag& tag)
     FE_Element_Spec spec = partDomain->ElementSpec();
 
     // create the domain
-    FEDomain* dom = nullptr;
+    RgDomain* dom = nullptr;
     if (sztype)
     {
         // if the type attribute is defined, try to allocate the domain class directly.
@@ -442,7 +442,7 @@ void FEBioMeshDomainsSection4::ParseBeamDomainSection(XMLTag& tag)
     {
         const FEBModel::ELEMENT& domElement = partDomain->GetElement(j);
 
-        FEElement& el = dom->ElementRef(j);
+        RgElement& el = dom->ElementRef(j);
         el.setId(domElement.id);
 
         // TODO: This assumes one-based indexing of all nodes!

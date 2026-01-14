@@ -2,7 +2,7 @@
 #include "RgMaterial.h"
 #include <cmath>
 
-namespace RgFem {
+
 
 RgNLTri3Element::RgNLTri3Element()
 {
@@ -279,4 +279,4 @@ double RgNLTri3Element::getElementArea() const
     return 0.5 * std::abs(evaluateJacobianDeterminant(0.0, 0.0, 0.0));
 }
 
-} // namespace RgFem
+

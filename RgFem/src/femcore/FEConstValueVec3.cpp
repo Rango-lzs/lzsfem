@@ -1,6 +1,6 @@
 #include "femcore/FEModel.h"
 #include "FEConstValueVec3.h"
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "FEMeshPartition.h"
 #include "FENode.h"
 #include "datastructure/quatd.h"
@@ -78,7 +78,7 @@ bool FEMathValueVec3::UpdateParams()
 	return Init();
 }
 
-Vector3d FEMathValueVec3::operator()(const FEMaterialPoint& pt)
+Vector3d FEMathValueVec3::operator()(const RgMaterialPoint& pt)
 {
 	/*double vx = m_math[0].value(GetFEModel(), pt);
 	double vy = m_math[1].value(GetFEModel(), pt);
@@ -111,7 +111,7 @@ void FEMappedValueVec3::setDataMap(FEDataMap* val, Vector3d scl)
 	m_val = val;
 }
 
-Vector3d FEMappedValueVec3::operator()(const FEMaterialPoint& pt)
+Vector3d FEMappedValueVec3::operator()(const RgMaterialPoint& pt)
 {
 	Vector3d r = m_val->valueVec3d(pt);
 	return Vector3d(r.x, r.y, r.z);
@@ -165,9 +165,9 @@ bool FELocalVectorGenerator::Init()
 	return FEVec3dValuator::Init();
 }
 
-Vector3d FELocalVectorGenerator::operator () (const FEMaterialPoint& mp)
+Vector3d FELocalVectorGenerator::operator () (const RgMaterialPoint& mp)
 {
-	FEElement* el = mp.m_elem; assert(el);
+	RgElement* el = mp.m_elem; assert(el);
 
 	FEMeshPartition* dom = el->GetMeshPartition();
 	Vector3d r0 = dom->Node(el->getLocNodeId(m_n[0]-1)).m_r0;
@@ -214,7 +214,7 @@ FEVec3dValuator* FESphericalVectorGenerator::copy()
 	return map;
 }
 
-Vector3d FESphericalVectorGenerator::operator () (const FEMaterialPoint& mp)
+Vector3d FESphericalVectorGenerator::operator () (const RgMaterialPoint& mp)
 {
 	Vector3d a = mp.m_r0 - m_center;
 	a.unit();
@@ -252,7 +252,7 @@ bool FECylindricalVectorGenerator::Init()
 	return true;
 }
 
-Vector3d FECylindricalVectorGenerator::operator () (const FEMaterialPoint& mp)
+Vector3d FECylindricalVectorGenerator::operator () (const RgMaterialPoint& mp)
 {
 	Vector3d p = mp.m_r0 - m_center;
 
@@ -294,7 +294,7 @@ FESphericalAnglesVectorGenerator::FESphericalAnglesVectorGenerator() : FEVec3dVa
 	m_phi = 90.0;
 }
 
-Vector3d FESphericalAnglesVectorGenerator::operator () (const FEMaterialPoint& mp)
+Vector3d FESphericalAnglesVectorGenerator::operator () (const RgMaterialPoint& mp)
 {
 	// convert from degress to radians
 	const double the = m_theta(mp)* PI / 180.;
@@ -326,7 +326,7 @@ FEUserVectorGenerator::FEUserVectorGenerator() : FEVec3dValuator()
 {
 }
 
-Vector3d FEUserVectorGenerator::operator () (const FEMaterialPoint& mp)
+Vector3d FEUserVectorGenerator::operator () (const RgMaterialPoint& mp)
 {
 	assert(false);
 	return Vector3d(0, 0, 0);

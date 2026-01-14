@@ -2,7 +2,7 @@
 #include "RgMaterial.h"
 #include <cmath>
 
-namespace RgFem {
+
 
 RgNLQuad4Element::RgNLQuad4Element()
 {
@@ -307,4 +307,4 @@ double RgNLQuad4Element::getElementArea() const
     return std::abs(area);
 }
 
-} // namespace RgFem
+

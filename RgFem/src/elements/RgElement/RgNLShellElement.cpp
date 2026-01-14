@@ -1,6 +1,6 @@
 #include "RgNLShellElement.h"
 
-namespace RgFem {
+
 
 RgNLShellElement::RgNLShellElement()
     : RgElement()
@@ -24,4 +24,4 @@ RgNLShellElement::~RgNLShellElement()
 {
 }
 
-} // namespace RgFem
+

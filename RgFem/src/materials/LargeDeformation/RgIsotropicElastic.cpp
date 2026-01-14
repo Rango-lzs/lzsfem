@@ -1,4 +1,4 @@
-#include "materials/FEIsotropicElastic.h"
+#include "materials/LargeDeformation/RgIsotropicElastic.h"
 #include "femcore/units.h"
 #include "femcore/FEParamValidator.h"
 
@@ -12,7 +12,7 @@ BEGIN_PARAM_DEFINE(FEIsotropicElastic, FEElasticMaterial)
 END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
-Matrix3ds FEIsotropicElastic::Stress(FEMaterialPoint& mp)
+Matrix3ds FEIsotropicElastic::Stress(RgMaterialPoint& mp)
 {
 	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
 
@@ -43,7 +43,7 @@ Matrix3ds FEIsotropicElastic::Stress(FEMaterialPoint& mp)
 }
 
 //-----------------------------------------------------------------------------
-tens4ds FEIsotropicElastic::Tangent(FEMaterialPoint& mp)
+tens4ds FEIsotropicElastic::Tangent(RgMaterialPoint& mp)
 {
 	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
 
@@ -65,7 +65,7 @@ tens4ds FEIsotropicElastic::Tangent(FEMaterialPoint& mp)
 }
 
 //-----------------------------------------------------------------------------
-double FEIsotropicElastic::StrainEnergyDensity(FEMaterialPoint& mp)
+double FEIsotropicElastic::StrainEnergyDensity(RgMaterialPoint& mp)
 {
 	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
 
@@ -86,7 +86,7 @@ double FEIsotropicElastic::StrainEnergyDensity(FEMaterialPoint& mp)
 }
 
 //-----------------------------------------------------------------------------
-Matrix3ds FEIsotropicElastic::PK2Stress(FEMaterialPoint& pt, const Matrix3ds E)
+Matrix3ds FEIsotropicElastic::PK2Stress(RgMaterialPoint& pt, const Matrix3ds E)
 {
 	double mE = m_E(pt);
 	double mv = m_v(pt);
@@ -105,7 +105,7 @@ Matrix3ds FEIsotropicElastic::PK2Stress(FEMaterialPoint& pt, const Matrix3ds E)
 }
 
 //-----------------------------------------------------------------------------
-tens4dmm FEIsotropicElastic::MaterialTangent(FEMaterialPoint& pt, const Matrix3ds E)
+tens4dmm FEIsotropicElastic::MaterialTangent(RgMaterialPoint& pt, const Matrix3ds E)
 {
 	double mE = m_E(pt);
 	double mv = m_v(pt);

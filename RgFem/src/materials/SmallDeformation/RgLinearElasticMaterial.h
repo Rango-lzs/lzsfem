@@ -5,7 +5,7 @@
 #include "datastructure/Matrix.h"
 #include "datastructure/tens4d.h"
 
-namespace RgFem {
+
 namespace SmallDef {
 
 /// Linear elastic material model for small strain analysis
@@ -21,7 +21,7 @@ public:
     RgLinearElastic(double E, double nu);
 
     /// Create material point data
-    RgMaterialPointData* createMaterialPointData() const override;
+    RgMaterialPointData* createRgMaterialPointData() const override;
 
     /// Compute constitutive response
     void computeConstitutive(RgMaterialPointData* mp, Matrix& D) override;
@@ -56,4 +56,3 @@ private:
 };
 
 } // namespace SmallDef
-} // namespace RgFem

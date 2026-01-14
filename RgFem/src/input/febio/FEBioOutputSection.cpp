@@ -197,7 +197,7 @@ void FEBioOutputSection::ParseLogfile(XMLTag &tag)
 			if (sz)
 			{
 				std::vector<int> dummy;
-				FEElementSet* pes = mesh.FindElementSet(sz);
+				RgElementSet* pes = mesh.FindElementSet(sz);
 				if (pes == 0) throw XMLReader::InvalidAttributeValue(tag, sztmp, sz);
 				pdr->SetItemList(pes, dummy);
 			}
@@ -355,7 +355,7 @@ void FEBioOutputSection::ParsePlotfile(XMLTag &tag)
 
 					// see if we can find the facet set
 					FEMesh& m = GetFEModel()->GetMesh();
-					FEElementSet* ps = m.FindElementSet(szeset);
+					RgElementSet* ps = m.FindElementSet(szeset);
 
 					// create a surface from the facet set
 					if (ps)

@@ -2,8 +2,6 @@
 
 #include "RgBeamElement.h"
 
-namespace RgFem {
-
 /**
  * @class RgLinearBeamElement
  * @brief Abstract base class for linear beam elements
@@ -45,5 +43,3 @@ public:
     /// F_int = integral of B^T * σ dV
     virtual void calculateInternalForceVector(RgVector& F) const override = 0;
 };
-
-} // namespace RgFem

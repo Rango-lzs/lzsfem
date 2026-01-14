@@ -2,7 +2,7 @@
 #include "datastructure/mathalg.h"
 #include <cmath>
 
-namespace RgFem {
+
 namespace SmallDef {
 
 RgElastoPlastic::RgElastoPlastic(double E, double nu, double sy, double H)
@@ -11,12 +11,12 @@ RgElastoPlastic::RgElastoPlastic(double E, double nu, double sy, double H)
     computeElasticMatrix();
 }
 
-MaterialPointData* RgElastoPlastic::createMaterialPointData() const
+RgMaterialPointData* RgElastoPlastic::createRgMaterialPointData() const
 {
     return new RgElastoPlasticMaterialPoint();
 }
 
-void RgElastoPlastic::computeConstitutive(MaterialPointData* mp, Matrix& D)
+void RgElastoPlastic::computeConstitutive(RgMaterialPointData* mp, Matrix& D)
 {
     // Cast to our specific material point type
     RgElastoPlasticMaterialPoint* ep_pt = dynamic_cast<RgElastoPlasticMaterialPoint*>(mp);
@@ -89,12 +89,12 @@ void RgElastoPlastic::computeConstitutive(MaterialPointData* mp, Matrix& D)
     }
 }
 
-void RgElastoPlastic::commitState(MaterialPointData* mp)
+void RgElastoPlastic::commitState(RgMaterialPointData* mp)
 {
     mp->commit();
 }
 
-void RgElastoPlastic::revertState(MaterialPointData* mp)
+void RgElastoPlastic::revertState(RgMaterialPointData* mp)
 {
     mp->revert();
 }
@@ -104,7 +104,7 @@ std::string RgElastoPlastic::getName() const
     return "RgElastoPlastic";
 }
 
-void RgElastoPlastic::updateState(MaterialPointData* mp, const Matrix& strainIncrement)
+void RgElastoPlastic::updateState(RgMaterialPointData* mp, const Matrix& strainIncrement)
 {
     // Cast to our specific material point type
     RgElastoPlasticMaterialPoint* ep_pt = dynamic_cast<RgElastoPlasticMaterialPoint*>(mp);
@@ -298,4 +298,3 @@ Matrix RgElastoPlastic::calculateDeviatoricStress(const Matrix& stress) const
 }
 
 } // namespace SmallDef
-} // namespace RgFem

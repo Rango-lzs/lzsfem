@@ -1,5 +1,5 @@
 #pragma once
-#include "RgElement.h"
+#include "elements/RgElement/RgStructureElement.h"
 
 
 //-----------------------------------------------------------------------------

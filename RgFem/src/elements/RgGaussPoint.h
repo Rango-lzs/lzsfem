@@ -3,7 +3,7 @@
 #include "datastructure/Vector3d.h"
 #include <vector>
 
-namespace RgFem {
+
 
 /**
  * @brief Represents a Gauss integration point in the finite element method
@@ -143,4 +143,3 @@ private:
     double m_weight;                  ///< Integration weight
 };
 
-} // namespace RgFem

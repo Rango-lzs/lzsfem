@@ -1,18 +1,14 @@
 #include "elements/ElementShape/RgTet4Shape.h"
 #include <vector>
-#include <stdexcept>
+#include "../NaturalCoord.h"
+
+
 
 std::vector<double> RgTet4Shape::evalH(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgTet4Shape requires NaturalCoord3d coordinates");
-    }
-    
-    double r = coord3d->getR();
-    double s = coord3d->getS();
-    double t = coord3d->getT();
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     
     std::vector<double> H(4);
     
@@ -26,11 +22,6 @@ std::vector<double> RgTet4Shape::evalH(const NaturalCoord& coord)
 
 std::vector<std::vector<double>> RgTet4Shape::evalDeriv(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgTet4Shape requires NaturalCoord3d coordinates");
-    }
     
     // Return derivatives in the format [dH/dr, dH/ds, dH/dt]
     // Each derivative is a vector of size 4 (one for each node)
@@ -50,11 +41,6 @@ std::vector<std::vector<double>> RgTet4Shape::evalDeriv(const NaturalCoord& coor
 
 std::vector<std::vector<double>> RgTet4Shape::evalDeriv2(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgTet4Shape requires NaturalCoord3d coordinates");
-    }
     
     // Return second derivatives in the format:
     // [d2H/dr2, d2H/ds2, d2H/dt2, d2H/drds, d2H/dsdt, d2H/drdt]

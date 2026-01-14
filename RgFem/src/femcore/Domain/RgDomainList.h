@@ -12,7 +12,7 @@ class FEM_EXPORT RgDomainList
 {
 public:
 	//! constructor
-	RgDomainList(FEModel* pfem);
+	RgDomainList();
 
 	//! destructor
 	~RgDomainList();
@@ -56,5 +56,4 @@ public:
 
 protected:
 	std::vector<RgDomain*>	m_Dom;
-	FEModel*		m_pfem;
 };

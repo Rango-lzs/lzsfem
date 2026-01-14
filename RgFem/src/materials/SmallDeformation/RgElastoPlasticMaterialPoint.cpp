@@ -2,11 +2,11 @@
 #include "basicio/DumpStream.h"
 #include <cassert>
 
-namespace RgFem {
+
 namespace SmallDef {
 
 RgElastoPlasticMaterialPoint::RgElastoPlasticMaterialPoint(RgMaterialPointData* mp) 
-    : SmallDefMaterialPointData(mp), m_ep_bar(0.0), m_bPlastic(false), m_yield_stress(0.0)
+    : SmallDefRgMaterialPointData(mp), m_ep_bar(0.0), m_bPlastic(false), m_yield_stress(0.0)
 {
     // Initialize matrices to zero
     m_e.resize(6, 1);
@@ -25,7 +25,7 @@ RgElastoPlasticMaterialPoint::RgElastoPlasticMaterialPoint(RgMaterialPointData* 
 void RgElastoPlasticMaterialPoint::init()
 {
     // Initialize base class
-    SmallDefMaterialPointData::init();
+    SmallDefRgMaterialPointData::init();
     
     // Reset all data
     m_e.zero();
@@ -118,4 +118,3 @@ void RgElastoPlasticMaterialPoint::setPlastic(bool plastic)
 }
 
 } // namespace SmallDef
-} // namespace RgFem

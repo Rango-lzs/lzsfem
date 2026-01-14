@@ -3,7 +3,7 @@
 #include "basicio/DumpStream.h"
 #include "FEMesh.h"
 #include "logger/log.h"
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 
 DEFINE_META_CLASS(FEPrescribedDOF, FEPrescribedNodeSet, "");
 
@@ -93,7 +93,7 @@ void FEPrescribedDOF::GetNodalValues(int n, std::vector<double>& val)
 	int nid = nset[n];
 	const FENode& node = *nset.Node(n);
 
-	FEMaterialPoint mp;
+	RgMaterialPoint mp;
 	mp.m_r0 = node.m_r0;
 	mp.m_index = n;
 

@@ -10,3 +10,8 @@ RgElementTraits::RgElementTraits(int ni, int ne, ElementCategory c, ElementShape
 	m_spec.etype  = t;
 	m_H.resize(ni, ne);
 }
+
+RgGaussPoint RgElementTraits::gaussPoint(int i) const
+{
+	return gaussPoints[i];
+}

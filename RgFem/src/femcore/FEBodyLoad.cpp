@@ -20,13 +20,13 @@ FEBodyLoad::~FEBodyLoad()
 bool FEBodyLoad::Init()
 {
 	// If the domain list is empty, add all the domains
-	if (m_dom.IsEmpty())
+	if (m_dom.Size() == 0)
 	{
 		FEMesh& mesh = GetMesh();
 		for (int i=0; i<mesh.Domains(); ++i)
 		{
-			FEDomain* dom = &mesh.Domain(i);
-			m_dom.AddDomain(dom);
+			RgDomain* dom = &mesh.Domain(i);
+			m_dom.Add(dom);
 		}
 	}
 	return FEModelLoad::Init();
@@ -35,19 +35,19 @@ bool FEBodyLoad::Init()
 //-----------------------------------------------------------------------------
 int FEBodyLoad::Domains() const
 {
-	return m_dom.Domains();
+	return m_dom.Size();
 }
 
 //-----------------------------------------------------------------------------
-FEDomain* FEBodyLoad::Domain(int i)
+RgDomain* FEBodyLoad::Domain(int i)
 {
-	return m_dom.GetDomain(i);
+	return m_dom.Get(i);
 }
 
 //-----------------------------------------------------------------------------
-void FEBodyLoad::SetDomainList(FEElementSet* elset)
+void FEBodyLoad::SetDomainList(RgElementSet* elset)
 {
-	m_dom = elset->GetDomainList();
+	m_dom = *elset->GetDomainList();
 
 	// add it to all the mapped parameters
 	FEParameterList& PL = GetParameterList();
@@ -74,7 +74,7 @@ void FEBodyLoad::SetDomainList(FEElementSet* elset)
 }
 
 // get the domain list
-FEDomainList& FEBodyLoad::GetDomainList()
+RgDomainList& FEBodyLoad::GetDomainList()
 { 
 	return m_dom; 
 }

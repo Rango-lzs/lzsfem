@@ -1,10 +1,6 @@
-  #pragma once
+#pragma once
 
-#include "datastructure/Matrix3d.h"
-#include "elements/FEElementLibrary.h"
-#include "elements/FEElementTraits.h"
-#include "elements/FEElementState.h"
-#include "elements/RgElement.h"
+#include "elements/RgElement/RgElement.h"
 #include "femcore/fem_export.h"
 
 #include <vector>
@@ -39,23 +35,25 @@ class DumpStream;
  * 4、
  */
 
-class FEM_EXPORT  RgStructureElement: public RgElement
+
+
+class FEM_EXPORT RgStructureElement: public RgElement
 {
 public:
     static constexpr int MAX_NODES = 28;
     static constexpr int MAX_INTPOINTS = 4;
 
-    FEElement();
-    virtual ~FEElement(){};
+    RgStructureElement();
+    virtual ~RgStructureElement(){};
 
-    FEElement(const FEElement& other) = default;
-    FEElement& operator=(const FEElement& other) = default;
+    RgStructureElement(const RgStructureElement& other) = default;
+    RgStructureElement& operator=(const RgStructureElement& other) = default;
 
-    // ��Ԫ���
+    // Ԫ
     int getId() const;
     void setId(int n);
 
-    // ���ϱ��
+    // ϱ
     int getMatId() const;
     void setMatId(int id);
 
@@ -214,3 +212,5 @@ protected:
     FEElementState m_state;
     FEElementTraits* m_pTraits;  //!< pointer to element traits
 };
+
+

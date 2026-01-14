@@ -1,38 +1,35 @@
 #include "femcore/FESurface.h"
 #include "femcore/FEMesh.h"
-#include "femcore/Domain/FESolidDomain.h"
-#include "elements/FEElemElemList.h"
+#include "femcore/Domain/RgSolidDomain.h"
+#include "elements/RgElemElemList.h"
 #include "basicio/DumpStream.h"
 #include "datastructure/Matrix.h"
 #include "logger/log.h"
-#include "elements/FEShellElement.h"
+#include "elements/RgElement/RgShellElement.h"
 
-DEFINE_META_CLASS(FESurface, FEMeshPartition, "");
+DEFINE_META_CLASS(RgSurfaceDomain, RgDomain, "");
 
 //-----------------------------------------------------------------------------
-FESurface::FESurface() : FEMeshPartition(FE_DOMAIN_SURFACE, nullptr)
+RgSurfaceDomain::RgSurfaceDomain() : RgDomain(FE_DOMAIN_SURFACE, nullptr)
 {
-	m_surf = 0;
-	m_bitfc = false;
-	m_alpha = 1;
-	m_bshellb = false;
+	 
 }
 
 //-----------------------------------------------------------------------------
-FESurface::~FESurface()
+RgSurfaceDomain::~RgSurfaceDomain()
 {
 
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::Create(int nsize, int elemType)
+void RgSurfaceDomain::Create(int nsize, int elemType)
 {
 	m_el.resize(nsize);
 	for (int i = 0; i < nsize; ++i)
 	{
-		FESurfaceElement& el = *m_el[i];
+		RgSurfaceElement& el = *m_el[i];
 		el.setLocalId(i);
-		el.SetMeshPartition(this);
+		el.setDomain(this);
 		el.m_elem[0] = nullptr;
 		el.m_elem[1] = nullptr;
 	}
@@ -45,7 +42,7 @@ void FESurface::Create(int nsize, int elemType)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::Create(const FEFacetSet& set)
+void RgSurfaceDomain::Create(const FEFacetSet& set)
 {
 	if (m_surf == 0) m_surf = const_cast<FEFacetSet*>(&set);
 	assert(m_surf == &set);
@@ -61,7 +58,7 @@ void FESurface::Create(const FEFacetSet& set)
 	// read faces
 	for (int i = 0; i<faces; ++i)
 	{
-		FESurfaceElement& el = Element(i);
+		RgSurfaceElement& el = Element(i);
 		const FEFacetSet::FACET& fi = set.Face(i);
 
 		if (fi.ntype == 4) el.setType(FE_QUAD4G4);
@@ -85,16 +82,16 @@ void FESurface::Create(const FEFacetSet& set)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::CreateMaterialPointData()
+void RgSurfaceDomain::CreateMaterialPointData()
 {
 	for (int i = 0; i < Elements(); ++i)
 	{
-		FESurfaceElement& el = *m_el[i];
+		RgSurfaceElement& el = *m_el[i];
 		int nint = el.GaussPointSize();
 		el.ClearData();
 		for (int n = 0; n < nint; ++n)
 		{
-			FESurfaceMaterialPoint* pt = dynamic_cast<FESurfaceMaterialPoint*>(CreateMaterialPoint());
+			RgSurfaceMaterialPoint* pt = dynamic_cast<RgSurfaceMaterialPoint*>(CreateMaterialPoint());
 			assert(pt);
 			el.SetMaterialPointData(pt, n);
 		}
@@ -103,7 +100,7 @@ void FESurface::CreateMaterialPointData()
 
 //-----------------------------------------------------------------------------
 // extract the nodes from this surface
-FENodeList FESurface::GetNodeList()
+FENodeList RgSurfaceDomain::GetNodeList()
 {
 	FEMesh* pm = GetMesh();
 	FENodeList nset(pm);
@@ -111,7 +108,7 @@ FENodeList FESurface::GetNodeList()
 	std::vector<int> tag(pm->Nodes(), 0);
 	for (int i=0; i<Elements(); ++i)
 	{
-		FESurfaceElement& el = Element(i);
+		RgSurfaceElement& el = Element(i);
 		int ne = el.NodeSize();
 		for (int j=0; j<ne; ++j)
 		{
@@ -127,14 +124,14 @@ FENodeList FESurface::GetNodeList()
 
 //-----------------------------------------------------------------------------
 //! Get the list of (local) node indices of the boundary nodes
-void FESurface::GetBoundaryFlags(std::vector<bool>& boundary) const
+void RgSurfaceDomain::GetBoundaryFlags(std::vector<bool>& boundary) const
 {
 	FEElemElemList EEL;
 	EEL.Create(this);
 
 	boundary.assign(Nodes(), false);
 	for (int i = 0; i < Elements(); ++i) {
-		const FESurfaceElement& el = Element(i);
+		const RgSurfaceElement& el = Element(i);
 		for (int j = 0; j < el.facet_edges(); ++j) {
 			FEElement* nel = EEL.Neighbor(i, j);
 			if (nel == nullptr) {
@@ -150,16 +147,16 @@ void FESurface::GetBoundaryFlags(std::vector<bool>& boundary) const
 
 //-----------------------------------------------------------------------------
 // Create material point data for this surface
-FEMaterialPoint* FESurface::CreateMaterialPoint()
+FEMaterialPoint* RgSurfaceDomain::CreateMaterialPoint()
 {
-	return new FESurfaceMaterialPoint;
+	return new RgSurfaceMaterialPoint;
 }
 
 //-----------------------------------------------------------------------------
 // update surface data
-void FESurface::Update(const FETimeInfo& tp)
+void RgSurfaceDomain::Update(const FETimeInfo& tp)
 {
-	ForEachSurfaceElement([=](FESurfaceElement& el) {
+	ForEachSurfaceElement([=](RgSurfaceElement& el) {
 		int nint = el.GaussPointSize();
 		int neln = el.NodeSize();
 
@@ -168,7 +165,7 @@ void FESurface::Update(const FETimeInfo& tp)
 
 		for (int n = 0; n < nint; ++n)
 		{
-			FESurfaceMaterialPoint& mp = static_cast<FESurfaceMaterialPoint&>(*el.GetMaterialPoint(n));
+			RgSurfaceMaterialPoint& mp = static_cast<RgSurfaceMaterialPoint&>(*el.GetMaterialPoint(n));
 
 			double* Gr = el.Gr(n);
 			double* Gs = el.Gs(n);
@@ -185,7 +182,7 @@ void FESurface::Update(const FETimeInfo& tp)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::InitSurface()
+void RgSurfaceDomain::InitSurface()
 {
 	// get the mesh to which this surface belongs
 	FEMesh& mesh = *GetMesh();
@@ -198,7 +195,7 @@ void FESurface::InitSurface()
 	int ne = Elements();
 	for (int i = 0; i<ne; ++i)
 	{
-		FESurfaceElement& el = Element(i);
+		RgSurfaceElement& el = Element(i);
 		el.m_lid = i;
 
 		for (int j = 0; j<el.NodeSize(); ++j)
@@ -232,7 +229,7 @@ void FESurface::InitSurface()
 //! Note that it is assumed that the element array is already created
 //! and initialized.
 
-bool FESurface::Init()
+bool RgSurfaceDomain::Init()
 {
 	// make sure that there is a surface defined
 	if (Elements() == 0) return false;
@@ -250,7 +247,7 @@ bool FESurface::Init()
 #pragma omp parallel for reduction(+:invalidFacets)
 	for (int i=0; i<ne; ++i)
 	{
-		FESurfaceElement& el = Element(i);
+		RgSurfaceElement& el = Element(i);
         if (m_bitfc && (el.m_elem[0] == nullptr)) FindElements(el);
 		else if (el.m_elem[0] == nullptr) el.m_elem[0] = FindElement(el);
         //to make sure
@@ -269,7 +266,7 @@ bool FESurface::Init()
 	// initialize material points of surface elements
 	for (int i = 0; i < Elements(); ++i)
 	{
-		FESurfaceElement& el = *m_el[i];
+		RgSurfaceElement& el = *m_el[i];
 
 		NodalCoordinates(el, re);
 
@@ -277,7 +274,7 @@ bool FESurface::Init()
 		int neln = el.NodeSize();
 		for (int n = 0; n < nint; ++n)
 		{
-			FESurfaceMaterialPoint* pt = dynamic_cast<FESurfaceMaterialPoint*>(el.GetMaterialPoint(n));
+			RgSurfaceMaterialPoint* pt = dynamic_cast<RgSurfaceMaterialPoint*>(el.GetMaterialPoint(n));
 			if (pt == nullptr) return false;
 
 			// initialize some material point data
@@ -318,7 +315,7 @@ bool FESurface::Init()
 //-----------------------------------------------------------------------------
 //! Find the element that a face belongs to
 // TODO: I should be able to speed this up
-FEElement* FESurface::FindElement(FESurfaceElement& el)
+FEElement* RgSurfaceDomain::FindElement(RgSurfaceElement& el)
 {
 	// get the mesh to which this surface belongs
 	FEMesh& mesh = *GetMesh();
@@ -357,12 +354,12 @@ FEElement* FESurface::FindElement(FESurfaceElement& el)
 	return nullptr;
 }
 
-void FESurface::ForEachSurfaceElement(std::function<void(FESurfaceElement& el)> f)
+void RgSurfaceDomain::ForEachSurfaceElement(std::function<void(RgSurfaceElement& el)> f)
 {
 	for (size_t i = 0; i < m_el.size(); ++i) f(*m_el[i]);
 }
 
-void FESurface::FindElements(FESurfaceElement& el)
+void RgSurfaceDomain::FindElements(RgSurfaceElement& el)
 {
 	// get the mesh to which this surface belongs
 	FEMesh& mesh = *GetMesh();
@@ -409,7 +406,7 @@ void FESurface::FindElements(FESurfaceElement& el)
 
 //-----------------------------------------------------------------------------
 //! unpack an LM std::vector from a dof list
-void FESurface::UnpackLM(const FESurfaceElement& el, const FEDofList& dofList, std::vector<int>& lm)
+void RgSurfaceDomain::UnpackLM(const RgSurfaceElement& el, const FEDofList& dofList, std::vector<int>& lm)
 {
 	int dofPerNode = dofList.Size();
 	int neln = el.NodeSize();
@@ -561,7 +558,7 @@ bool project2quad(Vector3d* y, Vector3d x, double& r, double& s, Vector3d& q)
 
 //-----------------------------------------------------------------------------
 // project to general surface element.
-bool project2surf(FESurfaceElement& el, Vector3d* y, Vector3d x, double& r, double& s, Vector3d& q)
+bool project2surf(RgSurfaceElement& el, Vector3d* y, Vector3d x, double& r, double& s, Vector3d& q)
 {
 	double Q[2], u[2], D;
 	const int NE = FEElement::MAX_NODES;
@@ -655,7 +652,7 @@ bool project2surf(FESurfaceElement& el, Vector3d* y, Vector3d x, double& r, doub
 }
 
 //-----------------------------------------------------------------------------
-Vector3d FESurface::Position(FESurfaceElement& el, double r, double s)
+Vector3d RgSurfaceDomain::Position(RgSurfaceElement& el, double r, double s)
 {
 	// get the mesh to which this surface belongs
 	FEMesh& mesh = *m_pMesh;
@@ -683,7 +680,7 @@ Vector3d FESurface::Position(FESurfaceElement& el, double r, double s)
 //-----------------------------------------------------------------------------
 //! This function calculates the position of integration point n
 
-Vector3d FESurface::Position(FESurfaceElement &el, int n)
+Vector3d RgSurfaceDomain::Position(RgSurfaceElement &el, int n)
 {
     // get the mesh to which this surface belongs
     FEMesh& mesh = *m_pMesh;
@@ -708,7 +705,7 @@ Vector3d FESurface::Position(FESurfaceElement &el, int n)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::NodalCoordinates(FESurfaceElement& el, Vector3d* re)
+void RgSurfaceDomain::NodalCoordinates(RgSurfaceElement& el, Vector3d* re)
 {
 	int ne = el.NodeSize();
 	if (!m_bshellb) for (int i = 0; i < ne; ++i) re[i] = Node(el.m_loc_node[i]).m_rt;
@@ -718,7 +715,7 @@ void FESurface::NodalCoordinates(FESurfaceElement& el, Vector3d* re)
 //-----------------------------------------------------------------------------
 //! detect face normal relative to element:
 //! return +1 if face points away from element, -1 if face points into element, 0 if invalid solution found
-double FESurface::FacePointing(FESurfaceElement& se, FEElement& el)
+double RgSurfaceDomain::FacePointing(RgSurfaceElement& se, FEElement& el)
 {
     FEMesh& mesh = *GetMesh();
     // get point on surface element
@@ -765,7 +762,7 @@ double FESurface::FacePointing(FESurfaceElement& se, FEElement& el)
 //! The system is solved using the Newton-Raphson method.
 //! The surface element may be either a quad or a triangular element.
 
-Vector3d FESurface::ProjectToSurface(FESurfaceElement& el, Vector3d x, double& r, double& s)
+Vector3d RgSurfaceDomain::ProjectToSurface(RgSurfaceElement& el, Vector3d x, double& r, double& s)
 {
 	// get the mesh to which this surface belongs
 	FEMesh& mesh = *m_pMesh;
@@ -833,7 +830,7 @@ Vector3d FESurface::ProjectToSurface(FESurfaceElement& el, Vector3d x, double& r
 
 //-----------------------------------------------------------------------------
 //! This function calculates the area of a surface element
-double FESurface::FaceArea(FESurfaceElement& el)
+double RgSurfaceDomain::FaceArea(RgSurfaceElement& el)
 {
 	// get the mesh to which this surface belongs
 	FEMesh& mesh = *m_pMesh;
@@ -887,7 +884,7 @@ double FESurface::FaceArea(FESurfaceElement& el)
 
 //-----------------------------------------------------------------------------
 //! This function calculates the area of a surface element
-double FESurface::CurrentFaceArea(FESurfaceElement& el)
+double RgSurfaceDomain::CurrentFaceArea(RgSurfaceElement& el)
 {
 	// get the mesh to which this surface belongs
 	FEMesh& mesh = *m_pMesh;
@@ -941,14 +938,14 @@ double FESurface::CurrentFaceArea(FESurfaceElement& el)
 
 //-----------------------------------------------------------------------------
 //! Calculate the max element size.
-double FESurface::MaxElementSize()
+double RgSurfaceDomain::MaxElementSize()
 {
 	FEMesh& mesh = *m_pMesh;
 	double h2 = 0.0;
 	int NS = Elements();
 	for (int m=0; m<NS; ++m)
 	{
-		FESurfaceElement& e = Element(m);
+		RgSurfaceElement& e = Element(m);
 		int n = e.NodeSize();
 		for (int i=0; i<n; ++i)
 			for (int j=i+1; j<n; ++j)
@@ -966,7 +963,7 @@ double FESurface::MaxElementSize()
 //! Calculates the metric tensor at the point with surface coordinates (r,s)
 //! \todo Perhaps I should place this function in the element class.
 
-Matrix2d FESurface::Metric0(FESurfaceElement& el, double r, double s)
+Matrix2d RgSurfaceDomain::Metric0(RgSurfaceElement& el, double r, double s)
 {
 	// nr of element nodes
 	int neln = el.NodeSize();
@@ -999,7 +996,7 @@ Matrix2d FESurface::Metric0(FESurfaceElement& el, double r, double s)
 //! Calculates the metric tensor at the point with surface coordinates (r,s)
 //! \todo Perhaps I should place this function in the element class.
 
-Matrix2d FESurface::Metric(FESurfaceElement& el, double r, double s)
+Matrix2d RgSurfaceDomain::Metric(RgSurfaceElement& el, double r, double s)
 {
 	// nr of element nodes
 	int neln = el.NodeSize();
@@ -1032,7 +1029,7 @@ Matrix2d FESurface::Metric(FESurfaceElement& el, double r, double s)
 //! Calculates the metric tensor at an integration point
 //! \todo Perhaps I should place this function in the element class.
 
-Matrix2d FESurface::Metric(const FESurfaceElement& el, int n) const
+Matrix2d RgSurfaceDomain::Metric(const RgSurfaceElement& el, int n) const
 {
     // nr of element nodes
     int neln = el.NodeSize();
@@ -1063,7 +1060,7 @@ Matrix2d FESurface::Metric(const FESurfaceElement& el, int n) const
 //! Calculates the metric tensor at an integration point at previous time
 //! \todo Perhaps I should place this function in the element class.
 
-Matrix2d FESurface::MetricP(FESurfaceElement& el, int n)
+Matrix2d RgSurfaceDomain::MetricP(RgSurfaceElement& el, int n)
 {
     // nr of element nodes
     int neln = el.NodeSize();
@@ -1092,7 +1089,7 @@ Matrix2d FESurface::MetricP(FESurfaceElement& el, int n)
 //-----------------------------------------------------------------------------
 //! Given an element an the natural coordinates of a point in this element, this
 //! function returns the global position std::vector.
-Vector3d FESurface::Local2Global(FESurfaceElement &el, double r, double s)
+Vector3d RgSurfaceDomain::Local2Global(RgSurfaceElement &el, double r, double s)
 {
 	// get the mesh
 	FEMesh& mesh = *m_pMesh;
@@ -1111,7 +1108,7 @@ Vector3d FESurface::Local2Global(FESurfaceElement &el, double r, double s)
 //! This function calculates the global location of an integration point
 //!
 
-Vector3d FESurface::Local2Global(FESurfaceElement &el, int n)
+Vector3d RgSurfaceDomain::Local2Global(RgSurfaceElement &el, int n)
 {
 	FEMesh& m = *m_pMesh;
 
@@ -1130,7 +1127,7 @@ Vector3d FESurface::Local2Global(FESurfaceElement &el, int n)
 //-----------------------------------------------------------------------------
 //! Given an element an the natural coordinates of a point in this element, this
 //! function returns the global position std::vector at the previous time.
-Vector3d FESurface::Local2GlobalP(FESurfaceElement &el, double r, double s)
+Vector3d RgSurfaceDomain::Local2GlobalP(RgSurfaceElement &el, double r, double s)
 {
     // get the mesh
     FEMesh& mesh = *m_pMesh;
@@ -1148,7 +1145,7 @@ Vector3d FESurface::Local2GlobalP(FESurfaceElement &el, double r, double s)
 //! This function calculates the global location of an integration point
 //!
 
-Vector3d FESurface::Local2GlobalP(FESurfaceElement &el, int n)
+Vector3d RgSurfaceDomain::Local2GlobalP(RgSurfaceElement &el, int n)
 {
     FEMesh& m = *m_pMesh;
     
@@ -1167,7 +1164,7 @@ Vector3d FESurface::Local2GlobalP(FESurfaceElement &el, int n)
 //! This function calculates the normal of a surface element at integration
 //! point n
 
-Vector3d FESurface::SurfaceNormal(const FESurfaceElement &el, int n) const
+Vector3d RgSurfaceDomain::SurfaceNormal(const RgSurfaceElement &el, int n) const
 {
 	FEMesh& m = *m_pMesh;
 
@@ -1201,7 +1198,7 @@ Vector3d FESurface::SurfaceNormal(const FESurfaceElement &el, int n) const
 //! This function calculates the normal of a surface element at the natural
 //! coordinates (r,s)
 
-Vector3d FESurface::SurfaceNormal(FESurfaceElement &el, double r, double s) const
+Vector3d RgSurfaceDomain::SurfaceNormal(RgSurfaceElement &el, double r, double s) const
 {
 	int l;
 	FEMesh& mesh = *m_pMesh;
@@ -1239,7 +1236,7 @@ Vector3d FESurface::SurfaceNormal(FESurfaceElement &el, double r, double s) cons
 //! obtain a unique normal the normal is averaged for each node over all the
 //! element normals at the node
 
-void FESurface::UpdateNodeNormals()
+void RgSurfaceDomain::UpdateNodeNormals()
 {
     const int MN = FEElement::MAX_NODES;
     Vector3d y[MN];
@@ -1250,7 +1247,7 @@ void FESurface::UpdateNodeNormals()
     // loop over all elements
     for (int i=0; i<Elements(); ++i)
     {
-        FESurfaceElement& el = Element(i);
+        RgSurfaceElement& el = Element(i);
         int ne = el.NodeSize();
         
         // get the nodal coordinates
@@ -1275,7 +1272,7 @@ void FESurface::UpdateNodeNormals()
 //! This function checks whether the point with natural coordinates (r,s) is
 //! inside the element, within a tolerance of tol.
 
-bool FESurface::IsInsideElement(FESurfaceElement& el, double r, double s, double tol)
+bool RgSurfaceDomain::IsInsideElement(RgSurfaceElement& el, double r, double s, double tol)
 {
 	int ne = el.NodeSize();
 	switch (ne)
@@ -1307,7 +1304,7 @@ bool FESurface::IsInsideElement(FESurfaceElement& el, double r, double s, double
 //! This function calculates the covariant base vectors of a surface element
 //! at an integration point
 
-void FESurface::CoBaseVectors(FESurfaceElement& el, double r, double s, Vector3d t[2])
+void RgSurfaceDomain::CoBaseVectors(RgSurfaceElement& el, double r, double s, Vector3d t[2])
 {
 	FEMesh& m = *m_pMesh;
 
@@ -1340,7 +1337,7 @@ void FESurface::CoBaseVectors(FESurfaceElement& el, double r, double s, Vector3d
 //! This function calculates the covariant base vectors of a surface element
 //! at an integration point
 
-void FESurface::CoBaseVectors(const FESurfaceElement& el, int j, Vector3d t[2]) const
+void RgSurfaceDomain::CoBaseVectors(const RgSurfaceElement& el, int j, Vector3d t[2]) const
 {
 	FEMesh& m = *m_pMesh;
 
@@ -1372,7 +1369,7 @@ void FESurface::CoBaseVectors(const FESurfaceElement& el, int j, Vector3d t[2]) 
 //! This function calculates the covariant base vectors of a surface element
 //! at an integration point at previous time step
 
-void FESurface::CoBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2])
+void RgSurfaceDomain::CoBaseVectorsP(RgSurfaceElement& el, int j, Vector3d t[2])
 {
     FEMesh& m = *m_pMesh;
     
@@ -1395,7 +1392,7 @@ void FESurface::CoBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2])
 //! This function calculates the covariant base vectors of a surface element
 //! at the natural coordinates (r,s)
 
-void FESurface::CoBaseVectors0(FESurfaceElement &el, double r, double s, Vector3d t[2])
+void RgSurfaceDomain::CoBaseVectors0(RgSurfaceElement &el, double r, double s, Vector3d t[2])
 {
 	int i;
 	const int MN = FEElement::MAX_NODES;
@@ -1414,7 +1411,7 @@ void FESurface::CoBaseVectors0(FESurfaceElement &el, double r, double s, Vector3
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::ContraBaseVectors(const FESurfaceElement& el, int j, Vector3d t[2]) const
+void RgSurfaceDomain::ContraBaseVectors(const RgSurfaceElement& el, int j, Vector3d t[2]) const
 {
     Vector3d e[2];
     CoBaseVectors(el, j, e);
@@ -1426,7 +1423,7 @@ void FESurface::ContraBaseVectors(const FESurfaceElement& el, int j, Vector3d t[
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::ContraBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2])
+void RgSurfaceDomain::ContraBaseVectorsP(RgSurfaceElement& el, int j, Vector3d t[2])
 {
     Vector3d e[2];
     CoBaseVectorsP(el, j, e);
@@ -1438,7 +1435,7 @@ void FESurface::ContraBaseVectorsP(FESurfaceElement& el, int j, Vector3d t[2])
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::ContraBaseVectors(FESurfaceElement& el, double r, double s, Vector3d t[2])
+void RgSurfaceDomain::ContraBaseVectors(RgSurfaceElement& el, double r, double s, Vector3d t[2])
 {
 	Vector3d e[2];
 	CoBaseVectors(el, r, s, e);
@@ -1451,7 +1448,7 @@ void FESurface::ContraBaseVectors(FESurfaceElement& el, double r, double s, Vect
 
 //-----------------------------------------------------------------------------
 
-void FESurface::ContraBaseVectors0(FESurfaceElement& el, double r, double s, Vector3d t[2])
+void RgSurfaceDomain::ContraBaseVectors0(RgSurfaceElement& el, double r, double s, Vector3d t[2])
 {
 	Vector3d e[2];
 	CoBaseVectors0(el, r, s, e);
@@ -1463,7 +1460,7 @@ void FESurface::ContraBaseVectors0(FESurfaceElement& el, double r, double s, Vec
 }
 
 //-----------------------------------------------------------------------------
-double FESurface::jac0(FESurfaceElement &el, int n)
+double RgSurfaceDomain::jac0(RgSurfaceElement &el, int n)
 {
 	const int nseln = el.NodeSize();
 	Vector3d r0[FEElement::MAX_NODES];
@@ -1487,7 +1484,7 @@ double FESurface::jac0(FESurfaceElement &el, int n)
 }
 
 //-----------------------------------------------------------------------------
-double FESurface::jac0(const FESurfaceElement &el, int n, Vector3d& nu)
+double RgSurfaceDomain::jac0(const RgSurfaceElement &el, int n, Vector3d& nu)
 {
 	const int nseln = el.NodeSize();
 	Vector3d r0[FEElement::MAX_NODES];
@@ -2124,9 +2121,9 @@ bool IntersectTri7(Vector3d* y, Vector3d r, Vector3d n, double rs[2], double& g,
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::Invert()
+void RgSurfaceDomain::Invert()
 {
-	ForEachSurfaceElement([](FESurfaceElement& el) {
+	ForEachSurfaceElement([](RgSurfaceElement& el) {
 		int tmp;
 		switch (el.Shape())
 		{
@@ -2154,7 +2151,7 @@ void FESurface::Invert()
 //! It simply calls the correct intersection function based on the type
 //! of element.
 //!
-bool FESurface::Intersect(FESurfaceElement& el, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
+bool RgSurfaceDomain::Intersect(RgSurfaceElement& el, Vector3d r, Vector3d n, double rs[2], double& g, double eps)
 {
 	int N = el.NodeSize();
 
@@ -2182,7 +2179,7 @@ bool FESurface::Intersect(FESurfaceElement& el, Vector3d r, Vector3d n, double r
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::Serialize(DumpStream &ar)
+void RgSurfaceDomain::Serialize(DumpStream &ar)
 {
 	FEMeshPartition::Serialize(ar);
 	if (ar.IsShallow() == false)
@@ -2198,12 +2195,12 @@ void FESurface::Serialize(DumpStream &ar)
 		{
 			for (int i = 0; i < Elements(); ++i)
 			{
-				FESurfaceElement& el = Element(i);
+				RgSurfaceElement& el = Element(i);
 				el.SetMeshPartition(this);
 				int nint = el.GaussPointSize();
 				for (int n = 0; n < nint; ++n)
 				{
-					FESurfaceMaterialPoint* pt = dynamic_cast<FESurfaceMaterialPoint*>(CreateMaterialPoint());
+					RgSurfaceMaterialPoint* pt = dynamic_cast<RgSurfaceMaterialPoint*>(CreateMaterialPoint());
 					assert(pt);
 					el.SetMaterialPointData(pt, n);
 				}
@@ -2217,7 +2214,7 @@ void FESurface::Serialize(DumpStream &ar)
 		int ne = Elements();
 		for (int i = 0; i<ne; ++i)
 		{
-			FESurfaceElement& el = Element(i);
+			RgSurfaceElement& el = Element(i);
 			if (m_bitfc && (el.m_elem[0] == nullptr)) FindElements(el);
 			else if (el.m_elem[0] == nullptr) el.m_elem[0] = FindElement(el);
 			//to make sure
@@ -2229,11 +2226,11 @@ void FESurface::Serialize(DumpStream &ar)
 	// serialize material point data
 	for (int i = 0; i < Elements(); ++i)
 	{
-		FESurfaceElement& el = Element(i);
+		RgSurfaceElement& el = Element(i);
 		int nint = el.GaussPointSize();
 		for (int n = 0; n < nint; ++n)
 		{
-			FESurfaceMaterialPoint* pt = dynamic_cast<FESurfaceMaterialPoint*>(el.GetMaterialPoint(n));
+			RgSurfaceMaterialPoint* pt = dynamic_cast<RgSurfaceMaterialPoint*>(el.GetMaterialPoint(n));
 			assert(pt);
 			pt->Serialize(ar);
 		}
@@ -2241,7 +2238,7 @@ void FESurface::Serialize(DumpStream &ar)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::GetNodalCoordinates(FESurfaceElement& el, Vector3d* rt)
+void RgSurfaceDomain::GetNodalCoordinates(RgSurfaceElement& el, Vector3d* rt)
 {
 	FEMesh& mesh = *GetMesh();
 	int neln = el.NodeSize();
@@ -2250,7 +2247,7 @@ void FESurface::GetNodalCoordinates(FESurfaceElement& el, Vector3d* rt)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::GetReferenceNodalCoordinates(FESurfaceElement& el, Vector3d* r0)
+void RgSurfaceDomain::GetReferenceNodalCoordinates(RgSurfaceElement& el, Vector3d* r0)
 {
 	FEMesh& mesh = *GetMesh();
 	int neln = el.NodeSize();
@@ -2260,7 +2257,7 @@ void FESurface::GetReferenceNodalCoordinates(FESurfaceElement& el, Vector3d* r0)
 
 //-----------------------------------------------------------------------------
 // Get current coordinates at intermediate configuration
-void FESurface::GetNodalCoordinates(FESurfaceElement& el, double alpha, Vector3d* rt)
+void RgSurfaceDomain::GetNodalCoordinates(RgSurfaceElement& el, double alpha, Vector3d* rt)
 {
 	int neln = el.NodeSize();
 	for (int j = 0; j<neln; ++j) {
@@ -2272,11 +2269,11 @@ void FESurface::GetNodalCoordinates(FESurfaceElement& el, double alpha, Vector3d
 
 //-----------------------------------------------------------------------------
 // Evaluate field variables
-double FESurface::Evaluate(FESurfaceMaterialPoint& mp, int dof)
+double RgSurfaceDomain::Evaluate(RgSurfaceMaterialPoint& mp, int dof)
 {
 	double v[FEElement::MAX_NODES];
 
-	FESurfaceElement& el = *mp.SurfaceElement();
+	RgSurfaceElement& el = *mp.SurfaceElement();
 	int neln = el.NodeSize();
 	for (int j = 0; j < neln; ++j) v[j] = Node(el.m_loc_node[j]).get(dof);
 
@@ -2286,11 +2283,11 @@ double FESurface::Evaluate(FESurfaceMaterialPoint& mp, int dof)
 
 //-----------------------------------------------------------------------------
 // Evaluate field variables
-double FESurface::Evaluate(int nface, int dof)
+double RgSurfaceDomain::Evaluate(int nface, int dof)
 {
     double v = 0;
 
-    FESurfaceElement& el = Element(nface);
+    RgSurfaceElement& el = Element(nface);
     int neln = el.NodeSize();
     for (int j = 0; j < neln; ++j) v += Node(el.m_loc_node[j]).get(dof);
 
@@ -2298,7 +2295,7 @@ double FESurface::Evaluate(int nface, int dof)
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool breference, FESurfaceVectorIntegrand f)
+void RgSurfaceDomain::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool breference, RgSurfaceDomainVectorIntegrand f)
 {
 	int dofPerNode = dofList.Size();
 	int order = (dofPerNode == 1 ? dofList.InterpolationOrder(0) : -1);
@@ -2313,7 +2310,7 @@ void FESurface::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool bre
 		std::vector<double> G(dofPerNode, 0.0);
 
 		// get the next element
-		FESurfaceElement& el = Element(i);
+		RgSurfaceElement& el = Element(i);
 
 		// init the element std::vector
 		int neln = el.ShapeFunctions(order);
@@ -2327,12 +2324,12 @@ void FESurface::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool bre
 			GetNodalCoordinates(el, re);
 
 		// calculate element std::vector
-		FESurfaceDofShape dof_a;
+		RgSurfaceDomainDofShape dof_a;
 		double* w = el.GaussWeights();
 		int nint = el.GaussPointSize();
 		for (int n = 0; n < nint; ++n)
 		{
-			FESurfaceMaterialPoint& pt = static_cast<FESurfaceMaterialPoint&>(*el.GetMaterialPoint(n));
+			RgSurfaceMaterialPoint& pt = static_cast<RgSurfaceMaterialPoint&>(*el.GetMaterialPoint(n));
 
 			// kinematics at integration points
 			pt.dxr = el.eval_deriv1(re, n);
@@ -2372,7 +2369,7 @@ void FESurface::LoadVector(FEGlobalVector& R, const FEDofList& dofList, bool bre
 }
 
 //-----------------------------------------------------------------------------
-void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, const FEDofList& dofList_b, FESurfaceMatrixIntegrand f)
+void RgSurfaceDomain::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, const FEDofList& dofList_b, RgSurfaceDomainMatrixIntegrand f)
 {
 	FEElementMatrix ke;
 
@@ -2385,13 +2382,13 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 	Vector3d rt[FEElement::MAX_NODES];
 
 	Matrix kab(dofPerNode_a, dofPerNode_b);
-	FESurfaceDofShape dof_a, dof_b;
+	RgSurfaceDomainDofShape dof_a, dof_b;
 
 	int NE = Elements();
 	for (int m = 0; m<NE; ++m)
 	{
 		// get the surface element
-		FESurfaceElement& el = Element(m);
+		RgSurfaceElement& el = Element(m);
 
 		ke.SetNodes(el.m_node);
 
@@ -2418,7 +2415,7 @@ void FESurface::LoadStiffness(FELinearSystem& LS, const FEDofList& dofList_a, co
 		ke.zero();
 		for (int n = 0; n<nint; ++n)
 		{
-			FESurfaceMaterialPoint& pt = static_cast<FESurfaceMaterialPoint&>(*el.GetMaterialPoint(n));
+			RgSurfaceMaterialPoint& pt = static_cast<RgSurfaceMaterialPoint&>(*el.GetMaterialPoint(n));
 
 			double* Gr = el.Gr(n);
 			double* Gs = el.Gs(n);

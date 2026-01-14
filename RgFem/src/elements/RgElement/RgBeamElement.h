@@ -3,8 +3,6 @@
 #include "RgStructureElement.h"
 #include <vector>
 
-namespace RgFem {
-
 // forward declarations
 class Matrix3d;
 class Vector3d;
@@ -75,7 +73,5 @@ protected:
     // Initialize Gauss points (called by derived classes)
     virtual void initializeGaussPoints() = 0;
 };
-
-} // namespace RgFem
 
 #endif // RGBEAMELEMENT_H

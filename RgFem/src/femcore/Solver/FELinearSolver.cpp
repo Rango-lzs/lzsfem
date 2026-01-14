@@ -1,13 +1,13 @@
 #include "FELinearSolver.h"
 #include "femcore/FEModel.h"
 #include "LinearSolver.h"
-#include "femcore/FEGlobalMatrix.h"
+#include "femcore/Matrix/FEGlobalMatrix.h"
 #include "logger/log.h"
 #include "FENodeReorder.h"
 #include "femcore/FELinearSystem.h"
 #include "femcore/FEBoundaryCondition.h"
 #include "femcore/FEGlobalVector.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "femcore/FENodalLoad.h"
 #include "femcore/FESurfaceLoad.h"
 #include "femcore/FEBodyLoad.h"
@@ -341,7 +341,7 @@ bool FELinearSolver::StiffnessMatrix(FELinearSystem& K)
 
 //-----------------------------------------------------------------------------
 // This function copies the solution back to the nodal variables
-// and class the FEDomain::Update to give domains a chance to update
+// and class the RgDomain::Update to give domains a chance to update
 // their local data.
 // TODO: Instead of calling Update on all domains, perhaps I should introduce
 //       a mechanism for solvers only update the domains that are relevant.
@@ -373,7 +373,7 @@ void FELinearSolver::Update(std::vector<double>& u)
 	// update the domains
 	for (int i=0; i<mesh.Domains(); ++i)
 	{
-		FEDomain& dom = mesh.Domain(i);
+		RgDomain& dom = mesh.Domain(i);
 		dom.Update(tp);
 	}
 

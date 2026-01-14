@@ -5,20 +5,20 @@
 DEFINE_META_CLASS(RgSolidDomain, RgDomain, "");
 
 //-----------------------------------------------------------------------------
-RgSolidDomain::RgSolidDomain(FEModel* fem) : RgDomain(FE_DOMAIN_SOLID, fem)
+RgSolidDomain::RgSolidDomain(FEModel* fem) : RgDomain(fem)
 {
 	m_assembler = nullptr;
 }
 
 //-----------------------------------------------------------------------------
-void RgSolidDomain::ForEachElement(std::function<void(FEElement& el)> f)
+void RgSolidDomain::ForEachElement(std::function<void(RgElement& el)> f)
 {
 	int NE = Elements();
 	for (int i = 0; i < NE; ++i) f(ElementRef(i));
 }
 
 //-----------------------------------------------------------------------------
-void RgSolidDomain::SetMaterial(FEMaterial* pmat)
+void RgSolidDomain::SetMaterial(RgMaterial* pmat)
 {
 	RgDomain::SetMaterial(pmat);
 }
@@ -45,13 +45,13 @@ void RgSolidDomain::Activate()
 }
 
 //-----------------------------------------------------------------------------
-FEMaterial* RgSolidDomain::GetMaterial()
+RgMaterial* RgSolidDomain::GetMaterial()
 {
 	return nullptr;
 }
 
 //-----------------------------------------------------------------------------
-void RgSolidDomain::UnpackLM(FEElement& el, std::vector<int>& lm)
+void RgSolidDomain::UnpackLM(RgElement& el, std::vector<int>& lm)
 {
 }
 

@@ -33,7 +33,7 @@ SOFTWARE.*/
 //-----------------------------------------------------------------------------
 class FEMesh;
 class FESurface;
-class FEElement;
+class RgElement;
 
 //-----------------------------------------------------------------------------
 //! This class finds for each element the neighbouring elements
@@ -54,7 +54,7 @@ public:
 	bool Create(const FESurface* psurf);
 
 	//! Find the j-th neighbor element of element n
-	FEElement* Neighbor(int n, int j) { return m_pel[ m_ref[n] + j]; }
+	RgElement* Neighbor(int n, int j) { return m_pel[ m_ref[n] + j]; }
 
 	//! Find the j-th neighbor element of element n
 	int NeighborIndex(int n, int j) { return m_peli[m_ref[n] + j]; }
@@ -68,7 +68,7 @@ protected:
 
 protected:
 	std::vector<int>		m_ref;		//!< start index into pel and peli array
-	std::vector<FEElement*>	m_pel;	//!< list of all neighbouring elements (or 0 if no neighbor)
+	std::vector<RgElement*>	m_pel;	//!< list of all neighbouring elements (or 0 if no neighbor)
 	std::vector<int>		m_peli;	//!< indices of neighbor elems (or -1 if no neighbor)
 	FEMesh*	m_pmesh;				//!< pointer to mesh that created this list
 };

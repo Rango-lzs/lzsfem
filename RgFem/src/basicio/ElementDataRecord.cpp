@@ -1,7 +1,7 @@
 
 #include "basicio/ElementDataRecord.h"
 #include "femcore/FEModel.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "femcore/FEMesh.h"
 
 DEFINE_META_CLASS(FELogElemData, FELogData, "element_data");
@@ -52,7 +52,7 @@ double ElementDataRecord::Evaluate(int item, int ndata)
 	{
 		ELEMREF& e = m_ELT[index];
 		assert((e.ndom != -1) && (e.nid != -1));
-		FEElement* pe = &mesh.Domain(e.ndom).ElementRef(e.nid); assert(pe);
+		RgElement* pe = &mesh.Domain(e.ndom).ElementRef(e.nid); assert(pe);
 		assert(pe->getId() == item);
 
 		// get the element value
@@ -71,11 +71,11 @@ void ElementDataRecord::BuildELT()
 	int minID = -1, maxID = 0;
 	for (int i = 0; i<m.Domains(); ++i)
 	{
-		FEDomain& dom = m.Domain(i);
+		RgDomain& dom = m.Domain(i);
 		int NE = dom.Elements();
 		for (int j = 0; j<NE; ++j)
 		{
-			FEElement& el = dom.ElementRef(j);
+			RgElement& el = dom.ElementRef(j);
 			int id = el.getId(); assert(id > 0);
 
 			if ((minID < 0) || (id < minID)) minID = id;
@@ -96,11 +96,11 @@ void ElementDataRecord::BuildELT()
 	m_offset = minID;
 	for (int i=0; i<m.Domains(); ++i)
 	{
-		FEDomain& d = m.Domain(i);
+		RgDomain& d = m.Domain(i);
 		int ne = d.Elements();
 		for (int j=0; j<ne; ++j)
 		{
-			FEElement& el = d.ElementRef(j);
+			RgElement& el = d.ElementRef(j);
 			int id = el.getId() - minID;
 			m_ELT[id].ndom = i;
 			m_ELT[id].nid  = j;
@@ -123,11 +123,11 @@ void ElementDataRecord::SelectAllItems()
 	n = 0;
 	for (int i=0; i<m.Domains(); ++i)
 	{
-		FEDomain& dom = m.Domain(i);
+		RgDomain& dom = m.Domain(i);
 		int NE = dom.Elements();
 		for (int j=0; j<NE; ++j, n++)
 		{
-			FEElement& el = dom.ElementRef(j);
+			RgElement& el = dom.ElementRef(j);
 			m_item[n] = el.getId();
 		}
 	}

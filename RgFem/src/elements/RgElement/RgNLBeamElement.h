@@ -2,8 +2,6 @@
 
 #include "RgBeamElement.h"
 
-namespace RgFem {
-
 /**
  * @class RgNLBeamElement
  * @brief Abstract base class for nonlinear beam elements
@@ -64,5 +62,3 @@ public:
     /// F_int = integral of P^T : F dV (first Piola-Kirchhoff stress)
     virtual void calculateInternalForceVector(RgVector& F) const override = 0;
 };
-
-} // namespace RgFem

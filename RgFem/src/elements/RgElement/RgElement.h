@@ -5,8 +5,12 @@
 #include "elements/RgElementState.h"
 #include "femcore/fem_export.h"
 
-#include <vector>
 #include <Eigen/Dense>
+#include <vector>
+
+
+class RgMaterialPoint;
+class RgMaterial;
 
 using NodeId = int;
 using ElemId = int;
@@ -17,10 +21,10 @@ using StressTensor = Matrix3ds;
 using StrainTensor = Matrix3ds;
 using Vector = std::vector<double>;
 
-class FEMaterialPoint;
 class FENode;
 class RgDomain;
 class DumpStream;
+
 
 /**
  *@~English
@@ -68,6 +72,8 @@ public:
     RgDomain* getDomain() const;
     void setDomain(RgDomain* dom);
 
+    RgMaterial* getMaterial() const;
+
     // --- Node Connectivity ---
     const std::vector<NodeId>& getNodeIds() const;
     virtual NodeId getNodeId(int idx) const;
@@ -79,7 +85,7 @@ public:
 
     // --- Element Properties ---
     virtual ElementType elementType() const;
-    virtual ElementCategory Class() const;
+    virtual ElementCategory elementCategory() const;
     virtual ElementShape elementShape() const;
 
     // --- Traits Management ---
@@ -91,8 +97,9 @@ public:
     int ShapeFunctions() const;
 
     // --- Material Point Data ---
-    RgMaterialPoint* getMaterialPoint(int n) const;
-    void setMaterialPointData(RgMaterialPoint* pmp, int n);
+    RgMaterialPoint* getMaterialPoint(int n);
+    const RgMaterialPoint* getMaterialPoint(int n) const;
+    void setRgMaterialPointData(RgMaterialPoint* pmp, int n);
 
     // --- Serialization ---
     virtual void Serialize(DumpStream& ar);
@@ -101,28 +108,27 @@ public:
     Vector3d Evaluate(Vector3d* value, int iGauss);
 
     // --- Core Finite Element Methods ---
-    virtual void calculateStiffnessMatrix(Matrix& K) const = 0;
-    virtual void calculateMassMatrix(Matrix& M) const = 0;
-    virtual void calculateDampingMatrix(Matrix& C) const = 0;
-    virtual void calculateInternalForceVector(std::vector<double>& F) const = 0;
+    virtual void calculateStiffnessMatrix(Matrix& K) = 0;
+    virtual void calculateMassMatrix(Matrix& M) = 0;
+    virtual void calculateDampingMatrix(Matrix& C) = 0;
+    virtual void calculateInternalForceVector(std::vector<double>& F) = 0;
 
-    virtual void calculateStress(FEMaterialPoint& matPt, StressTensor& stress) = 0;
-    virtual void calculateStrain(FEMaterialPoint& matPt, StrainTensor& strain) = 0;
+    virtual void calculateStress(RgMaterialPoint& matPt, StressTensor& stress) = 0;
+    virtual void calculateStrain(RgMaterialPoint& matPt, StrainTensor& strain) = 0;
 
     bool isActive() const;
     void ClearData();
 
 protected:
     // Element data
-    ElemId m_id;                     //!< element Id
-    ElemId m_loc_id;                 //!< local Id in the domain
-    MatId m_mat_id;                  //!< material index  
+    ElemId m_id;      //!< element Id
+    ElemId m_loc_id;  //!< local Id in the domain
+    MatId m_mat_id;   //!< material index
     RgDomain* m_part;
 
     RgElementState m_state;
     RgElementTraits* m_pTraits;      //!< pointer to element traits
-    
+
     std::vector<NodeId> m_node;      //!< connectivity
     std::vector<NodeId> m_loc_node;  //!< local connectivity
 };
-

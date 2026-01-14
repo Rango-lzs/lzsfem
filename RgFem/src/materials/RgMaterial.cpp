@@ -1,7 +1,9 @@
-
-
-namespace RgFem {
+#include "RgMaterial.h"
 
 
 // Material class is pure abstract, so no implementation needed
-} // namespace RgFem
+
+double RgMaterial::getDensity() const
+{
+	return density;
+}

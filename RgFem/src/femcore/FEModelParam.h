@@ -54,7 +54,7 @@ public:
     FEScalarValuator* valuator();
 
     // evaluate the parameter at a material point
-    double operator()(const FEMaterialPoint& pt)
+    double operator()(const RgMaterialPoint& pt)
     {
         return m_scl * (*m_val)(pt);
     }
@@ -96,10 +96,10 @@ public:
 	FEVec3dValuator* valuator();
 
 	// evaluate the parameter at a material point
-	Vector3d operator () (const FEMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
+	Vector3d operator () (const RgMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
 
 	// return a unit vector
-	Vector3d unitVector(const FEMaterialPoint& pt) { return (*this)(pt).normalized(); }
+	Vector3d unitVector(const RgMaterialPoint& pt) { return (*this)(pt).normalized(); }
 
 	// is this a const
 	bool isConst() const { return m_val->isConst(); }
@@ -137,7 +137,7 @@ public:
 	FEMat3dValuator* valuator();
 
 	// evaluate the parameter at a material point
-	Matrix3d operator () (const FEMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
+	Matrix3d operator () (const RgMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
 
 	// is this a const
 	bool isConst() const { return m_val->isConst(); }
@@ -172,7 +172,7 @@ public:
 	FEMat3dsValuator* valuator();
 
 	// evaluate the parameter at a material point
-	Matrix3ds operator () (const FEMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
+	Matrix3ds operator () (const RgMaterialPoint& pt) { return (*m_val)(pt)*m_scl; }
 
 	// is this a const
 	bool isConst() const { return m_val->isConst(); }

@@ -53,9 +53,5 @@ public:
         init();
     }
 
-    void init()
-    {
-    }
+    void init();
 };
-
-

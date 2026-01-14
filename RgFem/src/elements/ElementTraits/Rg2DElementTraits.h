@@ -15,11 +15,12 @@
 #include "RgElementTraits.h"
 #include <vector>
 
-namespace RgFem{
-    class NaturalCoord;
-}
+class NaturalCoord;
 
 // base class for the specific 2D element formulations.
+class RgElement;
+class Rg2DElementShape;
+
 class FEM_EXPORT Rg2DElementTraits : public RgElementTraits
 {
 public:
@@ -29,13 +30,13 @@ public:
     void init() override;
 
     // values of shape functions with size N
-    virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord);
+    virtual std::vector<double> evalH(const NaturalCoord& coord);
 
-    // values of shape function derivatives with size 3,N (2,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord);
+    // values of shape function derivatives with size 2,N (for 2D surface elements)
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord);
 
-    // values of shape function second derivatives with size 6,N (3,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) {
+    // values of shape function second derivatives with size 3,N (for 2D surface elements)
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) {
         // Default implementation returns empty vector
         return std::vector<std::vector<double>>();
     }
@@ -49,9 +50,10 @@ public:
     // legacy interface for second derivatives
     virtual void shape_deriv2(double* Grr, double* Grs, double* Gss, double r, double s) = 0;
 
+
 public:
     // gauss-points
-    std::vector<RgFem::RgGaussPoint> gaussPoints;
+    std::vector<RgGaussPoint> gaussPoints;
 
     // local derivatives of shape functions at gauss points
     Matrix Gr, Gs;
@@ -77,8 +79,8 @@ public:
     Rg2DTri3_(int ni, ElementType et);
 
     // Implementation of base class interface
-    // std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;  // Using base class implementation
-    // std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;  // Using base class implementation
+    // std::vector<double> evalH(const NaturalCoord& coord) override;  // Using base class implementation
+    // std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;  // Using base class implementation
     
     // Legacy interface implementation
     void shape(double* H, double r, double s) override;
@@ -118,8 +120,8 @@ public:
     Rg2DTri6_(int ni, ElementType et);
 
     // Implementation of base class interface
-    // std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;  // Using base class implementation
-    // std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;  // Using base class implementation
+    // std::vector<double> evalH(const NaturalCoord& coord) override;  // Using base class implementation
+    // std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;  // Using base class implementation
     
     // Legacy interface implementation
     void shape(double* H, double r, double s) override;
@@ -154,8 +156,8 @@ public:
     Rg2DQuad4_(int ni, ElementType et);
     
     // Implementation of base class interface
-    // std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;  // Using base class implementation
-    // std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;  // Using base class implementation
+    // std::vector<double> evalH(const NaturalCoord& coord) override;  // Using base class implementation
+    // std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;  // Using base class implementation
     
     // Legacy interface implementation
     void shape(double* H, double r, double s) override;
@@ -193,8 +195,8 @@ public:
     Rg2DQuad8_(int ni, ElementType et);
 
     // Implementation of base class interface
-    // std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;  // Using base class implementation
-    // std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;  // Using base class implementation
+    // std::vector<double> evalH(const NaturalCoord& coord) override;  // Using base class implementation
+    // std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;  // Using base class implementation
     
     // Legacy interface implementation
     void shape(double* H, double r, double s) override;
@@ -246,7 +248,7 @@ public:
 
 public:
     // gauss-points
-    std::vector<RgFem::RgGaussPoint> gaussPoints;
+    std::vector<RgGaussPoint> gaussPoints;
 
     // local derivatives of shape functions at gauss points
     Matrix Gr;
@@ -298,7 +300,5 @@ public:
 
     //! project integration point data to nodes
     void project_to_nodes(double* ai, double* ao) const override;
-
-private:
-    Matrix m_Ai;
 };
+

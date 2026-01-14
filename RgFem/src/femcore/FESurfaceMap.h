@@ -45,10 +45,10 @@ public:
 	int StorageFormat() const;
 
 public: // from FEDataMap
-	double value(const FEMaterialPoint& pt) override;
-	Vector3d valueVec3d(const FEMaterialPoint& mp) override;
-	Matrix3d valueMat3d(const FEMaterialPoint& mp) override;
-	Matrix3ds valueMat3ds(const FEMaterialPoint& mp) override;
+	double value(const RgMaterialPoint& pt) override;
+	Vector3d valueVec3d(const RgMaterialPoint& mp) override;
+	Matrix3d valueMat3d(const RgMaterialPoint& mp) override;
+	Matrix3ds valueMat3ds(const RgMaterialPoint& mp) override;
 
 public:
 	template <typename T> T value(int nface, int node)

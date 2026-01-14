@@ -29,10 +29,10 @@ void FEElemElemList::Init()
 	m_ref[0] = 0;
 	for (int i=0; i<m.Domains(); ++i)
 	{
-		FEDomain& dom = m.Domain(i);
+		RgDomain& dom = m.Domain(i);
 		for (int j=0; j<dom.Elements(); ++j, ++n)
 		{
-			FEElement& el = dom.ElementRef(j);
+			RgElement& el = dom.ElementRef(j);
 			nf = el.Faces();
 			if (n != 0) m_ref[n] = m_ref[n-1] + nf;
 			NN += nf;
@@ -60,14 +60,14 @@ bool FEElemElemList::Create(FEMesh* pmesh)
 	NEL.Create(m);
 
 	// loop over all solid elements first
-	int en0[FEElement::MAX_NODES], en1[FEElement::MAX_NODES], n0, n1, M = 0;
+	int en0[RgElement::MAX_NODES], en1[RgElement::MAX_NODES], n0, n1, M = 0;
 	int nf0, nf1;
 	for (int nd=0; nd<m.Domains(); ++nd)
 	{
-		FEDomain& dom = m.Domain(nd);
+		RgDomain& dom = m.Domain(nd);
 		for (int i=0; i<dom.Elements(); ++i)
 		{
-			FEElement& el = dom.ElementRef(i);
+			RgElement& el = dom.ElementRef(i);
 			
 			// get the number of neighbors
 			nf0 = el.Faces();
@@ -84,7 +84,7 @@ bool FEElemElemList::Create(FEMesh* pmesh)
 
 				// loop over all possible candidates
 				int nval = NEL.Valence(en0[0]);
-				FEElement** pne = NEL.ElementList(en0[0]);
+				RgElement** pne = NEL.ElementList(en0[0]);
 				int* pnei = NEL.ElementIndexList(en0[0]);
 				for (int k=0; k<nval; ++k)
 				{
@@ -193,7 +193,7 @@ bool FEElemElemList::Create(const FESurface* psurf)
 
 			// loop over all possible candidates
 			int nval = NEL.Valence(en0[0]);
-			FEElement** pne = NEL.ElementList(en0[0]);
+			RgElement** pne = NEL.ElementList(en0[0]);
 			for (int k=0; k<nval; ++k)
 			{
 				// make sure we don't compare the current element

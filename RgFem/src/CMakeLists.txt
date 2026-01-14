@@ -21,7 +21,6 @@ message(status "cmake module****${CMAKE_MODULE_PATH}")
 
 message(status "cmake source****${CMAKE_SOURCE_DIR}")
 
-
 # ģ·
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakes")
 
@@ -343,7 +342,7 @@ set(FEMCORE_SOURCES
     femcore/FEScalarValuator.cpp
     femcore/FESolidAnalysis.cpp
     femcore/FEStepComponent.cpp
-    femcore/FESurface.cpp
+    #femcore/FESurface.cpp
     femcore/FESurfaceBC.cpp
     femcore/FESurfaceLoad.cpp
     femcore/FESurfaceMap.cpp

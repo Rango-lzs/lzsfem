@@ -5,7 +5,7 @@
 #include <array>
 #include <vector>
 
-namespace RgFem {
+
 
 // forward declarations
 class Matrix3d;
@@ -113,6 +113,6 @@ private:
     double m_shearFactor;  // Shear correction factor (default 5/6 for rectangular)
 };
 
-} // namespace RgFem
+
 
 #endif // RGBEAM2DELEMENT_H

@@ -13,7 +13,7 @@ void FEBodyForce::LoadVector(FEGlobalVector& R)
 {
 	for (int i = 0; i<Domains(); ++i)
 	{
-		FEDomain* dom = Domain(i);
+		RgDomain* dom = Domain(i);
 		FEElasticDomain* edom = dynamic_cast<FEElasticDomain*>(dom);
 		if (edom) edom->BodyForce(R, *this);
 	}
@@ -25,7 +25,7 @@ void FEBodyForce::StiffnessMatrix(FELinearSystem& LS)
 {
 	for (int i = 0; i<Domains(); ++i)
 	{
-		FEDomain* dom = Domain(i);
+		RgDomain* dom = Domain(i);
 		FEElasticDomain* edom = dynamic_cast<FEElasticDomain*>(dom);
 		if (edom) edom->BodyForceStiffness(LS, *this);
 	}

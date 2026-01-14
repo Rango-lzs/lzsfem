@@ -1,16 +1,19 @@
 #pragma once
-#include "femcore/fem_export.h"
-#include "femcore/FEDofList.h"
-#include "femcore/FEMesh.h"
-#include <functional>
-#include <assert.h>
-#include "femcore/FEObjectBase.h"
 #include "../Matrix/FEGlobalMatrix.h"
+#include "femcore/FEDofList.h"
+#include "femcore/fem_export.h"
+#include "femcore/FEMesh.h"
+#include "femcore/FEObjectBase.h"
+
+#include <assert.h>
+#include <functional>
 
 //-----------------------------------------------------------------------------
 // forward declarations
+
+
 class RgElement;
-class FEMaterial;
+class RgMaterial;
 class FENode;
 class FEMesh;
 class FEModel;
@@ -26,105 +29,132 @@ struct FETimeInfo;
 //!
 class FEM_EXPORT RgDomain : public FEObjectBase
 {
-	DECLARE_META_CLASS(RgDomain, FEObjectBase);
+    DECLARE_META_CLASS(RgDomain, FEObjectBase);
 
 public:
-	//! constructor
-	RgDomain(FEModel* pfem);
+    //! constructor
+    RgDomain(FEModel* pfem);
 
-	//! destructor
-	virtual ~RgDomain();
+    //! destructor
+    virtual ~RgDomain();
 
-	//! copy constructor
-	RgDomain(const RgDomain& d);
+    //! copy constructor
+    RgDomain(const RgDomain& d);
 
-	//! assignment operator
-	RgDomain& operator = (const RgDomain& d);
+    //! assignment operator
+    RgDomain& operator=(const RgDomain& d);
 
-	//! Create domain data structures
-	virtual bool Create(int nsize, FE_Element_Spec espec) = 0;
+    //! Create domain data structures
+    virtual bool Create(int nsize, FE_Element_Spec espec) = 0;
 
-	virtual int domType() { return 1; }
+    virtual int domType()
+    {
+        return 1;
+    }
 
-	//! return number of elements
-	virtual int Elements() const = 0;
+    //! return number of elements
+    virtual int Elements() const = 0;
 
-	//! return a reference to an element
-	virtual RgElement& ElementRef(int n) = 0;
-	virtual const RgElement& ElementRef(int n) const = 0;
+    //! return a reference to an element
+    virtual RgElement& ElementRef(int n) = 0;
+    virtual const RgElement& ElementRef(int n) const = 0;
 
-	//! serialization
-	void Serialize(DumpStream& ar) override;
+    //! serialization
+    void Serialize(DumpStream& ar) override;
 
-	//! Get the total number of degrees of freedom
-	int GetTotalDofs();
-
-public:
-	// --- M E S H   I N T E R F A C E ---
-
-	//! return number of nodes
-	int Nodes() const { return (int)m_Node.size(); }
-
-	//! return a node
-	FENode& Node(int i) { return *m_Node[i]; }
-	const FENode& Node(int i) const { return *m_Node[i]; }
-
-	////! return a node index
-	//int NodeIndex(int i) const { return m_Node[i] - &m_pMesh->Node(0); }
-
-	//! return a node index from local node index
-	int GetNodeIndex(int inode) const { return m_lnode[inode]; }
-
-	//! return a node index from local element node index
-	int GetElementNodeIndex(int iel, int inode) const;
-
-	//! get the mesh
-	FEMesh* GetMesh() { return m_pMesh; }
+    //! Get the total number of degrees of freedom
+    int GetTotalDofs();
 
 public:
-	// --- M A T E R I A L   I N T E R F A C E ---
+    // --- M E S H   I N T E R F A C E ---
 
-	//! Set the domain's material
-	virtual void SetMaterial(FEMaterial* pmat);
+    //! return number of nodes
+    int Nodes() const
+    {
+        return (int)m_Node.size();
+    }
 
-	//! Get the domain's material
-	FEMaterial* GetMaterial() { return m_pMat; }
+    //! return a node
+    FENode& Node(int i)
+    {
+        return *m_Node[i];
+    }
+    const FENode& Node(int i) const
+    {
+        return *m_Node[i];
+    }
 
-	//! Get the domain's material
-	const FEMaterial* GetMaterial() const { return m_pMat; }
+    ////! return a node index
+    // int NodeIndex(int i) const { return m_Node[i] - &m_pMesh->Node(0); }
+
+    //! return a node index from local node index
+    int GetNodeIndex(int inode) const
+    {
+        return m_lnode[inode];
+    }
+
+    //! return a node index from local element node index
+    int GetElementNodeIndex(int iel, int inode) const;
+
+    //! get the mesh
+    FEMesh* GetMesh()
+    {
+        return m_pMesh;
+    }
 
 public:
-	// --- E L E M E N T   W A L K I N G ---
+    // --- M A T E R I A L   I N T E R F A C E ---
 
-	//! loop over all elements
-	virtual void ForEachElement(std::function<void(RgElement& el)> f);
+    //! Set the domain's material
+    virtual void SetMaterial(RgMaterial* pmat);
+
+    //! Get the domain's material
+    RgMaterial* GetMaterial()
+    {
+        return m_pMat;
+    }
+
+    //! Get the domain's material
+    const RgMaterial* GetMaterial() const
+    {
+        return m_pMat;
+    }
 
 public:
-	// --- S U B C L A S S   I N T E R F A C E ---
+    // --- E L E M E N T   W A L K I N G ---
 
-	//! Initialize data
-	virtual bool Init();
+    //! loop over all elements
+    virtual void ForEachElement(std::function<void(RgFem::RgElement& el)> f);
 
-	//! Reset data
-	virtual void Reset();
+public:
+    // --- S U B C L A S S   I N T E R F A C E ---
 
-	//! Initialize elements
-	virtual void PreSolveUpdate(const FETimeInfo& timeInfo);
+    //! Initialize data
+    virtual bool Init();
 
-	//! Activate domain
-	virtual void Activate();
-	bool isActive() { return true; }
+    //! Reset data
+    virtual void Reset();
 
-	//! Unpack element data
-	virtual void UnpackLM(RgElement& el, std::vector<int>& lm) = 0;
+    //! Initialize elements
+    virtual void PreSolveUpdate(const FETimeInfo& timeInfo);
 
-	virtual void BuildMatrixProfile(FEGlobalMatrix& M);
+    //! Activate domain
+    virtual void Activate();
+    bool isActive()
+    {
+        return true;
+    }
+
+    //! Unpack element data
+    virtual void UnpackLM(RgElement& el, std::vector<int>& lm) = 0;
+
+    virtual void BuildMatrixProfile(FEGlobalMatrix& M);
 
 protected:
-	FEModel*		m_pfem;		//!< pointer to model
-	FEMesh*		m_pMesh;		//!< pointer to mesh
-	FEMaterial*	m_pMat;		//!< pointer to material
-	std::vector<FENode*>	m_Node;		//!< list of nodes
-	std::vector<int>		m_lnode;		//!< local node indices
-	std::string		m_szname;		//!< domain name
+    FEModel* m_pfem;              //!< pointer to model
+    FEMesh* m_pMesh;              //!< pointer to mesh
+    RgMaterial* m_pMat;           //!< pointer to material
+    std::vector<FENode*> m_Node;  //!< list of nodes
+    std::vector<int> m_lnode;     //!< local node indices
+    std::string m_szname;         //!< domain name
 };

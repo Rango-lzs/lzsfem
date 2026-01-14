@@ -1,11 +1,11 @@
 #include "FEGlobalMatrix.h"
 #include "femcore/FEModel.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "femcore/FESurface.h"
 #include "../FEMesh.h"
 
 //-----------------------------------------------------------------------------
-FEElementMatrix::FEElementMatrix(const FEElement& el)
+FEElementMatrix::FEElementMatrix(const RgElement& el)
 {
 	m_node = el.getNodeIds();
 }
@@ -30,7 +30,7 @@ FEElementMatrix::FEElementMatrix(const FEElementMatrix& ke, double scale)
 }
 
 //-----------------------------------------------------------------------------
-FEElementMatrix::FEElementMatrix(const FEElement& el, const std::vector<int>& lmi) : Matrix((int)lmi.size(), (int)lmi.size())
+FEElementMatrix::FEElementMatrix(const RgElement& el, const std::vector<int>& lmi) : Matrix((int)lmi.size(), (int)lmi.size())
 {
 	m_node = el.m_node;
 	m_lmi = lmi;
@@ -38,7 +38,7 @@ FEElementMatrix::FEElementMatrix(const FEElement& el, const std::vector<int>& lm
 }
 
 //-----------------------------------------------------------------------------
-FEElementMatrix::FEElementMatrix(const FEElement& el, std::vector<int>& lmi, std::vector<int>& lmj) : Matrix((int)lmi.size(), (int)lmj.size())
+FEElementMatrix::FEElementMatrix(const RgElement& el, std::vector<int>& lmi, std::vector<int>& lmj) : Matrix((int)lmi.size(), (int)lmj.size())
 {
 	m_node = el.m_node;
 	m_lmi = lmi;
@@ -203,7 +203,7 @@ bool FEGlobalMatrix::Create(FEMesh& mesh, int neq)
 		// Loop over all active domains
 		for (int nd=0; nd<mesh.Domains(); ++nd)
 		{
-			FEDomain& d = mesh.Domain(nd);
+			RgDomain& d = mesh.Domain(nd);
 			d.BuildMatrixProfile(*this);
 		}
 	}
@@ -228,13 +228,13 @@ bool FEGlobalMatrix::Create(FEMesh& mesh, int nstart, int nend)
 		// Loop over all active domains
 		for (int nd = 0; nd<mesh.Domains(); ++nd)
 		{
-			FEDomain& d = mesh.Domain(nd);
+			RgDomain& d = mesh.Domain(nd);
 
 			std::vector<int> elm, lm;
 			const int NE = d.Elements();
 			for (int j = 0; j<NE; ++j)
 			{
-				FEElement& el = d.ElementRef(j);
+				RgElement& el = d.ElementRef(j);
 				d.UnpackLM(el, elm);
 
 				lm.clear();

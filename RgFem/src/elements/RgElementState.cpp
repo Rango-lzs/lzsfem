@@ -25,7 +25,7 @@ RgElementState::RgElementState(const RgElementState& s)
 
 RgElementState& RgElementState::operator=(const RgElementState& s)
 {
-    Clear();
+    destroy();
     m_data.resize(s.m_data.size());
     for (size_t i = 0; i < m_data.size(); ++i)
     {
@@ -37,7 +37,7 @@ RgElementState& RgElementState::operator=(const RgElementState& s)
     return (*this);
 }
 
-const std::vector<FEMaterialPoint*>& RgElementState::getMatPoints() const
+const std::vector<RgMaterialPoint*>& RgElementState::getMatPoints()
 {
     return m_data;
 }
@@ -47,7 +47,7 @@ int RgElementState::size() const
     return m_data.size();
 }
 
-FEMaterialPoint*& RgElementState::operator[](int i)
+RgMaterialPoint*& RgElementState::operator[](int i)
 {
     return m_data[i];
 }
@@ -63,5 +63,5 @@ void RgElementState::destroy()
 //! create
 void RgElementState::init(int n)
 {
-    m_data.assign(n, static_cast<FEMaterialPoint*>(0));
+    m_data.assign(n, static_cast<RgMaterialPoint*>(0));
 }

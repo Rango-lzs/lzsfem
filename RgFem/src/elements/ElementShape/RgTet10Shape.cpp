@@ -1,18 +1,14 @@
 #include "elements/ElementShape/RgTet10Shape.h"
 #include <vector>
-#include <stdexcept>
+#include "../NaturalCoord.h"
+
+
 
 std::vector<double> RgTet10Shape::evalH(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgTet10Shape requires NaturalCoord3d coordinates");
-    }
-    
-    double r = coord3d->getR();
-    double s = coord3d->getS();
-    double t = coord3d->getT();
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     double u = 1.0 - r - s - t;
     
     std::vector<double> H(10);
@@ -33,15 +29,9 @@ std::vector<double> RgTet10Shape::evalH(const NaturalCoord& coord)
 
 std::vector<std::vector<double>> RgTet10Shape::evalDeriv(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgTet10Shape requires NaturalCoord3d coordinates");
-    }
-    
-    double r = coord3d->getR();
-    double s = coord3d->getS();
-    double t = coord3d->getT();
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     double u = 1.0 - r - s - t;
     
     // Return derivatives in the format [dH/dr, dH/ds, dH/dt]
@@ -90,12 +80,6 @@ std::vector<std::vector<double>> RgTet10Shape::evalDeriv(const NaturalCoord& coo
 
 std::vector<std::vector<double>> RgTet10Shape::evalDeriv2(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgTet10Shape requires NaturalCoord3d coordinates");
-    }
-    
     // Return second derivatives in the format:
     // [d2H/dr2, d2H/ds2, d2H/dt2, d2H/drds, d2H/dsdt, d2H/drdt]
     // Each derivative is a vector of size 10 (one for each node)

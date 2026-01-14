@@ -168,7 +168,7 @@ void FEBioMeshSection4::ParseElementSection(XMLTag& tag, FEBModel::Part* part)
         tag.AttributeValue("id", el.id);
 
         // read the element data
-        tag.value(el.node, FEElement::MAX_NODES);
+        tag.value(el.node, RgElement::MAX_NODES);
 
         dom->AddElement(el);
         elemList.push_back(el.id);

@@ -2,7 +2,7 @@
 #include "FEBModel.h"
 #include "femcore/FEModel.h"
 #include "materials/FEMaterial.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "femcore/Domain/FEShellDomain.h"
 #include "logger/log.h"
 #include "femcore/FESurface.h"
@@ -415,7 +415,7 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 			if (mat == 0) return false;
 
 			// create the domain
-			FEDomain* dom = nullptr;// febio.CreateDomain(spec, &mesh, mat);
+			RgDomain* dom = nullptr;// febio.CreateDomain(spec, &mesh, mat);
 			if (dom == 0) return false;
 
 			if (dom->Create(elems, spec) == false)
@@ -433,7 +433,7 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 			{
 				const ELEMENT& domElement = partDomain.GetElement(j);
 
-				FEElement& el = dom->ElementRef(j);
+				RgElement& el = dom->ElementRef(j);
 				el.setId(++eid);
 
 				int ne = el.NodeSize();
@@ -464,7 +464,7 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 			mesh.AddDomain(dom);
 
 			// initialize material point data
-			dom->CreateMaterialPointData();
+			dom->CreateRgMaterialPointData();
 		}
 	}
 
@@ -532,10 +532,10 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 			// build the domain list
 			FEBModel::PartList* partList = surf->GetPartList();
 			std::vector<string> partNames = partList->GetPartList();
-			std::vector<FEDomain*> domList;
+			std::vector<RgDomain*> domList;
 			for (string s : partNames)
 			{
-				FEDomain* dom = mesh.FindDomain(s);
+				RgDomain* dom = mesh.FindDomain(s);
 				assert(dom);
 				if (dom == nullptr) return false;
 				domList.push_back(dom);
@@ -577,13 +577,13 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 		vector<int> elist = eset.ElementList();
 
 		int ne = (int) elist.size();
-		FEElementSet* feset = new FEElementSet(&fem);
+		RgElementSet* feset = new RgElementSet(&fem);
 		string name = partName + eset.Name();
 		feset->SetName(name);
 
 		// If a domain exists with the same name, we assume
 		// that this element set refers to the that domain (TODO: should actually check this!)
-		FEDomain* dom = mesh.FindDomain(name);
+		RgDomain* dom = mesh.FindDomain(name);
 		if (dom) feset->Create(dom);
 		else
 		{
@@ -591,12 +591,12 @@ bool FEBModel::BuildPart(FEModel& fem, Part& part, bool buildDomains, const Tran
 			// set still coincides with a domain, so let's see if we can find it. 
 			// see if all elements belong to the same domain
 			bool oneDomain = true;
-			FEElement* el = mesh.FindElementFromID(elist[0]); assert(el);
-			FEDomain* dom = dynamic_cast<FEDomain*>(el->GetMeshPartition());
+			RgElement* el = mesh.FindElementFromID(elist[0]); assert(el);
+			RgDomain* dom = dynamic_cast<RgDomain*>(el->GetMeshPartition());
 			for (int i = 1; i < elist.size(); ++i)
 			{
-				FEElement* el_i = mesh.FindElementFromID(elist[i]); assert(el);
-				FEDomain* dom_i = dynamic_cast<FEDomain*>(el_i->GetMeshPartition());
+				RgElement* el_i = mesh.FindElementFromID(elist[i]); assert(el);
+				RgDomain* dom_i = dynamic_cast<RgDomain*>(el_i->GetMeshPartition());
 
 				if (dom != dom_i)
 				{

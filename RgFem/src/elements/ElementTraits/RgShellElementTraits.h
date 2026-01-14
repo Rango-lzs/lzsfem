@@ -14,9 +14,9 @@
 #include "datastructure/Vector3d.h"
 #include "datastructure/Matrix3d.h"
 #include "elements/RgElemTypeDefine.h"
-#include "elements/NaturalCoord.h"
 #include <vector>
 #include "RgElementTraits.h"
+
 
 //=============================================================================
 //     S H E L L   E L E M E N T S
@@ -37,13 +37,13 @@ public:
     void init() override;
     
     // values of shape functions with size N
-    virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<double> evalH(const NaturalCoord& coord) override;
 
     // values of shape function derivatives with size 3,N (2,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord) override;
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord) override;
 
     // values of shape function second derivatives with size 6,N (3,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord) override ;
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord) override ;
     
  protected:
 

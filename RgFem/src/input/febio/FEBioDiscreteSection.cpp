@@ -87,7 +87,7 @@
 //	}
 //	while (!tag.isend());
 //
-//	pd->CreateMaterialPointData();
+//	pd->CreateRgMaterialPointData();
 //}
 //
 ////---------------------------------------------------------------------------------
@@ -206,7 +206,7 @@
 //			ReadParameterList(tag, pl);
 //
 //			// create an element set for this domain
-//			FEElementSet* elset = new FEElementSet(&fem);
+//			RgElementSet* elset = new RgElementSet(&fem);
 //			elset->Create(pd);
 //			elset->SetName(pd->GetName());
 //			mesh.AddElementSet(elset);
@@ -214,7 +214,7 @@
 //			// create material point data for this domain
 //
 //			// initialize domain
-//			pd->CreateMaterialPointData();
+//			pd->CreateRgMaterialPointData();
 //		}
 //		else if (tag == "rigid_axial_force") ParseRigidAxialForce(tag);
 //		else if (tag == "rigid_cable") ParseRigidCable(tag);

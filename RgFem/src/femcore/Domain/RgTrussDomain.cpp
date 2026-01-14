@@ -40,7 +40,7 @@ bool RgTrussDomain::Create(int nsize, FE_Element_Spec espec)
 }
 
 //-----------------------------------------------------------------------------
-void RgTrussDomain::ForEachElement(std::function<void(FEElement& el)> f)
+void RgTrussDomain::ForEachElement(std::function<void(RgElement& el)> f)
 {
 	int NE = Elements();
 	for (int i = 0; i < NE; ++i) f(ElementRef(i));
@@ -104,13 +104,13 @@ bool RgTrussDomain::Init()
 //-----------------------------------------------------------------------------
 void RgTrussDomain::Reset()
 {
-	ForEachMaterialPoint([](FEMaterialPoint& mp) {
+	ForEachMaterialPoint([](RgMaterialPoint& mp) {
 		mp.Init();
 	});
 }
 
 //-----------------------------------------------------------------------------
-void RgTrussDomain::UnpackLM(FEElement &el, vector<int>& lm)
+void RgTrussDomain::UnpackLM(RgElement &el, vector<int>& lm)
 {
 	lm.resize(6);
 	FENode& n1 = m_pMesh->Node(el.m_node[0]);

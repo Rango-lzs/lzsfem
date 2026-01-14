@@ -1,7 +1,7 @@
 #include "FENodeElemList.h"
 #include "FESurface.h"
 #include "FEMesh.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "femcore/Domain/FEShellDomain.h"
 #include "basicio/DumpStream.h"
 
@@ -92,10 +92,10 @@ void FENodeElemList::Create(FEMesh& mesh)
 	int nsize = 0;
 	for (nd=0; nd<mesh.Domains(); ++nd)
 	{
-		FEDomain& d = mesh.Domain(nd);
+		RgDomain& d = mesh.Domain(nd);
 		for (i=0; i<d.Elements(); ++i)
 		{
-			FEElement& el = d.ElementRef(i);
+			RgElement& el = d.ElementRef(i);
 			for (j=0; j<el.NodeSize(); ++j)
 			{
 				n = el.m_node[j];
@@ -127,11 +127,11 @@ void FENodeElemList::Create(FEMesh& mesh)
 	int nindex = 0;
 	for (nd=0; nd<mesh.Domains(); ++nd)
 	{
-		FEDomain& d = mesh.Domain(nd);
+		RgDomain& d = mesh.Domain(nd);
         if (d.Class() == FE_DOMAIN_SHELL) {
             for (i=0; i<d.Elements(); ++i, ++nindex)
             {
-                FEElement& el = d.ElementRef(i);
+                RgElement& el = d.ElementRef(i);
                 for (j=0; j<el.NodeSize(); ++j)
                 {
                     n = el.m_node[j];
@@ -144,11 +144,11 @@ void FENodeElemList::Create(FEMesh& mesh)
 	}
     for (nd=0; nd<mesh.Domains(); ++nd)
     {
-        FEDomain& d = mesh.Domain(nd);
+        RgDomain& d = mesh.Domain(nd);
         if (d.Class() != FE_DOMAIN_SHELL) {
             for (i=0; i<d.Elements(); ++i, ++nindex)
             {
-                FEElement& el = d.ElementRef(i);
+                RgElement& el = d.ElementRef(i);
                 for (j=0; j<el.NodeSize(); ++j)
                 {
                     n = el.m_node[j];
@@ -164,7 +164,7 @@ void FENodeElemList::Create(FEMesh& mesh)
 //-----------------------------------------------------------------------------
 //! This function builds the node-element list for a domain
 
-void FENodeElemList::Create(FEDomain& dom)
+void FENodeElemList::Create(RgDomain& dom)
 {
 	int i, j, n;
 
@@ -182,7 +182,7 @@ void FENodeElemList::Create(FEDomain& dom)
 	int nsize = 0;
 	for (i=0; i<dom.Elements(); ++i)
 	{
-		FEElement& el = dom.ElementRef(i);
+		RgElement& el = dom.ElementRef(i);
 		for (j=0; j<el.NodeSize(); ++j)
 		{
 			n = el.m_node[j];
@@ -208,7 +208,7 @@ void FENodeElemList::Create(FEDomain& dom)
 	// fill eref table
 	for (i=0; i<dom.Elements(); ++i)
 	{
-		FEElement& el = dom.ElementRef(i);
+		RgElement& el = dom.ElementRef(i);
 		for (j=0; j<el.NodeSize(); ++j)
 		{
 			n = el.m_node[j];

@@ -1,10 +1,10 @@
 #include "FENewtonSolver.h"
 
 #include "basicio/DumpStream.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "femcore/FEAnalysis/FEAnalysis.h"
 #include "femcore/FEException.h"
-#include "femcore/FEGlobalMatrix.h"
+#include "femcore/Matrix/FEGlobalMatrix.h"
 #include "femcore/FELinearConstraintManager.h"
 #include "femcore/FELinearSystem.h"
 #include "femcore/FEModel.h"
@@ -1068,12 +1068,12 @@ void FENewtonSolver::Update(std::vector<double>& ui)
     int ndom = mesh.Domains();
     for (int i = 0; i < ndom; ++i)
     {
-        FEDomain& dom = mesh.Domain(i);
+        RgDomain& dom = mesh.Domain(i);
         int NE = dom.Elements();
         for (int j = 0; j < NE; ++j)
         {
             //Rango TODO:
-            /*FEElement& el = dom.ElementRef(j);
+            /*RgElement& el = dom.ElementRef(j);
             if (el.m_lm >= 0)
                 el.m_val = U[el.m_lm];*/
         }
@@ -1127,11 +1127,11 @@ void FENewtonSolver::Update2(const std::vector<double>& ui)
     int ndom = mesh.Domains();
     for (int i = 0; i < ndom; ++i)
     {
-        FEDomain& dom = mesh.Domain(i);
+        RgDomain& dom = mesh.Domain(i);
         int NE = dom.Elements();
         for (int j = 0; j < NE; ++j)
         {
-            /*FEElement& el = dom.ElementRef(j);
+            /*RgElement& el = dom.ElementRef(j);
             if (el.m_lm >= 0)
                 el.m_val = U[el.m_lm];*/
         }

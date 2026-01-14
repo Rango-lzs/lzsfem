@@ -2,7 +2,7 @@
 #include "basicio/DataRecord.h"
 #include "ElementDataRecord.h"
 
-class FEDomain;
+class RgDomain;
 
 //-----------------------------------------------------------------------------
 //! Base class for domain log data
@@ -13,7 +13,7 @@ class FEM_EXPORT FELogDomainData : public FELogData
 public:
     FELogDomainData() : FELogData() {}
     virtual ~FELogDomainData() {}
-    virtual double value(FEDomain& rc) = 0;
+    virtual double value(RgDomain& rc) = 0;
 
     virtual bool SetParameters(std::vector<std::string>& params) { return false; }
 };
@@ -39,7 +39,7 @@ class FEM_EXPORT FELogAvgDomainData : public FELogDomainData
 public:
     FELogAvgDomainData();
     ~FELogAvgDomainData();
-    double value(FEDomain& rc) override;
+    double value(RgDomain& rc) override;
 
     bool SetParameters(std::vector<std::string>& params);
 
@@ -53,7 +53,7 @@ class FEM_EXPORT FELogPctDomainData : public FELogDomainData
 public:
     FELogPctDomainData();
     ~FELogPctDomainData();
-    double value(FEDomain& rc) override;
+    double value(RgDomain& rc) override;
 
     bool SetParameters(std::vector<std::string>& params);
 
@@ -68,7 +68,7 @@ class FEM_EXPORT FELogIntegralDomainData : public FELogDomainData
 public:
 	FELogIntegralDomainData();
 	~FELogIntegralDomainData();
-	double value(FEDomain& rc) override;
+	double value(RgDomain& rc) override;
 
 	bool SetParameters(std::vector<std::string>& params);
 

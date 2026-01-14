@@ -3,7 +3,7 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace RgFem {
+
 
 RgBeam2dGeomNLElement::RgBeam2dGeomNLElement()
 {
@@ -329,4 +329,4 @@ void RgBeam2dGeomNLElement::calculateInternalForceVector(RgVector& F) const
     // F_int = integral of B_nl^T * σ dV
 }
 
-} // namespace RgFem
+

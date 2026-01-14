@@ -40,22 +40,22 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 	int max_id = 0;
 	for (int i = 0; i<mesh.Domains(); ++i)
 	{
-		FEDomain& d = mesh.Domain(i);
+		RgDomain& d = mesh.Domain(i);
 		for (int j = 0; j<d.Elements(); ++j)
 		{
-			FEElement& el = d.ElementRef(j);
+			RgElement& el = d.ElementRef(j);
 			if (el.getId() > max_id) max_id = el.getId();
 		}
 	}
 
 	// create the pelem array
-	m_pelem.assign(max_id, static_cast<FEElement*>(0));
+	m_pelem.assign(max_id, static_cast<RgElement*>(0));
 	for (int nd = 0; nd<mesh.Domains(); ++nd)
 	{
-		FEDomain& d = mesh.Domain(nd);
+		RgDomain& d = mesh.Domain(nd);
 		for (int i = 0; i<d.Elements(); ++i)
 		{
-			FEElement& el = d.ElementRef(i);
+			RgElement& el = d.ElementRef(i);
 			assert(m_pelem[el.getId() - 1] == 0);
 			m_pelem[el.getId() - 1] = &el;
 		}
@@ -70,7 +70,7 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 		if (tag == "ElementData")
 		{
 			const char* szset = tag.AttributeValue("elem_set");
-			FEElementSet* part = mesh.FindElementSet(szset);
+			RgElementSet* part = mesh.FindElementSet(szset);
 			if (part == 0) throw XMLReader::InvalidAttributeValue(tag, "elem_set", szset);
 
 			// see if the data will be generated or tabulated
@@ -290,13 +290,13 @@ void FEBioMeshDataSection::Parse(XMLTag& tag)
 }
 
 //-----------------------------------------------------------------------------
-void FEBioMeshDataSection::ParseShellThickness(XMLTag& tag, FEElementSet& set)
+void FEBioMeshDataSection::ParseShellThickness(XMLTag& tag, RgElementSet& set)
 {
 	if (tag.isleaf())
 	{
 		FEMesh& mesh = GetFEModel()->GetMesh();
-		double h[FEElement::MAX_NODES];
-		int nval = tag.value(h, FEElement::MAX_NODES);
+		double h[RgElement::MAX_NODES];
+		int nval = tag.value(h, RgElement::MAX_NODES);
 
 		for (int i = 0; i<set.Elements(); ++i)
 		{
@@ -310,13 +310,13 @@ void FEBioMeshDataSection::ParseShellThickness(XMLTag& tag, FEElementSet& set)
 	else
 	{
 		std::vector<ELEMENT_DATA> data;
-		ParseElementData(tag, set, data, FEElement::MAX_NODES);
+		ParseElementData(tag, set, data, RgElement::MAX_NODES);
 		for (int i = 0; i<(int)data.size(); ++i)
 		{
 			ELEMENT_DATA& di = data[i];
 			if (di.nval > 0)
 			{
-				FEElement& el = *m_pelem[set[i] - 1];
+				RgElement& el = *m_pelem[set[i] - 1];
 
 				if (el.Class() != FE_ELEM_SHELL) throw XMLReader::InvalidTag(tag);
 				FEShellElement& shell = static_cast<FEShellElement&> (el);
@@ -331,17 +331,17 @@ void FEBioMeshDataSection::ParseShellThickness(XMLTag& tag, FEElementSet& set)
 
 //-----------------------------------------------------------------------------
 // Defined in FEBioGeometrySection.cpp
-void set_element_fiber(FEElement& el, const Vector3d& v, int ncomp);
-void set_element_mat_axis(FEElement& el, const Vector3d& v1, const Vector3d& v2, int ncomp);
+void set_element_fiber(RgElement& el, const Vector3d& v, int ncomp);
+void set_element_mat_axis(RgElement& el, const Vector3d& v1, const Vector3d& v2, int ncomp);
 
 //-----------------------------------------------------------------------------
-void FEBioMeshDataSection::ParseMaterialFibers(XMLTag& tag, FEElementSet& set)
+void FEBioMeshDataSection::ParseMaterialFibers(XMLTag& tag, RgElementSet& set)
 {
 	// find the domain with the same name
 	std::string name = set.GetName();
 
 	FEMesh* mesh = const_cast<FEMesh*>(set.GetMesh());
-	FEDomain* dom = mesh->FindDomain(name);
+	RgDomain* dom = mesh->FindDomain(name);
 	if (dom == nullptr) throw XMLReader::InvalidAttributeValue(tag, "elem_set", name.c_str());
 
 	// get the material
@@ -367,7 +367,7 @@ void FEBioMeshDataSection::ParseMaterialFibers(XMLTag& tag, FEElementSet& set)
 		ELEMENT_DATA& di = data[i];
 		if (di.nval > 0)
 		{
-			FEElement& el = *m_pelem[set[i] - 1];
+			RgElement& el = *m_pelem[set[i] - 1];
 
 			if (di.nval != 3) throw XMLReader::InvalidTag(tag);
 			Vector3d v(di.val[0], di.val[1], di.val[2]);
@@ -378,7 +378,7 @@ void FEBioMeshDataSection::ParseMaterialFibers(XMLTag& tag, FEElementSet& set)
 }
 
 //-----------------------------------------------------------------------------
-void FEBioMeshDataSection::ParseMaterialFiberProperty(XMLTag& tag, FEElementSet& set)
+void FEBioMeshDataSection::ParseMaterialFiberProperty(XMLTag& tag, RgElementSet& set)
 {
 	const char* szvar = tag.AttributeValue("var");
 	char szbuf[256] = { 0 };
@@ -401,7 +401,7 @@ void FEBioMeshDataSection::ParseMaterialFiberProperty(XMLTag& tag, FEElementSet&
 		ELEMENT_DATA& di = data[i];
 		if (di.nval > 0)
 		{
-			FEElement& el = *m_pelem[set[i] - 1];
+			RgElement& el = *m_pelem[set[i] - 1];
 
 			if (di.nval != 3) throw XMLReader::InvalidTag(tag);
 			Vector3d v(di.val[0], di.val[1], di.val[2]);
@@ -412,7 +412,7 @@ void FEBioMeshDataSection::ParseMaterialFiberProperty(XMLTag& tag, FEElementSet&
 }
 
 //-----------------------------------------------------------------------------
-void FEBioMeshDataSection::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
+void FEBioMeshDataSection::ParseMaterialAxes(XMLTag& tag, RgElementSet& set)
 {
 	const char* szvar = tag.AttributeValue("var");
 	char szbuf[256] = { 0 };
@@ -431,7 +431,7 @@ void FEBioMeshDataSection::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 	{
 		throw XMLReader::InvalidAttributeValue(tag, "elem_set", domName.c_str());
 	}
-	FEDomain* dom = DL.GetDomain(0);
+	RgDomain* dom = DL.GetDomain(0);
 
 	// get its material
 	FEMaterial* domMat = dom->GetMaterial();
@@ -474,7 +474,7 @@ void FEBioMeshDataSection::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 			if ((lid < 0) || (lid >= set.Elements())) throw XMLReader::InvalidAttributeValue(tag, "lid", szlid);
 
 			// get the element
-			FEElement* el = mesh.FindElementFromID(set[lid]);
+			RgElement* el = mesh.FindElementFromID(set[lid]);
 			if (el == 0) throw XMLReader::InvalidAttributeValue(tag, "lid", szlid);
 
 			// read parameters
@@ -528,7 +528,7 @@ void FEBioMeshDataSection::ParseMaterialAxes(XMLTag& tag, FEElementSet& set)
 }
 
 //-----------------------------------------------------------------------------
-void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, FEElementSet& set, const std::string& pname)
+void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, RgElementSet& set, const std::string& pname)
 {
 	// get the (optional) scale factor
 	double scale = 1.0;
@@ -655,7 +655,7 @@ void FEBioMeshDataSection::ParseMaterialData(XMLTag& tag, FEElementSet& set, con
 }
 
 //-----------------------------------------------------------------------------
-void FEBioMeshDataSection::ParseElementData(XMLTag& tag, FEElementSet& set, std::vector<ELEMENT_DATA>& values, int nvalues)
+void FEBioMeshDataSection::ParseElementData(XMLTag& tag, RgElementSet& set, std::vector<ELEMENT_DATA>& values, int nvalues)
 {
 	// get the total nr of elements
 	FEModel& fem = *GetFEModel();
@@ -689,7 +689,7 @@ void FEBioMeshDataSection::ParseElementData(XMLTag& tag, FEElementSet& set, std:
 //-----------------------------------------------------------------------------
 void FEBioMeshDataSection::ParseElementData(XMLTag& tag, FEDomainMap& map)
 {
-	const FEElementSet* set = map.GetElementSet();
+	const RgElementSet* set = map.GetElementSet();
 	if (set == nullptr) throw XMLReader::InvalidTag(tag);
 
 	// get the total nr of elements
@@ -700,7 +700,7 @@ void FEBioMeshDataSection::ParseElementData(XMLTag& tag, FEDomainMap& map)
 	FEDataType dataType = map.DataType();
 	int dataSize = map.DataSize();
 	int m = map.MaxNodes();
-	double data[3 * FEElement::MAX_NODES]; // make sure this array is large enough to store any data map type (current 3 for FE_VEC3D)
+	double data[3 * RgElement::MAX_NODES]; // make sure this array is large enough to store any data map type (current 3 for FE_VEC3D)
 
 	// TODO: For Vector3d values, I sometimes need to normalize the vectors (e.g. for fibers). How can I do this?
 

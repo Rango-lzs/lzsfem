@@ -90,7 +90,7 @@ bool FEBioBoundarySection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int nf
 		else if (nfmt == 1)
 		{
 			tag.value(nf, 2);
-			FEElement* pe = m.FindElementFromID(nf[0]);
+			RgElement* pe = m.FindElementFromID(nf[0]);
 			if (pe)
 			{
 				int ne[9];
@@ -356,7 +356,7 @@ void FEBioBoundarySection::ParseSpringSection(XMLTag &tag)
 	//}
 	//while (!tag.isend());
 
-	//pd->CreateMaterialPointData();
+	//pd->CreateRgMaterialPointData();
 }
 
 //-----------------------------------------------------------------------------

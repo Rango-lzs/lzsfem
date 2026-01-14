@@ -1,4 +1,4 @@
-#include "elements/FEShellElement.h"
+#include "elements/RgElement/RgShellElement.h"
 #include "basicio/DumpStream.h"
 using namespace std;
 
@@ -178,3 +178,4 @@ void RgShellElementNew::Serialize(DumpStream &ar)
 	ar & m_Kwa;
 	ar & m_E;
 }
+

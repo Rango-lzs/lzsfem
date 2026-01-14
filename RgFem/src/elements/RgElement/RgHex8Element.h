@@ -8,11 +8,11 @@
 #include <vector>
 #include <string>
 
-// forward declarations for project types
-class RgMaterial;
+
 class Matrix3ds;
 
-namespace RgFem {
+    // forward declarations for project types
+    class RgMaterial;
 
 /*
     RgHex8Element
@@ -37,36 +37,14 @@ public:
 
     ElementType elementType() const override;
     ElementShape elementShape() const override;
-
-    //使用ElementTraitsStore来管理ElementTraits,
-    static RgElementTraits* fullIntTraits();
-    static RgElementTraits* reduceIntTraits();
-
-    // Stiffness and Mass Matrices
-    virtual void calculateStiffnessMatrix(Matrix& K) const override;
-    virtual void calculateMassMatrix(Matrix& M) const override;
-    virtual void calculateDampingMatrix(Matrix& C) const override;
-     
-    // Internal force vector (residual)
-    virtual void calculateInternalForceVector(std::vector<double>& F) const override;
-
-    // Strain and Stress Calculations
-    virtual void calculateStress(FEMaterialPoint& matPt, StressTensor& stress) override;
-    virtual void calculateStrain(FEMaterialPoint& matPt, StrainTensor& strain) override;
-    
-    // Strain energy calculation
-    virtual double calculateStrainEnergy() const override;
-    // Kinetic energy calculation
-    virtual double calculateKineticEnergy() const override;
+    ElementCategory elementCategory() const override;
 
     // Serialization
     virtual void Serialize(DumpStream& ar) override;
    
 protected:
     // Compute B matrix (strain-displacement matrix) at natural coordinates
-    void computeBMatrix(const Vector3d& naturalCoord, Matrix& B) const;
+    void computeBMatrix(const NaturalCoord& naturalCoord, Matrix& B);
 };
-
-} // namespace RgFem
 
 #endif // RGHEX8ELEMENT_H

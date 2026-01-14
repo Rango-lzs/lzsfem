@@ -159,7 +159,7 @@ void FESurfaceMap::Serialize(DumpStream& ar)
 }
 
 //-----------------------------------------------------------------------------
-double FESurfaceMap::value(const FEMaterialPoint& pt)
+double FESurfaceMap::value(const RgMaterialPoint& pt)
 {
 	double v = 0.0;
 	switch (m_format)
@@ -169,7 +169,7 @@ double FESurfaceMap::value(const FEMaterialPoint& pt)
 			if (pt.m_elem)
 			{
 				// get the element this material point is in
-				FESurfaceElement* pe = dynamic_cast<FESurfaceElement*>(pt.m_elem);
+				RgSurfaceElement* pe = dynamic_cast<RgSurfaceElement*>(pt.m_elem);
 				assert(pe);
 
 				// make sure this element belongs to this domain
@@ -208,7 +208,7 @@ double FESurfaceMap::value(const FEMaterialPoint& pt)
 	case FMT_MULT:
 		{
 			// get the element this material point is in
-			FESurfaceElement* pe = dynamic_cast<FESurfaceElement*>(pt.m_elem);
+			RgSurfaceElement* pe = dynamic_cast<RgSurfaceElement*>(pt.m_elem);
 			assert(pe);
 
 			// make sure this element belongs to this domain
@@ -244,10 +244,10 @@ double FESurfaceMap::value(const FEMaterialPoint& pt)
 }
 
 //-----------------------------------------------------------------------------
-Vector3d FESurfaceMap::valueVec3d(const FEMaterialPoint& pt)
+Vector3d FESurfaceMap::valueVec3d(const RgMaterialPoint& pt)
 {
 	// get the element this material point is in
-	FESurfaceElement* pe = dynamic_cast<FESurfaceElement*>(pt.m_elem);
+	RgSurfaceElement* pe = dynamic_cast<RgSurfaceElement*>(pt.m_elem);
 	assert(pe);
 
 	// make sure this element belongs to this domain
@@ -272,10 +272,10 @@ Vector3d FESurfaceMap::valueVec3d(const FEMaterialPoint& pt)
 }
 
 //-----------------------------------------------------------------------------
-Matrix3d FESurfaceMap::valueMat3d(const FEMaterialPoint& pt)
+Matrix3d FESurfaceMap::valueMat3d(const RgMaterialPoint& pt)
 {
 	// get the element this material point is in
-	FESurfaceElement* pe = dynamic_cast<FESurfaceElement*>(pt.m_elem);
+	RgSurfaceElement* pe = dynamic_cast<RgSurfaceElement*>(pt.m_elem);
 	assert(pe);
 
 	// make sure this element belongs to this domain
@@ -301,10 +301,10 @@ Matrix3d FESurfaceMap::valueMat3d(const FEMaterialPoint& pt)
 
 
 //-----------------------------------------------------------------------------
-Matrix3ds FESurfaceMap::valueMat3ds(const FEMaterialPoint& pt)
+Matrix3ds FESurfaceMap::valueMat3ds(const RgMaterialPoint& pt)
 {
 	// get the element this material point is in
-	FESurfaceElement* pe = dynamic_cast<FESurfaceElement*>(pt.m_elem);
+	RgSurfaceElement* pe = dynamic_cast<RgSurfaceElement*>(pt.m_elem);
 	assert(pe);
 
 	// make sure this element belongs to this domain

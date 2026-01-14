@@ -1,412 +1,216 @@
+#include "Rg1DElementShape.h"
 
-#include "FESurfaceElementShape.h"
-#include "elements/NaturalCoord.h"
-#include <vector>
 
-// Implementation of the new virtual methods for FESurfaceElementShape
-std::vector<double> FESurfaceElementShape::evalH(const RgFem::NaturalCoord& coord)
+
+// Implementation for 2-node linear 1D element
+std::vector<double> Rg1D2NodeElementShape::evalH(const NaturalCoord& coord)
 {
-    // Default implementation using the legacy interface
-    std::vector<double> result(this->nodes());
     double r = coord.getR();
-    double s = coord.getS();
-    shape_fnc(result.data(), r, s);
-    return result;
+    std::vector<double> H(2);
+    
+    // Linear 1D shape functions in natural coordinates [-1, 1]
+    H[0] = 0.5 * (1.0 - r);  // Node 1 at r = -1
+    H[1] = 0.5 * (1.0 + r);  // Node 2 at r = +1
+    
+    return H;
 }
 
-std::vector<std::vector<double>> FESurfaceElementShape::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> Rg1D2NodeElementShape::evalDeriv(const NaturalCoord& coord)
 {
-    // Default implementation using the legacy interface
-    int nNodes = this->nodes();
-    std::vector<std::vector<double>> result(2, std::vector<double>(nNodes)); // 2 for d/dr, d/ds
+    // For 1D element, derivatives are with respect to the single natural coordinate
+    std::vector<std::vector<double>> deriv(1, std::vector<double>(2));
+    
+    // Derivatives of shape functions with respect to r
+    deriv[0][0] = -0.5;  // dN1/dr
+    deriv[0][1] = 0.5;   // dN2/dr
+    
+    return deriv;
+}
+
+std::vector<std::vector<double>> Rg1D2NodeElementShape::evalDeriv2(const NaturalCoord& coord)
+{
+    // For 1D element, second derivatives
+    std::vector<std::vector<double>> deriv2(1, std::vector<double>(2));
+    
+    // Second derivatives of shape functions with respect to r
+    deriv2[0][0] = 0.0;  // d2N1/dr2
+    deriv2[0][1] = 0.0;  // d2N2/dr2
+    
+    return deriv2;
+}
+
+// Implementation for 3-node quadratic 1D element
+std::vector<double> Rg1D3NodeElementShape::evalH(const NaturalCoord& coord)
+{
     double r = coord.getR();
-    double s = coord.getS();
-    shape_deriv(result[0].data(), result[1].data(), r, s);
-    return result;
+    std::vector<double> H(3);
+    
+    // Quadratic 1D shape functions in natural coordinates [-1, 1]
+    // Node 1 at r = -1, Node 2 at r = 0, Node 3 at r = +1
+    H[0] = 0.5 * r * (r - 1.0);   // N1
+    H[1] = (1.0 - r) * (1.0 + r); // N2
+    H[2] = 0.5 * r * (r + 1.0);   // N3
+    
+    return H;
 }
 
-std::vector<std::vector<double>> FESurfaceElementShape::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> Rg1D3NodeElementShape::evalDeriv(const NaturalCoord& coord)
 {
-    // Default implementation using the legacy interface
-    int nNodes = this->nodes();
-    std::vector<std::vector<double>> result(3, std::vector<double>(nNodes)); // 3 for d2/dr2, d2/ds2, d2/drdt
+    // For 1D element, derivatives are with respect to the single natural coordinate
+    std::vector<std::vector<double>> deriv(1, std::vector<double>(3));
+    
     double r = coord.getR();
-    double s = coord.getS();
-    shape_deriv2(result[0].data(), result[1].data(), result[2].data(), r, s);
-    return result;
+    
+    // Derivatives of shape functions with respect to r
+    deriv[0][0] = r - 0.5;      // dN1/dr
+    deriv[0][1] = -2.0 * r;     // dN2/dr
+    deriv[0][2] = r + 0.5;      // dN3/dr
+    
+    return deriv;
 }
 
-//=============================================================================
-//              Q U A D 4
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-void FEQuad4::shape_fnc(double* H, double r, double s)
+std::vector<std::vector<double>> Rg1D3NodeElementShape::evalDeriv2(const NaturalCoord& coord)
 {
-	H[0] = 0.25*(1 - r)*(1 - s);
-	H[1] = 0.25*(1 + r)*(1 - s);
-	H[2] = 0.25*(1 + r)*(1 + s);
-	H[3] = 0.25*(1 - r)*(1 + s);
+    // For 1D element, second derivatives
+    std::vector<std::vector<double>> deriv2(1, std::vector<double>(3));
+    
+    // Second derivatives of shape functions with respect to r
+    deriv2[0][0] = 1.0;   // d2N1/dr2
+    deriv2[0][1] = -2.0;  // d2N2/dr2
+    deriv2[0][2] = 1.0;   // d2N3/dr2
+    
+    return deriv2;
 }
 
-//-----------------------------------------------------------------------------
-void FEQuad4::shape_deriv(double* Hr, double* Hs, double r, double s)
+// Implementation for 4-node cubic 1D element
+std::vector<double> Rg1D4NodeElementShape::evalH(const NaturalCoord& coord)
 {
-	Hr[0] = -0.25*(1 - s); Hs[0] = -0.25*(1 - r);
-	Hr[1] =  0.25*(1 - s); Hs[1] = -0.25*(1 + r);
-	Hr[2] =  0.25*(1 + s); Hs[2] =  0.25*(1 + r);
-	Hr[3] = -0.25*(1 + s); Hs[3] =  0.25*(1 - r);
+    double r = coord.getR();
+    std::vector<double> H(4);
+    
+    // Cubic 1D shape functions in natural coordinates [-1, 1]
+    // Node 1 at r = -1, Node 2 at -1/3, Node 3 at 1/3, Node 4 at r = +1
+    H[0] = -0.5 * (r - 0.0) * (r - 1.0/3.0) * (r - 1.0) / ((-1.0/3.0) * (2.0/3.0) * 2.0); // N1 at r=-1
+    H[1] = (r + 1.0) * (r - 1.0/3.0) * (r - 1.0) / ((4.0/3.0) * (-2.0/3.0) * (-4.0/3.0)); // N2 at r=-1/3
+    H[2] = (r + 1.0) * (r + 1.0/3.0) * (r - 1.0) / ((2.0/3.0) * (4.0/3.0) * (-2.0/3.0)); // N3 at r=1/3
+    H[3] = (r + 1.0) * (r + 1.0/3.0) * (r - 0.0) / (2.0 * (4.0/3.0) * (2.0/3.0)); // N4 at r=1
+    
+    // Simplified Lagrange cubic shape functions
+    // N1 = -0.5 * r * (r-1/3) * (r-1) / (2/9)
+    // N2 = (r+1) * (r-1/3) * (r-1) / (64/27)
+    // N3 = (r+1) * (r+1/3) * (r-1) / (-64/27)
+    // N4 = 0.5 * (r+1) * (r+1/3) * r / (2/9)
+    
+    // More direct cubic Lagrange shape functions:
+    // At r = [-1, -1/3, 1/3, 1]
+    double r1 = -1.0, r2 = -1.0/3.0, r3 = 1.0/3.0, r4 = 1.0;
+    
+    // N1(r) = [(r-r2)(r-r3)(r-r4)] / [(r1-r2)(r1-r3)(r1-r4)]
+    double den1 = (r1-r2)*(r1-r3)*(r1-r4);
+    H[0] = ((r-r2)*(r-r3)*(r-r4)) / den1;
+    
+    // N2(r) = [(r-r1)(r-r3)(r-r4)] / [(r2-r1)(r2-r3)(r2-r4)]
+    double den2 = (r2-r1)*(r2-r3)*(r2-r4);
+    H[1] = ((r-r1)*(r-r3)*(r-r4)) / den2;
+    
+    // N3(r) = [(r-r1)(r-r2)(r-r4)] / [(r3-r1)(r3-r2)(r3-r4)]
+    double den3 = (r3-r1)*(r3-r2)*(r3-r4);
+    H[2] = ((r-r1)*(r-r2)*(r-r4)) / den3;
+    
+    // N4(r) = [(r-r1)(r-r2)(r-r3)] / [(r4-r1)(r4-r2)(r4-r3)]
+    double den4 = (r4-r1)*(r4-r2)*(r4-r3);
+    H[3] = ((r-r1)*(r-r2)*(r-r3)) / den4;
+    
+    return H;
 }
 
-//-----------------------------------------------------------------------------
-void FEQuad4::shape_deriv2(double* Hrr, double* Hss, double* Hrs, double r, double s)
+std::vector<std::vector<double>> Rg1D4NodeElementShape::evalDeriv(const NaturalCoord& coord)
 {
-	Hrr[0] = 0; Hrs[0] =  0.25; Hss[0] = 0;
-	Hrr[1] = 0; Hrs[1] = -0.25; Hss[1] = 0;
-	Hrr[2] = 0; Hrs[2] =  0.25; Hss[2] = 0;
-	Hrr[3] = 0; Hrs[3] = -0.25; Hss[3] = 0;
+    // For 1D element, derivatives are with respect to the single natural coordinate
+    std::vector<std::vector<double>> deriv(1, std::vector<double>(4));
+    
+    double r = coord.getR();
+    
+    // Derivatives of cubic shape functions
+    double r1 = -1.0, r2 = -1.0/3.0, r3 = 1.0/3.0, r4 = 1.0;
+    double den1 = (r1-r2)*(r1-r3)*(r1-r4);
+    double den2 = (r2-r1)*(r2-r3)*(r2-r4);
+    double den3 = (r3-r1)*(r3-r2)*(r3-r4);
+    double den4 = (r4-r1)*(r4-r2)*(r4-r3);
+    
+    // dN1/dr = [ (r-r3)(r-r4) + (r-r2)(r-r4) + (r-r2)(r-r3) ] / den1
+    deriv[0][0] = ((r-r3)*(r-r4) + (r-r2)*(r-r4) + (r-r2)*(r-r3)) / den1;
+    
+    // dN2/dr = [ (r-r3)(r-r4) + (r-r1)(r-r4) + (r-r1)(r-r3) ] / den2
+    deriv[0][1] = ((r-r3)*(r-r4) + (r-r1)*(r-r4) + (r-r1)*(r-r3)) / den2;
+    
+    // dN3/dr = [ (r-r2)(r-r4) + (r-r1)(r-r4) + (r-r1)(r-r2) ] / den3
+    deriv[0][2] = ((r-r2)*(r-r4) + (r-r1)*(r-r4) + (r-r1)*(r-r2)) / den3;
+    
+    // dN4/dr = [ (r-r2)(r-r3) + (r-r1)(r-r3) + (r-r1)(r-r2) ] / den4
+    deriv[0][3] = ((r-r2)*(r-r3) + (r-r1)*(r-r3) + (r-r1)*(r-r2)) / den4;
+    
+    return deriv;
 }
 
-//=============================================================================
-//              Q U A D 8
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-// shape function at (r,s)
-void FEQuad8::shape_fnc(double* H, double r, double s)
+std::vector<std::vector<double>> Rg1DHermiteElementShape::evalDeriv(const NaturalCoord& coord)
 {
-	H[4] = 0.5*(1 - r*r)*(1 - s);
-	H[5] = 0.5*(1 - s*s)*(1 + r);
-	H[6] = 0.5*(1 - r*r)*(1 + s);
-	H[7] = 0.5*(1 - s*s)*(1 - r);
-
-	H[0] = 0.25*(1 - r)*(1 - s) - 0.5*(H[4] + H[7]);
-	H[1] = 0.25*(1 + r)*(1 - s) - 0.5*(H[4] + H[5]);
-	H[2] = 0.25*(1 + r)*(1 + s) - 0.5*(H[5] + H[6]);
-	H[3] = 0.25*(1 - r)*(1 + s) - 0.5*(H[6] + H[7]);
+    // For 1D element, derivatives are with respect to the single natural coordinate
+    std::vector<std::vector<double>> deriv(1, std::vector<double>(4));
+    
+    double r = coord.getR();
+    
+    // First derivatives of Hermite shape functions
+    deriv[0][0] = 0.25 * (-3.0 + 3.0*r*r);     // dN1/dr
+    deriv[0][1] = 0.25 * (3.0 - 3.0*r*r);      // dN2/dr
+    deriv[0][2] = 0.125 * (-1.0 - 2.0*r - 3.0*r*r);  // dN3/dr
+    deriv[0][3] = 0.125 * (1.0 - 2.0*r + 3.0*r*r);   // dN4/dr
+    
+    return deriv;
 }
 
-//-----------------------------------------------------------------------------
-// shape function derivatives at (r,s)
-void FEQuad8::shape_deriv(double* Hr, double* Hs, double r, double s)
+std::vector<std::vector<double>> Rg1D4NodeElementShape::evalDeriv2(const NaturalCoord& coord)
 {
-	Hr[4] = -r*(1 - s);
-	Hr[5] = 0.5*(1 - s*s);
-	Hr[6] = -r*(1 + s);
-	Hr[7] = -0.5*(1 - s*s);
-
-	Hr[0] = -0.25*(1 - s) - 0.5*(Hr[4] + Hr[7]);
-	Hr[1] = 0.25*(1 - s) - 0.5*(Hr[4] + Hr[5]);
-	Hr[2] = 0.25*(1 + s) - 0.5*(Hr[5] + Hr[6]);
-	Hr[3] = -0.25*(1 + s) - 0.5*(Hr[6] + Hr[7]);
-
-	Hs[4] = -0.5*(1 - r*r);
-	Hs[5] = -s*(1 + r);
-	Hs[6] = 0.5*(1 - r*r);
-	Hs[7] = -s*(1 - r);
-
-	Hs[0] = -0.25*(1 - r) - 0.5*(Hs[4] + Hs[7]);
-	Hs[1] = -0.25*(1 + r) - 0.5*(Hs[4] + Hs[5]);
-	Hs[2] = 0.25*(1 + r) - 0.5*(Hs[5] + Hs[6]);
-	Hs[3] = 0.25*(1 - r) - 0.5*(Hs[6] + Hs[7]);
+    // For 1D element, second derivatives
+    std::vector<std::vector<double>> deriv2(1, std::vector<double>(4));
+    
+    double r = coord.getR();
+    
+    // Second derivatives of cubic shape functions
+    double r1 = -1.0, r2 = -1.0/3.0, r3 = 1.0/3.0, r4 = 1.0;
+    double den1 = (r1-r2)*(r1-r3)*(r1-r4);
+    double den2 = (r2-r1)*(r2-r3)*(r2-r4);
+    double den3 = (r3-r1)*(r3-r2)*(r3-r4);
+    double den4 = (r4-r1)*(r4-r2)*(r4-r3);
+    
+    // d2N1/dr2 = [2(r-r3) + 2(r-r2) + 2(r-r4)] / den1
+    deriv2[0][0] = (2.0*(r-r3) + 2.0*(r-r2) + 2.0*(r-r4)) / den1;
+    
+    // d2N2/dr2 = [2(r-r3) + 2(r-r1) + 2(r-r4)] / den2
+    deriv2[0][1] = (2.0*(r-r3) + 2.0*(r-r1) + 2.0*(r-r4)) / den2;
+    
+    // d2N3/dr2 = [2(r-r2) + 2(r-r1) + 2(r-r4)] / den3
+    deriv2[0][2] = (2.0*(r-r2) + 2.0*(r-r1) + 2.0*(r-r4)) / den3;
+    
+    // d2N4/dr2 = [2(r-r2) + 2(r-r1) + 2(r-r3)] / den4
+    deriv2[0][3] = (2.0*(r-r2) + 2.0*(r-r1) + 2.0*(r-r3)) / den4;
+    
+    return deriv2;
 }
 
-//-----------------------------------------------------------------------------
-//! shape function derivatives at (r,s)
-//! \todo implement this
-void FEQuad8::shape_deriv2(double* Hrr, double* Hss, double* Hrs, double r, double s)
+std::vector<std::vector<double>> Rg1DHermiteElementShape::evalDeriv2(const NaturalCoord& coord)
 {
-	Hrr[4] = -(1 - s);
-	Hrr[5] = 0.0;
-	Hrr[6] = -(1 + s);
-	Hrr[7] = 0.0;
-
-	Hrs[4] = r;
-	Hrs[5] = -s;
-	Hrs[6] = -r;
-	Hrs[7] = s;
-
-	Hss[4] = 0.0;
-	Hss[5] = -(1 + r);
-	Hss[6] = 0.0;
-	Hss[7] = -(1 - r);
-
-	Hrr[0] = -0.5*(Hrr[4] + Hrr[7]);
-	Hrr[1] = -0.5*(Hrr[4] + Hrr[5]);
-	Hrr[2] = -0.5*(Hrr[5] + Hrr[6]);
-	Hrr[3] = -0.5*(Hrr[6] + Hrr[7]);
-
-	Hrs[0] = 0.25 - 0.5*(Hrs[4] + Hrs[7]);
-	Hrs[1] = -0.25 - 0.5*(Hrs[4] + Hrs[5]);
-	Hrs[2] = 0.25 - 0.5*(Hrs[5] + Hrs[6]);
-	Hrs[3] = -0.25 - 0.5*(Hrs[6] + Hrs[7]);
-
-	Hss[0] = -0.5*(Hss[4] + Hss[7]);
-	Hss[1] = -0.5*(Hss[4] + Hss[5]);
-	Hss[2] = -0.5*(Hss[5] + Hss[6]);
-	Hss[3] = -0.5*(Hss[6] + Hss[7]);
+    // For 1D element, second derivatives
+    std::vector<std::vector<double>> deriv2(1, std::vector<double>(4));
+    
+    double r = coord.getR();
+    
+    // Second derivatives of Hermite shape functions
+    deriv2[0][0] = 0.25 * (6.0*r);              // d2N1/dr2
+    deriv2[0][1] = 0.25 * (-6.0*r);             // d2N2/dr2
+    deriv2[0][2] = 0.125 * (-2.0 - 6.0*r);      // d2N3/dr2
+    deriv2[0][3] = 0.125 * (-2.0 + 6.0*r);      // d2N4/dr2
+    
+    return deriv2;
 }
 
-//=============================================================================
-//              Q U A D 9
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-// shape function at (r,s)
-void FEQuad9::shape_fnc(double* H, double r, double s)
-{
-	double R[3] = { 0.5*r*(r - 1.0), 0.5*r*(r + 1.0), 1.0 - r*r };
-	double S[3] = { 0.5*s*(s - 1.0), 0.5*s*(s + 1.0), 1.0 - s*s };
-
-	H[0] = R[0] * S[0];
-	H[1] = R[1] * S[0];
-	H[2] = R[1] * S[1];
-	H[3] = R[0] * S[1];
-	H[4] = R[2] * S[0];
-	H[5] = R[1] * S[2];
-	H[6] = R[2] * S[1];
-	H[7] = R[0] * S[2];
-	H[8] = R[2] * S[2];
-}
-
-//-----------------------------------------------------------------------------
-// shape function derivatives at (r,s)
-void FEQuad9::shape_deriv(double* Hr, double* Hs, double r, double s)
-{
-	double R[3] = { 0.5*r*(r - 1.0), 0.5*r*(r + 1.0), 1.0 - r*r };
-	double S[3] = { 0.5*s*(s - 1.0), 0.5*s*(s + 1.0), 1.0 - s*s };
-	double DR[3] = { r - 0.5, r + 0.5, -2.0*r };
-	double DS[3] = { s - 0.5, s + 0.5, -2.0*s };
-
-	Hr[0] = DR[0] * S[0];
-	Hr[1] = DR[1] * S[0];
-	Hr[2] = DR[1] * S[1];
-	Hr[3] = DR[0] * S[1];
-	Hr[4] = DR[2] * S[0];
-	Hr[5] = DR[1] * S[2];
-	Hr[6] = DR[2] * S[1];
-	Hr[7] = DR[0] * S[2];
-	Hr[8] = DR[2] * S[2];
-
-	Hs[0] = R[0] * DS[0];
-	Hs[1] = R[1] * DS[0];
-	Hs[2] = R[1] * DS[1];
-	Hs[3] = R[0] * DS[1];
-	Hs[4] = R[2] * DS[0];
-	Hs[5] = R[1] * DS[2];
-	Hs[6] = R[2] * DS[1];
-	Hs[7] = R[0] * DS[2];
-	Hs[8] = R[2] * DS[2];
-}
-
-//-----------------------------------------------------------------------------
-//! shape function derivatives at (r,s)
-void FEQuad9::shape_deriv2(double* Grr, double* Gss, double* Grs, double r, double s)
-{
-	double R[3] = { 0.5*r*(r - 1.0), 0.5*r*(r + 1.0), 1.0 - r*r };
-	double S[3] = { 0.5*s*(s - 1.0), 0.5*s*(s + 1.0), 1.0 - s*s };
-	double DR[3] = { r - 0.5, r + 0.5, -2.0*r };
-	double DS[3] = { s - 0.5, s + 0.5, -2.0*s };
-	double DDR[3] = { 1.0, 1.0, -2.0 };
-	double DDS[3] = { 1.0, 1.0, -2.0 };
-
-	Grr[0] = DDR[0] * S[0]; Grs[0] = DR[0] * DS[0]; Gss[0] = R[0] * DDS[0];
-	Grr[1] = DDR[1] * S[0]; Grs[1] = DR[1] * DS[0]; Gss[1] = R[1] * DDS[0];
-	Grr[2] = DDR[1] * S[1]; Grs[2] = DR[1] * DS[1]; Gss[2] = R[1] * DDS[1];
-	Grr[3] = DDR[0] * S[1]; Grs[3] = DR[0] * DS[1]; Gss[3] = R[0] * DDS[1];
-	Grr[4] = DDR[2] * S[0]; Grs[4] = DR[2] * DS[0]; Gss[4] = R[2] * DDS[0];
-	Grr[5] = DDR[1] * S[2]; Grs[5] = DR[1] * DS[2]; Gss[5] = R[1] * DDS[2];
-	Grr[6] = DDR[2] * S[1]; Grs[6] = DR[2] * DS[1]; Gss[6] = R[2] * DDS[1];
-	Grr[7] = DDR[0] * S[2]; Grs[7] = DR[0] * DS[2]; Gss[7] = R[0] * DDS[2];
-	Grr[8] = DDR[2] * S[2]; Grs[8] = DR[2] * DS[2]; Gss[8] = R[2] * DDS[2];
-}
-
-//=============================================================================
-//              T R I 3
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-void FETri3::shape_fnc(double* H, double r, double s)
-{
-	H[0] = 1.0 - r - s;
-	H[1] = r;
-	H[2] = s;
-}
-
-//-----------------------------------------------------------------------------
-void FETri3::shape_deriv(double* Hr, double* Hs, double r, double s)
-{
-	Hr[0] = -1; Hs[0] = -1;
-	Hr[1] =  1; Hs[1] =  0;
-	Hr[2] =  0; Hs[2] =  1;
-}
-
-//-----------------------------------------------------------------------------
-void FETri3::shape_deriv2(double* Hrr, double* Hss, double* Hrs, double r, double s)
-{
-	Hrr[0] = 0; Hrs[0] = 0; Hss[0] = 0;
-	Hrr[1] = 0; Hrs[1] = 0; Hss[1] = 0;
-	Hrr[2] = 0; Hrs[2] = 0; Hss[2] = 0;
-}
-
-//=============================================================================
-//              T R I 6
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-void FETri6::shape_fnc(double* H, double r, double s)
-{
-	double r1 = 1.0 - r - s;
-	double r2 = r;
-	double r3 = s;
-
-	H[0] = r1*(2.0*r1 - 1.0);
-	H[1] = r2*(2.0*r2 - 1.0);
-	H[2] = r3*(2.0*r3 - 1.0);
-	H[3] = 4.0*r1*r2;
-	H[4] = 4.0*r2*r3;
-	H[5] = 4.0*r3*r1;
-}
-
-//-----------------------------------------------------------------------------
-void FETri6::shape_deriv(double* Hr, double* Hs, double r, double s)
-{
-	Hr[0] = -3.0 + 4.0*r + 4.0*s;
-	Hr[1] = 4.0*r - 1.0;
-	Hr[2] = 0.0;
-	Hr[3] = 4.0 - 8.0*r - 4.0*s;
-	Hr[4] = 4.0*s;
-	Hr[5] = -4.0*s;
-
-	Hs[0] = -3.0 + 4.0*s + 4.0*r;
-	Hs[1] = 0.0;
-	Hs[2] = 4.0*s - 1.0;
-	Hs[3] = -4.0*r;
-	Hs[4] = 4.0*r;
-	Hs[5] = 4.0 - 8.0*s - 4.0*r;
-}
-
-//-----------------------------------------------------------------------------
-void FETri6::shape_deriv2(double* Hrr, double* Hss, double* Hrs, double r, double s)
-{
-	Hrr[0] =  4.0; Hrs[0] =  4.0; Hss[0] =  4.0;
-	Hrr[1] =  4.0; Hrs[1] =  0.0; Hss[1] =  0.0;
-	Hrr[2] =  0.0; Hrs[2] =  0.0; Hss[2] =  4.0;
-	Hrr[3] = -8.0; Hrs[3] = -4.0; Hss[3] =  0.0;
-	Hrr[4] =  0.0; Hrs[4] =  4.0; Hss[4] =  0.0;
-	Hrr[5] =  0.0; Hrs[5] = -4.0; Hss[5] = -8.0;
-}
-
-//=============================================================================
-//              T R I 7
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-void FETri7::shape_fnc(double* H, double r, double s)
-{
-	double r1 = 1.0 - r - s;
-	double r2 = r;
-	double r3 = s;
-
-	H[6] = 27.0*r1*r2*r3;
-	H[0] = r1*(2.0*r1 - 1.0) + H[6] / 9.0;
-	H[1] = r2*(2.0*r2 - 1.0) + H[6] / 9.0;
-	H[2] = r3*(2.0*r3 - 1.0) + H[6] / 9.0;
-	H[3] = 4.0*r1*r2 - 4.0*H[6] / 9.0;
-	H[4] = 4.0*r2*r3 - 4.0*H[6] / 9.0;
-	H[5] = 4.0*r3*r1 - 4.0*H[6] / 9.0;
-}
-
-//-----------------------------------------------------------------------------
-void FETri7::shape_deriv(double* Hr, double* Hs, double r, double s)
-{
-	Hr[6] = 27.0*s*(1.0 - 2.0*r - s);
-	Hr[0] = -3.0 + 4.0*r + 4.0*s + Hr[6] / 9.0;
-	Hr[1] = 4.0*r - 1.0 + Hr[6] / 9.0;
-	Hr[2] = 0.0 + Hr[6] / 9.0;
-	Hr[3] = 4.0 - 8.0*r - 4.0*s - 4.0*Hr[6] / 9.0;
-	Hr[4] = 4.0*s - 4.0*Hr[6] / 9.0;
-	Hr[5] = -4.0*s - 4.0*Hr[6] / 9.0;
-
-	Hs[6] = 27.0*r*(1.0 - r - 2.0*s);
-	Hs[0] = -3.0 + 4.0*s + 4.0*r + Hs[6] / 9.0;
-	Hs[1] = 0.0 + Hs[6] / 9.0;
-	Hs[2] = 4.0*s - 1.0 + Hs[6] / 9.0;
-	Hs[3] = -4.0*r - 4.0*Hs[6] / 9.0;
-	Hs[4] = 4.0*r - 4.0*Hs[6] / 9.0;
-	Hs[5] = 4.0 - 8.0*s - 4.0*r - 4.0*Hs[6] / 9.0;
-}
-
-//-----------------------------------------------------------------------------
-void FETri7::shape_deriv2(double* Hrr, double* Hss, double* Hrs, double r, double s)
-{
-	Hrr[6] = -54.0*s;
-	Hss[6] = -54.0*r;
-	Hrs[6] = 27.0*(1.0 - 2.0*r - 2.0*s);
-
-	Hrr[0] = 4.0 + Hrr[6] / 9.0; Hrs[0] = 4.0 + Hrs[6] / 9.0; Hss[0] = 4.0 + Hss[6] / 9.0;
-	Hrr[1] = 4.0 + Hrr[6] / 9.0; Hrs[1] = 0.0 + Hrs[6] / 9.0; Hss[1] = 0.0 + Hss[6] / 9.0;
-	Hrr[2] = 0.0 + Hrr[6] / 9.0; Hrs[2] = 0.0 + Hrs[6] / 9.0; Hss[2] = 4.0 + Hss[6] / 9.0;
-	Hrr[3] = -8.0 - 4.0*Hrr[6] / 9.0; Hrs[3] = -4.0 - 4.0*Hrs[6] / 9.0; Hss[3] = 0.0 - 4.0*Hss[6] / 9.0;
-	Hrr[4] = 0.0 - 4.0*Hrr[6] / 9.0; Hrs[4] = 4.0 - 4.0*Hrs[6] / 9.0; Hss[4] = 0.0 - 4.0*Hss[6] / 9.0;
-	Hrr[5] = 0.0 - 4.0*Hrr[6] / 9.0; Hrs[5] = -4.0 - 4.0*Hrs[6] / 9.0; Hss[5] = -8.0 - 4.0*Hss[6] / 9.0;
-}
-
-//=============================================================================
-//              T R I 10
-//=============================================================================
-
-//-----------------------------------------------------------------------------
-void FETri10::shape_fnc(double* H, double r, double s)
-{
-	double L1 = 1.0 - r - s;
-	double L2 = r;
-	double L3 = s;
-
-	H[0] = 0.5*(3 * L1 - 1)*(3 * L1 - 2)*L1;
-	H[1] = 0.5*(3 * L2 - 1)*(3 * L2 - 2)*L2;
-	H[2] = 0.5*(3 * L3 - 1)*(3 * L3 - 2)*L3;
-	H[3] = 4.5*(3 * L1 - 1)*L1*L2;
-	H[4] = 4.5*(3 * L2 - 1)*L1*L2;
-	H[5] = 4.5*(3 * L2 - 1)*L2*L3;
-	H[6] = 4.5*(3 * L3 - 1)*L2*L3;
-	H[7] = 4.5*(3 * L1 - 1)*L1*L3;
-	H[8] = 4.5*(3 * L3 - 1)*L1*L3;
-	H[9] = 27.*L1*L2*L3;
-}
-
-//-----------------------------------------------------------------------------
-void FETri10::shape_deriv(double* Hr, double* Hs, double r, double s)
-{
-	double L1 = 1.0 - r - s;
-	double L2 = r;
-	double L3 = s;
-
-	Hr[0] = -3. / 2.*(3 * L1 - 2)*L1 - 3. / 2.*(3 * L1 - 1)*L1 - 0.5*(3 * L1 - 1)*(3 * L1 - 2);
-	Hr[1] = 3. / 2.*(3 * L2 - 2)*L2 + 3. / 2.*(3 * L2 - 1)*L2 + 0.5*(3 * L2 - 1)*(3 * L2 - 2);
-	Hr[2] = 0.0;
-	Hr[3] = -27. / 2.*L1*L2 - 9. / 2.*(3 * L1 - 1)*L2 + 9. / 2.*(3 * L1 - 1)*L1;
-	Hr[4] = 27. / 2.*L1*L2 - 9. / 2.*(3 * L2 - 1)*L2 + 9. / 2.*(3 * L2 - 1)*L1;
-	Hr[5] = 27. / 2.*L2*L3 + 9. / 2.*(3 * L2 - 1)*L3;
-	Hr[6] = 9. / 2.*(3 * L3 - 1)*L3;
-	Hr[7] = -27. / 2.*L1*L3 - 9. / 2.*(3 * L1 - 1)*L3;
-	Hr[8] = -9. / 2.*(3 * L3 - 1)*L3;
-	Hr[9] = -27.*L2*L3 + 27.*L1*L3;
-
-	Hs[0] = -3. / 2.*(3 * L1 - 2)*L1 - 3. / 2.*(3 * L1 - 1)*L1 - 0.5*(3 * L1 - 1)*(3 * L1 - 2);
-	Hs[1] = 0.0;
-	Hs[2] = 3. / 2.*(3 * L3 - 2)*L3 + 3. / 2.*(3 * L3 - 1)*L3 + 0.5*(3 * L3 - 1)*(3 * L3 - 2);
-	Hs[3] = -27. / 2.*L1*L2 - 9. / 2.*(3 * L1 - 1)*L2;
-	Hs[4] = -9. / 2.*(3 * L2 - 1)*L2;
-	Hs[5] = 9. / 2.*(3 * L2 - 1)*L2;
-	Hs[6] = 27. / 2.*L2*L3 + 9. / 2.*(3 * L3 - 1)*L2;
-	Hs[7] = -27. / 2.*L1*L3 - 9. / 2.*(3 * L1 - 1)*L3 + 9. / 2.*(3 * L1 - 1)*L1;
-	Hs[8] = 27. / 2.*L1*L3 - 9. / 2.*(3 * L3 - 1)*L3 + 9. / 2.*(3 * L3 - 1)*L1;
-	Hs[9] = -27.*L2*L3 + 27.*L1*L2;
-}
-
-//-----------------------------------------------------------------------------
-void FETri10::shape_deriv2(double* Hrr, double* Hss, double* Hrs, double r, double s)
-{
-	// TODO: Implement this
-}

@@ -20,11 +20,11 @@ class FEModel;
 class FENode;
 class FEMesh;
 class FESurface;
-class FEDomain;
+class RgDomain;
 class FESolidDomain;
-class FEMaterialPoint;
+class RgMaterialPoint;
 class FENodeSet;
-class FEElement;
+class RgElement;
 
 //-----------------------------------------------------------------------------
 //! This is the base class for all classes that wish to store data to the 
@@ -76,7 +76,7 @@ protected:
 public: // override one of these functions depending on the Region_Type
 	virtual bool Save(FEDataStream& a) { return false; }					// for FE_REGION_GLOBAL
 	virtual bool Save(FEMesh&    m, FEDataStream& a) { return false; }		// for FE_REGION_NODE
-	virtual bool Save(FEDomain&  D, FEDataStream& a) { return false; }		// for FE_REGION_DOMAIN
+	virtual bool Save(RgDomain&  D, FEDataStream& a) { return false; }		// for FE_REGION_DOMAIN
 	virtual bool Save(FESurface& S, FEDataStream& a) { return false; }		// for FE_REGION_SURFACE
 
 public:

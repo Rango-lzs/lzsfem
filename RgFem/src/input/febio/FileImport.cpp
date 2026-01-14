@@ -8,7 +8,7 @@
 #include "femcore/FESurface.h"
 #include "femcore/FESurfaceLoad.h"
 #include "femcore/FEBodyLoad.h"
-#include "femcore/Domain/FEDomainMap.h"
+#include "femcore/Domain/RgDomainMap.h"
 #include "femcore/FEPointFunction.h"
 #include "femcore/FEGlobalData.h"
 #include "logger/log.h"

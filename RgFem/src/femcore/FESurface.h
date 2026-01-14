@@ -9,6 +9,7 @@
 #include "FENodeSet.h"
 #include "basicio/DumpStream.h"
 #include "elements/RgElement/RgSurfaceElement.h"
+#include "Domain/RgDomain.h"
 
 //-----------------------------------------------------------------------------
 class FEMesh;
@@ -145,7 +146,7 @@ public:
 
 public:
     // Create Material point data for this surface
-    virtual FEMaterialPoint* CreateMaterialPoint();
+    virtual RgMaterialPoint* CreateMaterialPoint();
 
     // update surface data
     //void update(const FETimeInfo& tp) override;

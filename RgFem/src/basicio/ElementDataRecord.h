@@ -1,7 +1,7 @@
 #pragma once
 #include "basicio/DataRecord.h"
 
-class FEElement;
+class RgElement;
 class RgElementSet;
 
 //-----------------------------------------------------------------------------
@@ -13,7 +13,7 @@ class FEM_EXPORT FELogElemData : public FELogData
 public:
     FELogElemData();
     virtual ~FELogElemData();
-    virtual double value(FEElement& el) = 0;
+    virtual double value(RgElement& el) = 0;
 };
 
 //-----------------------------------------------------------------------------

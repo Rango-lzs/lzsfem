@@ -44,7 +44,7 @@ void FEBioLoadsSection3::ParseBodyLoad(XMLTag& tag)
 	if (szpart)
 	{
 		FEMesh& mesh = fem.GetMesh();
-		FEElementSet* elset = mesh.FindElementSet(szpart);
+		RgElementSet* elset = mesh.FindElementSet(szpart);
 		if (elset == 0) throw XMLReader::InvalidAttributeValue(tag, "elem_set", szpart);
 		pbl->SetDomainList(elset);
 	}

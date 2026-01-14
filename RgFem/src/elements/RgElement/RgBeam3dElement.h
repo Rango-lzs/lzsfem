@@ -5,7 +5,7 @@
 #include <array>
 #include <vector>
 
-namespace RgFem {
+
 
 // forward declarations
 class Matrix3d;
@@ -130,6 +130,6 @@ private:
     std::vector<Matrix3d> m_rotation;  // Rotation matrix at each Gauss point
 };
 
-} // namespace RgFem
+
 
 #endif // RGBEAM3DELEMENT_H

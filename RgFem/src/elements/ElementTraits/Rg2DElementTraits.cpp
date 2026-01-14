@@ -7,7 +7,7 @@
 #include "../ElementShape/RgSolidElementShape.h"
 #include "elements/NaturalCoord.h"
 
-using namespace RgFem;
+
 
 // Rg2DElementTraits implementation
 Rg2DElementTraits::Rg2DElementTraits(int ni, int ne, ElementShape es, ElementType et)
@@ -58,7 +58,7 @@ void Rg2DElementTraits::init()
 //-----------------------------------------------------------------------------
 // Implementation of modern interface using legacy interface
 //
-std::vector<double> Rg2DElementTraits::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> Rg2DElementTraits::evalH(const NaturalCoord& coord)
 {
     const int NELN = m_neln;
     std::vector<double> N(NELN);
@@ -72,7 +72,7 @@ std::vector<double> Rg2DElementTraits::evalH(const RgFem::NaturalCoord& coord)
     return result;
 }
 
-std::vector<std::vector<double>> Rg2DElementTraits::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> Rg2DElementTraits::evalDeriv(const NaturalCoord& coord)
 {
     const int NELN = m_neln;
     std::vector<double> Nr(NELN), Ns(NELN);
@@ -483,7 +483,7 @@ RgLine2G1::RgLine2G1() : RgLine2_(NINT, FE_LINE2G1)
     {
         double r = gaussPoints[0].getR();
         double s = gaussPoints[0].getS();
-        auto h = evalH(RgFem::NaturalCoord(r, s));
+        auto h = evalH(NaturalCoord(r, s));
         for (int j = 0; j < NELN; ++j)
         {
             H(i, j) = h[j];

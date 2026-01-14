@@ -14,7 +14,7 @@ public:
 
 public:
 	// evaluate value at a material point
-	virtual Vector3d operator()(const FEMaterialPoint& pt) = 0;
+	virtual Vector3d operator()(const RgMaterialPoint& pt) = 0;
 
 	// create a copy of the valuator
 	virtual FEVec3dValuator* copy() = 0;
@@ -26,7 +26,7 @@ public:
 	virtual Vector3d* constValue() { return nullptr; }
 
 	// return a unit vector
-	Vector3d unitVector(const FEMaterialPoint& pt)
+	Vector3d unitVector(const RgMaterialPoint& pt)
 	{
 		Vector3d v = operator () (pt);
 		return v.Normalized();

@@ -8,7 +8,7 @@
 // 前置声明
 class FEModel;
 class FESolver;
-class FEDomain;
+class RgDomain;
 class DumpStream;
 class FEStepComponent;
 class FETimeStepController;
@@ -69,7 +69,7 @@ public:
     // 域管理
     void addDomain(int domainId);
     void clearDomains();
-    FEDomain* getDomain(size_t index) const;
+    RgDomain* getDomain(size_t index) const;
     size_t domainCount() const noexcept;
 
     // 组件管理

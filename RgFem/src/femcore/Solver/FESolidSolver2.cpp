@@ -720,7 +720,7 @@ void FESolidSolver2::PrepStep()
     //       the material point data is initialized
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        //FEDomain& dom = mesh.Domain(i);
+        //RgDomain& dom = mesh.Domain(i);
         //if (dom.IsActive())
         //    dom.PreSolveUpdate(tp);
     }
@@ -749,7 +749,7 @@ void FESolidSolver2::PrepStep()
     //int ndom = mesh.Domains();
     //for (int i = 0; i < ndom; ++i)
     //{
-    //    FEDomain* dom = &mesh.Domain(i);
+    //    RgDomain* dom = &mesh.Domain(i);
     //    FE3FieldElasticSolidDomain* dom3f = dynamic_cast<FE3FieldElasticSolidDomain*>(dom);
     //    if (dom3f && dom3f->DoAugmentations())
     //        m_baugment = true;

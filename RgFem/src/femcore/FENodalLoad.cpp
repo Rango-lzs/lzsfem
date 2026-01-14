@@ -2,7 +2,7 @@
 #include "femcore/FENodeSet.h"
 #include "basicio/DumpStream.h"
 #include "femcore/FENode.h"
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "femcore/FEParam.h"
 
 DEFINE_META_CLASS(FENodalLoad, FEModelLoad, "");
@@ -166,7 +166,7 @@ void FENodalDOFLoad::GetNodalValues(int n, std::vector<double>& val)
 	int nid = nset[n];
 	const FENode& node = *nset.Node(n);
 
-	FEMaterialPoint mp;
+	RgMaterialPoint mp;
 	mp.m_r0 = node.m_r0;
 	mp.m_index = n;
 
@@ -185,7 +185,7 @@ double FENodalDOFLoad::NodeValue(int n)
 	int nid = nset[n];
 	const FENode& node = *nset.Node(n);
 
-	FEMaterialPoint mp;
+	RgMaterialPoint mp;
 	mp.m_r0 = node.m_r0;
 	mp.m_index = n;
 

@@ -3,20 +3,17 @@
 #include <vector>
 
 // Forward declaration
-namespace RgFem {
-    class RgGaussPoint;
-}
-
-namespace RgFem {
+class RgGaussPoint;
 
 /**
  * @brief Represents a natural coordinate in the finite element method
- * 
+ *
  * This class stores the natural coordinates used in finite element shape functions
  * and can be used in 1D, 2D or 3D elements. It can be constructed from a RgGaussPoint
  * by extracting only the coordinate values, discarding the weight.
  */
-class NaturalCoord {
+class NaturalCoord
+{
 public:
     /**
      * @brief Default constructor
@@ -133,7 +130,5 @@ public:
     void setCoordinates(double r, double s);
 
 private:
-    std::vector<double> m_coordinates; ///< Natural coordinates
+    std::vector<double> m_coordinates;  ///< Natural coordinates
 };
-
-} // namespace RgFem

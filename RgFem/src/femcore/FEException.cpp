@@ -120,7 +120,7 @@ bool NegativeJacobian::m_boutput = false;
 bool NegativeJacobian::m_bthrown = false;
 
 //-----------------------------------------------------------------------------
-NegativeJacobian::NegativeJacobian(int iel, int ng, double vol, FEElement* pe)
+NegativeJacobian::NegativeJacobian(int iel, int ng, double vol, RgElement* pe)
 {
 	m_iel = iel;
 	m_ng = ng;

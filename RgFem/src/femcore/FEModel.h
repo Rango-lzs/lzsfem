@@ -1,17 +1,18 @@
-/*****************************************************************//**
- * \file   FEModel.h
- * \brief  This class define the FE model.
- * 
- * \author 11914
- * \date   December 2024
- *********************************************************************/
+/*****************************************************************/ /**
+                                                                     * \file   FEModel.h
+                                                                     * \brief  This class define the FE model.
+                                                                     *
+                                                                     * \author 11914
+                                                                     * \date   December 2024
+                                                                     *********************************************************************/
 
 #pragma once
 #include "femcore/FEObjectBase.h"
+
 #include <memory>
 #include <string>
 
- // helper class for managing global (user-defined) variables.
+// helper class for managing global (user-defined) variables.
 class FEGlobalVariable
 {
 public:
@@ -42,266 +43,258 @@ class FEModelSubject;
 /**
  * 定义整个求解模型. 包含所有的FEM组件，此类可进一步精简，定义每个组件的Manager
  */
-class FEM_EXPORT FEModel: public FEObjectBase
+class FEM_EXPORT FEModel : public FEObjectBase
 {
 public:
-	FEModel(void);
-	virtual ~FEModel(void);
-    void Clear(); //do some memory manage
+    FEModel(void);
+    virtual ~FEModel(void);
+    void Clear();  // do some memory manage
 
-	virtual bool Input(const char* szfile) = 0;
+    virtual bool Input(const char* szfile) = 0;
 
-	virtual void Log(int ntag, const char* szmsg) = 0;
-	virtual Logfile& GetLogFile() = 0;
+    virtual void Log(int ntag, const char* szmsg) = 0;
+    virtual Logfile& GetLogFile() = 0;
 
-	virtual bool Init() override;
-	virtual bool Solve();
-	bool IsSolved() const;
+    virtual bool Init() override;
+    virtual bool Solve();
+    bool IsSolved() const;
     void Update();
 
 public:
-	
-	FEMesh& GetMesh();
-	FELinearConstraintManager& GetLinearConstraintManager();
+    FEMesh& GetMesh();
+    FELinearConstraintManager& GetLinearConstraintManager();
 
-	bool InitBCs();
-	bool InitMesh();
+    bool InitBCs();
+    bool InitMesh();
 
-	//! Build the Matrix profile for this model
-	/**
-	 * @~English
-	 * @brief brief-description-about-BuildMatrixProfile .
-	 * @param[??] G brief-description-about-G .
-	 * @param[??] breset brief-description-about-breset .
-	 * @return void brief-description-about-void .
-	 */
-	virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);
+    //! Build the Matrix profile for this model
+    /**
+     * @~English
+     * @brief brief-description-about-BuildMatrixProfile .
+     * @param[??] G brief-description-about-G .
+     * @param[??] breset brief-description-about-breset .
+     * @return void brief-description-about-void .
+     */
+    virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);
 
-public:	
+public:
+    void AddLoadController(FELoadController* plc);
+    void ReplaceLoadController(int n, FELoadController* plc);
+    FELoadController* GetLoadController(int i);
 
-	void AddLoadController(FELoadController* plc);
-	void ReplaceLoadController(int n, FELoadController* plc);
-	FELoadController* GetLoadController(int i);
+    int LoadControllers() const;
 
-	int LoadControllers() const;
+    void AttachLoadController(FEParam* p, int lc);
+    void AttachLoadController(FEParam* p, FELoadController* plc);
 
-	void AttachLoadController(FEParam* p, int lc);
-	void AttachLoadController(FEParam* p, FELoadController* plc);
+    bool DetachLoadController(FEParam* p);
+    FELoadController* GetLoadController(FEParam* p);
 
-	bool DetachLoadController(FEParam* p);
-	FELoadController* GetLoadController(FEParam* p);
-
-	void EvaluateLoadControllers(double time);
+    void EvaluateLoadControllers(double time);
     //-----------------------------------------------------------------------------
     bool EvaluateLoadParameters();
 
-	//--- Material functions ---
-public: 
+    //--- Material functions ---
+public:
+    //! Add a material to the model
+    void AddMaterial(FEMaterial* pm);
 
-	//! Add a material to the model
-	void AddMaterial(FEMaterial* pm);
+    //! get the number of materials
+    int Materials();
 
-	//! get the number of materials
-	int Materials();
+    //! return a pointer to a material
+    FEMaterial* GetMaterial(int i);
 
-	//! return a pointer to a material
-	FEMaterial* GetMaterial(int i);
+    //! find a material based on its index
+    FEMaterial* FindMaterial(int nid);
 
-	//! find a material based on its index
-	FEMaterial* FindMaterial(int nid);
+    //! find a material based on its name
+    FEMaterial* FindMaterial(const std::string& matName);
 
-	//! find a material based on its name
-	FEMaterial* FindMaterial(const std::string& matName);
+    //! material initialization
+    bool InitMaterials();
 
-	//! material initialization
-	bool InitMaterials();
-
-	//! material validation
-	bool ValidateMaterials();
+    //! material validation
+    bool ValidateMaterials();
 
 public:
-	// Boundary conditions
-	int BoundaryConditions() const;
-	FEBoundaryCondition* BoundaryCondition(int i);
-	void AddBoundaryCondition(FEBoundaryCondition* bc);
-	void ClearBoundaryConditions();
+    // Boundary conditions
+    int BoundaryConditions() const;
+    FEBoundaryCondition* BoundaryCondition(int i);
+    void AddBoundaryCondition(FEBoundaryCondition* bc);
+    void ClearBoundaryConditions();
 
-	// initial conditions
-	int InitialConditions();
-	FEInitialCondition* InitialCondition(int i);
-	void AddInitialCondition(FEInitialCondition* pbc);
+    // initial conditions
+    int InitialConditions();
+    FEInitialCondition* InitialCondition(int i);
+    void AddInitialCondition(FEInitialCondition* pbc);
 
-public: // --- Analysis steps functions ---
+public:  // --- Analysis steps functions ---
+    // the number of steps
+    int Steps() const;
 
-	//the number of steps
-	int Steps() const;
+    int currentStep() const;
 
-	int currentStep() const;
+    //! clear the steps
+    void ClearSteps();
 
-	//! clear the steps
-	void ClearSteps();
+    //! Add an analysis step
+    void AddStep(FEAnalysis* pstep);
 
-	//! Add an analysis step
-	void AddStep(FEAnalysis* pstep);
+    //! Get a particular step
+    FEAnalysis* GetStep(int i);
 
-	//! Get a particular step
-	FEAnalysis* GetStep(int i);
+    //! Get the current step
+    FEAnalysis* GetCurrentStep();
+    const FEAnalysis* GetCurrentStep() const;
 
-	//! Get the current step
-	FEAnalysis* GetCurrentStep();
-	const FEAnalysis* GetCurrentStep() const;
+    //! Set the current step index
+    int GetCurrentStepIndex() const;
 
-	//! Set the current step index
-	int GetCurrentStepIndex() const;
+    //! Set the current step
+    void SetCurrentStep(FEAnalysis* pstep);
 
-	//! Set the current step
-	void SetCurrentStep(FEAnalysis* pstep);
+    //! Set the current step index
+    void SetCurrentStepIndex(int n);
 
-	//! Set the current step index
-	void SetCurrentStepIndex(int n);
+    //! Get the current time
+    FETimeInfo& GetTime();
 
-	//! Get the current time
-	FETimeInfo& GetTime();
-	
-	//! Get the start time
-	double GetStartTime() const;
+    //! Get the start time
+    double GetStartTime() const;
 
-	//! Set the start time
-	void SetStartTime(double t);
+    //! Set the start time
+    void SetStartTime(double t);
 
-	//! Get the current time
-	double GetCurrentTime() const;
+    //! Get the current time
+    double GetCurrentTime() const;
 
-	
-	//! Set the current time
-	void SetCurrentTime(double t);
 
-	//! set the current time step
-	void SetCurrentTimeStep(double dt);
+    //! Set the current time
+    void SetCurrentTime(double t);
 
-public: // --- Contact interface functions ---
+    //! set the current time step
+    void SetCurrentTimeStep(double dt);
 
-	//! return number of surface pair constraints
-	int SurfacePairConstraints();
+public:  // --- Contact interface functions ---
+    //! return number of surface pair constraints
+    int SurfacePairConstraints();
 
-	//! retrive a surface pair interaction
-	FESurfacePairConstraint* SurfacePairConstraint(int i);
+    //! retrive a surface pair interaction
+    FESurfacePairConstraint* SurfacePairConstraint(int i);
 
-	//! Add a surface pair constraint
-	void AddSurfacePairConstraint(FESurfacePairConstraint* pci);
+    //! Add a surface pair constraint
+    void AddSurfacePairConstraint(FESurfacePairConstraint* pci);
 
-	//! Initializes contact data
-	bool InitContact();
+    //! Initializes contact data
+    bool InitContact();
 
-public: // --- Nonlinear constraints functions ---
+public:  // --- Nonlinear constraints functions ---
+    //! return number of nonlinear constraints
+    int NonlinearConstraints();
 
-	//! return number of nonlinear constraints
-	int NonlinearConstraints();
+    //! retrieve a nonlinear constraint
+    FENLConstraint* NonlinearConstraint(int i);
 
-	//! retrieve a nonlinear constraint
-	FENLConstraint* NonlinearConstraint(int i);
+    //! add a nonlinear constraint
+    void AddNonlinearConstraint(FENLConstraint* pnlc);
 
-	//! add a nonlinear constraint
-	void AddNonlinearConstraint(FENLConstraint* pnlc);
+    //! Initialize constraint data
+    bool InitConstraints();
 
-	//! Initialize constraint data
-	bool InitConstraints();
+public:  // --- Model Loads ----
+    //! return the number of model loads
+    int ModelLoads();
 
-public:	// --- Model Loads ----
-	//! return the number of model loads
-	int ModelLoads();
+    //! retrieve a model load
+    FEModelLoad* ModelLoad(int i);
 
-	//! retrieve a model load
-	FEModelLoad* ModelLoad(int i);
+    //! Add a model load
+    void AddModelLoad(FEModelLoad* pml);
 
-	//! Add a model load
-	void AddModelLoad(FEModelLoad* pml);
+    //! initialize model loads
+    bool InitModelLoads();
 
-	//! initialize model loads
-	bool InitModelLoads();
+public:  // --- Miscellaneous routines ---
+    //! call the callback function
+    //! This function returns fals if the run is to be aborted
+    bool DoCallback(unsigned int nevent);
 
-public:	// --- Miscellaneous routines ---
+    //! I'd like to place the list of DOFS inside the model.
+    //! As a first step, all classes that have access to the model
+    //! should get the DOFS from this function
+    DOFS& GetDOFS();
 
-	//! call the callback function
-	//! This function returns fals if the run is to be aborted
-	bool DoCallback(unsigned int nevent);
+    //! Get the index of a DOF
+    int GetDOFIndex(const char* sz) const;
+    int GetDOFIndex(const char* szvar, int n) const;
 
-	//! I'd like to place the list of DOFS inside the model.
-	//! As a first step, all classes that have access to the model
-	//! should get the DOFS from this function
-	DOFS& GetDOFS();
+    //! serialize data for restarts
+    void Serialize(DumpStream& ar) override;
 
-	//! Get the index of a DOF
-	int GetDOFIndex(const char* sz) const;
-	int GetDOFIndex(const char* szvar, int n) const;
+    //! This is called to serialize geometry.
+    //! Derived classes can override this
+    virtual void SerializeGeometry(DumpStream& ar);
 
-	//! serialize data for restarts
-	void Serialize(DumpStream& ar) override;
+    //! set the active module
+    void SetActiveModule(const std::string& moduleName);
 
-	//! This is called to serialize geometry.
-	//! Derived classes can override this
-	virtual void SerializeGeometry(DumpStream& ar);
+    //! get the module name
+    std::string GetModuleName() const;
 
-	//! set the active module
-	void SetActiveModule(const std::string& moduleName);
+public:  // Global data
+    void AddGlobalData(FEGlobalData* psd);
+    FEGlobalData* GetGlobalData(int i);
+    FEGlobalData* FindGlobalData(const char* szname);
+    int FindGlobalDataIndex(const char* szname);
+    int GlobalDataItems();
 
-	//! get the module name
-	std::string GetModuleName() const;
+    // get/set global data
+    void SetGlobalConstant(const std::string& s, double v);
+    double GetGlobalConstant(const std::string& s);
 
-public: // Global data
-	void AddGlobalData(FEGlobalData* psd);
-	FEGlobalData* GetGlobalData(int i);
-	FEGlobalData* FindGlobalData(const char* szname);
-	int FindGlobalDataIndex(const char* szname);
-	int GlobalDataItems();
+    int GlobalVariables() const;
+    void AddGlobalVariable(const std::string& s, double v);
+    const FEGlobalVariable& GetGlobalVariable(int n);
 
-	// get/set global data
-	void SetGlobalConstant(const std::string& s, double v);
-	double GetGlobalConstant(const std::string& s);
+public:  // Data retrieval
+    // get nodal dof data
+    bool GetNodeData(int dof, std::vector<double>& data);
 
-	int GlobalVariables() const;
-	void AddGlobalVariable(const std::string& s, double v);
-	const FEGlobalVariable& GetGlobalVariable(int n);
+    //! return the data store
+    DataStore& GetDataStore();
 
-public: // Data retrieval
-
-	// get nodal dof data
-	bool GetNodeData(int dof, std::vector<double>& data);
-
-	//! return the data store
-	DataStore& GetDataStore();
-
-	//! return plot data
-	FEPlotDataStore& GetPlotDataStore();
-	const FEPlotDataStore& GetPlotDataStore() const;
+    //! return plot data
+    FEPlotDataStore& GetPlotDataStore();
+    const FEPlotDataStore& GetPlotDataStore() const;
 
 public:
-	// reset all the timers
-	void ResetAllTimers();
+    // reset all the timers
+    void ResetAllTimers();
 
-	// return total number of timers
-	int Timers();
+    // return total number of timers
+    int Timers();
 
-	// return a timer by index
-	Timer* GetTimer(int i);
+    // return a timer by index
+    Timer* GetTimer(int i);
 
-	// get the number of calls to Update()
-	int UpdateCounter() const;
+    // get the number of calls to Update()
+    int UpdateCounter() const;
 
-	// this can be used to change the update counter
-	void IncrementUpdateCounter();
+    // this can be used to change the update counter
+    void IncrementUpdateCounter();
 
 public:
-	void SetUnits(const char* szunits);
-	const char* GetUnits() const;
+    void SetUnits(const char* szunits);
+    const char* GetUnits() const;
 
-	void notify();
+    void notify();
 
 private:
-	class Impl;
-	std::unique_ptr<Impl> m_imp;
+    class Impl;
+    std::unique_ptr<Impl> m_imp;
 
-	FEModelSubject* mp_model_sbj;
+    FEModelSubject* mp_model_sbj;
 
-	DECLARE_PARAM_LIST();
+    DECLARE_PARAM_LIST();
 };

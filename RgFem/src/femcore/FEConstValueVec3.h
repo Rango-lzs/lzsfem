@@ -37,7 +37,7 @@ public:
 
 	FEVec3dValuator* copy() override;
 
-	Vector3d operator()(const FEMaterialPoint& pt) override { return m_val; }
+	Vector3d operator()(const RgMaterialPoint& pt) override { return m_val; }
 
 	// is this a const value
 	bool isConst() override { return true; }
@@ -61,7 +61,7 @@ class FEM_EXPORT FEMathValueVec3 : public FEVec3dValuator
 {
 public:
 	FEMathValueVec3();
-	Vector3d operator()(const FEMaterialPoint& pt) override;
+	Vector3d operator()(const RgMaterialPoint& pt) override;
 
 	bool Init() override;
 
@@ -87,7 +87,7 @@ public:
 
 	void setDataMap(FEDataMap* val, Vector3d scl = Vector3d(1, 1, 1));
 
-	Vector3d operator()(const FEMaterialPoint& pt) override;
+	Vector3d operator()(const RgMaterialPoint& pt) override;
 
 	FEVec3dValuator* copy() override;
 
@@ -114,7 +114,7 @@ public:
 
 	bool Init() override;
 
-	Vector3d operator () (const FEMaterialPoint& mp) override;
+	Vector3d operator () (const RgMaterialPoint& mp) override;
 
 	FEVec3dValuator* copy() override;
 
@@ -132,7 +132,7 @@ public:
 
 	bool Init() override;
 
-	Vector3d operator () (const FEMaterialPoint& mp) override;
+	Vector3d operator () (const RgMaterialPoint& mp) override;
 
 	FEVec3dValuator* copy() override;
 
@@ -152,7 +152,7 @@ public:
 
 	bool Init() override;
 
-	Vector3d operator () (const FEMaterialPoint& mp) override;
+	Vector3d operator () (const RgMaterialPoint& mp) override;
 
 	FEVec3dValuator* copy() override;
 
@@ -169,7 +169,7 @@ class FEM_EXPORT FESphericalAnglesVectorGenerator : public FEVec3dValuator
 public:
 	FESphericalAnglesVectorGenerator();
 
-	Vector3d operator () (const FEMaterialPoint& mp) override;
+	Vector3d operator () (const RgMaterialPoint& mp) override;
 
 	FEVec3dValuator* copy() override;
 
@@ -188,7 +188,7 @@ class FEM_EXPORT FEUserVectorGenerator : public FEVec3dValuator
 public:
 	FEUserVectorGenerator();
 
-	Vector3d operator () (const FEMaterialPoint& mp) override;
+	Vector3d operator () (const RgMaterialPoint& mp) override;
 
 	FEVec3dValuator* copy() override;
 

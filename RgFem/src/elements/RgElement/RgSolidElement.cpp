@@ -35,7 +35,7 @@ int RgSolidElement::dofs() const
     return 3 * NodeSize();
 }
 
-RgFem::RgGaussPoint RgSolidElement::gaussPoint(int n) const
+ RgGaussPoint RgSolidElement::gaussPoint(int n) const
 {
     // Get the element traits for this element
     RgElementTraits* traits = RgElementTraitsStore::GetInstance()->GetElementTraits(elementType());
@@ -43,44 +43,42 @@ RgFem::RgGaussPoint RgSolidElement::gaussPoint(int n) const
         // Cast to the appropriate traits type
         RgSolidElementTraits* solidTraits = dynamic_cast<RgSolidElementTraits*>(traits);
         if (solidTraits) {
-            return solidTraits->gaussPoints[n];
+            return solidTraits->gaussPoint(n);
         }
     }
-    return RgFem::RgGaussPoint(); // Return default if traits not found
+    return  RgGaussPoint(); // Return default if traits not found
 }
 
 // --- assembly interfaces (common to all solid elements) ---
-void RgSolidElement::calculateStiffnessMatrix(Matrix& K) const
+void RgSolidElement::calculateStiffnessMatrix(Matrix& K)
 {
     // 默认实现，具体单元类型需要重写此方法
     K.zero();
 }
 
-void RgSolidElement::calculateMassMatrix(Matrix& M) const
+void RgSolidElement::calculateMassMatrix(Matrix& M)
 {
     // 默认实现，具体单元类型需要重写此方法
     M.zero();
 }
 
-void RgSolidElement::calculateDampingMatrix(Matrix& C) const
+void RgSolidElement::calculateDampingMatrix(Matrix& C)
 {
     // 默认实现，具体单元类型需要重写此方法
     C.zero();
 }
 
-void RgSolidElement::calculateInternalForceVector(Vector& F) const
+void RgSolidElement::calculateInternalForceVector(std::vector<double>& F) 
 {
-    // 默认实现，具体单元类型需要重写此方法
-    //F.zero();
 }
 
-void RgSolidElement::calculateStress(FEMaterialPoint& matPt, StressTensor& stress)
+void RgSolidElement::calculateStress(RgMaterialPoint& matPt, StressTensor& stress)
 {
     // 默认实现，具体单元类型需要重写此方法
     stress.zero();
 }
 
-void RgSolidElement::calculateStrain(FEMaterialPoint& matPt, StrainTensor& strain)
+void RgSolidElement::calculateStrain(RgMaterialPoint& matPt, StrainTensor& strain)
 {
     // 默认实现，具体单元类型需要重写此方法
     strain.zero();
@@ -99,31 +97,31 @@ void RgSolidElement::getConstitutiveTangentAtGauss(int gp, Matrix& D) const
     D.zero();
 }
 
-Matrix3d RgSolidElement::evaluateJacobian(const Vector3d& naturalCoord) const
+Matrix3d RgSolidElement::evaluateJacobian(const NaturalCoord& naturalCoord) const
 {
     // 默认实现，具体单元类型需要重写此方法
     return Matrix3d();
 }
 
-double RgSolidElement::evaluateJacobianDeterminant(const Vector3d& naturalCoord) const
+double RgSolidElement::evaluateJacobianDeterminant(const NaturalCoord& naturalCoord) const
 {
     Matrix3d J = evaluateJacobian(naturalCoord);
     return J.det();
 }
 
-Matrix3d RgSolidElement::evaluateJacobianInverse(const Vector3d& naturalCoord) const
+Matrix3d RgSolidElement::evaluateJacobianInverse(const NaturalCoord& naturalCoord) const
 {
     Matrix3d J = evaluateJacobian(naturalCoord);
     return J.inverse();
 }
 
-double RgSolidElement::calculateStrainEnergy() const
+double RgSolidElement::calculateStrainEnergy()
 {
     // 默认实现，具体单元类型需要重写此方法
     return 0.0;
 }
 
-double RgSolidElement::calculateKineticEnergy() const
+double RgSolidElement::calculateKineticEnergy()
 {
     // 默认实现，具体单元类型需要重写此方法
     return 0.0;
@@ -133,13 +131,13 @@ std::vector<double> RgSolidElement::evalH(int n)
 {
     // Get the element traits for this element
     RgElementTraits* traits = RgElementTraitsStore::GetInstance()->GetElementTraits(elementType());
-    if (traits && n < traits->m_nint) {
+    if (traits && n < traits->guassSize()) {
         // Cast to the appropriate traits type
         RgSolidElementTraits* solidTraits = dynamic_cast<RgSolidElementTraits*>(traits);
         if (solidTraits) {
-            std::vector<double> result(solidTraits->m_neln);
-            for (int i = 0; i < solidTraits->m_neln; ++i) {
-                result[i] = solidTraits->m_H[n][i];
+            std::vector<double> result(solidTraits->shapeSize());
+            for (int i = 0; i < solidTraits->shapeSize(); ++i) {
+                result[i] = solidTraits->getH()[n][i];
             }
             return result;
         }
@@ -151,12 +149,12 @@ std::vector<std::vector<double>> RgSolidElement::evalDeriv(int n)
 {
     // Get the element traits for this element
     RgElementTraits* traits = RgElementTraitsStore::GetInstance()->GetElementTraits(elementType());
-    if (traits && n < traits->m_nint) {
+    if (traits && n < traits->guassSize()) {
         // Cast to the appropriate traits type
         RgSolidElementTraits* solidTraits = dynamic_cast<RgSolidElementTraits*>(traits);
         if (solidTraits) {
-            std::vector<std::vector<double>> result(3, std::vector<double>(solidTraits->m_neln));
-            for (int i = 0; i < solidTraits->m_neln; ++i) {
+            std::vector<std::vector<double>> result(3, std::vector<double>(solidTraits->shapeSize()));
+            for (int i = 0; i < solidTraits->shapeSize(); ++i) {
                 result[0][i] = solidTraits->m_Gr[n][i];  // dN/dr
                 result[1][i] = solidTraits->m_Gs[n][i];  // dN/ds
                 result[2][i] = solidTraits->m_Gt[n][i];  // dN/dt
@@ -171,12 +169,12 @@ std::vector<std::vector<double>> RgSolidElement::evalDeriv2(int n)
 {
     // Get the element traits for this element
     RgElementTraits* traits = RgElementTraitsStore::GetInstance()->GetElementTraits(elementType());
-    if (traits && n < traits->m_nint) {
+    if (traits && n < traits->guassSize()) {
         // Cast to the appropriate traits type
         RgSolidElementTraits* solidTraits = dynamic_cast<RgSolidElementTraits*>(traits);
         if (solidTraits) {
-            std::vector<std::vector<double>> result(6, std::vector<double>(solidTraits->m_neln));
-            for (int i = 0; i < solidTraits->m_neln; ++i) {
+            std::vector<std::vector<double>> result(6, std::vector<double>(solidTraits->shapeSize()));
+            for (int i = 0; i < solidTraits->shapeSize(); ++i) {
                 result[0][i] = solidTraits->Grr[n][i];  // d²N/dr²
                 result[1][i] = solidTraits->Gss[n][i];  // d²N/ds²
                 result[2][i] = solidTraits->Gtt[n][i];  // d²N/dt²
@@ -190,7 +188,7 @@ std::vector<std::vector<double>> RgSolidElement::evalDeriv2(int n)
     return std::vector<std::vector<double>>(); // Return empty vector if traits not found or invalid index
 }
 
-std::vector<double> RgSolidElement::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> RgSolidElement::evalH(const  NaturalCoord& coord)
 {
     // Get the element traits for this element
     RgElementTraits* traits = RgElementTraitsStore::GetInstance()->GetElementTraits(elementType());
@@ -205,7 +203,7 @@ std::vector<double> RgSolidElement::evalH(const RgFem::NaturalCoord& coord)
     return std::vector<double>(); // Return empty vector if traits not found
 }
 
-std::vector<std::vector<double>> RgSolidElement::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> RgSolidElement::evalDeriv(const  NaturalCoord& coord)
 {
     // Get the element traits for this element
     RgElementTraits* traits = RgElementTraitsStore::GetInstance()->GetElementTraits(elementType());
@@ -220,7 +218,7 @@ std::vector<std::vector<double>> RgSolidElement::evalDeriv(const RgFem::NaturalC
     return std::vector<std::vector<double>>(); // Return empty vector if traits not found
 }
 
-std::vector<std::vector<double>> RgSolidElement::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> RgSolidElement::evalDeriv2(const  NaturalCoord& coord)
 {
     // Get the element traits for this element
     RgElementTraits* traits = RgElementTraitsStore::GetInstance()->GetElementTraits(elementType());

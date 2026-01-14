@@ -4,7 +4,6 @@
 #include "femcore/Domain/RgTrussDomain.h"
 //#include "femcore/Domain/FEShellDomain.h"
 #include "femcore/Domain/RgSolidDomain.h"
-#include "femcore/Domain/RgDomain2D.h"
 #include "femcore/DOFS.h"
 #include "elements/RgElemElemList.h"
 #include "elements/RgElementList.h"
@@ -367,7 +366,7 @@ int FEMesh::RemoveIsolatedVertices()
 		RgDomain& d = Domain(i);
 		for (j=0; j<d.Elements(); ++j)
 		{
-			FEElement& el = d.ElementRef(j);
+			RgElement& el = d.ElementRef(j);
 			n = el.NodeSize();
 			for (k=0; k<n; ++k) ++val[el.getNodeId(k)];
 		}
@@ -464,7 +463,7 @@ void FEMesh::Reset()
 //-----------------------------------------------------------------------------
 //! This function calculates the (initial) volume of an element. In some case, the volume
 //! may only be approximate.
-double FEMesh::ElementVolume(FEElement &el)
+double FEMesh::ElementVolume(RgElement &el)
 {
 	double V = 0;
 	switch (el.Class())
@@ -488,7 +487,7 @@ double FEMesh::ElementVolume(FEElement &el)
 //-----------------------------------------------------------------------------
 //! This function calculates the (initial) volume of an element. In some case, the volume
 //! may only be approximate.
-double FEMesh::CurrentElementVolume(FEElement& el)
+double FEMesh::CurrentElementVolume(RgElement& el)
 {
 	double V = 0;
 	switch (el.Class())
@@ -565,7 +564,7 @@ FESurface* FEMesh::CreateSurface(FEFacetSet& facetSet)
 //-----------------------------------------------------------------------------
 //! Find a element set by name
 
-FEElementSet* FEMesh::FindElementSet(const std::string& name)
+RgElementSet* FEMesh::FindElementSet(const std::string& name)
 {
 	for (size_t i=0; i<m_ElemSet.size(); ++i) if (m_ElemSet[i]->GetName() == name) return m_ElemSet[i];
 	return 0;
@@ -606,12 +605,12 @@ FENodeSet* FEMesh::NodeSet(int i)
 	return m_NodeSet[i];
 }
 
-void FEMesh::AddElementSet(FEElementSet* pg)
+void FEMesh::AddElementSet(RgElementSet* pg)
 {
 	m_ElemSet.push_back(pg);
 }
 
-FEElementSet& FEMesh::ElementSet(int n)
+RgElementSet& FEMesh::ElementSet(int n)
 {
 	return *m_ElemSet[n];
 }
@@ -695,7 +694,7 @@ RgDomain* FEMesh::FindDomain(int domId)
 
 //-----------------------------------------------------------------------------
 //! return an element
-FEElement* FEMesh::Element(int n)
+RgElement* FEMesh::Element(int n)
 {
 	if (n < 0) return nullptr;
 	for (int i = 0; i < Domains(); ++i)
@@ -724,16 +723,16 @@ FENode* FEMesh::FindNodeFromID(int nid)
 //-----------------------------------------------------------------------------
 //! Find an element from a given ID. return 0 if the element cannot be found.
 
-FEElement* FEMesh::FindElementFromID(int nid)
+RgElement* FEMesh::FindElementFromID(int nid)
 {
 	if (m_LUT == 0) m_LUT = new FEElementLUT(*this);
 	return m_LUT->Find(nid);
 }
 
 /*
-FEElement* FEMesh::FindElementFromID(int nid)
+RgElement* FEMesh::FindElementFromID(int nid)
 {
-	FEElement* pe = 0;
+	RgElement* pe = 0;
 
 	for (int i=0; i<Domains(); ++i)
 	{
@@ -754,7 +753,7 @@ bool FEMesh::IsType(ElementShape eshape)
 	FEElementList elemList(*this);
 	for (FEElementList::iterator it = elemList.begin(); it != elemList.end(); ++it)
 	{
-		FEElement& el = *it;
+		RgElement& el = *it;
 		if (el.Shape() != eshape) return false;
 	}
 	return true;
@@ -815,11 +814,11 @@ FESurface* FEMesh::ElementBoundarySurface(bool boutside, bool binside)
 	FEElementList::iterator it = EL.begin();
 	for (int i=0; i<NE; ++i, ++it)
 	{
-		FEElement& el = *it;
+		RgElement& el = *it;
 		int nf = el.Faces();
 		for (int j=0; j<nf; ++j)
 		{
-			FEElement* pen = EEL.Neighbor(i, j);
+			RgElement* pen = EEL.Neighbor(i, j);
 			if ((pen == 0) && boutside) ++NF;
 			if ((pen != 0) && (el.getId() < pen->getId()) && binside ) ++NF;
 		}
@@ -830,16 +829,16 @@ FESurface* FEMesh::ElementBoundarySurface(bool boutside, bool binside)
 	ps->Create(NF);
 
 	// build the surface elements
-	int face[FEElement::MAX_NODES];
+	int face[RgElement::MAX_NODES];
 	NF = 0;
 	it = EL.begin();
 	for (int i=0; i<NE; ++i, ++it)
 	{
-		FEElement& el = *it;
+		RgElement& el = *it;
 		int nf = el.Faces();
 		for (int j=0; j<nf; ++j)
 		{
-			FEElement* pen = EEL.Neighbor(i, j);
+			RgElement* pen = EEL.Neighbor(i, j);
 			if (((pen == 0) && boutside)||
 				((pen != 0) && (el.getId() < pen->getId()) && binside ))
 			{
@@ -897,11 +896,11 @@ FESurface* FEMesh::ElementBoundarySurface(std::vector<RgDomain*> domains, bool b
 	{
 		for (int j = 0; j < domains[i]->Elements(); j++)
 		{
-			FEElement& el = domains[i]->ElementRef(j);
+			RgElement& el = domains[i]->ElementRef(j);
 			int nf = el.Faces();
 			for (int k = 0; k<nf; ++k)
 			{
-				FEElement* pen = EEL.Neighbor(el.getId()-1, k);
+				RgElement* pen = EEL.Neighbor(el.getId()-1, k);
 				if ((pen == nullptr) && boutside) ++NF;
 				else if (pen && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) == domains.end()) && boutside) ++NF;
 				if ((pen != nullptr) && (el.getId() < pen->getId()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())) ++NF;
@@ -915,17 +914,17 @@ FESurface* FEMesh::ElementBoundarySurface(std::vector<RgDomain*> domains, bool b
 	ps->Create(NF);
 
 	// build the surface elements
-	int face[FEElement::MAX_NODES];
+	int face[RgElement::MAX_NODES];
 	NF = 0;
 	for (int i = 0; i < domains.size(); i++)
 	{
 		for (int j = 0; j < domains[i]->Elements(); j++)
 		{
-			FEElement& el = domains[i]->ElementRef(j);
+			RgElement& el = domains[i]->ElementRef(j);
 			int nf = el.Faces();
 			for (int k = 0; k < nf; ++k)
 			{
-				FEElement* pen = EEL.Neighbor(el.getId()-1, k);
+				RgElement* pen = EEL.Neighbor(el.getId()-1, k);
 				if (((pen == nullptr) && boutside) ||
 					(pen && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) == domains.end()) && boutside) ||
 					((pen != nullptr) && (el.getId() < pen->getId()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())))
@@ -985,11 +984,11 @@ FEFacetSet* FEMesh::DomainBoundary(std::vector<RgDomain*> domains, bool boutside
 	{
 		for (int j = 0; j < domains[i]->Elements(); j++)
 		{
-			FEElement& el = domains[i]->ElementRef(j);
+			RgElement& el = domains[i]->ElementRef(j);
 			int nf = el.Faces();
 			for (int k = 0; k < nf; ++k)
 			{
-				FEElement* pen = EEL.Neighbor(el.getId() - 1, k);
+				RgElement* pen = EEL.Neighbor(el.getId() - 1, k);
 				if ((pen == nullptr) && boutside) ++NF;
 				else if (pen && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) == domains.end()) && boutside) ++NF;
 				if ((pen != nullptr) && (el.getId() < pen->getId()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())) ++NF;
@@ -1003,17 +1002,17 @@ FEFacetSet* FEMesh::DomainBoundary(std::vector<RgDomain*> domains, bool boutside
 	ps->Create(NF);
 
 	// build the surface elements
-	int faceNodes[FEElement::MAX_NODES];
+	int faceNodes[RgElement::MAX_NODES];
 	NF = 0;
 	for (int i = 0; i < domains.size(); i++)
 	{
 		for (int j = 0; j < domains[i]->Elements(); j++)
 		{
-			FEElement& el = domains[i]->ElementRef(j);
+			RgElement& el = domains[i]->ElementRef(j);
 			int nf = el.Faces();
 			for (int k = 0; k < nf; ++k)
 			{
-				FEElement* pen = EEL.Neighbor(el.getId() - 1, k);
+				RgElement* pen = EEL.Neighbor(el.getId() - 1, k);
 				if (((pen == nullptr) && boutside) ||
 					(pen && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) == domains.end()) && boutside) ||
 					((pen != nullptr) && (el.getId() < pen->getId()) && binside && (std::find(domains.begin(), domains.end(), pen->GetMeshPartition()) != domains.end())))
@@ -1048,7 +1047,7 @@ FEFacetSet* FEMesh::DomainBoundary(std::vector<RgDomain*> domains, bool boutside
 
 //-----------------------------------------------------------------------------
 //! Retrieve the nodal coordinates of an element in the reference configuration.
-void FEMesh::GetInitialNodalCoordinates(const FEElement& el, Vector3d* node)
+void FEMesh::GetInitialNodalCoordinates(const RgElement& el, Vector3d* node)
 {
 	const int neln = el.NodeSize();
 	for (int i=0; i<neln; ++i) node[i] = Node(el.m_node[i]).m_r0;
@@ -1056,7 +1055,7 @@ void FEMesh::GetInitialNodalCoordinates(const FEElement& el, Vector3d* node)
 
 //-----------------------------------------------------------------------------
 //! Retrieve the nodal coordinates of an element in the current configuration.
-void FEMesh::GetNodalCoordinates(const FEElement& el, Vector3d* node)
+void FEMesh::GetNodalCoordinates(const RgElement& el, Vector3d* node)
 {
 	const int neln = el.NodeSize();
 	for (int i=0; i<neln; ++i) node[i] = Node(el.m_node[i]).m_rt;
@@ -1075,7 +1074,7 @@ FEElementLUT::FEElementLUT(FEMesh& mesh)
 		int NE = dom.Elements();
 		for (int j=0; j<NE; ++j)
 		{
-			FEElement& el = dom.ElementRef(j);
+			RgElement& el = dom.ElementRef(j);
 			int eid = el.getId();
 			if ((eid < m_minID) || (m_minID == -1)) m_minID = eid;
 			if ((eid > m_maxID) || (m_maxID == -1)) m_maxID = eid;
@@ -1084,7 +1083,7 @@ FEElementLUT::FEElementLUT(FEMesh& mesh)
 
 	// allocate size
 	int nsize = m_maxID - m_minID + 1;
-	m_elem.resize(nsize, (FEElement*) 0);
+	m_elem.resize(nsize, (RgElement*) 0);
 
 	// fill the table
 	for (int i = 0; i<NDOM; ++i)
@@ -1093,7 +1092,7 @@ FEElementLUT::FEElementLUT(FEMesh& mesh)
 		int NE = dom.Elements();
 		for (int j = 0; j<NE; ++j)
 		{
-			FEElement& el = dom.ElementRef(j);
+			RgElement& el = dom.ElementRef(j);
 			int eid = el.getId();
 			m_elem[eid - m_minID] = &el;
 		}
@@ -1101,7 +1100,7 @@ FEElementLUT::FEElementLUT(FEMesh& mesh)
 }
 
 // Find an element from its ID
-FEElement* FEElementLUT::Find(int nid)
+RgElement* FEElementLUT::Find(int nid)
 {
 	if ((nid < m_minID) || (nid > m_maxID)) return 0;
 	return m_elem[nid - m_minID];
@@ -1154,7 +1153,7 @@ FEDataMap* FEMesh::GetDataMap(int i)
 }
 
 //==============================================================================
-FEElementIterator::FEElementIterator(FEMesh* mesh, FEElementSet* elemSet) : m_mesh(mesh), m_eset(elemSet)
+FEElementIterator::FEElementIterator(FEMesh* mesh, RgElementSet* elemSet) : m_mesh(mesh), m_eset(elemSet)
 {
 	reset();
 }
@@ -1239,7 +1238,7 @@ void FEElementIterator::operator++()
 	}
 }
 
-FEElement& FEElementIterator::operator*()
+RgElement& FEElementIterator::operator*()
 {
 	return *m_el;
 }
@@ -1293,8 +1292,8 @@ void FEMesh::CopyFrom(FEMesh& mesh)
 	// copy element sets
 	for (int i = 0; i < mesh.ElementSets(); ++i)
 	{
-		FEElementSet& eset = mesh.ElementSet(i);
-		FEElementSet* pset = new FEElementSet(GetFEModel());
+		RgElementSet& eset = mesh.ElementSet(i);
+		RgElementSet* pset = new RgElementSet(GetFEModel());
 		pset->SetMesh(this);
 		pset->CopyFrom(eset);
 		AddElementSet(pset);

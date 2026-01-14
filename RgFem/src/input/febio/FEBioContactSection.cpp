@@ -137,7 +137,7 @@ bool FEBioContactSection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int nfm
 		else if (nfmt == 1)
 		{
 			tag.value(nf, 2);
-			FEElement* pe = m.FindElementFromID(nf[0]);
+			RgElement* pe = m.FindElementFromID(nf[0]);
 			if (pe)
 			{
 				int ne[4];
@@ -153,7 +153,7 @@ bool FEBioContactSection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int nfm
 	}
 
 	s.InitSurface();
-	s.CreateMaterialPointData();
+	s.CreateRgMaterialPointData();
 
 	return true;
 }

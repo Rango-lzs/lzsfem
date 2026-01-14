@@ -5,7 +5,7 @@
 #include "femcore/FEModel.h"
 #include "femcore/FEMesh.h"
 #include "materials/FESolidMaterial.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 
 #include <vector>
 #include "materials/FEElasticMaterialPoint.h"
@@ -53,7 +53,7 @@ void VTUWriter::write(const std::vector<NodeData>& nodes,
    
     for (auto dom : mp_model->GetMesh().AllDomain())
     {
-        auto stressGeter = [](const FEMaterialPoint& mp)
+        auto stressGeter = [](const RgMaterialPoint& mp)
         {
             const FEElasticMaterialPoint& ep = *mp.ExtractData<FEElasticMaterialPoint>();
             Matrix3ds s = ep.m_s;
@@ -63,7 +63,7 @@ void VTUWriter::write(const std::vector<NodeData>& nodes,
 
         for (int i = 0; i < dom->Elements(); i++)
         {
-            FEElement& el = dom->ElementRef(i);
+            RgElement& el = dom->ElementRef(i);
             Matrix3ds s(0.0);
             for (int j = 0; j < el.GaussPointSize(); ++j)
                 s += stressGeter(*el.GetMaterialPoint(j));
@@ -126,7 +126,7 @@ void VTUWriter::writeCells()
     for (int i =0; i< mp_model->GetMesh().Elements();i++)
     {
         m_out << SPACE10; 
-        const FEElement& elem = *mp_model->GetMesh().Element(i);
+        const RgElement& elem = *mp_model->GetMesh().Element(i);
         for (int nodeId : elem.getNodeIds())
         {
             m_out << nodeId << " ";  // VTK Ê¹ÓÃ0-basedË÷Òý
@@ -141,7 +141,7 @@ void VTUWriter::writeCells()
     int offset = 0;
     for (int i = 0; i < mp_model->GetMesh().Elements(); i++)
     {
-        const FEElement& elem = *mp_model->GetMesh().Element(i);
+        const RgElement& elem = *mp_model->GetMesh().Element(i);
         offset += elem.NodeSize();
         m_out << offset << " ";
     }
@@ -152,7 +152,7 @@ void VTUWriter::writeCells()
     m_out << SPACE10; 
     for (int i = 0; i < mp_model->GetMesh().Elements(); i++)
     {
-        const FEElement& elem = *mp_model->GetMesh().Element(i);
+        const RgElement& elem = *mp_model->GetMesh().Element(i);
         m_out << 12 << " ";
     }
     m_out << "\n" << SPACE8 <<"</DataArray >\n ";

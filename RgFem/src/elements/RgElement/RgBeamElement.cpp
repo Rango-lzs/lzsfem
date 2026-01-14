@@ -1,8 +1,6 @@
 #include "RgBeamElement.h"
 #include "basicio/DumpStream.h"
 
-namespace RgFem {
-
 // ============================================================================
 // Constructor and Destructor
 // ============================================================================
@@ -28,5 +26,3 @@ RgBeamElement& RgBeamElement::operator=(const RgBeamElement& other)
     }
     return *this;
 }
-
-} // namespace RgFem

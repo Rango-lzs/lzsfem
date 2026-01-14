@@ -16,12 +16,12 @@ void FEBioModelBuilder::AddMaterial(FEMaterial* mat)
 	if (pucm) FixUncoupledMaterial(pucm);*/
 }
 
-FEDomain* FEBioModelBuilder::CreateDomain(FE_Element_Spec espec, FEMaterial* mat)
+RgDomain* FEBioModelBuilder::CreateDomain(FE_Element_Spec espec, FEMaterial* mat)
 {
 	FEModel& fem = GetFEModel();
 
 	//FECoreKernel& febio = FECoreKernel::GetInstance();
-	//FEDomain* pdom = febio.CreateDomain(espec, &fem.GetMesh(), mat);
+	//RgDomain* pdom = febio.CreateDomain(espec, &fem.GetMesh(), mat);
 
 	//// Handle dome special cases
 	//// TODO: Find a better way of dealing with these special cases

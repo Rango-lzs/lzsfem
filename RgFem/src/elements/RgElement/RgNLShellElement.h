@@ -4,7 +4,7 @@
 #include <array>
 #include <vector>
 
-namespace RgFem {
+
 
 /**
  * @class RgNLShellElement
@@ -82,4 +82,4 @@ public:
     virtual void calculateInternalForceVector(RgVector& F) const override = 0;
 };
 
-} // namespace RgFem
+

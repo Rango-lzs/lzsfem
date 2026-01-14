@@ -1,7 +1,7 @@
-#include "elements/FEElement2d.h"
+#include "elements/RgElement/RgSolid2dElement.h"
 
 //-----------------------------------------------------------------------------
-FEElement2D::FEElement2D(const FEElement2D& el)
+RgSolid2dElement::RgSolid2dElement(const RgSolid2dElement& el)
 {
     // set the traits of the element
     if (el.m_pTraits)
@@ -11,7 +11,7 @@ FEElement2D::FEElement2D(const FEElement2D& el)
     }
 }
 
-FEElement2D& FEElement2D::operator=(const FEElement2D& el)
+RgSolid2dElement& RgSolid2dElement::operator=(const RgSolid2dElement& el)
 {
     // set the traits of the element
     if (el.m_pTraits)
@@ -19,15 +19,11 @@ FEElement2D& FEElement2D::operator=(const FEElement2D& el)
         SetTraits(el.m_pTraits);
         m_state = el.m_state;
     }
+    
+    return *this;
+}
 
-    // copy base class data ??? no need
-    /* m_mat = el.m_mat;
-     m_nID = el.m_nID;
-     m_lid = el.m_lid;
-     m_node = el.m_node;
-     m_loc_node = el.m_loc_node;
-     m_lm = el.m_lm;
-     m_val = el.m_val;*/
-
-    return (*this);
+int RgSolid2dElement::dim()
+{
+    return 2;
 }

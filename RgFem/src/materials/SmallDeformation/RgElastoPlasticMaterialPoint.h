@@ -3,11 +3,11 @@
 #include "datastructure/Matrix.h"
 #include "materials/RgMaterialPointData.h"
 
-namespace RgFem {
+
 namespace SmallDef {
 
 /// This class defines material point data for elastic-plastic materials.
-class RgElastoPlasticMaterialPoint : public SmallDefMaterialPointData {
+class RgElastoPlasticMaterialPoint : public SmallDefRgMaterialPointData {
 public:
     //! constructor
     RgElastoPlasticMaterialPoint(RgMaterialPointData* mp = nullptr);
@@ -70,4 +70,3 @@ public:
 };
 
 } // namespace SmallDef
-} // namespace RgFem

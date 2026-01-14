@@ -44,7 +44,7 @@ void FEMappedValueMat3ds::setDataMap(FEDataMap* val)
 	m_val = val;
 }
 
-Matrix3ds FEMappedValueMat3ds::operator()(const FEMaterialPoint& pt)
+Matrix3ds FEMappedValueMat3ds::operator()(const RgMaterialPoint& pt)
 {
 	return m_val->valueMat3ds(pt);
 }

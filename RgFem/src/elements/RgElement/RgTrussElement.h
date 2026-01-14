@@ -1,14 +1,16 @@
 #pragma once
-#include "elements/RgElement.h"
+#include "elements/RgElement/RgElement.h"
 
-class FEM_EXPORT FETrussElement : public FEElement
+
+
+class FEM_EXPORT RgTrussElement : public RgElement
 {
 public:
-    FETrussElement();
+    RgTrussElement();
 
-    FETrussElement(const FETrussElement& el);
+    RgTrussElement(const RgTrussElement& el);
 
-    FETrussElement& operator=(const FETrussElement& el);
+    RgTrussElement& operator=(const RgTrussElement& el);
 
     void Serialize(DumpStream& ar) override;
 
@@ -18,6 +20,3 @@ public:
     double m_tau;  // Kirchoff stress
     double m_L0;   // initial length
 };
-
-//-----------------------------------------------------------------------------
-//! Discrete element class

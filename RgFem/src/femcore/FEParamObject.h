@@ -94,7 +94,7 @@ public:
     FEParam* AddParameter(std::vector<double>& v, const char* sz);
     FEParam* AddParameter(std::vector<Vector2d>& v, const char* sz);
     FEParam* AddParameter(std::vector<std::string>& v, const char* sz);
-    //FEParam* AddParameter(FEMaterialPointProperty& v, const char* sz);
+    //FEParam* AddParameter(RgMaterialPointProperty& v, const char* sz);
 
     FEParam* AddParameter(int& v, const RANGE& rng, const char* sz);
     FEParam* AddParameter(double& v, const RANGE& rng, const char* sz);

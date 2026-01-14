@@ -4,7 +4,7 @@
 #include "datastructure/Matrix3d.h"
 #include "datastructure/mathalg.h"
 
-namespace RgFem {
+
 namespace SmallDef {
 
 RgLinearElastic::RgLinearElastic(double E, double nu)
@@ -37,7 +37,7 @@ void RgLinearElastic::updateLameParameters()
     m_mu = m_E / (2 * (1 + m_nu));
 }
 
-RgMaterialPointData* RgLinearElastic::createMaterialPointData() const
+RgMaterialPointData* RgLinearElastic::createRgMaterialPointData() const
 {
     // For linear elastic materials, return an instance of the specific material point data
     return new RgLinearElasticMatData();
@@ -69,11 +69,11 @@ void RgLinearElastic::computeConstitutive(RgMaterialPointData* mp, Matrix& D)
     // For demonstration, we'll compute stress based on strain in mp
     if (mp) {
         // Use the strain from the material point
-        // Extract the SmallDefMaterialPointData from the RgMaterialPointData chain
-        SmallDefMaterialPointData* smpt = mp->ExtractData<SmallDefMaterialPointData>();
+        // Extract the SmallDefRgMaterialPointData from the RgMaterialPointData chain
+        SmallDefRgMaterialPointData* smpt = mp->ExtractData<SmallDefRgMaterialPointData>();
         if (smpt) {
-            Matrix3d strain = smpt->strain; // Using the strain field from SmallDef::SmallDefMaterialPointData
-            Matrix3d stress;
+            Matrix3ds strain = smpt->strain; // Using the strain field from SmallDef::SmallDefRgMaterialPointData
+            Matrix3ds stress;
             
             // Compute stress = D * strain
             // This is a simplified calculation for demonstration
@@ -139,4 +139,3 @@ void RgLinearElastic::computeElasticMatrix()
 }
 
 } // namespace SmallDef
-} // namespace RgFem

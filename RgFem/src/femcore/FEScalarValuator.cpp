@@ -1,5 +1,5 @@
 #include "femcore/FEScalarValuator.h"
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "femcore/FEModelParam.h"
 #include "femcore/FEModel.h"
 #include "basicio/DumpStream.h"
@@ -89,7 +89,7 @@ DEFINE_META_CLASS(FEConstValue, FEScalarValuator, "const");
 //	m_vars = me.m_vars;
 //}
 //
-//double FEMathExpression::value(FEModel* fem, const FEMaterialPoint& pt)
+//double FEMathExpression::value(FEModel* fem, const RgMaterialPoint& pt)
 //{
 //	std::vector<double> var(4 + m_vars.size());
 //	var[0] = pt.m_r0.x;
@@ -208,7 +208,7 @@ END_PARAM_DEFINE();
 //	return newExpr;
 //}
 //
-//double FEMathValue::operator()(const FEMaterialPoint& pt)
+//double FEMathValue::operator()(const RgMaterialPoint& pt)
 //{
 //	return m_math.value(GetFEModel(), pt);
 //}
@@ -235,7 +235,7 @@ void FEMappedValue::setScaleFactor(double s)
 	m_scale = s;
 }
 
-double FEMappedValue::operator()(const FEMaterialPoint& pt)
+double FEMappedValue::operator()(const RgMaterialPoint& pt)
 {
 	return m_scale*m_val->value(pt);
 }
@@ -267,7 +267,7 @@ void FEMappedValue::Serialize(DumpStream& dmp)
 //	m_val = val;
 //}
 //
-//double FENodeMappedValue::operator()(const FEMaterialPoint& pt)
+//double FENodeMappedValue::operator()(const RgMaterialPoint& pt)
 //{
 //	return m_val->getValue(pt.m_index);
 //}

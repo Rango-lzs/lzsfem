@@ -5,7 +5,7 @@
 #include <array>
 #include <vector>
 
-namespace RgFem {
+
 
 // Forward declarations
 class RgMaterial;
@@ -147,6 +147,6 @@ private:
                          std::array<double, 3>& zAxis) const;
 };
 
-} // namespace RgFem
+
 
 #endif // RGBEAM3DGEOMNLELEMENT_H

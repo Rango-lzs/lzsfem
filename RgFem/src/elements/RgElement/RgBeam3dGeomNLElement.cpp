@@ -2,7 +2,7 @@
 #include "RgMaterial.h"
 #include <cmath>
 
-namespace RgFem {
+
 
 RgBeam3dGeomNLElement::RgBeam3dGeomNLElement()
 {
@@ -367,4 +367,4 @@ void RgBeam3dGeomNLElement::calculateInternalForceVector(RgVector& F) const
     // Placeholder: actual implementation needed
 }
 
-} // namespace RgFem
+

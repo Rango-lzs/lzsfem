@@ -2,7 +2,7 @@
 #include "RgGaussPoint.h"
 #include <cassert>
 
-namespace RgFem {
+
 
 // ============================================================================
 // Constructors
@@ -101,4 +101,3 @@ void NaturalCoord::setCoordinates(double r, double s)
     m_coordinates[1] = s;
 }
 
-} // namespace RgFem

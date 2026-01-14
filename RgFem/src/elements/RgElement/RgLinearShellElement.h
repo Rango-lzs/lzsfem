@@ -2,8 +2,6 @@
 
 #include "RgShellElement.h"
 
-namespace RgFem {
-
 /**
  * @class RgLinearShellElement
  * @brief Abstract base class for linear shell elements
@@ -63,5 +61,3 @@ public:
     /// F_int = integral of B^T * σ dV
     virtual void calculateInternalForceVector(RgVector& F) const override = 0;
 };
-
-} // namespace RgFem

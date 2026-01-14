@@ -1,7 +1,7 @@
 #include "RgGaussPoint.h"
 #include <cassert>
 
-namespace RgFem {
+
 
 // ============================================================================
 // Constructors
@@ -114,4 +114,3 @@ void RgGaussPoint::setWeight(double weight)
     m_weight = weight;
 }
 
-} // namespace RgFem

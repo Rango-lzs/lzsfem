@@ -1,6 +1,6 @@
 #pragma once
 #include "datastructure/Vector3d.h"
-#include "elements/RgElement.h"
+#include "elements/RgElement/RgElement.h"
 #include "femcore/FETransform.h"
 #include <vector>
 #include <string>
@@ -24,20 +24,20 @@ public:
 	struct ELEMENT
 	{
 		int	id;
-		int	node[FEElement::MAX_NODES];
+		int	node[RgElement::MAX_NODES];
 	};
 
 	struct FACET
 	{
 		int id;
-		int node[FEElement::MAX_NODES];
+		int node[RgElement::MAX_NODES];
 		int ntype;
 	};
 
 	struct EDGE
 	{
 		int id;
-		int node[FEElement::MAX_NODES];
+		int node[RgElement::MAX_NODES];
 		int ntype;
 	};
 

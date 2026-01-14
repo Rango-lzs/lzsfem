@@ -38,7 +38,7 @@ void FEFacetSet::Create(const FESurface& surf)
 	m_Face.resize(NE);
 	for (int i = 0; i < NE; ++i)
 	{
-		const FESurfaceElement& el = surf.Element(i);
+		const RgSurfaceElement& el = surf.Element(i);
 		FACET& face = m_Face[i];
 		switch (el.Shape())
 		{

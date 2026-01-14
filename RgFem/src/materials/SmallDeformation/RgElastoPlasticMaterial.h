@@ -3,7 +3,7 @@
 #include "materials/SmallDeformation/RgElastoPlasticMaterialPoint.h"
 #include "datastructure/Matrix.h"
 
-namespace RgFem {
+
 namespace SmallDef {
 
 /// Elasto-plastic material model for small strain analysis
@@ -19,22 +19,22 @@ public:
     RgElastoPlastic(double E, double nu, double sy, double H = 0.0);
 
     /// Create material point data
-    MaterialPointData* createMaterialPointData() const override;
+    RgMaterialPointData* createRgMaterialPointData() const override;
 
     /// Compute constitutive response
-    void computeConstitutive(MaterialPointData* mp, Matrix& D) override;
+    void computeConstitutive(RgMaterialPointData* mp, Matrix& D) override;
 
     /// Commit state variables
-    void commitState(MaterialPointData* mp) override;
+    void commitState(RgMaterialPointData* mp) override;
 
     /// Revert state variables
-    void revertState(MaterialPointData* mp) override;
+    void revertState(RgMaterialPointData* mp) override;
 
     /// Get material name
     std::string getName() const override;
 
     /// Update material state with strain increment
-    void updateState(MaterialPointData* mp, const Matrix& strainIncrement);
+    void updateState(RgMaterialPointData* mp, const Matrix& strainIncrement);
 
 private:
     /// Compute elastic matrix based on material properties
@@ -57,4 +57,3 @@ private:
 };
 
 } // namespace SmallDef
-} // namespace RgFem

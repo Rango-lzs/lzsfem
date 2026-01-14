@@ -3,7 +3,7 @@
 #include "FEMesh.h"
 #include "FEDataMap.h"
 #include "basicio/DumpStream.h"
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 
 DEFINE_META_CLASS(FEMat3dValuator, FEValuator, "");
 
@@ -54,13 +54,13 @@ bool FEMat3dLocalElementMap::Init()
 }
 
 //-----------------------------------------------------------------------------
-Matrix3d FEMat3dLocalElementMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dLocalElementMap::operator () (const RgMaterialPoint& mp)
 {
 	FEMesh& mesh = GetFEModel()->GetMesh();
 
-	FEElement& el = *mp.m_elem;
+	RgElement& el = *mp.m_elem;
 
-	Vector3d r0[FEElement::MAX_NODES];
+	Vector3d r0[RgElement::MAX_NODES];
 	for (int i=0; i<el.NodeSize(); ++i) r0[i] = mesh.Node(el.getNodeId(i)).m_r0;
 
 	Vector3d a, b, c, d;
@@ -132,7 +132,7 @@ bool FEMat3dSphericalMap::Init()
 }
 
 //-----------------------------------------------------------------------------
-Matrix3d FEMat3dSphericalMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dSphericalMap::operator () (const RgMaterialPoint& mp)
 {
 	Vector3d a = mp.m_r0;
 	a -= m_c;
@@ -206,7 +206,7 @@ bool FEMat3dCylindricalMap::Init()
 }
 
 //-----------------------------------------------------------------------------
-Matrix3d FEMat3dCylindricalMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dCylindricalMap::operator () (const RgMaterialPoint& mp)
 {
 	// get the position of the material point
 	Vector3d p = mp.m_r0;
@@ -288,7 +288,7 @@ bool FEMat3dPolarMap::Init()
 }
 
 //-----------------------------------------------------------------------------
-Matrix3d FEMat3dPolarMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dPolarMap::operator () (const RgMaterialPoint& mp)
 {
 	// get the nodal position of material point
 	Vector3d p = mp.m_r0;
@@ -415,7 +415,7 @@ void FEMat3dVectorMap::SetVectors(Vector3d a, Vector3d d)
 }
 
 //-----------------------------------------------------------------------------
-Matrix3d FEMat3dVectorMap::operator () (const FEMaterialPoint& mp)
+Matrix3d FEMat3dVectorMap::operator () (const RgMaterialPoint& mp)
 {
 	return m_Q;
 }
@@ -461,7 +461,7 @@ FEDataMap* FEMappedValueMat3d::dataMap()
 	return m_val;
 }
 
-Matrix3d FEMappedValueMat3d::operator()(const FEMaterialPoint& pt)
+Matrix3d FEMappedValueMat3d::operator()(const RgMaterialPoint& pt)
 {
 	return m_val->valueMat3d(pt);
 }

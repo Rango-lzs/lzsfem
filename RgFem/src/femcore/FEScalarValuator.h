@@ -13,7 +13,7 @@ class FEM_EXPORT FEScalarValuator : public FEValuator
 public:
 	FEScalarValuator() : FEValuator() {};
 
-	virtual double operator()(const FEMaterialPoint& pt) = 0;
+	virtual double operator()(const RgMaterialPoint& pt) = 0;
 
 	virtual FEScalarValuator* copy() = 0;
 
@@ -28,7 +28,7 @@ class FEM_EXPORT FEConstValue : public FEScalarValuator
     DECLARE_META_CLASS(FEConstValue, FEScalarValuator);
 public:
 	FEConstValue() : FEScalarValuator(), m_val(0.0) {};
-	double operator()(const FEMaterialPoint& pt) override { return m_val; }
+	double operator()(const RgMaterialPoint& pt) override { return m_val; }
 
 	bool isConst() override { return true; }
 
@@ -60,7 +60,7 @@ private:
 //
 //	void operator = (const FEMathExpression& me);
 //
-//	double value(FEModel* fem, const FEMaterialPoint& pt);
+//	double value(FEModel* fem, const RgMaterialPoint& pt);
 //
 //private:
 //	std::vector<MathParam>	m_vars;
@@ -72,7 +72,7 @@ private:
 //public:
 //	FEMathValue(FEModel* fem);
 //	~FEMathValue();
-//	double operator()(const FEMaterialPoint& pt) override;
+//	double operator()(const RgMaterialPoint& pt) override;
 //
 //	bool Init() override;
 //
@@ -102,7 +102,7 @@ public:
 
 	FEDataMap* dataMap();
 
-	double operator()(const FEMaterialPoint& pt) override;
+	double operator()(const RgMaterialPoint& pt) override;
 
 	FEScalarValuator* copy() override;
 
@@ -120,7 +120,7 @@ private:
 //	FENodeMappedValue(FEModel* fem);
 //	void setDataMap(FENodeDataMap* val);
 //
-//	double operator()(const FEMaterialPoint& pt) override;
+//	double operator()(const RgMaterialPoint& pt) override;
 //
 //	FEScalarValuator* copy() override;
 //

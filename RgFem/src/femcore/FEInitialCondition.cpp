@@ -1,6 +1,6 @@
 #include "FEInitialCondition.h"
 #include "basicio/DumpStream.h"
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "FENode.h"
 #include "FEModel.h"
 
@@ -152,7 +152,7 @@ void FEInitialDOF::GetNodalValues(int inode, std::vector<double>& val)
 	int nid = nset[inode];
 	const FENode& node = *nset.Node(inode);
 
-	FEMaterialPoint mp;
+	RgMaterialPoint mp;
 	mp.m_r0 = node.m_r0;
 	mp.m_index = inode;
 

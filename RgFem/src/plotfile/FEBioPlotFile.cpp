@@ -8,7 +8,7 @@
 //#include <femcore/FEPIDController.h>
 #include <sstream>
 #include "femcore/FEMesh.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "basicio/FEDataStream.h"
 #include "basicio/FEPlotData.h"
 
@@ -84,7 +84,7 @@ public:
 		int NDOMS = mesh.Domains();
 		for (int i = 0; i<NDOMS; ++i)
 		{
-			FEDomain& dom = mesh.Domain(i);
+			RgDomain& dom = mesh.Domain(i);
 			int NDATA = dom.DataExports();
 			if (NDATA > 0)
 			{
@@ -172,7 +172,7 @@ public:
 			}
 		}
 	}
-	bool Save(FEDomain& D, FEDataStream& a)
+	bool Save(RgDomain& D, FEDataStream& a)
 	{
 		// get the DOFS
 		FEModel& fem = *GetFEModel();
@@ -398,7 +398,7 @@ bool FEBioPlotFile::Dictionary::AddVariable(FEModel* pfem, const char* szname, s
 		// now the domains.
 		for (int i = 0; i<mesh.Domains(); ++i)
 		{
-			FEDomain& dom = mesh.Domain(i);
+			RgDomain& dom = mesh.Domain(i);
 			int ND = dom.DataExports();
 			for (int j = 0; j<ND; ++j)
 			{
@@ -1074,7 +1074,7 @@ void FEBioPlotFile::WriteDomainSection(FEMesh& m)
 	// write all domains
 	for (int nd = 0; nd<m.Domains(); ++nd)
 	{
-		FEDomain& dom = m.Domain(nd);
+		RgDomain& dom = m.Domain(nd);
 		m_ar.BeginChunk(PLT_DOMAIN);
 		{
 			switch (dom.Class())
@@ -1132,7 +1132,7 @@ void FEBioPlotFile::WriteSolidDomain(FESolidDomain& dom)
 	m_ar.EndChunk();
 
 	// write the element std::list
-	int n[FEElement::MAX_NODES + 1];
+	int n[RgElement::MAX_NODES + 1];
 	m_ar.BeginChunk(PLT_DOM_ELEM_LIST);
 	{
 		for (i=0; i<NE; ++i)
@@ -1229,7 +1229,7 @@ void FEBioPlotFile::WriteBeamDomain(FEBeamDomain& dom)
 	{
 		for (i=0; i<NE; ++i)
 		{
-			FEElement& el = dom.ElementRef(i);
+			RgElement& el = dom.ElementRef(i);
 			n[0] = el.getId();
 			for (j=0; j<ne; ++j) n[j+1] = el.m_node[j];
 			m_ar.WriteChunk(PLT_ELEMENT, n, ne+1);
@@ -1266,7 +1266,7 @@ void FEBioPlotFile::WriteDiscreteDomain(FEDiscreteDomain& dom)
 	//{
 	//	for (i=0; i<NE; ++i)
 	//	{
-	//		FEElement& el = dom.ElementRef(i);
+	//		RgElement& el = dom.ElementRef(i);
 	//		n[0] = el.getId();
 	//		for (j=0; j<ne; ++j) n[j+1] = el.m_node[j];
 	//		m_ar.WriteChunk(PLT_ELEMENT, n, ne+1);
@@ -1374,7 +1374,7 @@ void FEBioPlotFile::WriteSurfaceSection(FEMesh& m)
 
 			m_ar.BeginChunk(PLT_FACE_LIST);
 			{
-				int n[FEElement::MAX_NODES + 2];
+				int n[RgElement::MAX_NODES + 2];
 				for (int i=0; i<NF; ++i)
 				{
 					FESurfaceElement& f = s.Element(i);
@@ -1422,7 +1422,7 @@ void FEBioPlotFile::WriteElementSetSection(FEMesh& m)
 {
 	for (int n = 0; n < m.ElementSets(); ++n)
 	{
-		FEElementSet& l = m.ElementSet(n);
+		RgElementSet& l = m.ElementSet(n);
 		int elems = l.Elements();
 		m_ar.BeginChunk(PLT_ELEMENTSET);
 		{
@@ -1467,7 +1467,7 @@ void FEBioPlotFile::WriteFacetSetSection(FEMesh& m)
 
 			m_ar.BeginChunk(PLT_FACETSET_LIST);
 			{
-				int n[FEElement::MAX_NODES + 2];
+				int n[RgElement::MAX_NODES + 2];
 				for (int i = 0; i < NF; ++i)
 				{
 					FEFacetSet::FACET& f = surf.Face(i);
@@ -1873,7 +1873,7 @@ void FEBioPlotFile::WriteDomainDataField(FEModel &fem, FEPlotData* pd)
 	for (int i = 0; i<ND; ++i)
 	{
 		// get the domain
-		FEDomain& D = m.Domain(item[i]);
+		RgDomain& D = m.Domain(item[i]);
 
 		if (domName.empty() || (D.GetName() == domName))
 		{
@@ -1888,7 +1888,7 @@ void FEBioPlotFile::WriteDomainDataField(FEModel &fem, FEPlotData* pd)
 				// since all elements have the same type within a domain
 				// we just grab the number of nodes of the first element 
 				// to figure out how much storage we need
-				FEElement& e = D.ElementRef(0);
+				RgElement& e = D.ElementRef(0);
 				int n = e.NodeSize();
 				nsize *= n * D.Elements();
 			}
@@ -2030,11 +2030,11 @@ void FEBioPlotFile::WriteMeshState(FEMesh& mesh)
 	int NDOM = mesh.Domains();
 	for (int i = 0; i < NDOM; ++i)
 	{
-		FEDomain& dom = mesh.Domain(i);
+		RgDomain& dom = mesh.Domain(i);
 		int NE = dom.Elements();
 		for (int j = 0; j < NE; ++j)
 		{
-			FEElement& el = dom.ElementRef(j);
+			RgElement& el = dom.ElementRef(j);
 			//Rango TODO:
             /*unsigned int status = el.m_state;
             flags.push_back(status);*/

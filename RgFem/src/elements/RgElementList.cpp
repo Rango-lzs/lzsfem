@@ -1,19 +1,19 @@
 
 #include "FEElementList.h"
 #include "femcore/FEMesh.h"
-#include "femcore/DOmain/FEDomain.h"
+#include "femcore/DOmain/RgDomain.h"
 
-FEElement& FEElementList::iterator::operator*()
+RgElement& FEElementList::iterator::operator*()
 { 
 	return m_pmesh->Domain(m_ndom).ElementRef(m_nel); 
 }
 
-FEElement* FEElementList::iterator::operator->()
+RgElement* FEElementList::iterator::operator->()
 {
 	return &m_pmesh->Domain(m_ndom).ElementRef(m_nel);
 }
 
-FEM_EXPORT FEElementList::iterator::operator FEElement* ()
+FEM_EXPORT FEElementList::iterator::operator RgElement* ()
 {
 	return &m_pmesh->Domain(m_ndom).ElementRef(m_nel);
 }

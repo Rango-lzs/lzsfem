@@ -38,7 +38,7 @@ public:
 	FEBioGeometrySection(FEBioImport* pim) : FEBioFileSection(pim) {}
 
 protected:
-	bool ReadElement(XMLTag& tag, FEElement& el, int nid);
+	bool ReadElement(XMLTag& tag, RgElement& el, int nid);
 };
 
 //-----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ protected:
 	void ParseNodeSetSection(XMLTag& tag);
 	void ParseElementSection(XMLTag& tag);
 	void ParseElementDataSection(XMLTag& tag);
-	void ParseElementData(FEElement& el, XMLTag& tag);
+	void ParseElementData(RgElement& el, XMLTag& tag);
 };
 
 //-----------------------------------------------------------------------------
@@ -79,7 +79,7 @@ protected:
 	void ParseNodeSetSection   (XMLTag& tag);
 	void ParseElementSetSection(XMLTag& tag);
 	void ParseElementDataSection(XMLTag& tag);
-	void ParseElementData(FEElement& el, XMLTag& tag);
+	void ParseElementData(RgElement& el, XMLTag& tag);
 };
 
 //-----------------------------------------------------------------------------

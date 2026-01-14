@@ -2,7 +2,7 @@
 #include "RgMaterial.h"
 #include <cmath>
 
-namespace RgFem {
+
 
 RgShell3Element::RgShell3Element()
 {
@@ -245,4 +245,4 @@ void RgShell3Element::calculateInternalForceVector(RgVector& F) const
     // Placeholder: actual implementation needed
 }
 
-} // namespace RgFem
+

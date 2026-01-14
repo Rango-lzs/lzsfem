@@ -174,7 +174,7 @@ bool FEBioConstraintsSection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int
 		else if (nfmt == 1)
 		{
 			tag.value(nf, 2);
-			FEElement* pe = m.FindElementFromID(nf[0]);
+			RgElement* pe = m.FindElementFromID(nf[0]);
 			if (pe)
 			{
 				int ne[9];

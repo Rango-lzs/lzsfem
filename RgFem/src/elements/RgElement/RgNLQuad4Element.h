@@ -5,7 +5,7 @@
 #include <array>
 #include <vector>
 
-namespace RgFem {
+
 
 // Forward declarations
 class RgMaterial;
@@ -207,6 +207,6 @@ private:
     double dNds(int nodeId, double r, double s) const;
 };
 
-} // namespace RgFem
+
 
 #endif // RGNLQUAD4ELEMENT_H

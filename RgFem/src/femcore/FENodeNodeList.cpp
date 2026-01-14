@@ -1,7 +1,7 @@
 #include "FENodeNodeList.h"
 #include "FENodeElemList.h"
 #include "FEMesh.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include <stdlib.h>
 
 //////////////////////////////////////////////////////////////////////
@@ -50,10 +50,10 @@ void FENodeNodeList::Create(FEMesh& mesh)
 	{
 		nb = 0;
 		n = EL.Valence(i);
-		FEElement** pe = EL.ElementList(i);
+		RgElement** pe = EL.ElementList(i);
 		for (j=0; j<n; ++j)
 		{
-			FEElement* pel = pe[j];
+			RgElement* pel = pe[j];
 			m = pel->NodeSize();
 			en = &pel->getNodeIds()[0];
 			for (k=0; k<m; ++k)
@@ -89,10 +89,10 @@ void FENodeNodeList::Create(FEMesh& mesh)
 	{
 		nb = 0;
 		n = EL.Valence(i);
-		FEElement** pe = EL.ElementList(i);
+		RgElement** pe = EL.ElementList(i);
 		for (j=0; j<n; ++j)
 		{
-			FEElement* pel = pe[j];
+			RgElement* pel = pe[j];
 			m = pel->NodeSize();
 			en = &pel->getNodeIds()[0];
 			for (k=0; k<m; ++k)
@@ -114,7 +114,7 @@ void FENodeNodeList::Create(FEMesh& mesh)
 }
 
 //-----------------------------------------------------------------------------
-void FENodeNodeList::Create(FEDomain& dom)
+void FENodeNodeList::Create(RgDomain& dom)
 {
 	int i, j, k, n, m;
 
@@ -143,10 +143,10 @@ void FENodeNodeList::Create(FEDomain& dom)
 	{
 		nb = 0;
 		n = EL.Valence(i);
-		FEElement** pe = EL.ElementList(i);
+		RgElement** pe = EL.ElementList(i);
 		for (j=0; j<n; ++j)
 		{
-			FEElement* pel = pe[j];
+			RgElement* pel = pe[j];
 			m = pel->NodeSize();
 			en = &pel->getNodeIds()[0];
 			for (k=0; k<m; ++k)
@@ -182,10 +182,10 @@ void FENodeNodeList::Create(FEDomain& dom)
 	{
 		nb = 0;
 		n = EL.Valence(i);
-		FEElement** pe = EL.ElementList(i);
+		RgElement** pe = EL.ElementList(i);
 		for (j=0; j<n; ++j)
 		{
-			FEElement* pel = pe[j];
+			RgElement* pel = pe[j];
 			m = pel->NodeSize();
 			en = &pel->getNodeIds()[0];
 			for (k=0; k<m; ++k)

@@ -2,6 +2,9 @@
 
 #include "RgSolid2dElement.h"
 
+using RgMatrix = Matrix;
+using RgVector = Vector;
+
 //! RgLinearSolid2dElement - Linear 2D solid element
 //! Used for small strain, small displacement analysis (geometrically linear)
 class FEM_EXPORT RgLinearSolid2dElement : public RgSolid2dElement
@@ -19,18 +22,23 @@ public:
     //! destructor
     virtual ~RgLinearSolid2dElement() = default;
 
-    //! return element type
-    virtual std::string typeName() const override;
 
-    //! Calculate stiffness matrix (linear formulation)
-    //! K = integral of B^T * D * B dV
-    virtual void calculateStiffnessMatrix(RgMatrix& K) const override;
+    // Stiffness and Mass Matrices
+    virtual void calculateStiffnessMatrix(RgMatrix& K) override;
+    virtual void calculateMassMatrix(RgMatrix& M) override;
+    virtual void calculateDampingMatrix(RgMatrix& C) override;
 
-    //! Calculate mass matrix (linear formulation)
-    //! M = integral of N^T * ρ * N dV
-    virtual void calculateMassMatrix(RgMatrix& M) const override;
+    // Internal force vector (residual)
+    virtual void calculateInternalForceVector(std::vector<double>& F) override;
 
-    //! Calculate internal force vector (linear)
-    //! F_int = integral of B^T * σ dV
-    virtual void calculateInternalForceVector(RgVector& F) const override;
+    // Strain and Stress Calculations
+    virtual void getStress(RgMaterialPoint& matPt, StressTensor& stress);
+    virtual void getStrain(RgMaterialPoint& matPt, StrainTensor& strain);
+
+    void updateStress(RgMaterialPoint& matPt);
+    void updateStrain(RgMaterialPoint& matPt);
+
+    // Energy calculations
+    virtual double calculateStrainEnergy() override;
+    virtual double calculateKineticEnergy() override;
 };

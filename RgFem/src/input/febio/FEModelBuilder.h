@@ -1,5 +1,5 @@
 #pragma once
-#include "elements/RgElement.h"
+#include "elements/RgElement/RgElement.h"
 #include "FEBModel.h"
 #include "femcore/FEModel.h"
 #include "femcore/FEStepComponent.h"
@@ -14,7 +14,7 @@ class FENodalLoad;
 class FEEdgeLoad;
 class FESurfaceLoad;
 class FEBodyLoad;
-class FEDomain;
+class RgDomain;
 class FESurface;
 class FEFacetSet;
 
@@ -97,7 +97,7 @@ public:
     void NextStep();
 
     //! Create a domain
-    virtual FEDomain* CreateDomain(FE_Element_Spec espec, FEMaterial* mat);
+    virtual RgDomain* CreateDomain(FE_Element_Spec espec, FEMaterial* mat);
 
     //! Get the mesh
     FEMesh& GetMesh();

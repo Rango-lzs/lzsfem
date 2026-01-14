@@ -1,6 +1,6 @@
 #include "basicio/DomainDataRecord.h"
 #include "femcore/FEModel.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "femcore/FEMesh.h"
 
  DEFINE_META_CLASS(FELogDomainData, FELogData, "");
@@ -65,7 +65,7 @@ double FEDomainDataRecord::Evaluate(int item, int ndata)
     int nd = item - 1;
     if ((nd < 0) || (nd >= mesh.Domains())) return 0;
 
-    FEDomain& dom = mesh.Domain(nd);
+    RgDomain& dom = mesh.Domain(nd);
     return m_Data[ndata]->value(dom);
 }
 
@@ -110,7 +110,7 @@ bool FELogAvgDomainData::SetParameters(std::vector<std::string>& params)
 }
 
 //-----------------------------------------------------------------------------
-double FELogAvgDomainData::value(FEDomain& dom)
+double FELogAvgDomainData::value(RgDomain& dom)
 {
     if (m_elemData == nullptr) return 0.0;
 
@@ -118,7 +118,7 @@ double FELogAvgDomainData::value(FEDomain& dom)
     const int NE = dom.Elements();
     for (int i = 0; i < dom.Elements(); ++i)
     {
-        FEElement& el = dom.ElementRef(i);
+        RgElement& el = dom.ElementRef(i);
         double eval = m_elemData->value(el);
         avg += eval;
     }
@@ -156,7 +156,7 @@ bool FELogPctDomainData::SetParameters(std::vector<std::string>& params)
 }
 
 //-----------------------------------------------------------------------------
-double FELogPctDomainData::value(FEDomain& dom)
+double FELogPctDomainData::value(RgDomain& dom)
 {
     if (m_elemData == nullptr) return 0.0;
 
@@ -164,7 +164,7 @@ double FELogPctDomainData::value(FEDomain& dom)
     std::vector<double> val(NE, 0.0);
     for (int i = 0; i < NE; ++i)
     {
-        FEElement& el = dom.ElementRef(i);
+        RgElement& el = dom.ElementRef(i);
         val[i] = m_elemData->value(el);
     }
 
@@ -200,7 +200,7 @@ bool FELogIntegralDomainData::SetParameters(std::vector<std::string>& params)
 }
 
 //-----------------------------------------------------------------------------
-double FELogIntegralDomainData::value(FEDomain& dom)
+double FELogIntegralDomainData::value(RgDomain& dom)
 {
 	if (m_elemData == nullptr) return 0.0;
 
@@ -210,7 +210,7 @@ double FELogIntegralDomainData::value(FEDomain& dom)
 	const int NE = dom.Elements();
 	for (int i = 0; i < dom.Elements(); ++i)
 	{
-		FEElement& el = dom.ElementRef(i);
+		RgElement& el = dom.ElementRef(i);
 		double eval = m_elemData->value(el);
 		double vol = mesh->ElementVolume(el);
 		sum += eval*vol;

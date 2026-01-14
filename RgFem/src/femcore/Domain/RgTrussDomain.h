@@ -1,8 +1,6 @@
 #pragma once
 #include "RgDomain.h"
-#include "elements/FETrussElement.h"
-#include "FEElasticDomain.h"
-#include "materials/FETrussMaterial.h"
+#include "elements/RgElement/RgTrussElement.h"
 #include "femcore/FEDofList.h"
 
 // Forward declaration
@@ -10,7 +8,7 @@ class RgAssembler;
 
 //-----------------------------------------------------------------------------
 //! Domain described by 3D truss elements
-class FEM_EXPORT RgTrussDomain : public RgDomain, public FEElasticDomain
+class FEM_EXPORT RgTrussDomain : public RgDomain
 {
 public:
 	//! Constructor
@@ -29,13 +27,13 @@ public:
 	void PreSolveUpdate(const FETimeInfo& timeInfo) override;
 
 	//! Unpack truss element data
-	void UnpackLM(FEElement& el, std::vector<int>& lm) override;
+	void UnpackLM(RgElement& el, std::vector<int>& lm) override;
 
 	//! get the material
-	FEMaterial* GetMaterial() override { return m_pMat; }
+	RgMaterial* GetMaterial() override { return m_pMat; }
 
 	//! set the material
-	void SetMaterial(FEMaterial* pmat) override;
+	void SetMaterial(RgMaterial* pmat) override;
 
 	//! Activate domain
 	void Activate() override;
@@ -67,37 +65,37 @@ public: // overloads from FEElasticDomain
 	void BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf) override { assert(false); }
 
 	//! elemental mass Matrix
-	void ElementMassMatrix(FETrussElement& el, Matrix& ke);
+	void ElementMassMatrix(RgTrussElement& el, Matrix& ke);
 
 public:
 	bool Create(int nsize, FE_Element_Spec espec) override;
 
 	int Elements() const override { return (int)m_Elem.size(); }
 
-	FETrussElement& Element(int i) { return m_Elem[i]; }
+	RgTrussElement& Element(int i) { return m_Elem[i]; }
 
-	FEElement& ElementRef(int n) override { return m_Elem[n]; }
-	const FEElement& ElementRef(int n) const override { return m_Elem[n]; }
+	RgElement& ElementRef(int n) override { return m_Elem[n]; }
+	const RgElement& ElementRef(int n) const override { return m_Elem[n]; }
 
-	void ForEachElement(std::function<void(FEElement& el)> f) override;
+	void ForEachElement(std::function<void(RgElement& el)> f) override;
 
 public:
-	void ForEachTrussElement(std::function<void(FETrussElement& el)> f);
+	void ForEachTrussElement(std::function<void(RgTrussElement& el)> f);
 
 public:
 	//! Calculate the truss normal
-	Vector3d TrussNormal(FETrussElement& el);
+	Vector3d TrussNormal(RgTrussElement& el);
 
 protected:
 	//! calculates the truss element stiffness Matrix
 	void ElementStiffness(int iel, Matrix& ke);
 
 	//! Calculates the internal stress vector for solid elements
-	void ElementInternalForces(FETrussElement& el, std::vector<double>& fe);
+	void ElementInternalForces(RgTrussElement& el, std::vector<double>& fe);
 
 protected:
-	std::vector<FETrussElement>	m_Elem;
-	FETrussMaterial*	m_pMat;
+	std::vector<RgTrussElement>	m_Elem;
+	RgMaterial*	m_pMat;
 	double	m_a0;
 
 	FEDofList	m_dofU;

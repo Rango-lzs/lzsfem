@@ -355,7 +355,7 @@ FEParam* FEParamObject::AddParameter(std::vector<int>&         v, const char* sz
 FEParam* FEParamObject::AddParameter(std::vector<double>&      v, const char* sz) { return AddParameter(&v, FE_PARAM_STD_VECTOR_DOUBLE, 1, sz); }
 FEParam* FEParamObject::AddParameter(std::vector<Vector2d>&       v, const char* sz) { return AddParameter(&v, FE_PARAM_STD_VECTOR_VEC2D, 1, sz); }
 FEParam* FEParamObject::AddParameter(std::vector<std::string>& v, const char* sz) { return AddParameter(&v, FE_PARAM_STD_VECTOR_STRING, 1, sz); }
-//FEParam* FEParamObject::AddParameter(FEMaterialPointProperty&  v, const char* sz) { return AddParameter(&v, FE_PARAM_MATERIALPOINT, 1, sz); }
+//FEParam* FEParamObject::AddParameter(RgMaterialPointProperty&  v, const char* sz) { return AddParameter(&v, FE_PARAM_MATERIALPOINT, 1, sz); }
 //FEParam* FEParamObject::AddParameter(Image& v                   , const char* sz) { return AddParameter(&v, FE_PARAM_IMAGE_3D, 1, sz); }
 
 FEParam* FEParamObject::AddParameter(int&           v, const RANGE& rng, const char* sz) { return AddParameter(&v, FE_PARAM_INT, 1, rng, sz); }

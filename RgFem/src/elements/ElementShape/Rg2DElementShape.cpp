@@ -2,12 +2,14 @@
 #include "elements/NaturalCoord.h"
 #include <vector>
 
+
+
 //=============================================================================
 //              Q U A D 4
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-std::vector<double> FEQuad4::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> FEQuad4::evalH(const NaturalCoord& coord)
 {
     std::vector<double> H(4);
     double r = coord.getR();
@@ -22,7 +24,7 @@ std::vector<double> FEQuad4::evalH(const RgFem::NaturalCoord& coord)
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FEQuad4::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FEQuad4::evalDeriv(const NaturalCoord& coord)
 {
     int nNodes = 4;
     std::vector<std::vector<double>> result(2, std::vector<double>(nNodes)); // 2 for d/dr, d/ds
@@ -38,7 +40,7 @@ std::vector<std::vector<double>> FEQuad4::evalDeriv(const RgFem::NaturalCoord& c
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FEQuad4::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FEQuad4::evalDeriv2(const NaturalCoord& coord)
 {
     int nNodes = 4;
     std::vector<std::vector<double>> result(3, std::vector<double>(nNodes)); // 3 for d2/dr2, d2/ds2, d2/drdt
@@ -59,7 +61,7 @@ std::vector<std::vector<double>> FEQuad4::evalDeriv2(const RgFem::NaturalCoord& 
 
 //-----------------------------------------------------------------------------
 // shape function at (r,s)
-std::vector<double> FEQuad8::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> FEQuad8::evalH(const NaturalCoord& coord)
 {
     std::vector<double> H(8);
     double r = coord.getR();
@@ -80,7 +82,7 @@ std::vector<double> FEQuad8::evalH(const RgFem::NaturalCoord& coord)
 
 //-----------------------------------------------------------------------------
 // shape function derivatives at (r,s)
-std::vector<std::vector<double>> FEQuad8::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FEQuad8::evalDeriv(const NaturalCoord& coord)
 {
     int nNodes = 8;
     std::vector<std::vector<double>> result(2, std::vector<double>(nNodes)); // 2 for d/dr, d/ds
@@ -112,7 +114,7 @@ std::vector<std::vector<double>> FEQuad8::evalDeriv(const RgFem::NaturalCoord& c
 
 //-----------------------------------------------------------------------------
 // shape function derivatives at (r,s)
-std::vector<std::vector<double>> FEQuad8::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FEQuad8::evalDeriv2(const NaturalCoord& coord)
 {
     int nNodes = 8;
     std::vector<std::vector<double>> result(3, std::vector<double>(nNodes)); // 3 for d2/dr2, d2/ds2, d2/drdt
@@ -158,7 +160,7 @@ std::vector<std::vector<double>> FEQuad8::evalDeriv2(const RgFem::NaturalCoord& 
 
 //-----------------------------------------------------------------------------
 // shape function at (r,s)
-std::vector<double> FEQuad9::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> FEQuad9::evalH(const NaturalCoord& coord)
 {
     std::vector<double> H(9);
     double r = coord.getR();
@@ -182,7 +184,7 @@ std::vector<double> FEQuad9::evalH(const RgFem::NaturalCoord& coord)
 
 //-----------------------------------------------------------------------------
 // shape function derivatives at (r,s)
-std::vector<std::vector<double>> FEQuad9::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FEQuad9::evalDeriv(const NaturalCoord& coord)
 {
     int nNodes = 9;
     std::vector<std::vector<double>> result(2, std::vector<double>(nNodes)); // 2 for d/dr, d/ds
@@ -219,7 +221,7 @@ std::vector<std::vector<double>> FEQuad9::evalDeriv(const RgFem::NaturalCoord& c
 
 //-----------------------------------------------------------------------------
 // shape function derivatives at (r,s)
-std::vector<std::vector<double>> FEQuad9::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FEQuad9::evalDeriv2(const NaturalCoord& coord)
 {
     int nNodes = 9;
     std::vector<std::vector<double>> result(3, std::vector<double>(nNodes)); // 3 for d2/dr2, d2/ds2, d2/drdt
@@ -251,7 +253,7 @@ std::vector<std::vector<double>> FEQuad9::evalDeriv2(const RgFem::NaturalCoord& 
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-std::vector<double> FETri3::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> FETri3::evalH(const NaturalCoord& coord)
 {
     std::vector<double> H(3);
     double r = coord.getR();
@@ -265,7 +267,7 @@ std::vector<double> FETri3::evalH(const RgFem::NaturalCoord& coord)
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FETri3::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FETri3::evalDeriv(const NaturalCoord& coord)
 {
     int nNodes = 3;
     std::vector<std::vector<double>> result(2, std::vector<double>(nNodes)); // 2 for d/dr, d/ds
@@ -280,7 +282,7 @@ std::vector<std::vector<double>> FETri3::evalDeriv(const RgFem::NaturalCoord& co
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FETri3::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FETri3::evalDeriv2(const NaturalCoord& coord)
 {
     int nNodes = 3;
     std::vector<std::vector<double>> result(3, std::vector<double>(nNodes)); // 3 for d2/dr2, d2/ds2, d2/drdt
@@ -299,7 +301,7 @@ std::vector<std::vector<double>> FETri3::evalDeriv2(const RgFem::NaturalCoord& c
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-std::vector<double> FETri6::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> FETri6::evalH(const NaturalCoord& coord)
 {
     std::vector<double> H(6);
     double r = coord.getR();
@@ -320,7 +322,7 @@ std::vector<double> FETri6::evalH(const RgFem::NaturalCoord& coord)
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FETri6::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FETri6::evalDeriv(const NaturalCoord& coord)
 {
     int nNodes = 6;
     std::vector<std::vector<double>> result(2, std::vector<double>(nNodes)); // 2 for d/dr, d/ds
@@ -345,7 +347,7 @@ std::vector<std::vector<double>> FETri6::evalDeriv(const RgFem::NaturalCoord& co
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FETri6::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FETri6::evalDeriv2(const NaturalCoord& coord)
 {
     int nNodes = 6;
     std::vector<std::vector<double>> result(3, std::vector<double>(nNodes)); // 3 for d2/dr2, d2/ds2, d2/drdt
@@ -367,7 +369,7 @@ std::vector<std::vector<double>> FETri6::evalDeriv2(const RgFem::NaturalCoord& c
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-std::vector<double> FETri7::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> FETri7::evalH(const NaturalCoord& coord)
 {
     std::vector<double> H(7);
     double r = coord.getR();
@@ -389,7 +391,7 @@ std::vector<double> FETri7::evalH(const RgFem::NaturalCoord& coord)
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FETri7::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FETri7::evalDeriv(const NaturalCoord& coord)
 {
     int nNodes = 7;
     std::vector<std::vector<double>> result(2, std::vector<double>(nNodes)); // 2 for d/dr, d/ds
@@ -427,7 +429,7 @@ std::vector<std::vector<double>> FETri7::evalDeriv(const RgFem::NaturalCoord& co
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FETri7::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FETri7::evalDeriv2(const NaturalCoord& coord)
 {
     int nNodes = 7;
     std::vector<std::vector<double>> result(3, std::vector<double>(nNodes)); // 3 for d2/dr2, d2/ds2, d2/drdt
@@ -465,7 +467,7 @@ std::vector<std::vector<double>> FETri7::evalDeriv2(const RgFem::NaturalCoord& c
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-std::vector<double> FETri10::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> FETri10::evalH(const NaturalCoord& coord)
 {
     std::vector<double> H(10);
     double r = coord.getR();
@@ -490,7 +492,7 @@ std::vector<double> FETri10::evalH(const RgFem::NaturalCoord& coord)
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FETri10::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FETri10::evalDeriv(const NaturalCoord& coord)
 {
     int nNodes = 10;
     std::vector<std::vector<double>> result(2, std::vector<double>(nNodes)); // 2 for d/dr, d/ds
@@ -527,7 +529,7 @@ std::vector<std::vector<double>> FETri10::evalDeriv(const RgFem::NaturalCoord& c
 }
 
 //-----------------------------------------------------------------------------
-std::vector<std::vector<double>> FETri10::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> FETri10::evalDeriv2(const NaturalCoord& coord)
 {
     // TODO: Implement this
     int nNodes = 10;

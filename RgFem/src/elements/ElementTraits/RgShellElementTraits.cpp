@@ -31,7 +31,7 @@ void RgShellElementTraits::init()
     // calculate shape function values at gauss points
     for (int n = 0; n < m_nint; ++n)
     {
-        RgFem::NaturalCoord coord(gaussPoints[n].getR(), gaussPoints[n].getS());
+        NaturalCoord coord(gaussPoints[n].getR(), gaussPoints[n].getS());
         auto N = evalH(coord);
         for (int i = 0; i < m_neln; ++i)
             m_H(n, i) = N[i];
@@ -40,7 +40,7 @@ void RgShellElementTraits::init()
     // calculate local derivatives of shape functions at gauss points
     for (int n = 0; n < m_nint; ++n)
     {
-        RgFem::NaturalCoord coord(gaussPoints[n].getR(), gaussPoints[n].getS());
+        NaturalCoord coord(gaussPoints[n].getR(), gaussPoints[n].getS());
         auto deriv = evalDeriv(coord);
         for (int i = 0; i < m_neln; ++i)
         {
@@ -49,17 +49,17 @@ void RgShellElementTraits::init()
         }
     }
 }
-std::vector<double> RgShellElementTraits::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> RgShellElementTraits::evalH(const NaturalCoord& coord)
 {
     return m_shape->evalH(coord);
 }
 
-std::vector<std::vector<double>> RgShellElementTraits::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> RgShellElementTraits::evalDeriv(const NaturalCoord& coord)
 {
     return m_shape->evalDeriv(coord);
 }
 
-std::vector<std::vector<double>> RgShellElementTraits::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> RgShellElementTraits::evalDeriv2(const NaturalCoord& coord)
 {
     return m_shape->evalDeriv2(coord);
 }
@@ -97,7 +97,7 @@ RgShellQuad4G8::RgShellQuad4G8() : RgShellQuad4_(NINT, FE_SHELL_QUAD4G8)
     {
         double r = gaussPoints[i].getR();
         double s = gaussPoints[i].getS();
-        auto h = evalH(RgFem::NaturalCoord(r, s));
+        auto h = evalH(NaturalCoord(r, s));
         for (int j = 0; j < NELN; ++j)
         {
             H(i, j) = h[j];
@@ -150,7 +150,7 @@ RgShellQuad4G12::RgShellQuad4G12() : RgShellQuad4_(NINT, FE_SHELL_QUAD4G12)
     {
         double r = gaussPoints[i].getR();
         double s = gaussPoints[i].getS();
-        auto h = evalH(RgFem::NaturalCoord(r, s));
+        auto h = evalH(NaturalCoord(r, s));
         for (int j = 0; j < NELN; ++j)
         {
             H(i, j) = h[j];
@@ -215,7 +215,7 @@ RgShellTri3G6::RgShellTri3G6() : RgShellTri3_(NINT, FE_SHELL_TRI3G6)
     {
         double r = gaussPoints[i].getR();
         double s = gaussPoints[i].getS();
-        auto h = evalH(RgFem::NaturalCoord(r, s));
+        auto h = evalH(NaturalCoord(r, s));
         for (int j = 0; j < NELN; ++j)
         {
             H(i, j) = h[j];
@@ -275,7 +275,7 @@ RgShellTri3G9::RgShellTri3G9() : RgShellTri3_(NINT, FE_SHELL_TRI3G9)
     {
         double r = gaussPoints[i].getR();
         double s = gaussPoints[i].getS();
-        auto h = evalH(RgFem::NaturalCoord(r, s));
+        auto h = evalH(NaturalCoord(r, s));
         for (int j = 0; j < NELN; ++j)
         {
             H(i, j) = h[j];
@@ -352,7 +352,7 @@ RgShellQuad8G18::RgShellQuad8G18() : RgShellQuad8_(NINT, FE_SHELL_QUAD8G18)
     {
         double r = gaussPoints[i].getR();
         double s = gaussPoints[i].getS();
-        auto h = evalH(RgFem::NaturalCoord(r, s));
+        auto h = evalH(NaturalCoord(r, s));
         for (int j = 0; j < NELN; ++j)
         {
             H(i, j) = h[j];
@@ -424,7 +424,7 @@ RgShellQuad8G27::RgShellQuad8G27() : RgShellQuad8_(NINT, FE_SHELL_QUAD8G27)
     {
         double r = gaussPoints[i].getR();
         double s = gaussPoints[i].getS();
-        auto h = evalH(RgFem::NaturalCoord(r, s));
+        auto h = evalH(NaturalCoord(r, s));
         for (int j = 0; j < NELN; ++j)
         {
             H(i, j) = h[j];
@@ -503,7 +503,7 @@ RgShellTri6G14::RgShellTri6G14() : RgShellTri6_(NINT, FE_SHELL_TRI6G14)
     {
         double r = gaussPoints[i].getR();
         double s = gaussPoints[i].getS();
-        auto h = evalH(RgFem::NaturalCoord(r, s));
+        auto h = evalH(NaturalCoord(r, s));
         for (int j = 0; j < NELN; ++j)
         {
             H(i, j) = h[j];
@@ -577,7 +577,7 @@ RgShellTri6G21::RgShellTri6G21() : RgShellTri6_(NINT, FE_SHELL_TRI6G21)
     {
         double r = gaussPoints[i].getR();
         double s = gaussPoints[i].getS();
-        auto h = evalH(RgFem::NaturalCoord(r, s));
+        auto h = evalH(NaturalCoord(r, s));
         for (int j = 0; j < NELN; ++j)
         {
             H(i, j) = h[j];

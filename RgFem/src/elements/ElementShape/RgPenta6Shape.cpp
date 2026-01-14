@@ -1,18 +1,14 @@
 #include "elements/ElementShape/RgPenta6Shape.h"
 #include <vector>
-#include <stdexcept>
+#include "../NaturalCoord.h"
+
+
 
 std::vector<double> RgPenta6Shape::evalH(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgPenta6Shape requires NaturalCoord3d coordinates");
-    }
-    
-    double r = coord3d->getR();
-    double s = coord3d->getS();
-    double t = coord3d->getT();
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     
     std::vector<double> H(6);
     
@@ -28,15 +24,9 @@ std::vector<double> RgPenta6Shape::evalH(const NaturalCoord& coord)
 
 std::vector<std::vector<double>> RgPenta6Shape::evalDeriv(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgPenta6Shape requires NaturalCoord3d coordinates");
-    }
-    
-    double r = coord3d->getR();
-    double s = coord3d->getS();
-    double t = coord3d->getT();
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     
     // Return derivatives in the format [dH/dr, dH/ds, dH/dt]
     // Each derivative is a vector of size 6 (one for each node)
@@ -72,11 +62,6 @@ std::vector<std::vector<double>> RgPenta6Shape::evalDeriv(const NaturalCoord& co
 
 std::vector<std::vector<double>> RgPenta6Shape::evalDeriv2(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgPenta6Shape requires NaturalCoord3d coordinates");
-    }
     
     // Return second derivatives in the format:
     // [d2H/dr2, d2H/ds2, d2H/dt2, d2H/drds, d2H/dsdt, d2H/drdt]

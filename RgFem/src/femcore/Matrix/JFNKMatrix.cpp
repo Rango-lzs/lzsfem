@@ -1,7 +1,7 @@
 #include "JFNKMatrix.h"
 #include "femcore/Solver/FENewtonSolver.h"
 #include "femcore/FEModel.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "../FEMesh.h"
 
 JFNKMatrix::JFNKMatrix(FENewtonSolver* pns, SparseMatrix* K) : m_pns(pns), m_K(K)
@@ -40,11 +40,11 @@ JFNKMatrix::JFNKMatrix(FENewtonSolver* pns, SparseMatrix* K) : m_pns(pns), m_K(K
 	//Rango TODO
 	/*for (int i = 0; i < mesh.Domains(); ++i)
 	{
-		FEDomain& dom = mesh.Domain(i);
+		RgDomain& dom = mesh.Domain(i);
 		int NEL = dom.Elements();
 		for (int j = 0; j < NEL; ++j)
 		{
-			FEElement& elj = dom.ElementRef(j);
+			RgElement& elj = dom.ElementRef(j);
 			if (elj.m_lm >= 0) m_freeDofs.push_back(elj.m_lm);
 		}
 	}*/

@@ -1,7 +1,5 @@
 #include "RgLinearShellElement.h"
 
-namespace RgFem {
-
 RgLinearShellElement::RgLinearShellElement()
     : RgElement()
 {
@@ -23,5 +21,3 @@ RgLinearShellElement& RgLinearShellElement::operator=(const RgLinearShellElement
 RgLinearShellElement::~RgLinearShellElement()
 {
 }
-
-} // namespace RgFem

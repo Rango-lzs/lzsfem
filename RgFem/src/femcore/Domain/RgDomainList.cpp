@@ -1,5 +1,5 @@
 #include "RgDomainList.h"
-#include "FEModel.h"
+#include "femcore/FEModel.h"
 
 //-----------------------------------------------------------------------------
 RgDomainList::RgDomainList(FEModel* pfem) : m_pfem(pfem)

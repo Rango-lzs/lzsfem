@@ -7,7 +7,7 @@
 #include "materials/FEMaterial.h"
 #include "femcore/FENodeNodeList.h"
 #include <sstream>
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 
 //-----------------------------------------------------------------------------
 FEBioMeshSection::FEBioMeshSection(FEBioImport* pim) : FEBioFileSection(pim) {}
@@ -146,7 +146,7 @@ void FEBioMeshSection::ParseElementSection(XMLTag& tag, FEBModel::Part* part)
 		tag.AttributeValue("id", el.id);
 
 		// read the element data
-		tag.value(el.node, FEElement::MAX_NODES);
+		tag.value(el.node, RgElement::MAX_NODES);
 
 		dom->AddElement(el);
 		elemList.push_back(el.id);
@@ -369,8 +369,8 @@ void FEBioMeshDomainsSection::Parse(XMLTag& tag)
 	FEMesh& mesh = fem.GetMesh();
 	for (int i = 0; i<mesh.Domains(); ++i)
 	{
-		FEDomain& dom = mesh.Domain(i);
-		dom.CreateMaterialPointData();
+		RgDomain& dom = mesh.Domain(i);
+		dom.CreateRgMaterialPointData();
 	}
 
 	// Now we can allocate the degrees of freedom.
@@ -446,7 +446,7 @@ void FEBioMeshDomainsSection::ParseSolidDomainSection(XMLTag& tag)
 	FE_Element_Spec spec = partDomain->ElementSpec();
 
 	// create the domain
-	FEDomain* dom = nullptr;//febio.CreateDomain(spec, &mesh, mat);
+	RgDomain* dom = nullptr;//febio.CreateDomain(spec, &mesh, mat);
     if (dom == 0)
         throw XMLReader::InvalidTag(tag);
 
@@ -476,7 +476,7 @@ void FEBioMeshDomainsSection::ParseSolidDomainSection(XMLTag& tag)
 	{
 		const FEBModel::ELEMENT& domElement = partDomain->GetElement(j);
 
-		FEElement& el = dom->ElementRef(j);
+		RgElement& el = dom->ElementRef(j);
 		el.setId(domElement.id);
 
 		// TODO: This assumes one-based indexing of all nodes!
@@ -559,7 +559,7 @@ void FEBioMeshDomainsSection::ParseShellDomainSection(XMLTag& tag)
 	FE_Element_Spec spec = partDomain->ElementSpec();
 
 	// create the domain
-	FEDomain* dom = nullptr;//febio.CreateDomain(spec, &mesh, mat);
+	RgDomain* dom = nullptr;//febio.CreateDomain(spec, &mesh, mat);
 	if (dom == 0) throw XMLReader::InvalidTag(tag);
 
 	mesh.AddDomain(dom);
@@ -584,7 +584,7 @@ void FEBioMeshDomainsSection::ParseShellDomainSection(XMLTag& tag)
 	{
 		const FEBModel::ELEMENT& domElement = partDomain->GetElement(j);
 
-		FEElement& el = dom->ElementRef(j);
+		RgElement& el = dom->ElementRef(j);
 		el.setId(domElement.id);
 
 		// TODO: This assumes one-based indexing of all nodes!

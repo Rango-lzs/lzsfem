@@ -5,7 +5,7 @@
 #include <array>
 #include <vector>
 
-namespace RgFem {
+
 
 // Forward declarations
 class RgMaterial;
@@ -155,4 +155,4 @@ private:
     void getGaussPointData(int gaussPointIndex, double& r, double& weight) const;
 };
 
-} // namespace RgFem
+

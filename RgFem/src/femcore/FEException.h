@@ -2,7 +2,7 @@
 #include "femcore/fem_export.h"
 #include <string>
 
-class FEElement;
+class RgElement;
 
 class FEM_EXPORT FEException
 {
@@ -32,12 +32,12 @@ private:
 class FEM_EXPORT NegativeJacobian : public FEException
 {
 public:
-	NegativeJacobian(int iel, int ng, double vol, FEElement* pe = 0);
+	NegativeJacobian(int iel, int ng, double vol, RgElement* pe = 0);
 
 	int		m_iel;	// element where the jacobian was negative
 	int		m_ng;	// integration point
 	double	m_vol;	// volume
-	FEElement*	m_pel;	// pointer to element
+	RgElement*	m_pel;	// pointer to element
 
 	static bool DoOutput();
 

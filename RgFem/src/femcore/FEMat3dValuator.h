@@ -2,7 +2,7 @@
 #include "FEValuator.h"
 
 class FEDataMap;
-class FEMaterialPoint;
+class RgMaterialPoint;
 
 //---------------------------------------------------------------------------------------
 // Base class for evaluating Vector3d parameters
@@ -13,7 +13,7 @@ class FEM_EXPORT FEMat3dValuator : public FEValuator
 public:
 	FEMat3dValuator() : FEValuator() {};
 
-	virtual Matrix3d operator()(const FEMaterialPoint& pt) = 0;
+	virtual Matrix3d operator()(const RgMaterialPoint& pt) = 0;
 
 	virtual FEMat3dValuator* copy() = 0;
 
@@ -31,7 +31,7 @@ public:
 
 	FEMat3dValuator* copy() override;
 
-	Matrix3d operator()(const FEMaterialPoint& pt) override { return m_val; }
+	Matrix3d operator()(const RgMaterialPoint& pt) override { return m_val; }
 
 	// is this a const value
 	bool isConst() override { return true; }
@@ -57,7 +57,7 @@ public:
 
 	bool Init() override;
 
-	Matrix3d operator () (const FEMaterialPoint& mp) override;
+	Matrix3d operator () (const RgMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
@@ -83,7 +83,7 @@ public:
 
 	void SetSphereVector(const Vector3d& r) { m_r = r; }
 
-	Matrix3d operator() (const FEMaterialPoint& mp) override;
+	Matrix3d operator() (const RgMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
@@ -109,7 +109,7 @@ public:
 
 	void SetCylinderRef(Vector3d r) { m_r = r; m_r.unit(); }
 
-	Matrix3d operator () (const FEMaterialPoint& mp) override;
+	Matrix3d operator () (const RgMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
@@ -140,7 +140,7 @@ public:
 	void SetRadius0(double r) { m_R0 = r; }
 	void SetRadius1(double r) { m_R1 = r; }
 
-	Matrix3d operator () (const FEMaterialPoint& mp) override;
+	Matrix3d operator () (const RgMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
@@ -164,7 +164,7 @@ public:
 
 	void SetVectors(Vector3d a, Vector3d d);
 
-	Matrix3d operator () (const FEMaterialPoint& mp) override;
+	Matrix3d operator () (const RgMaterialPoint& mp) override;
 
 	FEMat3dValuator* copy() override;
 
@@ -187,7 +187,7 @@ public:
 
 	FEDataMap* dataMap();
 
-	Matrix3d operator()(const FEMaterialPoint& pt) override;
+	Matrix3d operator()(const RgMaterialPoint& pt) override;
 
 	FEMat3dValuator* copy() override;
 

@@ -31,17 +31,17 @@ RgSurfaceElementTraits::RgSurfaceElementTraits(int ni, int ne, ElementShape es, 
     cs = 0.0;
 }
 
-std::vector<double> RgSurfaceElementTraits::evalH(const RgFem::NaturalCoord& coord)
+std::vector<double> RgSurfaceElementTraits::evalH(const NaturalCoord& coord)
 {
     return m_shape->evalH(coord);
 }
 
-std::vector<std::vector<double>> RgSurfaceElementTraits::evalDeriv(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> RgSurfaceElementTraits::evalDeriv(const NaturalCoord& coord)
 {
     return m_shape->evalDeriv(coord);
 }
 
-std::vector<std::vector<double>> RgSurfaceElementTraits::evalDeriv2(const RgFem::NaturalCoord& coord)
+std::vector<std::vector<double>> RgSurfaceElementTraits::evalDeriv2(const NaturalCoord& coord)
 {
     return m_shape->evalDeriv2(coord);
 }
@@ -60,7 +60,7 @@ void RgSurfaceElementTraits::init()
     std::vector<double> N(MAX_NODES, 0);
     for (int n=0; n<m_nint; ++n)
     {
-        RgFem::NaturalCoord coord(gaussPoints[n]);
+        NaturalCoord coord(gaussPoints[n]);
         N = m_shape->evalH(coord);
         for (int i=0; i<m_neln; ++i) m_H(n, i) = N[i];
     }
@@ -68,7 +68,7 @@ void RgSurfaceElementTraits::init()
     // calculate local derivatives of shape functions at gauss points
     for (int n=0; n<m_nint; ++n)
     {
-        RgFem::NaturalCoord coord(gaussPoints[n]);
+        NaturalCoord coord(gaussPoints[n]);
         auto result = m_shape->evalDeriv(coord); // result is {dN/dr, dN/ds}
         for (int i=0; i<m_neln; ++i)
         {
@@ -80,7 +80,7 @@ void RgSurfaceElementTraits::init()
     // calculate local second derivatives of shape functions at gauss points
     for (int n=0; n<m_nint; ++n)
     {
-        RgFem::NaturalCoord coord(gaussPoints[n]);
+        NaturalCoord coord(gaussPoints[n]);
         auto result = m_shape->evalDeriv2(coord); // result is {d2N/dr2, d2N/ds2, d2N/drdt}
         for (int i=0; i<m_neln; ++i)
         {

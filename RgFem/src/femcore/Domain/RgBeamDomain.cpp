@@ -11,7 +11,7 @@ RgBeamDomain::RgBeamDomain(FEModel* fem) : RgDomain(FE_DOMAIN_BEAM, fem)
 }
 
 //-----------------------------------------------------------------------------
-void RgBeamDomain::ForEachElement(std::function<void(FEElement& el)> f)
+void RgBeamDomain::ForEachElement(std::function<void(RgElement& el)> f)
 {
 	int NE = Elements();
 	for (int i = 0; i < NE; ++i) f(ElementRef(i));
@@ -51,7 +51,7 @@ FEMaterial* RgBeamDomain::GetMaterial()
 }
 
 //-----------------------------------------------------------------------------
-void RgBeamDomain::UnpackLM(FEElement& el, std::vector<int>& lm)
+void RgBeamDomain::UnpackLM(RgElement& el, std::vector<int>& lm)
 {
 }
 

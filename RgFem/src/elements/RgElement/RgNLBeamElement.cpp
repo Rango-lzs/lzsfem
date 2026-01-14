@@ -1,6 +1,6 @@
 #include "RgNLBeamElement.h"
 
-namespace RgFem {
+
 
 RgNLBeamElement::RgNLBeamElement()
     : RgBeamElement()
@@ -24,4 +24,4 @@ RgNLBeamElement::~RgNLBeamElement()
 {
 }
 
-} // namespace RgFem
+

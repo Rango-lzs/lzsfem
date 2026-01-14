@@ -1,7 +1,7 @@
 #include "RgElementSet.h"
 #include "elements/RgElement.h"
 #include "femcore/FEMesh.h"
-#include "femcore/Domain/FEDomain.h"
+#include "femcore/Domain/RgDomain.h"
 #include "basicio/DumpStream.h"
 #include "femcore/FEModel.h"
 
@@ -27,7 +27,7 @@ void RgElementSet::Create(const std::vector<int>& elemList)
 }
 
 //-----------------------------------------------------------------------------
-void RgElementSet::Create(FEDomain* dom, const std::vector<int>& elemList)
+void RgElementSet::Create(RgDomain* dom, const std::vector<int>& elemList)
 {
 	m_dom.Clear();
 	m_dom.AddDomain(dom);
@@ -48,8 +48,8 @@ void RgElementSet::CopyFrom(RgElementSet& eset)
 	FEDomainList& dl = eset.GetDomainList();
 	for (int i = 0; i < dl.Domains(); ++i)
 	{
-		FEDomain* di = dl.GetDomain(i);
-		FEDomain* newdi = mesh->FindDomain(di->GetName()); assert(newdi);
+		RgDomain* di = dl.GetDomain(i);
+		RgDomain* newdi = mesh->FindDomain(di->GetName()); assert(newdi);
 		m_dom.AddDomain(newdi);
 	}
 
@@ -57,7 +57,7 @@ void RgElementSet::CopyFrom(RgElementSet& eset)
 }
 
 //-----------------------------------------------------------------------------
-void RgElementSet::Create(FEDomain* dom)
+void RgElementSet::Create(RgDomain* dom)
 {
 	m_dom.Clear();
 	m_dom.AddDomain(dom);
@@ -67,7 +67,7 @@ void RgElementSet::Create(FEDomain* dom)
 	m_Elem.resize(NE, -1);
 	for (int i = 0; i < NE; ++i)
 	{
-		FEElement& el = dom->ElementRef(i);
+		RgElement& el = dom->ElementRef(i);
 		m_Elem[i] = el.getId();
 	}
 
@@ -94,7 +94,7 @@ void RgElementSet::Create(FEDomainList& domList)
 	m_dom.Clear();
 	for (int n = 0; n < domList.Domains(); ++n)
 	{
-		FEDomain* dom = domList.GetDomain(n);
+		RgDomain* dom = domList.GetDomain(n);
 		m_dom.AddDomain(dom);
 		NT += dom->Elements();
 	}
@@ -103,11 +103,11 @@ void RgElementSet::Create(FEDomainList& domList)
 	NT = 0;
 	for (int n = 0; n < domList.Domains(); ++n)
 	{
-		FEDomain* dom = domList.GetDomain(n);
+		RgDomain* dom = domList.GetDomain(n);
 		int NE = dom->Elements();
 		for (int i = 0; i < NE; ++i)
 		{
-			FEElement& el = dom->ElementRef(i);
+			RgElement& el = dom->ElementRef(i);
 			m_Elem[NT + i] = el.getId();
 		}
 		NT += NE;
@@ -124,7 +124,7 @@ void RgElementSet::BuildLUT()
 	m_minID = m_maxID = -1;
 	for (int i = 0; i < N; ++i)
 	{
-		FEElement* pe = mesh->FindElementFromID(m_Elem[i]);
+		RgElement* pe = mesh->FindElementFromID(m_Elem[i]);
 		int id = pe->getId();
 
 		if ((id < m_minID) || (m_minID == -1)) m_minID = id;
@@ -135,21 +135,21 @@ void RgElementSet::BuildLUT()
 	m_LUT.resize(lutSize, -1);
 	for (int i = 0; i < N; ++i)
 	{
-		FEElement* pe = mesh->FindElementFromID(m_Elem[i]);
+		RgElement* pe = mesh->FindElementFromID(m_Elem[i]);
 		int id = pe->getId() - m_minID;
 		m_LUT[id] = i;
 	}
 }
 
 //-----------------------------------------------------------------------------
-FEElement& RgElementSet::Element(int i)
+RgElement& RgElementSet::Element(int i)
 {
 	FEMesh* mesh = GetMesh();
 	return *mesh->FindElementFromID(m_Elem[i]);
 }
 
 //-----------------------------------------------------------------------------
-const FEElement& RgElementSet::Element(int i) const
+const RgElement& RgElementSet::Element(int i) const
 {
 	FEMesh* mesh = GetMesh();
 	return *mesh->FindElementFromID(m_Elem[i]);
@@ -181,7 +181,7 @@ FENodeList RgElementSet::GetNodeList() const
 	std::vector<int> tag(mesh->Nodes(), 0);
 	for (int i = 0; i<Elements(); ++i)
 	{
-		const FEElement& el = Element(i);
+		const RgElement& el = Element(i);
 		int ne = el.NodeSize();
 		for (int j = 0; j<ne; ++j)
 		{

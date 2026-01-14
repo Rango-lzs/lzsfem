@@ -1,7 +1,7 @@
 #pragma once
 #include "FEDataArray.h"
 
-class FEMaterialPoint;
+class RgMaterialPoint;
 class FEItemList;
 
 //-----------------------------------------------------------------------------
@@ -23,10 +23,10 @@ public:
 
 public:
 	// This function needs to be overridden by derived classes
-	virtual double value(const FEMaterialPoint& mp) = 0;
-	virtual Vector3d valueVec3d(const FEMaterialPoint& mp) = 0;
-	virtual Matrix3d valueMat3d(const FEMaterialPoint& mp) = 0;
-	virtual Matrix3ds valueMat3ds(const FEMaterialPoint& mp) = 0;
+	virtual double value(const RgMaterialPoint& mp) = 0;
+	virtual Vector3d valueVec3d(const RgMaterialPoint& mp) = 0;
+	virtual Matrix3d valueMat3d(const RgMaterialPoint& mp) = 0;
+	virtual Matrix3ds valueMat3ds(const RgMaterialPoint& mp) = 0;
 
 	// return the item list associated with this map
 	virtual FEItemList* GetItemList() = 0;

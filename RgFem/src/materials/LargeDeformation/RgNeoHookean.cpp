@@ -1,22 +1,23 @@
-#include "RgNeoHookean.h"
+#include "materials//LargeDeformation/RgNeoHookean.h"
 #include "datastructure/Matrix3d.h"
 #include "femcore/FEModel.h"
 
-namespace RgFem {
+using namespace LargeDef;
 
-RgNeoHookean::RgNeoHookean()
-    : m_mu(1.0), m_kappa(2.0)
+RgNeoHookean::RgNeoHookean(double mu, double lambda):
+     m_mu(mu),
+    m_lambda(lambda)
 {
 }
 
-RgMaterialPointData* RgNeoHookean::createMaterialPointData() const
+RgMaterialPointData* RgNeoHookean::createRgMaterialPointData() const
 {
     // Neo-Hookean doesn't require specialized material point data
     // beyond what's provided by base class
     return nullptr;
 }
 
-void RgNeoHookean::computeConstitutive(MaterialPointData* mp, Matrix& D)
+void RgNeoHookean::computeConstitutive(RgMaterialPoint* mp, Matrix& D)
 {
     // Neo-Hookean constitutive equations:
     //  - strain energy function: W = mu/2 * (tr(C) - 3) - mu*ln(J) + kappa/2 * (J-1)^2
@@ -34,7 +35,7 @@ void RgNeoHookean::computeConstitutive(MaterialPointData* mp, Matrix& D)
         Matrix3d I = Matrix3d::identity();  // identity matrix
 
         // Calculate Cauchy stress for Neo-Hookean material
-        Matrix3d cauchy = (m_mu/J) * b - (m_mu/J) * I + (m_kappa * (J - 1)) * I;
+        Matrix3d cauchy = (m_mu/J) * b - (m_mu/J) * I + (m_lambda * (J - 1)) * I;
 
         // Store in the material point
         mp->sigma = cauchy;
@@ -42,13 +43,13 @@ void RgNeoHookean::computeConstitutive(MaterialPointData* mp, Matrix& D)
         // Set up the material tangent matrix (simplified)
         // In a real implementation, this would be the fourth-order elasticity tensor
         // or a contracted version depending on the formulation
-        D.resize(6, 6);  // Standard 6x6 for 3D stress-strain relationship
-        D.zero();
+        //D.resize(6, 6);  // Standard 6x6 for 3D stress-strain relationship
+       D.zero();
         // Fill D with appropriate tangent moduli
     }
 }
 
-void RgNeoHookean::commitState(MaterialPointData* mp)
+void RgNeoHookean::commitState(RgMaterialPoint* mp)
 {
     if (mp) {
         // Commit state variables to their current values
@@ -56,7 +57,7 @@ void RgNeoHookean::commitState(MaterialPointData* mp)
     }
 }
 
-void RgNeoHookean::revertState(MaterialPointData* mp)
+void RgNeoHookean::revertState(RgMaterialPoint* mp)
 {
     if (mp) {
         // Revert state variables to last committed values
@@ -69,4 +70,4 @@ std::string RgNeoHookean::getName() const
     return "RgNeoHookean";
 }
 
-} // namespace RgFem
+

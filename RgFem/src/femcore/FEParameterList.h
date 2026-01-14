@@ -21,7 +21,7 @@ class FEParamMat3d;
 class FEParamMat3ds;
 class FEDataArray;
 class tens3drs;
-class FEMaterialPointProperty;
+class RgMaterialPointProperty;
 
 //-----------------------------------------------------------------------------
 typedef std::list<FEParam>::iterator FEParamIterator;

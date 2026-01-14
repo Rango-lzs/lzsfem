@@ -8,7 +8,7 @@
 #include <cmath>
 #include <array>
 
-namespace RgFem {
+
 
 // ============================================================================
 // Constructor and Destructor
@@ -593,4 +593,4 @@ double RgBeam3dElement::getVolume() const
     return m_A * evaluateLength();
 }
 
-} // namespace RgFem
+

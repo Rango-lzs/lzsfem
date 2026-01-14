@@ -14,7 +14,7 @@ class FEM_EXPORT RgDomainMap : public RgDomainList
 {
 public:
 	//! constructor
-	RgDomainMap(FEModel* pfem);
+	RgDomainMap();
 
 	//! destructor
 	~RgDomainMap();

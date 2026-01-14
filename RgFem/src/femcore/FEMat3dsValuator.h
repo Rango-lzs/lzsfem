@@ -2,7 +2,7 @@
 #include "femcore/FEValuator.h"
 
 class FEDataMap;
-class FEMaterialPoint;
+class RgMaterialPoint;
 
 //---------------------------------------------------------------------------------------
 // Base class for evaluating Vector3d parameters
@@ -13,7 +13,7 @@ class FEM_EXPORT FEMat3dsValuator : public FEValuator
 public:
 	FEMat3dsValuator() : FEValuator() {};
 
-	virtual Matrix3ds operator()(const FEMaterialPoint& pt) = 0;
+	virtual Matrix3ds operator()(const RgMaterialPoint& pt) = 0;
 
 	virtual FEMat3dsValuator* copy() = 0;
 
@@ -31,7 +31,7 @@ public:
 
 	FEMat3dsValuator* copy() override;
 
-	Matrix3ds operator()(const FEMaterialPoint& pt) override { return m_val; }
+	Matrix3ds operator()(const RgMaterialPoint& pt) override { return m_val; }
 
 	// is this a const value
 	bool isConst() override { return true; }
@@ -55,7 +55,7 @@ public:
 
 	void setDataMap(FEDataMap* val);
 
-	Matrix3ds operator()(const FEMaterialPoint& pt) override;
+	Matrix3ds operator()(const RgMaterialPoint& pt) override;
 
 	FEMat3dsValuator* copy() override;
 

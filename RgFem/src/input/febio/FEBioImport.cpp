@@ -587,7 +587,7 @@ FESurface* FEBioImport::ParseSurface(XMLTag& tag, const char* szatt)
     //    FEModelBuilder* feb = GetBuilder();
 
     //    ++tag;
-    //    int nf[FEElement::MAX_NODES], N;
+    //    int nf[RgElement::MAX_NODES], N;
     //    for (int i = 0; i < npr; ++i)
     //    {
     //        FESurfaceElement& el = psurf->Element(i);

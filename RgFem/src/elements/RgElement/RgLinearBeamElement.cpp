@@ -1,7 +1,5 @@
 #include "RgLinearBeamElement.h"
 
-namespace RgFem {
-
 RgLinearBeamElement::RgLinearBeamElement()
     : RgBeamElement()
 {
@@ -23,5 +21,3 @@ RgLinearBeamElement& RgLinearBeamElement::operator=(const RgLinearBeamElement& o
 RgLinearBeamElement::~RgLinearBeamElement()
 {
 }
-
-} // namespace RgFem

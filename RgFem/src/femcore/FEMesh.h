@@ -28,7 +28,7 @@ class FEModel;
 class FETimeInfo;
 class FEDataMap;
 class DumpStream;
-class FEElement;
+class RgElement;
 
 //---------------------------------------------------------------------------------------
 // Helper class for faster lookup of elements based on their ID
@@ -38,10 +38,10 @@ public:
     FEElementLUT(FEMesh& mesh);
 
     // Find an element from its ID
-    FEElement* Find(int nid);
+    RgElement* Find(int nid);
 
 private:
-    std::vector<FEElement*> m_elem;
+    std::vector<RgElement*> m_elem;
     int m_minID, m_maxID;
 };
 
@@ -100,19 +100,19 @@ public:
     void Reset();
 
     //! Calculates an elements volume in reference configuration
-    double ElementVolume(FEElement& el);
+    double ElementVolume(RgElement& el);
 
     //! calculates element volume in current configuration
-    double CurrentElementVolume(FEElement& el);
+    double CurrentElementVolume(RgElement& el);
 
     //! Finds a node from a given ID
     FENode* FindNodeFromID(int nid);
 
     //! return an element (expensive way!)
-    FEElement* Element(int i);
+    RgElement* Element(int i);
 
     //! Finds an element from a given ID
-    FEElement* FindElementFromID(int nid);
+    RgElement* FindElementFromID(int nid);
 
     FENodeElemList& NodeElementList();
 
@@ -203,15 +203,15 @@ public:
     //! Calculate the surface representing the element boundaries
     //! domains  : a list of which domains to create the surface from
     //! boutside : include all exterior facets
-    //! binside  : include all interior facets
+    //! binside  : include all interior facetsk
     FESurface* ElementBoundarySurface(std::vector<RgDomain*> domains, bool boutside = true, bool binside = false);
     FEFacetSet* DomainBoundary(std::vector<RgDomain*> domains, bool boutside = true, bool binside = false);
 
     //! get the nodal coordinates in reference configuration
-    void GetInitialNodalCoordinates(const FEElement& el, Vector3d* node);
+    void GetInitialNodalCoordinates(const RgElement& el, Vector3d* node);
 
     //! get the nodal coordinates in current configuration
-    void GetNodalCoordinates(const FEElement& el, Vector3d* node);
+    void GetNodalCoordinates(const RgElement& el, Vector3d* node);
 
     // Get the FE model
     FEModel* GetFEModel() const;

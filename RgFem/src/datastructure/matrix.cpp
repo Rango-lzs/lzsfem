@@ -327,6 +327,10 @@ std::vector<double> operator/(std::vector<double>& b, Matrix& m)
     return m.solve(b);
 }
 
+Matrix FEM_EXPORT operator*(double a, Matrix& m)
+{
+    return m * a;
+}
 
 Matrix Matrix::OuterProduct(const std::vector<double>& a)
 {

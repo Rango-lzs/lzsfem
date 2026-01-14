@@ -4,8 +4,8 @@
 
 class FESurface;
 class FEMesh;
-class FEElement;
-class FEDomain;
+class RgElement;
+class RgDomain;
 class DumpStream;
 
 //-----------------------------------------------------------------------------
@@ -28,7 +28,7 @@ public:
 	void Create(FEMesh& mesh);
 
 	//! build the node-element list for a domain
-	void Create(FEDomain& dom);
+	void Create(RgDomain& dom);
 
 	//! serialize data to/from dump file
 	void Serialize(DumpStream& ar);
@@ -38,14 +38,14 @@ public:
 
 	int MaxValence();
 	int Valence(int n) { return m_nval[n]; }
-	FEElement** ElementList(int n) { return &m_eref[0] + m_pn[n]; }
+	RgElement** ElementList(int n) { return &m_eref[0] + m_pn[n]; }
 	int* ElementIndexList(int n) { return &m_iref[0] + m_pn[n]; }
 
 	int Size() { return (int) m_nval.size(); }
 
 protected:
 	std::vector<int>			m_nval;	// nodal valences
-	std::vector<FEElement*>		m_eref;	// element pointers
+	std::vector<RgElement*>		m_eref;	// element pointers
 	std::vector<int>			m_iref;	// element indices
 	std::vector<int>			m_pn;	// start index into the eref array
 };
@@ -62,10 +62,10 @@ public:
 
 	int Valence(int n) { return (int) m_nel[n].size(); }
 
-	FEElement** ElementList(int n) { return &(m_nel[n][0]);}
+	RgElement** ElementList(int n) { return &(m_nel[n][0]);}
 
 	bool empty() { return m_nel.empty(); }
 
 protected:
-	std::vector< std::vector<FEElement*> >	m_nel;
+	std::vector< std::vector<RgElement*> >	m_nel;
 };

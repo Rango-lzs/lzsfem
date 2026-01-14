@@ -31,7 +31,7 @@ RgElementTraitsStore* RgElementTraitsStore::GetInstance()
         //m_pThis->RegisterTraits(FE_TET5G4, new RgTet5G4);
         m_pThis->RegisterTraits(FE_PENTA6G6, new RgPenta6G6);
         //m_pThis->RegisterTraits(FE_TET10G1, new RgTet10G1);
-        m_pThis->RegisterTraits(FE_TET10G4, new FETet10G4);
+       /* m_pThis->RegisterTraits(FE_TET10G4, new FETet10G4);
         m_pThis->RegisterTraits(FE_TET10G8, new FETet10G8);
         m_pThis->RegisterTraits(FE_TET10GL11, new FETet10GL11);
         m_pThis->RegisterTraits(FE_TET10G4RI1, new FETet10G4RI1);
@@ -85,7 +85,7 @@ RgElementTraitsStore* RgElementTraitsStore::GetInstance()
         m_pThis->RegisterTraits(FE2D_QUAD4G4, new FE2DQuad4G4);
         m_pThis->RegisterTraits(FE2D_QUAD8G9, new FE2DQuad8G9);
         m_pThis->RegisterTraits(FE2D_QUAD9G9, new FE2DQuad9G9);
-        m_pThis->RegisterTraits(FE_LINE2G1, new FELine2G1);
+        m_pThis->RegisterTraits(FE_LINE2G1, new FELine2G1);*/
     }
     return m_pThis;
 }
@@ -98,12 +98,12 @@ RgElementTraitsStore::~RgElementTraitsStore()
     m_TraitsMap.clear();
 }
 
-void RgElementTraitsStore::RegisterTraits(ElementType traitType, FEElementTraits* ptrait)
+void RgElementTraitsStore::RegisterTraits(ElementType traitType, RgElementTraits* ptrait)
 {
     m_TraitsMap[traitType] = ptrait;
 }
 
-void RgElementTraitsStore::SetElementTraits(FEElement& el, int nid)
+void RgElementTraitsStore::SetElementTraits(RgElement& el, int nid)
 {
     // In the new design, we need to find the trait by index
     // This is a bit awkward with map-only storage, so we'll iterate

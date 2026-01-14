@@ -1,6 +1,6 @@
 #include "FENodeDataMap.h"
 #include "FENodeSet.h"
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "basicio/DumpStream.h"
 
 FENodeDataMap::FENodeDataMap() : FEDataMap(FE_NODE_DATA_MAP, FE_INVALID_TYPE)
@@ -80,25 +80,25 @@ void FENodeDataMap::fillValue(const Matrix3ds& v)
 	set<Matrix3ds>(v);
 }
 
-double FENodeDataMap::value(const FEMaterialPoint& mp)
+double FENodeDataMap::value(const RgMaterialPoint& mp)
 {
 	assert(mp.m_elem == nullptr);
 	return get<double>(mp.m_index);
 }
 
-Vector3d FENodeDataMap::valueVec3d(const FEMaterialPoint& mp)
+Vector3d FENodeDataMap::valueVec3d(const RgMaterialPoint& mp)
 {
 	assert(mp.m_elem == nullptr);
 	return get<Vector3d>(mp.m_index);
 }
 
-Matrix3d FENodeDataMap::valueMat3d(const FEMaterialPoint& mp)
+Matrix3d FENodeDataMap::valueMat3d(const RgMaterialPoint& mp)
 {
 	assert(mp.m_elem == nullptr);
 	return get<Matrix3d>(mp.m_index);
 }
 
-Matrix3ds FENodeDataMap::valueMat3ds(const FEMaterialPoint& mp)
+Matrix3ds FENodeDataMap::valueMat3ds(const RgMaterialPoint& mp)
 {
 	assert(mp.m_elem == nullptr);
 	return get<Matrix3ds>(mp.m_index);

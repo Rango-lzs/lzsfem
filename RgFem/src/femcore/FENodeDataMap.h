@@ -33,10 +33,10 @@ public:
 	void fillValue(const Matrix3d& v) override;
 	void fillValue(const Matrix3ds& v) override;
 
-	double value(const FEMaterialPoint& mp) override;
-	Vector3d valueVec3d(const FEMaterialPoint& mp) override;
-	Matrix3d valueMat3d(const FEMaterialPoint& mp) override;
-	Matrix3ds valueMat3ds(const FEMaterialPoint& mp) override;
+	double value(const RgMaterialPoint& mp) override;
+	Vector3d valueVec3d(const RgMaterialPoint& mp) override;
+	Matrix3d valueMat3d(const RgMaterialPoint& mp) override;
+	Matrix3ds valueMat3ds(const RgMaterialPoint& mp) override;
 
 private:
 	const FENodeSet*	m_nodeSet;

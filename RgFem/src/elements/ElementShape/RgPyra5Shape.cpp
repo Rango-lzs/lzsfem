@@ -1,18 +1,14 @@
 #include "elements/ElementShape/RgPyra5Shape.h"
 #include <vector>
-#include <stdexcept>
+#include "../NaturalCoord.h"
+
+
 
 std::vector<double> RgPyra5Shape::evalH(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgPyra5Shape requires NaturalCoord3d coordinates");
-    }
-    
-    double r = coord3d->getR();
-    double s = coord3d->getS();
-    double t = coord3d->getT();
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     
     std::vector<double> H(5);
     
@@ -27,15 +23,9 @@ std::vector<double> RgPyra5Shape::evalH(const NaturalCoord& coord)
 
 std::vector<std::vector<double>> RgPyra5Shape::evalDeriv(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgPyra5Shape requires NaturalCoord3d coordinates");
-    }
-    
-    double r = coord3d->getR();
-    double s = coord3d->getS();
-    double t = coord3d->getT();
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     
     // Return derivatives in the format [dH/dr, dH/ds, dH/dt]
     // Each derivative is a vector of size 5 (one for each node)
@@ -68,12 +58,10 @@ std::vector<std::vector<double>> RgPyra5Shape::evalDeriv(const NaturalCoord& coo
 
 std::vector<std::vector<double>> RgPyra5Shape::evalDeriv2(const NaturalCoord& coord)
 {
-    // Check if the coordinate is of the correct type
-    const NaturalCoord3d* coord3d = dynamic_cast<const NaturalCoord3d*>(&coord);
-    if (!coord3d) {
-        throw std::invalid_argument("RgPyra5Shape requires NaturalCoord3d coordinates");
-    }
-    
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
+
     // Return second derivatives in the format:
     // [d2H/dr2, d2H/ds2, d2H/dt2, d2H/drds, d2H/dsdt, d2H/drdt]
     // Each derivative is a vector of size 5 (one for each node)

@@ -1,8 +1,8 @@
-#include "elements/FETrussElement.h"
+#include "elements/RgElement/RgTrussElement.h"
 #include "basicio/DumpStream.h"
 
 //-----------------------------------------------------------------------------
-FETrussElement::FETrussElement()
+RgTrussElement::RgTrussElement()
 {
     m_a0 = 0.0;
     m_lam = 1.0;
@@ -10,7 +10,7 @@ FETrussElement::FETrussElement()
     m_L0 = 0.0;
 }
 
-FETrussElement::FETrussElement(const FETrussElement& el)
+RgTrussElement::RgTrussElement(const RgTrussElement& el)
 {
     // set the traits of the element
     if (el.m_pTraits)
@@ -29,7 +29,7 @@ FETrussElement::FETrussElement(const FETrussElement& el)
     m_tau = el.m_tau;
 }
 
-FETrussElement& FETrussElement::operator=(const FETrussElement& el)
+RgTrussElement& RgTrussElement::operator=(const RgTrussElement& el)
 {
     // set the traits of the element
     if (el.m_pTraits)
@@ -51,7 +51,7 @@ FETrussElement& FETrussElement::operator=(const FETrussElement& el)
 }
 
 //-----------------------------------------------------------------------------
-void FETrussElement::Serialize(DumpStream& ar)
+void RgTrussElement::Serialize(DumpStream& ar)
 {
     FEElement::Serialize(ar);
     if (ar.IsShallow() == false)

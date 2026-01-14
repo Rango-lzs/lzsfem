@@ -19,9 +19,14 @@
 #include <vector>
 
 //-----------------------------------------------------------------------------
-// Forward declaration of the FEElement class
+// Forward declaration of the RgElement class
 class RgElement;
 class RgSolidElementShape;
+class RgSurfaceElementShape;
+
+class NaturalCoord;
+
+
 //=============================================================================
 //      S O L I D   E L E M E N T
 //
@@ -43,25 +48,21 @@ public:
     void init() override;
 
     // values of shape functions with size N
-    virtual std::vector<double> evalH(const RgFem::NaturalCoord& coord);
+    virtual std::vector<double> evalH(const NaturalCoord& coord);
 
     // values of shape function derivatives with size 3,N (2,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv(const RgFem::NaturalCoord& coord);
+    virtual std::vector<std::vector<double>> evalDeriv(const NaturalCoord& coord);
 
     // values of shape function second derivatives with size 6,N (3,N for 2d)
-    virtual std::vector<std::vector<double>> evalDeriv2(const RgFem::NaturalCoord& coord);
+    virtual std::vector<std::vector<double>> evalDeriv2(const NaturalCoord& coord);
 
     virtual void project_to_nodes(double* ai, double* ao) const;
 
-    const RgFem::RgGaussPoint gaussPoint(int n);
+    const RgGaussPoint gaussPoint(int n);
 
 
 public:
-    // gauss-points
-    std::vector<RgFem::RgGaussPoint> gaussPoints;
-
-    // element shape class
-    RgSolidElementShape* m_shape;
+    
     // local derivatives of shape functions at gauss points
     Matrix m_Gr, m_Gs, m_Gt;
     // local second derivatives of shape functions at gauss points

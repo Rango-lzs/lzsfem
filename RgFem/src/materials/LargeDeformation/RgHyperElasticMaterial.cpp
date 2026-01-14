@@ -19,14 +19,14 @@ FEElasticMaterial::~FEElasticMaterial()
 }
 
 //-----------------------------------------------------------------------------
-RgMaterialPointData* FEElasticMaterial::CreateMaterialPointData()
+RgMaterialPointData* FEElasticMaterial::CreateRgMaterialPointData()
 { 
 	return new FEElasticMaterialPoint;
 }
 
 //-----------------------------------------------------------------------------
 //! calculate spatial tangent stiffness at material point, using secant method
-Matrix3ds FEElasticMaterial::SecantStress(FEMaterialPoint& mp, bool PK2)
+Matrix3ds FEElasticMaterial::SecantStress(RgMaterialPoint& mp, bool PK2)
 {
 	// extract the deformation gradient
 	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
@@ -75,7 +75,7 @@ Matrix3ds FEElasticMaterial::SecantStress(FEMaterialPoint& mp, bool PK2)
 
 //-----------------------------------------------------------------------------
 //! return the strain energy density
-double FEElasticMaterial::StrainEnergyDensity(FEMaterialPoint& pt) { return 0; }
+double FEElasticMaterial::StrainEnergyDensity(RgMaterialPoint& pt) { return 0; }
 
 //-----------------------------------------------------------------------------
 FEElasticStress::FEElasticStress() : FEDomainParameter("stress")
@@ -83,7 +83,7 @@ FEElasticStress::FEElasticStress() : FEDomainParameter("stress")
 
 }
 
-FEParamValue FEElasticStress::value(FEMaterialPoint& mp)
+FEParamValue FEElasticStress::value(RgMaterialPoint& mp)
 {
 	FEElasticMaterialPoint& ep = *mp.ExtractData<FEElasticMaterialPoint>();
 	return ep.m_s;

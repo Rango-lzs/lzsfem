@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include "../NaturalCoord.h"
 
-using namespace RgFem;
 
 std::vector<double> RgHex20Shape::evalH(const NaturalCoord& coord)
 {

@@ -1,15 +1,14 @@
 #include "elements/ElementShape/RgHex8Shape.h"
 #include <cassert>
+#include "../NaturalCoord.h"
 
-namespace RgFem {
+
 
 std::vector<double> RgHex8Shape::evalH(const NaturalCoord& coord)
-{
-    // Cast to NaturalCoord3d to access r, s, t coordinates
-    const NaturalCoord3d& coord3d = static_cast<const NaturalCoord3d&>(coord);
-    double r = coord3d.getR();
-    double s = coord3d.getS();
-    double t = coord3d.getT();
+{  
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     
     std::vector<double> H(8);
     
@@ -26,11 +25,10 @@ std::vector<double> RgHex8Shape::evalH(const NaturalCoord& coord)
 }
 
 std::vector<std::vector<double>> RgHex8Shape::evalDeriv(const NaturalCoord& coord)
-{
-    const NaturalCoord3d& coord3d = static_cast<const NaturalCoord3d&>(coord);
-    double r = coord3d.getR();
-    double s = coord3d.getS();
-    double t = coord3d.getT();
+{  
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     
     // Return derivatives in the format [dH/dr, dH/ds, dH/dt]
     // Each derivative is a vector of size 8 (one for each node)
@@ -71,10 +69,9 @@ std::vector<std::vector<double>> RgHex8Shape::evalDeriv(const NaturalCoord& coor
 
 std::vector<std::vector<double>> RgHex8Shape::evalDeriv2(const NaturalCoord& coord)
 {
-    const NaturalCoord3d& coord3d = static_cast<const NaturalCoord3d&>(coord);
-    double r = coord3d.getR();
-    double s = coord3d.getS();
-    double t = coord3d.getT();
+    double r = coord.getR();
+    double s = coord.getS();
+    double t = coord.getT();
     
     // Return second derivatives in the format [d2H/dr2, d2H/ds2, d2H/dt2, d2H/drdt, d2H/dsdt, d2H/dsdr]
     // Each derivative is a vector of size 8 (one for each node)
@@ -143,4 +140,3 @@ std::vector<std::vector<double>> RgHex8Shape::evalDeriv2(const NaturalCoord& coo
     return deriv2;
 }
 
-} // namespace RgFem

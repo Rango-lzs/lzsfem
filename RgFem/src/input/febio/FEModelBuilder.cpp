@@ -9,7 +9,7 @@
 #include "femcore/FEModelLoad.h"
 #include "femcore/FELoadCurve.h"
 #include "femcore/FESurfaceMap.h"
-#include "femcore/Domain/FEDomainMap.h"
+#include "femcore/Domain/RgDomainMap.h"
 //#include "femcore/FEEdge.h"
 //#include "femcore/FEConstValueVec3.h"
 #include "logger/log.h"
@@ -149,10 +149,10 @@ FEModel& FEModelBuilder::GetFEModel()
 
 //-----------------------------------------------------------------------------
 //! Create a domain
-FEDomain* FEModelBuilder::CreateDomain(FE_Element_Spec espec, FEMaterial* mat)
+RgDomain* FEModelBuilder::CreateDomain(FE_Element_Spec espec, FEMaterial* mat)
 {
 	/*FECoreKernel& febio = FECoreKernel::GetInstance();
-	FEDomain* pdom = febio.CreateDomain(espec, &m_fem.GetMesh(), mat);
+	RgDomain* pdom = febio.CreateDomain(espec, &m_fem.GetMesh(), mat);
 	return pdom;*/
     return nullptr;
 }
@@ -300,7 +300,7 @@ bool FEModelBuilder::BuildSurface(FESurface& s, FEFacetSet& fs, bool bnodal)
 	s.InitSurface();
 
 	// allocate material point data
-	s.CreateMaterialPointData();
+	s.CreateRgMaterialPointData();
     
 	return true;
 }
@@ -775,7 +775,7 @@ FENodeSet* FEModelBuilder::FindNodeSet(const std::string& setName)
 	{
 		// see if we can find an element set
 		std::string esetName = setName.substr(10);
-		FEElementSet* part = mesh.FindElementSet(esetName);
+		RgElementSet* part = mesh.FindElementSet(esetName);
 		if (part == nullptr) return nullptr;
 
 		// we might have been here before. If so, we already create a nodeset

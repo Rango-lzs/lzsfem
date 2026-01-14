@@ -1,15 +1,37 @@
 #include "RgPyramid5Element.h"
+#include "elements/ElementShape/RgPyra5Shape.h"
+#include "elements/ElementTraits/RgSolidElementTraits.h"
+#include "materials/RgMaterialPoint.h"
+#include "materials/RgMaterial.h"
+#include "datastructure/Matrix3d.h"
+#include "datastructure/Vector3d.h"
+#include "basicio/DumpStream.h"
+#include "femcore/RgElementTraitsStore.h"
+#include "elements/NaturalCoord.h"
 #include <cmath>
+#include <array>
 
-namespace RgFem {
+
+
+// ============================================================================
+// Constructor and Destructor
+// ============================================================================
 
 RgPyramid5Element::RgPyramid5Element()
+    : RgLinearSolid3dElement()
 {
+    // Initialize traits for Pyramid5 element
+    m_pTraits = RgElementTraitsStore::GetInstance()->GetElementTraits(FE_PYRA5G8);
+    m_node.resize(kNodeCount);
+    m_loc_node.resize(kNodeCount);
 }
 
 RgPyramid5Element::RgPyramid5Element(const std::array<int, kNodeCount>& nodeIds)
+    : RgLinearSolid3dElement()
 {
-    setNodeIds(nodeIds);
+    m_node.assign(nodeIds.begin(), nodeIds.end());
+    m_pTraits = RgElementTraitsStore::GetInstance()->GetElementTraits(FE_PYRA5G8);
+    m_loc_node.resize(kNodeCount);
 }
 
 RgPyramid5Element::RgPyramid5Element(const RgPyramid5Element& other)
@@ -29,196 +51,75 @@ RgPyramid5Element::~RgPyramid5Element()
 {
 }
 
+// ============================================================================
+// Element Type Identification
+// ============================================================================
+
 ElementType RgPyramid5Element::elementType() const
 {
-    return ElementType::FE_PYRAMID5;
+    return ElementType::FE_PYRA5G8;  // 5-node pyramid with 8 Gauss points
 }
 
 ElementShape RgPyramid5Element::elementShape() const
 {
-    return ElementShape::PYRAMID;
+    return ElementShape::ET_PYRA5;
 }
 
-ElementCategory RgPyramid5Element::elementClass() const
+ElementCategory RgPyramid5Element::elementCategory() const
 {
-    return ElementCategory::SOLID;
+    return ElementCategory::FE_ELEM_SOLID;
 }
 
-int RgPyramid5Element::getNumberOfGaussPoints() const
+// ============================================================================
+// Serialization
+// ============================================================================
+
+void RgPyramid5Element::Serialize(DumpStream& ar)
 {
-    return 8;  // Reduced integration for pyramid
+    RgLinearSolid3dElement::Serialize(ar);
 }
 
-void RgPyramid5Element::initTraits()
-{
-    // Initialize element traits (Gauss points, shape function derivatives)
-    // To be implemented
-}
+// ============================================================================
+// B-Matrix Computation
+// ============================================================================
 
-double RgPyramid5Element::shapeFunction(int nodeId, double r, double s, double t) const
+void RgPyramid5Element::computeBMatrix(const NaturalCoord& naturalCoord, Matrix& B)
 {
-    // Pyramid shape functions (isoparametric)
-    // Natural coordinates: r,s in [-1,1], t in [-1,1] (t=-1 at base, t=1 at apex)
-    // Base nodes 0-3 at t=-1, Apex node 4 at t=1
+    // Compute strain-displacement matrix B
+    // Relates nodal displacements to strain: epsilon = B * u
     
-    double z = 0.5 * (1.0 - t);  // Height factor: 0 at apex, 1 at base
+    std::vector<std::vector<double>> dN_dr_ds_dt = evalDeriv(NaturalCoord(naturalCoord.getR(), naturalCoord.getS(), naturalCoord.getT()));
+    std::vector<double> dN_dr = dN_dr_ds_dt[0];
+    std::vector<double> dN_ds = dN_dr_ds_dt[1];
+    std::vector<double> dN_dt = dN_dr_ds_dt[2];
     
-    if (nodeId < 4) {
-        // Base quad nodes (bilinear in r,s)
-        // Node 0: r=-1, s=-1
-        // Node 1: r=1,  s=-1
-        // Node 2: r=1,  s=1
-        // Node 3: r=-1, s=1
-        
-        double N_base = 0.25 * (1.0 + r * (nodeId % 2 == 1 ? 1.0 : -1.0)) 
-                              * (1.0 + s * (nodeId / 2 == 1 ? 1.0 : -1.0));
-        return z * N_base;
-    } else {
-        // Apex node
-        return 0.5 * (1.0 + t);
-    }
-}
-
-void RgPyramid5Element::shapeDerivatives(int nodeId, double r, double s, double t,
-                                         double& dNdr, double& dNds, double& dNdt) const
-{
-    double z = 0.5 * (1.0 - t);
+    Matrix3d JinvT = evaluateJacobianInverse(naturalCoord);
+    JinvT = JinvT.transpose();
     
-    if (nodeId < 4) {
-        // Base nodes
-        double r_sign = (nodeId % 2 == 1) ? 1.0 : -1.0;
-        double s_sign = (nodeId / 2 == 1) ? 1.0 : -1.0;
-        
-        double N_base = 0.25 * (1.0 + r * r_sign) * (1.0 + s * s_sign);
-        
-        dNdr = 0.25 * r_sign * (1.0 + s * s_sign) * z;
-        dNds = 0.25 * (1.0 + r * r_sign) * s_sign * z;
-        dNdt = -0.5 * N_base;
-    } else {
-        // Apex node
-        dNdr = 0.0;
-        dNds = 0.0;
-        dNdt = 0.5;
-    }
-}
-
-double RgPyramid5Element::computeHeightFactor(double t) const
-{
-    return 0.5 * (1.0 - t);
-}
-
-void RgPyramid5Element::evaluateCoordinates(double r, double s, double t,
-                                            std::array<double, 3>& coord) const
-{
-    coord[0] = coord[1] = coord[2] = 0.0;
+    // B matrix has shape [6, 15] for 3D solid element
+    // 6 strain components (Voigt): {exx, eyy, ezz, exy, eyz, exz}
+    // 15 DOFs: 3 per node * 5 nodes
+    
+    B.resize(6, 15);
+    B.zero();
     
     for (int i = 0; i < kNodeCount; ++i) {
-        double N = shapeFunction(i, r, s, t);
-        const auto& nodeCoord = getNodeCoordinate(i);
-        coord[0] += N * nodeCoord[0];
-        coord[1] += N * nodeCoord[1];
-        coord[2] += N * nodeCoord[2];
+        // Compute physical derivatives: dN/dx, dN/dy, dN/dz
+        // Using chain rule: dN/dx_i = dN/dξ_j * dξ_j/dx_i
+        const double dN_dx = JinvT[0][0] * dN_dr[i] + JinvT[0][1] * dN_ds[i] + JinvT[0][2] * dN_dt[i];
+        const double dN_dy = JinvT[1][0] * dN_dr[i] + JinvT[1][1] * dN_ds[i] + JinvT[1][2] * dN_dt[i];
+        const double dN_dz = JinvT[2][0] * dN_dr[i] + JinvT[2][1] * dN_ds[i] + JinvT[2][2] * dN_dt[i];
+        
+        // Strain-displacement matrix for node i (3 DOFs: u, v, w)
+        // Voigt notation: [εxx, εyy, εzz, γxy, γyz, γzx]
+        B(0, 3*i)     = dN_dx;   // εxx = ∂u/∂x
+        B(1, 3*i+1)   = dN_dy;   // εyy = ∂v/∂y
+        B(2, 3*i+2)   = dN_dz;   // εzz = ∂w/∂z
+        B(3, 3*i)     = dN_dy;   // γxy = ∂u/∂y
+        B(3, 3*i+1)   = dN_dx;   // γxy = ∂v/∂x
+        B(4, 3*i+1)   = dN_dz;   // γyz = ∂v/∂z
+        B(4, 3*i+2)   = dN_dy;   // γyz = ∂w/∂y
+        B(5, 3*i)     = dN_dz;   // γzx = ∂u/∂z
+        B(5, 3*i+2)   = dN_dx;   // γzx = ∂w/∂x
     }
 }
-
-void RgPyramid5Element::evaluateJacobian(double r, double s, double t,
-                                         std::array<std::array<double, 3>, 3>& J) const
-{
-    // Initialize Jacobian
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            J[i][j] = 0.0;
-        }
-    }
-
-    // J[i][j] = ∂x_i/∂ξ_j
-    for (int node = 0; node < kNodeCount; ++node) {
-        double dNdr, dNds, dNdt;
-        shapeDerivatives(node, r, s, t, dNdr, dNds, dNdt);
-        
-        const auto& coord = getNodeCoordinate(node);
-        
-        J[0][0] += dNdr * coord[0];
-        J[1][0] += dNdr * coord[1];
-        J[2][0] += dNdr * coord[2];
-        
-        J[0][1] += dNds * coord[0];
-        J[1][1] += dNds * coord[1];
-        J[2][1] += dNds * coord[2];
-        
-        J[0][2] += dNdt * coord[0];
-        J[1][2] += dNdt * coord[1];
-        J[2][2] += dNdt * coord[2];
-    }
-}
-
-double RgPyramid5Element::evaluateJacobianDeterminant(double r, double s, double t) const
-{
-    std::array<std::array<double, 3>, 3> J;
-    evaluateJacobian(r, s, t, J);
-    
-    return J[0][0] * (J[1][1] * J[2][2] - J[1][2] * J[2][1])
-         - J[0][1] * (J[1][0] * J[2][2] - J[1][2] * J[2][0])
-         + J[0][2] * (J[1][0] * J[2][1] - J[1][1] * J[2][0]);
-}
-
-void RgPyramid5Element::evaluateJacobianInverse(double r, double s, double t,
-                                               std::array<std::array<double, 3>, 3>& Jinv) const
-{
-    std::array<std::array<double, 3>, 3> J;
-    evaluateJacobian(r, s, t, J);
-    
-    double det = evaluateJacobianDeterminant(r, s, t);
-    if (std::abs(det) < 1e-15) {
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                Jinv[i][j] = (i == j) ? 1.0 : 0.0;
-            }
-        }
-        return;
-    }
-    
-    Jinv[0][0] =  (J[1][1] * J[2][2] - J[1][2] * J[2][1]) / det;
-    Jinv[0][1] = -(J[0][1] * J[2][2] - J[0][2] * J[2][1]) / det;
-    Jinv[0][2] =  (J[0][1] * J[1][2] - J[0][2] * J[1][1]) / det;
-    
-    Jinv[1][0] = -(J[1][0] * J[2][2] - J[1][2] * J[2][0]) / det;
-    Jinv[1][1] =  (J[0][0] * J[2][2] - J[0][2] * J[2][0]) / det;
-    Jinv[1][2] = -(J[0][0] * J[1][2] - J[0][2] * J[1][0]) / det;
-    
-    Jinv[2][0] =  (J[1][0] * J[2][1] - J[1][1] * J[2][0]) / det;
-    Jinv[2][1] = -(J[0][0] * J[2][1] - J[0][1] * J[2][0]) / det;
-    Jinv[2][2] =  (J[0][0] * J[1][1] - J[0][1] * J[1][0]) / det;
-}
-
-void RgPyramid5Element::calculateStiffnessMatrix(RgMatrix& K) const
-{
-    // K = integral of B^T * D * B dV using 8-point Gauss quadrature
-    int ndofs = kNodeCount * 3;
-    K.resize(ndofs, ndofs);
-    K.zero();
-    
-    // Placeholder: actual implementation needed
-}
-
-void RgPyramid5Element::calculateMassMatrix(RgMatrix& M) const
-{
-    // M = integral of N^T * rho * N dV
-    int ndofs = kNodeCount * 3;
-    M.resize(ndofs, ndofs);
-    M.zero();
-    
-    // Placeholder: actual implementation needed
-}
-
-void RgPyramid5Element::calculateInternalForceVector(RgVector& F) const
-{
-    // F_int = integral of B^T * sigma dV
-    int ndofs = kNodeCount * 3;
-    F.resize(ndofs);
-    F.zero();
-    
-    // Placeholder: actual implementation needed
-}
-
-} // namespace RgFem

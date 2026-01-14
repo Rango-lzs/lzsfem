@@ -1,8 +1,9 @@
 #include "elements/RgElement/RgElement.h"
 #include "basicio/DumpStream.h"
-#include "materials/FEMaterialPoint.h"
+#include "materials/RgMaterialPoint.h"
 #include "femcore/Domain/RgDomain.h"
 #include <math.h>
+#include "materials/RgMaterial.h"
 
 RgElement::RgElement() : m_pTraits(0) 
 { 
@@ -41,6 +42,11 @@ RgDomain* RgElement::getDomain() const
 void RgElement::setDomain(RgDomain* dom)
 {
     m_part = dom;
+}
+
+RgMaterial* RgElement::getMaterial() const
+{
+    return getDomain()->GetMaterial();
 }
 
 // --- Node Connectivity ---
@@ -90,7 +96,7 @@ ElementType RgElement::elementType() const
     return ElementType::FE_ELEM_INVALID_TYPE;
 }
 
-ElementCategory RgElement::Class() const
+ElementCategory RgElement::elementCategory() const
 {
     return ElementCategory::FE_ELEM_SOLID;
 }
@@ -113,12 +119,12 @@ RgElementTraits* RgElement::getTraits()
 
 int RgElement::NodeSize() const
 {
-    return m_pTraits ? m_pTraits->m_neln : 0;
+    return m_node.size();
 }
 
 int RgElement::GaussPointSize() const
 {
-    return m_pTraits ? m_pTraits->m_nint : 0;
+    return m_pTraits ? m_pTraits->guassSize() : 0;
 }
 
 int RgElement::ShapeFunctions() const
@@ -127,12 +133,19 @@ int RgElement::ShapeFunctions() const
 }
 
 // --- Material Point Data ---
-RgMaterialPoint* RgElement::getMaterialPoint(int n) const
+RgMaterialPoint* RgElement::getMaterialPoint(int n)
 {
     return (n >= 0 && n < m_state.size()) ? m_state[n] : nullptr;
 }
 
-void RgElement::setMaterialPointData(RgMaterialPoint* pmp, int n)
+// --- Material Point Data ---
+ const RgMaterialPoint* RgElement::getMaterialPoint(int n) const
+{
+    //return (n >= 0 && n < m_state.size()) ? m_state[n] : nullptr;
+     return nullptr;
+}
+
+void RgElement::setRgMaterialPointData(RgMaterialPoint* pmp, int n)
 {
     if (pmp && n >= 0 && n < m_state.size()) {
         /* pmp->m_elem = this;

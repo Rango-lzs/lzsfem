@@ -1,9 +1,9 @@
 #pragma once
 
-#include "femcore/fecore_api.h"
 #include "datastructure/Matrix3d.h"
 #include "datastructure/tens4d.h"
 #include "FEMaterial.h"
+#include "femcore/fecore_api.h"
 #include "femcore/FETimeInfo.h"
 #include "RgMaterial.h"
 #include "RgMaterialPoint.h"
@@ -70,7 +70,7 @@ public:
 
 protected:
     RgMaterialPointData* m_parent;
-    std::vector<RgMaterialPointData*> m_child; //这种应该不需要
+    std::vector<RgMaterialPointData*> m_child;  // 这种应该不需要
 
     friend class RgMaterialPoint;
 };
@@ -137,103 +137,98 @@ inline const T* RgMaterialPointData::ExtractData() const
     return nullptr;
 }
 
-
-namespace RgFem
+namespace LargeDef
 {
-    namespace LargeDef
+    /// Data structure for storing kinematic and stress state at a material point
+    class LargeDefMaterialPointData : public RgMaterialPointData
     {
-        /// Data structure for storing kinematic and stress state at a material point
-        class LargeDefMaterialPointData : public RgMaterialPointData
-        {
-        public:
-            /// Kinematic variables
-            Matrix3d F;      ///< Deformation gradient (current trial configuration)
-            Matrix3d Fprev;  ///< Deformation gradient at last converged step
-            double J;        ///< Jacobian determinant (volume ratio) J = det(F)
-            Matrix3d C;      ///< Right Cauchy-Green tensor C = F^T * F
-            Matrix3d E;      ///< Green-Lagrange strain (material measure)
-            Matrix3d e;      ///< Almansi or small strain (spatial measure)
+    public:
+        /// Kinematic variables
+        Matrix3d F;      ///< Deformation gradient (current trial configuration)
+        Matrix3d Fprev;  ///< Deformation gradient at last converged step
+        double J;        ///< Jacobian determinant (volume ratio) J = det(F)
+        Matrix3d C;      ///< Right Cauchy-Green tensor C = F^T * F
+        Matrix3d E;      ///< Green-Lagrange strain (material measure)
+        Matrix3d e;      ///< Almansi or small strain (spatial measure)
 
-            /// Stress measures
-            Matrix3d S;      ///< Second Piola-Kirchhoff stress (material measure)
-            Matrix3d sigma;  ///< Cauchy stress (spatial)
+        /// Stress measures
+        Matrix3d S;      ///< Second Piola-Kirchhoff stress (material measure)
+        Matrix3d sigma;  ///< Cauchy stress (spatial)
 
-            /// Internal variables for history-dependent materials
-            std::vector<double> ivar_committed;  ///< Committed internal variables
-            std::vector<double> ivar_trial;      ///< Trial internal variables
+        /// Internal variables for history-dependent materials
+        std::vector<double> ivar_committed;  ///< Committed internal variables
+        std::vector<double> ivar_trial;      ///< Trial internal variables
 
-        public:
-            LargeDefMaterialPointData(RgMaterialPointData* ppt = nullptr);
-            virtual ~LargeDefMaterialPointData() = default;
+    public:
+        LargeDefMaterialPointData(RgMaterialPointData* ppt = nullptr);
+        virtual ~LargeDefMaterialPointData() = default;
 
-            /// Update kinematic variables from deformation gradient
-            void updateKinematicsFromF(const Matrix3d& F_new);
+        /// Update kinematic variables from deformation gradient
+        void updateKinematicsFromF(const Matrix3d& F_new);
 
-            /// Push forward stress from material to spatial configuration
-            void pushForwardStress();
+        /// Push forward stress from material to spatial configuration
+        void pushForwardStress();
 
-            /// Commit state variables
-            void commit();
+        /// Commit state variables
+        void commit();
 
-            /// Revert state variables to last committed state
-            void revert();
+        /// Revert state variables to last committed state
+        void revert();
 
-            /// Initialize material point data
-            void init() override;
+        /// Initialize material point data
+        void init() override;
 
-            /// Update material point data
-            void update(const FETimeInfo& timeInfo) override;
+        /// Update material point data
+        void update(const FETimeInfo& timeInfo) override;
 
-            /// Serialize material point data
-            void serialize(DumpStream& ar) override;
-        };
-    }  // namespace LargeDef
+        /// Serialize material point data
+        void serialize(DumpStream& ar) override;
+    };
+}  // namespace LargeDef
 
 
-    namespace SmallDef
+namespace SmallDef
+{
+    /// Data structure for storing kinematic and stress state at a material point
+    class SmallDefMaterialPointData : public RgMaterialPointData
     {
-        /// Data structure for storing kinematic and stress state at a material point
-        class SmallDefMaterialPointData : public RgMaterialPointData
-        {
-        public:
-            /// Kinematic variables
-            Matrix3d gradU;        ///< Displacement gradient tensor
-            Matrix3ds strain;       ///< Infinitesimal strain tensor (Cauchy strain) ε = 1/2(∇u + ∇u^T)
-            Matrix3ds strain_prev;  ///< Strain tensor at last converged step
+    public:
+        /// Kinematic variables
+        Matrix3d gradU;         ///< Displacement gradient tensor
+        Matrix3ds strain;       ///< Infinitesimal strain tensor (Cauchy strain) ε = 1/2(∇u + ∇u^T)
+        Matrix3ds strain_prev;  ///< Strain tensor at last converged step
 
-            /// Stress measures
-            Matrix3ds stress;       ///< Cauchy stress tensor (spatial measure)
-            Matrix3ds stress_prev;  ///< Stress tensor at last converged step
+        /// Stress measures
+        Matrix3ds stress;       ///< Cauchy stress tensor (spatial measure)
+        Matrix3ds stress_prev;  ///< Stress tensor at last converged step
 
-            /// Internal variables for history-dependent materials
-            std::vector<double> ivar_committed;  ///< Committed internal variables
-            std::vector<double> ivar_trial;      ///< Trial internal variables
+        /// Internal variables for history-dependent materials
+        std::vector<double> ivar_committed;  ///< Committed internal variables
+        std::vector<double> ivar_trial;      ///< Trial internal variables
 
-            /// Material tangent stiffness
-            tens4d C;            ///< Fourth-order elasticity tensor (material tangent stiffness)
+        /// Material tangent stiffness
+        tens4d C;  ///< Fourth-order elasticity tensor (material tangent stiffness)
 
-        public:
-            SmallDefMaterialPointData(RgMaterialPointData* ppt = nullptr);
-            virtual ~SmallDefMaterialPointData() = default;
+    public:
+        SmallDefMaterialPointData(RgMaterialPointData* ppt = nullptr);
+        virtual ~SmallDefMaterialPointData() = default;
 
-            /// Update kinematic variables from displacement gradient
-            void updateKinematicsFromGradU(const Matrix3d& gradU_new);
+        /// Update kinematic variables from displacement gradient
+        void updateKinematicsFromGradU(const Matrix3d& gradU_new);
 
-            /// Commit state variables
-            void commit();
+        /// Commit state variables
+        void commit();
 
-            /// Revert state variables to last committed state
-            void revert();
+        /// Revert state variables to last committed state
+        void revert();
 
-            /// Initialize material point data
-            void init() override;
+        /// Initialize material point data
+        void init() override;
 
-            /// Update material point data
-            void update(const FETimeInfo& timeInfo) override;
+        /// Update material point data
+        void update(const FETimeInfo& timeInfo) override;
 
-            /// Serialize material point data
-            void serialize(DumpStream& ar) override;
-        };
-    }  // namespace SmallDef
-
-}  // namespace RgFem
+        /// Serialize material point data
+        void serialize(DumpStream& ar) override;
+    };
+}  // namespace SmallDef

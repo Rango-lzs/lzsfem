@@ -2,7 +2,7 @@
 #include "femcore/fem_export.h"
 
 class FEMesh;
-class FEElement;
+class RgElement;
 
 //-----------------------------------------------------------------------------
 //! utitlity class for accessing all elements without having to go throug the domains
@@ -15,11 +15,11 @@ public:
 		iterator() { m_pmesh = 0; m_ndom = -1; m_nel = -1; }
 		iterator(FEMesh* pm) { m_pmesh = pm; m_ndom = 0; m_nel = 0; }
 
-		FEM_EXPORT FEElement& operator*();
+		FEM_EXPORT RgElement& operator*();
 
-		FEM_EXPORT FEElement* operator->();
+		FEM_EXPORT RgElement* operator->();
 
-		FEM_EXPORT operator FEElement* ();
+		FEM_EXPORT operator RgElement* ();
 
 		FEM_EXPORT void operator ++ ();
 
