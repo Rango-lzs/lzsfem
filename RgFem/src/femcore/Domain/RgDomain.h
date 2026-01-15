@@ -124,7 +124,7 @@ public:
     // --- E L E M E N T   W A L K I N G ---
 
     //! loop over all elements
-    virtual void ForEachElement(std::function<void(RgFem::RgElement& el)> f);
+    virtual void ForEachElement(std::function<void(RgElement& el)> f);
 
 public:
     // --- S U B C L A S S   I N T E R F A C E ---

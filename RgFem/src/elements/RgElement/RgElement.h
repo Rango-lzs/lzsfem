@@ -95,7 +95,7 @@ public:
     int NodeSize() const;
     int GaussPointSize() const;
     int ShapeFunctions() const;
-
+   
     // --- Material Point Data ---
     RgMaterialPoint* getMaterialPoint(int n);
     const RgMaterialPoint* getMaterialPoint(int n) const;

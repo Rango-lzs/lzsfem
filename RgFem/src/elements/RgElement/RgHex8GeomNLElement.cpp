@@ -8,19 +8,6 @@
 #include <algorithm>
 
 
-
-// ============================================================================
-// Gauss Quadrature Data (8-point for hex)
-// ============================================================================
-
-const std::array<double, 2> RgHex8GeomNLElement::gaussPoints_1D = {
-    -1.0 / std::sqrt(3.0), 1.0 / std::sqrt(3.0)
-};
-
-const std::array<double, 2> RgHex8GeomNLElement::gaussWeights_1D = {
-    1.0, 1.0
-};
-
 // ============================================================================
 // Constructor and Destructor
 // ============================================================================
@@ -31,7 +18,7 @@ RgHex8GeomNLElement::RgHex8GeomNLElement()
 }
 
 RgHex8GeomNLElement::RgHex8GeomNLElement(const std::array<int, kNodeCount>& nodeIds)
-    : RgNLSolid3dElement(nodeIds)
+    : RgNLSolid3dElement()
 {
 }
 

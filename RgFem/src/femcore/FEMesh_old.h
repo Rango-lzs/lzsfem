@@ -219,10 +219,15 @@ public:
     // update the domains of the mesh
     void Update(const FETimeInfo& tp);
 
-private:
-    FEModel* m_fem;
-    FEElementLUT* m_LUT;
+public:  // data maps
+    void ClearDataMaps();
+    void AddDataMap(FEDataMap* map);
+    FEDataMap* FindDataMap(const std::string& map);
 
+    int DataMaps() const;
+    FEDataMap* GetDataMap(int i);
+
+private:
     std::vector<FENode> m_Node;              //!< nodes
     std::vector<RgDomain*> m_Domain;         //!< list of domains
     std::vector<FESurface*> m_Surf;          //!< surfaces
@@ -230,18 +235,4 @@ private:
 
     std::vector<FENodeSet*> m_NodeSet;       //!< node sets
     std::vector<RgElementSet*> m_ElemSet;    //!< element sets
-    std::vector<FEFacetSet*>		m_FaceSet;	//!< facet sets
-    std::vector<FESurfacePair*>	m_SurfPair;	//!< facet set pairs
-
-    std::vector<FEDiscreteSet*>	m_DiscSet;	//!< discrete element sets
-
-    FENodeElemList	m_NEL;
-
-    FEBoundingBox		m_box;	//!< bounding box
 };
-
-/*
-* Domian : mesh part
-* Surface: boundary of 3d domian
-* Edge   : surface boundary
-*/

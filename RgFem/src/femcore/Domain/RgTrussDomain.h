@@ -30,7 +30,7 @@ public:
 	void UnpackLM(RgElement& el, std::vector<int>& lm) override;
 
 	//! get the material
-	RgMaterial* GetMaterial() override { return m_pMat; }
+	RgMaterial* GetMaterial() { return m_pMat; }
 
 	//! set the material
 	void SetMaterial(RgMaterial* pmat) override;
@@ -39,30 +39,30 @@ public:
 	void Activate() override;
 
 	//! get the dof list
-	const FEDofList& GetDOFList() const override;
+	const FEDofList& GetDOFList() const;
 
 public: // overloads from FEElasticDomain
 
 	//! update the truss stresses
-	void Update(const FETimeInfo& tp) override;
+	void Update(const FETimeInfo& tp);
 
 	//! internal stress forces
-	void InternalForces(FEGlobalVector& R) override;
+	void InternalForces(FEGlobalVector& R);
 
 	//! calculate body force \todo implement this
-	void BodyForce(FEGlobalVector& R, FEBodyForce& bf) override { assert(false); }
+	void BodyForce(FEGlobalVector& R, FEBodyForce& bf) { assert(false); }
 
 	//! Calculates inertial forces for dynamic problems
-	void InertialForces(FEGlobalVector& R, std::vector<double>& F) override { assert(false); }
+	void InertialForces(FEGlobalVector& R, std::vector<double>& F)  { assert(false); }
 
 	//! calculates the global stiffness Matrix for this domain
-	void StiffnessMatrix(FELinearSystem& LS) override;
+	void StiffnessMatrix(FELinearSystem& LS) ;
 
 	//! intertial stiffness Matrix
-	void MassMatrix(FELinearSystem& LS, double scale) override;
+	void MassMatrix(FELinearSystem& LS, double scale) ;
 
 	//! body force stiffness Matrix \todo implement this
-	void BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf) override { assert(false); }
+	void BodyForceStiffness(FELinearSystem& LS, FEBodyForce& bf)  { assert(false); }
 
 	//! elemental mass Matrix
 	void ElementMassMatrix(RgTrussElement& el, Matrix& ke);

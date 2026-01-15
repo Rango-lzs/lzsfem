@@ -87,7 +87,6 @@ set(FEMCORE_HEADERS
     femcore/Domain/RgDomain.h
     #femcore/Domain/RgDomain2D.h
     femcore/Domain/RgDomainList.h
-    femcore/Domain/RgDomainMap.h
     femcore/Domain/RgDomainParameter.h
     femcore/Domain/RgElasticAssembler.h
     #femcore/Domain/RgElasticDomain.h
@@ -113,6 +112,7 @@ set(FEMCORE_HEADERS
     #femcore/FECoreKernel.h
     femcore/FECoreTask.h
     femcore/FEDataMap.h
+    femcore/FEDomainMap.h
     femcore/FEDiscreteSet.h
     femcore/FEDofList.h
     femcore/FEException.h
@@ -282,7 +282,6 @@ set(FEMCORE_SOURCES
     femcore/Domain/RgBeamDomain.cpp
     femcore/Domain/RgDomain.cpp
     femcore/Domain/RgDomainList.cpp
-    femcore/Domain/RgDomainMap.cpp
     femcore/Domain/RgDomainParameter.cpp
     femcore/Domain/RgElasticAssembler.cpp
     #femcore/Domain/RgElasticDomain.cpp
@@ -304,6 +303,7 @@ set(FEMCORE_SOURCES
     #femcore/FECoreKernel.cpp
     femcore/FECoreTask.cpp
     femcore/FEDataMap.cpp
+    femcore/FEDomainMap.cpp
     femcore/FEDiscreteSet.cpp
     femcore/FEDofList.cpp
     femcore/FEException.cpp
