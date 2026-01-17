@@ -210,7 +210,7 @@ bool FEBioImport::Load(FEModel& fem, const char* szfile)
         *(ch + 1) = 0;
 
     // clean up
-    fem.GetMesh().ClearDataMaps();
+    //fem.GetMesh().ClearDataMaps();
 
     // read the file
     if (ReadFile(szfile) == false)

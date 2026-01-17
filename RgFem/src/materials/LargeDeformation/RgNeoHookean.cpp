@@ -26,43 +26,37 @@ void RgNeoHookean::computeConstitutive(RgMaterialPoint* mp, Matrix& D)
 
     // Implementation details would go here
     // This is a simplified example for demonstration
-    if (mp && mp->F.det() > 0) {
-        // Calculate constitutive response based on deformation gradient in mp
-        Matrix3d F = mp->F;  // deformation gradient from material point
-        Matrix3d C = F.transpose() * F;  // right Cauchy-Green tensor
-        Matrix3d b = F * F.transpose();  // left Cauchy-Green tensor
-        double J = F.det();  // determinant of F
-        Matrix3d I = Matrix3d::identity();  // identity matrix
+    //if (mp && mp->F.det() > 0) {
+    //    // Calculate constitutive response based on deformation gradient in mp
+    //    Matrix3d F = mp->F;  // deformation gradient from material point
+    //    Matrix3d C = F.transpose() * F;  // right Cauchy-Green tensor
+    //    Matrix3d b = F * F.transpose();  // left Cauchy-Green tensor
+    //    double J = F.det();  // determinant of F
+    //    Matrix3d I = Matrix3d::identity();  // identity matrix
 
-        // Calculate Cauchy stress for Neo-Hookean material
-        Matrix3d cauchy = (m_mu/J) * b - (m_mu/J) * I + (m_lambda * (J - 1)) * I;
+    //    // Calculate Cauchy stress for Neo-Hookean material
+    //    Matrix3d cauchy = (m_mu/J) * b - (m_mu/J) * I + (m_lambda * (J - 1)) * I;
 
-        // Store in the material point
-        mp->sigma = cauchy;
+    //    // Store in the material point
+    //    //mp->sigma = cauchy;
 
-        // Set up the material tangent matrix (simplified)
-        // In a real implementation, this would be the fourth-order elasticity tensor
-        // or a contracted version depending on the formulation
-        //D.resize(6, 6);  // Standard 6x6 for 3D stress-strain relationship
-       D.zero();
-        // Fill D with appropriate tangent moduli
-    }
+    //    // Set up the material tangent matrix (simplified)
+    //    // In a real implementation, this would be the fourth-order elasticity tensor
+    //    // or a contracted version depending on the formulation
+    //    //D.resize(6, 6);  // Standard 6x6 for 3D stress-strain relationship
+    //   D.zero();
+    //    // Fill D with appropriate tangent moduli
+    //}
 }
 
 void RgNeoHookean::commitState(RgMaterialPoint* mp)
 {
-    if (mp) {
-        // Commit state variables to their current values
-        mp->commit();
-    }
+    
 }
 
 void RgNeoHookean::revertState(RgMaterialPoint* mp)
 {
-    if (mp) {
-        // Revert state variables to last committed values
-        mp->revert();
-    }
+   
 }
 
 std::string RgNeoHookean::getName() const

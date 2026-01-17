@@ -134,7 +134,7 @@ void FEBioLoadsSection3::ParseSurfaceLoad(XMLTag& tag)
 					const char* szsurfdata = tag.AttributeValue("surface_data");
 
 					// find the surface map
-					FEDataMap* surfMap = mesh.FindDataMap(szsurfdata);
+					FEDataMap* surfMap;// = mesh.FindDataMap(szsurfdata);
 					if (surfMap == nullptr) throw XMLReader::InvalidAttributeValue(tag, "surface_data");
 
 					// get the velocity parameter

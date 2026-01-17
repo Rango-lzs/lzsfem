@@ -51,7 +51,7 @@ bool FEBioBoundarySection::ParseSurfaceSection(XMLTag &tag, FESurface& s, int nf
 	++tag;
 	for (int i=0; i<faces; ++i)
 	{
-		FESurfaceElement& el = s.Element(i);
+		RgSurfaceElement& el = s.Element(i);
 
 		// set the element type/integration rule
 		if (bnodal)

@@ -342,7 +342,7 @@ set(FEMCORE_SOURCES
     femcore/FEScalarValuator.cpp
     femcore/FESolidAnalysis.cpp
     femcore/FEStepComponent.cpp
-    #femcore/FESurface.cpp
+    femcore/FESurface.cpp
     femcore/FESurfaceBC.cpp
     femcore/FESurfaceLoad.cpp
     femcore/FESurfaceMap.cpp
@@ -559,43 +559,43 @@ set(INPUT_HEADERS
     #input/abaqus/AbaqusImport.h
     #input/abaqus/AbaqusModel.h
     #input/abaqus/AbaqusParser.h
-    input/febio/FEBModel.h
-    input/febio/FEBioBoundarySection.h
-    input/febio/FEBioBoundarySection3.h
-    input/febio/FEBioCodeSection.h
-    input/febio/FEBioConstraintsSection.h
-    input/febio/FEBioContactSection.h
-    input/febio/FEBioControlSection.h
-    input/febio/FEBioControlSection4.h
-    input/febio/FEBioDiscreteSection.h
+    #input/febio/FEBModel.h
+    #input/febio/FEBioBoundarySection.h
+    #input/febio/FEBioBoundarySection3.h
+    #input/febio/FEBioCodeSection.h
+    #input/febio/FEBioConstraintsSection.h
+    #input/febio/FEBioContactSection.h
+    #input/febio/FEBioControlSection.h
+    #input/febio/FEBioControlSection4.h
+    #input/febio/FEBioDiscreteSection.h
     #input/febio/FEBioGeometrySection.h
-    input/febio/FEBioGlobalsSection.h
-    input/febio/FEBioImport.h
-    input/febio/FEBioIncludeSection.h
-    input/febio/FEBioInitialSection.h
-    input/febio/FEBioInitialSection3.h
-    input/febio/FEBioLoadDataSection.h
-    input/febio/FEBioLoadsSection.h
-    input/febio/FEBioMaterialSection.h
-    input/febio/FEBioMeshAdaptorSection.h
-    input/febio/FEBioMeshDataSection.h
-    input/febio/FEBioMeshDomainsSection4.h
-    input/febio/FEBioMeshSection.h
-    input/febio/FEBioMeshSection4.h
-    input/febio/FEBioModelBuilder.h
-    input/febio/FEBioModuleSection.h
-    input/febio/FEBioOutputSection.h
-    input/febio/FEBioRigidSection.h
-    input/febio/FEBioRigidSection4.h
-    input/febio/FEBioStepSection.h
-    input/febio/FEBioStepSection4.h
-    input/febio/FEModelBuilder.h
+    #input/febio/FEBioGlobalsSection.h
+    #input/febio/FEBioImport.h
+    #input/febio/FEBioIncludeSection.h
+    #input/febio/FEBioInitialSection.h
+    #input/febio/FEBioInitialSection3.h
+    #input/febio/FEBioLoadDataSection.h
+    #input/febio/FEBioLoadsSection.h
+    #input/febio/FEBioMaterialSection.h
+    #input/febio/FEBioMeshAdaptorSection.h
+    #input/febio/FEBioMeshDataSection.h
+    #input/febio/FEBioMeshDomainsSection4.h
+    #input/febio/FEBioMeshSection.h
+    #input/febio/FEBioMeshSection4.h
+    #input/febio/FEBioModelBuilder.h
+    #input/febio/FEBioModuleSection.h
+    #input/febio/FEBioOutputSection.h
+    #input/febio/FEBioRigidSection.h
+    #input/febio/FEBioRigidSection4.h
+    #input/febio/FEBioStepSection.h
+    #input/febio/FEBioStepSection4.h
+    #input/febio/FEModelBuilder.h
     #input/febio/FEPlotDataStore.h
-    input/febio/FERestartImport.h
-    input/febio/FileImport.h
-    input/febio/febioxml_api.h
-    input/febio/stdafx.h
-    input/febio/xmltool.h
+    #input/febio/FERestartImport.h
+    #input/febio/FileImport.h
+    #input/febio/febioxml_api.h
+    #input/febio/stdafx.h
+    #input/febio/xmltool.h
    #input/oofem/abaqus_input_parser.h
    #input/oofem/datareader.h
    #input/oofem/dynamic_data_reader.h
@@ -612,42 +612,42 @@ set(INPUT_SOURCES
     #input/abaqus/AbaqusExport.cpp
     #input/abaqus/AbaqusImport.cpp
     #input/abaqus/AbaqusModel.cpp
-    input/febio/FEBModel.cpp
-    input/febio/FEBioBoundarySection.cpp
-    input/febio/FEBioBoundarySection3.cpp
-    input/febio/FEBioCodeSection.cpp
-    input/febio/FEBioConstraintsSection.cpp
-    input/febio/FEBioContactSection.cpp
-    input/febio/FEBioControlSection.cpp
-    input/febio/FEBioControlSection4.cpp
-    input/febio/FEBioDiscreteSection.cpp
+    #input/febio/FEBModel.cpp
+    #input/febio/FEBioBoundarySection.cpp
+    #input/febio/FEBioBoundarySection3.cpp
+    #input/febio/FEBioCodeSection.cpp
+    #input/febio/FEBioConstraintsSection.cpp
+    #input/febio/FEBioContactSection.cpp
+    #input/febio/FEBioControlSection.cpp
+    #input/febio/FEBioControlSection4.cpp
+    #input/febio/FEBioDiscreteSection.cpp
     #input/febio/FEBioGeometrySection.cpp
-    input/febio/FEBioGlobalsSection.cpp
-    input/febio/FEBioImport.cpp
-    input/febio/FEBioIncludeSection.cpp
-    input/febio/FEBioInitialSection.cpp
-    input/febio/FEBioInitialSection3.cpp
-    input/febio/FEBioLoadDataSection3.cpp
-    input/febio/FEBioLoadDataSection.cpp
-    input/febio/FEBioLoadsSection.cpp
-    input/febio/FEBioMaterialSection.cpp
-    input/febio/FEBioMeshAdaptorSection.cpp
-    input/febio/FEBioMeshDataSection.cpp
-    input/febio/FEBioMeshDataSection4.cpp
-    input/febio/FEBioMeshDomainsSection4.cpp
-    input/febio/FEBioMeshSection.cpp
-    input/febio/FEBioMeshSection4.cpp
-    input/febio/FEBioModelBuilder.cpp
-    input/febio/FEBioModuleSection.cpp
-    input/febio/FEBioOutputSection.cpp
-    input/febio/FEBioRigidSection.cpp
-    input/febio/FEBioRigidSection4.cpp
-    input/febio/FEBioStepSection.cpp
-    input/febio/FEBioStepSection4.cpp
-    input/febio/FEModelBuilder.cpp
-    input/febio/FERestartImport.cpp
-    input/febio/FileImport.cpp
-    input/febio/xmltool.cpp
+    #input/febio/FEBioGlobalsSection.cpp
+    #input/febio/FEBioImport.cpp
+    #input/febio/FEBioIncludeSection.cpp
+    #input/febio/FEBioInitialSection.cpp
+    #input/febio/FEBioInitialSection3.cpp
+    #input/febio/FEBioLoadDataSection3.cpp
+    #input/febio/FEBioLoadDataSection.cpp
+    #input/febio/FEBioLoadsSection.cpp
+    #input/febio/FEBioMaterialSection.cpp
+    #input/febio/FEBioMeshAdaptorSection.cpp
+    #input/febio/FEBioMeshDataSection.cpp
+    #input/febio/FEBioMeshDataSection4.cpp
+    #input/febio/FEBioMeshDomainsSection4.cpp
+    #input/febio/FEBioMeshSection.cpp
+    #input/febio/FEBioMeshSection4.cpp
+    #input/febio/FEBioModelBuilder.cpp
+    #input/febio/FEBioModuleSection.cpp
+    #input/febio/FEBioOutputSection.cpp
+    #input/febio/FEBioRigidSection.cpp
+    #input/febio/FEBioRigidSection4.cpp
+    #input/febio/FEBioStepSection.cpp
+    #input/febio/FEBioStepSection4.cpp
+    #input/febio/FEModelBuilder.cpp
+    #input/febio/FERestartImport.cpp
+    #input/febio/FileImport.cpp
+    #input/febio/xmltool.cpp
     #input/oofem/dynamic_data_reader.cpp
     #input/oofem/dynamic_input_record.cpp
     #input/oofem/inputrecord.cpp

@@ -264,24 +264,24 @@ bool FEGlobalMatrix::Create(FEMesh& mesh, int nstart, int nend)
 //! construct a stiffness Matrix from a surface
 bool FEGlobalMatrix::Create(const FESurface& surf, const std::vector<int>& equationIDs)
 {
-	int N = surf.Nodes();
-	if ((int)equationIDs.size() != N) return false;
+	//int N = surf.Nodes();
+	//if ((int)equationIDs.size() != N) return false;
 
-	// count equations
-	int neq = 0;
-	for (int i = 0; i < N; ++i) if (equationIDs[i] != -1) neq++;
-	if (neq == 0) return false;
+	//// count equations
+	//int neq = 0;
+	//for (int i = 0; i < N; ++i) if (equationIDs[i] != -1) neq++;
+	//if (neq == 0) return false;
 
-	// build the Matrix, assuming one degree of freedom per node
-	build_begin(neq);
-	for (int i = 0; i<surf.Elements(); ++i) {
-		const FESurfaceElement& el = surf.Element(i);
-		std::vector<int> elm(el.NodeSize(), -1);
-		for (int j = 0; j<el.NodeSize(); ++j)
-			elm[j] = equationIDs[el.m_loc_node[j]];
-		build_add(elm);
-	}
-	build_end();
+	//// build the Matrix, assuming one degree of freedom per node
+	//build_begin(neq);
+	//for (int i = 0; i<surf.Elements(); ++i) {
+	//	const FESurfaceElement& el = surf.Element(i);
+	//	std::vector<int> elm(el.NodeSize(), -1);
+	//	for (int j = 0; j<el.NodeSize(); ++j)
+	//		elm[j] = equationIDs[el.m_loc_node[j]];
+	//	build_add(elm);
+	//}
+	//build_end();
 
 	return true;
 }

@@ -65,16 +65,16 @@ typedef std::function<void(RgSurfaceMaterialPoint& mp, const FESurfaceDofShape& 
 //! This class implements the basic functionality for an FE surface.
 //! More specialized surfaces are derived from this class
 
-class FEM_EXPORT RgSurfaceDomain : public RgDomain
+class FEM_EXPORT RgSurface : public RgDomain
 {
-    DECLARE_META_CLASS(RgSurfaceDomain, RgDomain);
+    DECLARE_META_CLASS(RgSurface, RgDomain);
 
 public:
     //! default constructor
-    RgSurfaceDomain();
+    RgSurface();
 
     //! destructor
-    virtual ~RgSurfaceDomain();
+    virtual ~RgSurface();
 
     //! initialize surface data structure
     bool Init() override;
@@ -113,9 +113,9 @@ public:
     }
 
     //! return an element of the surface
-    RgSurfaceElement& Element(int i)
+    RgSurfaceElement* Element(int i)
     {
-        return *m_el[i];
+        return m_el[i];
     }
 
     //! return an element of the surface

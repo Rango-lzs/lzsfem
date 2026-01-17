@@ -76,7 +76,12 @@ class FEM_EXPORT RgElementTraits
             return m_faces;
         }
 
-        const Matrix& getH()
+        const Matrix& getH() const
+        {
+            return m_H;
+        }
+
+        Matrix& getH()
         {
             return m_H;
         }

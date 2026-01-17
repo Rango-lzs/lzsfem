@@ -92,6 +92,16 @@ public:
     virtual void initTraits();
     RgElementTraits* getTraits();
 
+    //! shape function values
+    double* H(int n)
+    {
+        return m_pTraits->getH()[n];
+    }
+    const double* H(int n) const
+    {
+        return m_pTraits->getH()[n];
+    }
+
     int NodeSize() const;
     int GaussPointSize() const;
     int ShapeFunctions() const;

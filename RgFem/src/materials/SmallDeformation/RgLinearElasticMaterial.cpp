@@ -94,7 +94,7 @@ void RgLinearElastic::commitState(RgMaterialPointData* mp)
     if (mp) {
         // For linear elastic, no state variables to commit
         // Just pass through to base implementation if needed
-        mp->commit();
+        //mp->commit();
     }
 }
 
@@ -103,7 +103,7 @@ void RgLinearElastic::revertState(RgMaterialPointData* mp)
     if (mp) {
         // For linear elastic, no state variables to revert
         // Just pass through to base implementation if needed
-        mp->revert();
+        //mp->revert();
     }
 }
 

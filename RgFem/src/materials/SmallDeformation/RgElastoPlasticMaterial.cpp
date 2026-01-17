@@ -91,12 +91,12 @@ void RgElastoPlastic::computeConstitutive(RgMaterialPointData* mp, Matrix& D)
 
 void RgElastoPlastic::commitState(RgMaterialPointData* mp)
 {
-    mp->commit();
+    
 }
 
 void RgElastoPlastic::revertState(RgMaterialPointData* mp)
 {
-    mp->revert();
+    //mp->revert();
 }
 
 std::string RgElastoPlastic::getName() const
