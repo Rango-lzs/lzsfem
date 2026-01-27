@@ -1,144 +1,224 @@
-/*This file is part of the FEBio Studio source code and is licensed under the MIT license
-listed below.
-
-See Copyright-FEBio-Studio.txt for details.
-
-Copyright (c) 2021 University of Utah, The Trustees of Columbia University in
-the City of New York, and others.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.*/
+/*********************************************************************
+ * \file   AbaqusImport.h
+ * \brief  Import Abaqus INP file and convert to FEModel
+ *
+ * \author
+ * \date   January 2026
+ *********************************************************************/
 
 #pragma once
-#include <MeshIO/FSFileImport.h>
-#include <FEMLib/FSProject.h>
-#include "AbaqusModel.h"
+#include "datastructure/Vector3d.h"
+#include "femcore/fem_export.h"
 
-#include <list>
-////using namespace std;
+#include <fstream>
+#include <map>
+#include <string>
+#include <vector>
 
-//-----------------------------------------------------------------------------
-// Implements a class to import ABAQUS files
-// 
-class AbaqusImport : public FSFileImport
+class FEModel;
+class FEMesh;
+class RgDomain;
+class FENode;
+class FENodeSet;
+class RgElementSet;
+class FEFacetSet;
+
+/**
+ * @brief Abaqus INP file importer
+ *
+ * This class reads Abaqus INP files and converts them to FEModel format.
+ * Each Abaqus Part corresponds to one RgDomain in the model.
+ */
+class FEM_EXPORT AbaqusImport
 {
-	enum {MAX_ATTRIB = 16};
-
-	// attributes
-	struct ATTRIBUTE
-	{
-		char szatt[AbaqusModel::Max_Name];	// name of attribute
-		char szval[AbaqusModel::Max_Name];	// value of attribute
-	};
-
 public:
-	class Exception{};
+    AbaqusImport();
+    ~AbaqusImport();
 
-public:	// import options
-	bool	m_bnodesets;	// read node sets
-	bool	m_belemsets;	// read element sets
-	bool	m_bfacesets;	// read the surfaces
-	bool	m_bautopart;	// auto-partition parts
-	bool	m_bautosurf;	// auto-partition surfaces
-	bool	m_bssection;	// process solid-sections
-	bool	m_breadPhysics;	// read the physics (i.e. materials, bcs, etc).
-
-public:
-	AbaqusImport(FSProject& prj);
-	virtual ~AbaqusImport();
-
-	bool Load(const char* szfile);
-
-	bool UpdateData(bool bsave) override;
-
-protected:
-	// read a line and increment line counter
-	bool read_line(char* szline, FILE* fp);
-
-	// build the model
-	bool build_model();
-
-	// build a mesh
-	bool build_mesh();
-
-	// build all physics
-	bool build_physics();
-
-	// build a part
-	GObject* build_part(AbaqusModel::PART* pg);
-
-	// build a surface
-	FSSurface* build_surface(AbaqusModel::SURFACE* ps);
-	FSSurface* find_surface(AbaqusModel::SURFACE* ps);
-
-	// build a nodeset
-	FSNodeSet* build_nodeset(AbaqusModel::NODE_SET* ns);
-	FSNodeSet* find_nodeset(AbaqusModel::NODE_SET* ns);
-
-	// Keyword parsers
-	bool read_heading            (char* szline, FILE* fp);
-	bool read_nodes              (char* szline, FILE* fp);
-	bool read_ngen               (char* szline, FILE* fp);
-	bool read_nfill              (char* szline, FILE* fp);
-	bool read_elements           (char* szline, FILE* fp);
-	bool read_element_sets       (char* szline, FILE* fp);
-	bool read_node_sets          (char* szline, FILE* fp);
-	bool read_surface            (char* szline, FILE* fp);
-	bool read_surface_interaction(char* szline, FILE* fp);
-	bool read_materials          (char* szline, FILE* fp);
-	bool read_part               (char* szline, FILE* fp);
-	bool read_end_part           (char* szline, FILE* fp);
-	bool read_instance           (char* szline, FILE* fp);
-	bool read_end_instance       (char* szline, FILE* fp);
-	bool read_assembly           (char* szline, FILE* fp);
-	bool read_end_assembly       (char* szline, FILE* fp);
-	bool read_spring_elements    (char* szline, FILE* fp);
-	bool read_step				 (char* szline, FILE* fp);
-	bool read_boundary           (char* szline, FILE* fp);
-	bool read_dsload             (char* szline, FILE* fp);
-	bool read_solid_section      (char* szline, FILE* fp);
-	bool read_shell_section      (char* szline, FILE* fp);
-	bool read_static             (char* szline, FILE* fp);
-	bool read_orientation        (char* szline, FILE* fp);
-	bool read_distribution       (char* szline, FILE* fp);
-	bool read_amplitude          (char* szline, FILE* fp);
-	bool read_contact_pair       (char* szline, FILE* fp);
-
-	// skip until we find the next keyword
-	bool skip_keyword(char* szline, FILE* fp);
-
-protected:
-	// parse a file for keywords
-	bool parse_file(FILE* fp);
-
-	// parse the line for attributes
-	int parse_line(const char* szline, ATTRIBUTE* pa);
-
-	// find an attribute in a list
-	const char* find_attribute(ATTRIBUTE* pa, int nmax, const char* szatt);
+    /**
+     * @brief Load an Abaqus INP file and create FEModel
+     * @param filename Path to the INP file
+     * @param fem Pointer to FEModel to populate
+     * @return true if successful, false otherwise
+     */
+    bool load(const char* filename, FEModel* fem);
 
 private:
-	char		m_szTitle[AbaqusModel::Max_Title + 1];
-	FSProject*	m_pprj;
+    struct BoundaryCondition
+    {
+        std::string nodeSetName;
+        int dof;
+        double value;
+        int step;
+    };
 
-	FSModel*	m_pfem;
+    struct ConcentratedLoad
+    {
+        std::string nodeSetName;
+        int dof;
+        double magnitude;
+        int step;
+    };
 
-	AbaqusModel		m_inp;
+    struct DistributedLoad
+    {
+        std::string surfaceName;
+        std::string loadType;  // P (pressure), TRVEC (traction)
+        double magnitude;
+        Vector3d direction;
+        int step;
+    };
 
-	int	m_nline;	// current line number
+    struct MaterialProperty
+    {
+        std::string name;
+        std::string type;  // ELASTIC, PLASTIC, etc.
+        std::map<std::string, std::vector<double>> properties;
+    };
+
+    struct StepInfo
+    {
+        std::string name;
+        std::string procedure;  // STATIC, DYNAMIC, etc.
+        double timePeriod;
+        double initialTimeIncrement;
+        double minTimeIncrement;
+        double maxTimeIncrement;
+    };
+
+private:
+    // Helper structures for parsing
+    struct AbaqusNode
+    {
+        int id;
+        double x, y, z;
+    };
+
+    struct AbaqusElement
+    {
+        int id;
+        int type;           // Element type identifier
+        std::vector<int> nodes;
+        std::string elset;  // Element set name
+    };
+
+    struct AbaqusPart
+    {
+        std::string name;
+        std::vector<AbaqusNode> nodes;
+        std::vector<AbaqusElement> elements;
+        std::map<std::string, std::vector<int>> nodeSets;
+        std::map<std::string, std::vector<int>> elementSets;
+        std::map<std::string, std::vector<std::vector<int>>> surfaces;
+    };
+
+    struct AbaqusInstance
+    {
+        std::string name;
+        std::string partName;
+        double translation[3];
+        double rotation[7];  // axis (3) + angle or rotation matrix
+    };
+
+private:
+    // Core parsing functions
+    bool parseFile(const char* filename);
+    bool processData(FEModel* fem);
+
+    // Keyword parsing functions
+    bool parseHeading(std::ifstream& file);
+    bool parsePart(std::ifstream& file, const std::string& keywordLine);
+    bool parseNode(std::ifstream& file, AbaqusPart& part);
+    bool parseElement(std::ifstream& file, AbaqusPart& part, const std::string& keywordLine);
+    bool parseNset(std::ifstream& file, AbaqusPart& part, const std::string& keywordLine);
+    bool parseElset(std::ifstream& file, AbaqusPart& part, const std::string& keywordLine);
+    bool parseSurface(std::ifstream& file, AbaqusPart& part, const std::string& keywordLine);
+    bool parseMaterial(std::ifstream& file, const std::string& keywordLine);
+    bool parseStep(std::ifstream& file, const std::string& keywordLine);
+    bool parseBoundary(std::ifstream& file);
+    bool parseLoad(std::ifstream& file);
+    bool parseCload(std::ifstream& file);
+    bool parseDload(std::ifstream& file);
+
+    // Assembly parsing
+    bool parseAssembly(std::ifstream& file);
+    bool parseInstance(std::ifstream& file, const std::string& keywordLine);
+    bool parseEndInstance(std::ifstream& file);
+    bool parseEndAssembly(std::ifstream& file);
+
+    // Conversion functions
+    RgDomain* createDomain(const AbaqusPart& part, FEMesh* mesh);
+    bool createNodes(const AbaqusPart& part, FEMesh* mesh, std::map<int, int>& nodeMap);
+    bool createElements(const AbaqusPart& part, RgDomain* domain, const std::map<int, int>& nodeMap);
+    bool createNodeSets(const AbaqusPart& part, FEMesh* mesh, const std::map<int, int>& nodeMap);
+    bool createElementSets(const AbaqusPart& part, FEMesh* mesh, RgDomain* domain);
+    bool createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain* domain);
+    bool createBoundaryConditions(FEModel* fem);
+    bool createLoads(FEModel* fem);
+
+    // Element type conversion
+    int convertElementType(const std::string& abqType);
+    int getElementNodeCount(int elemType);
+
+    // Utility functions
+    std::string readKeywordLine(std::ifstream& file);
+    void parseKeywordParams(const std::string& line, std::map<std::string, std::string>& params);
+    std::vector<std::string> splitString(const std::string& str, char delimiter);
+    std::string trimString(const std::string& str);
+    std::string toUpper(const std::string& str);
+    bool isKeyword(const std::string& line);
+    bool skipToNextKeyword(std::ifstream& file);
+
+    // Data validation
+    bool validatePart(const AbaqusPart& part);
+    bool validateNodeId(int nodeId, const std::map<int, int>& nodeMap);
+
+private:
+    std::vector<AbaqusPart> m_parts;
+    std::vector<AbaqusInstance> m_instances;
+    std::vector<MaterialProperty> m_materials;
+    std::vector<BoundaryCondition> m_boundaryConditions;
+    std::vector<ConcentratedLoad> m_concentratedLoads;
+    std::vector<DistributedLoad> m_distributedLoads;
+    std::vector<StepInfo> m_steps;
+
+    // Current parsing context
+    std::string m_currentPart;
+    std::string m_currentInstance;
+    std::string m_currentMaterial;
+    int m_currentStep;
+    bool m_inAssembly;
+    bool m_inStep;
+
+    // Global node/element mappings
+    std::map<int, int> m_globalNodeMap;  // Abaqus ID -> FEModel index
+    std::map<int, int> m_globalElemMap;  // Abaqus ID -> FEModel index
+
+    // Statistics
+    int m_totalNodes;
+    int m_totalElements;
+
+    // Error handling
+    std::string m_lastError;
+    int m_lineNumber;
+
+    //int m_globalNodeOffset;  // 全局节点偏移
+    //int m_globalElemOffset;  // 全局单元偏移
+
+    private:
+    // 全局编号管理
+    int m_globalNodeOffset;  // 当前全局节点偏移
+    int m_globalElemOffset;  // 当前全局单元偏移
+
+    // 辅助函数
+    void applyRotation(Vector3d& pos, const double rotation[7]);
+
+    // 修改后的函数签名
+    bool createNodes(const AbaqusPart& part, FEMesh* mesh, std::map<int, int>& nodeMap, const AbaqusInstance& instance);
+
+    bool createElements(const AbaqusPart& part, RgDomain* domain, const std::map<int, int>& nodeMap);
+
+    bool createNodeSets(const AbaqusPart& part, FEMesh* mesh, const std::map<int, int>& nodeMap);
+
+    bool createElementSets(const AbaqusPart& part, FEMesh* mesh, RgDomain* domain);
 };
