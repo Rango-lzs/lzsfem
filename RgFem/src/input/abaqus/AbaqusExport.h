@@ -24,16 +24,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 #pragma once
-#include <MeshIO/FSFileExport.h>
+#include <MeshTools/FEFileExport.h>
 
-class FSProject;
+class FEProject;
 
 //-----------------------------------------------------------------------------
-class AbaqusExport : public FSFileExport
+class FEAbaqusExport : public FEFileExport
 {
 public:
-	AbaqusExport(FSProject& prj);
-	~AbaqusExport(void);
+	FEAbaqusExport(FEProject& prj);
+	~FEAbaqusExport(void);
 
 	bool Write(const char* szfile) override;
 

@@ -1,4 +1,4 @@
-#include "AbaqusImport.h"
+Ôªø#include "AbaqusImport.h"
 #include "femcore/FEModel.h"
 #include "femcore/FEMesh.h"
 #include "femcore/FENode.h"
@@ -15,6 +15,32 @@
 #include <cctype>
 #include <sstream>
 #include <iostream>
+#include "elements/RgElement/RgHex8Element.h"
+#include "femcore/Load/RgLoad.h"
+#include "femcore/RgLoadController.h"
+#include "AbaqusLoadParser.h"
+#include "AbaqusBoundaryParser.h"
+
+// ============================================================================
+// ÂçïÂÖÉÁ±ªÂûãÂ∏∏ÈáèÂÆö‰πâÔºàÂ¶ÇÊûúËøòÊ≤°ÊúâÔºåÈúÄË¶ÅÂú®Êüê‰∏™Â§¥Êñá‰ª∂‰∏≠ÂÆö‰πâÔºâ
+// ============================================================================
+
+enum AbaElementType
+{
+    FE_HEX8 = 0,
+    FE_HEX20,
+    FE_HEX27,
+    FE_TET4,
+    FE_TET10,
+    FE_PENTA6,
+    FE_PENTA15,
+    FE_QUAD4,
+    FE_QUAD8,
+    FE_TRI3,
+    FE_TRI6,
+    FE_LINE2,
+    // ... ÂÖ∂‰ªñÁ±ªÂûã
+};
 
 //-----------------------------------------------------------------------------
 AbaqusImport::AbaqusImport()
@@ -38,11 +64,13 @@ bool AbaqusImport::load(const char* filename, FEModel* fem)
     if (!filename || !fem)
     {
         m_lastError = "Invalid input parameters";
-        //feLogError(m_lastError.c_str());
+        //RgLogError(m_lastError.c_str());
         return false;
     }
 
-    //feLog("Reading Abaqus INP file: %s\n", filename);
+    m_model = fem;
+
+    //RgLog("Reading Abaqus INP file: %s\n", filename);
 
     // Clear previous data
     m_parts.clear();
@@ -60,18 +88,11 @@ bool AbaqusImport::load(const char* filename, FEModel* fem)
     // Parse the INP file
     if (!parseFile(filename))
     {
-        //feLogError("Failed to parse INP file: %s", m_lastError.c_str());
+        RgLogError("Failed to parse INP file: %s", m_lastError.c_str());
         return false;
     }
 
-    // Convert parsed data to FEModel
-    if (!processData(fem))
-    {
-        //feLogError("Failed to process INP data: %s", m_lastError.c_str());
-        return false;
-    }
-
-    //feLog("Successfully imported %d nodes and %d elements from %d parts\n", m_totalNodes, m_totalElements,
+    //RgLog("Successfully imported %d nodes and %d elements from %d parts\n", m_totalNodes, m_totalElements,
     //      (int)m_parts.size());
 
     return true;
@@ -119,11 +140,31 @@ bool AbaqusImport::parseFile(const char* filename)
                 m_inAssembly = true;
                 if (!parseAssembly(file))
                     return false;
+
+                // Convert Instance data to FEModel
+                if (!processData(m_model))
+                {
+                    RgLogError("Failed to process INP data: %s", m_lastError.c_str());
+                    return false;
+                }
+
                 m_inAssembly = false;
             }
             else if (keyword.find("MATERIAL") == 0)
             {
                 parseMaterial(file, line);
+            }
+            if (keyword.find("*BOUNDARY") == 0)
+            {
+                parseBoundary(file); 
+            }
+            else if (keyword.find("*CLOAD") == 0)
+            {
+                parseCload(file);
+            }
+            else if (keyword.find("*DLOAD") == 0)
+            {
+                parseDload(file);
             }
             else if (keyword.find("STEP") == 0)
             {
@@ -152,7 +193,7 @@ bool AbaqusImport::parsePart(std::ifstream& file, const std::string& keywordLine
     }
 
     m_currentPart = part.name;
-    //feLog("  Parsing part: %s\n", part.name.c_str());
+    //RgLog("  Parsing part: %s\n", part.name.c_str());
 
     std::string line;
 
@@ -203,7 +244,7 @@ bool AbaqusImport::parsePart(std::ifstream& file, const std::string& keywordLine
                 std::string elsetName = sectionParams["ELSET"];
                 std::string materialName = sectionParams["MATERIAL"];
 
-                //feLog("    Section: ELSET=%s, MATERIAL=%s\n", elsetName.c_str(), materialName.c_str());
+                //RgLog("    Section: ELSET=%s, MATERIAL=%s\n", elsetName.c_str(), materialName.c_str());
 
                 // Store section information (you may want to create a dedicated structure)
                 // For now, we'll skip reading section data lines
@@ -283,7 +324,7 @@ bool AbaqusImport::parseNode(std::ifstream& file, AbaqusPart& part)
         lastPos = file.tellg();
     }
 
-    //feLog("    Read %d nodes\n", nodeCount);
+    //RgLog("    Read %d nodes\n", nodeCount);
     return true;
 }
 
@@ -373,7 +414,7 @@ bool AbaqusImport::parseElement(std::ifstream& file, AbaqusPart& part, const std
         lastPos = file.tellg();
     }
 
-    //feLog("    Read %d %s elements\n", elemCount, elemType.c_str());
+    //RgLog("    Read %d %s elements\n", elemCount, elemType.c_str());
     return true;
 }
 
@@ -425,7 +466,71 @@ bool AbaqusImport::parseNset(std::ifstream& file, AbaqusPart& part, const std::s
     }
 
     part.nodeSets[nsetName] = nodeIds;
-    //feLog("    Read node set '%s' with %d nodes\n", nsetName.c_str(), (int)nodeIds.size());
+    //RgLog("    Read node set '%s' with %d nodes\n", nsetName.c_str(), (int)nodeIds.size());
+    return true;
+}
+
+bool AbaqusImport::parseNset(std::ifstream& file, const std::string& keywordLine)
+{
+    std::map<std::string, std::string> params;
+    parseKeywordParams(keywordLine, params);
+
+    std::string nsetName = params["NSET"];
+    if (nsetName.empty())
+    {
+        m_lastError = "NSET name is required";
+        return false;
+    }
+
+    std::string insName = params["INSTANCE"];
+    AbaqusInstance* partIns = nullptr;
+    for (auto& ins : m_instances)
+    {
+        if (ins.name == insName)
+        {
+            partIns = &ins;
+            break;
+        }
+    }
+    if (!partIns)
+        return false;
+
+    std::vector<int> nodeIds;
+    std::string line;
+    std::streampos lastPos = file.tellg();
+
+    while (std::getline(file, line))
+    {
+        m_lineNumber++;
+        line = trimString(line);
+
+        if (line.empty())
+        {
+            lastPos = file.tellg();
+            continue;
+        }
+        if (line[0] == '*')
+        {
+            file.seekg(lastPos);
+            m_lineNumber--;
+            break;
+        }
+
+        // Parse node IDs
+        std::vector<std::string> tokens = splitString(line, ',');
+        for (const auto& token : tokens)
+        {
+            std::string trimmed = trimString(token);
+            if (!trimmed.empty())
+            {
+                nodeIds.push_back(std::stoi(trimmed));
+            }
+        }
+        lastPos = file.tellg();
+    }
+
+    partIns->nodeSets.emplace(nsetName, nodeIds);
+    // RgLog("    Read node set '%s' with %d nodes\n", nsetName.c_str(), (int)nodeIds.size());
     return true;
 }
 
@@ -477,7 +582,68 @@ bool AbaqusImport::parseElset(std::ifstream& file, AbaqusPart& part, const std::
     }
 
     part.elementSets[elsetName] = elemIds;
-    //feLog("    Read element set '%s' with %d elements\n", elsetName.c_str(), (int)elemIds.size());
+    //RgLog("    Read element set '%s' with %d elements\n", elsetName.c_str(), (int)elemIds.size());
+    return true;
+}
+
+bool AbaqusImport::parseElset(std::ifstream& file, const std::string& keywordLine)
+{
+    std::map<std::string, std::string> params;
+    parseKeywordParams(keywordLine, params);
+
+    std::string elsetName = params["ELSET"];
+    if (elsetName.empty())
+    {
+        m_lastError = "ELSET name is required";
+        return false;
+    }
+
+    std::string insName = params["instance"];
+    AbaqusInstance partIns{};
+    for (auto ins : m_instances)
+    {
+        if (ins.name == insName)
+        {
+            partIns = ins;
+        }
+    }
+
+    std::vector<int> elemIds;
+    std::string line;
+    std::streampos lastPos = file.tellg();
+
+    while (std::getline(file, line))
+    {
+        m_lineNumber++;
+        line = trimString(line);
+
+        if (line.empty())
+        {
+            lastPos = file.tellg();
+            continue;
+        }
+        if (line[0] == '*')
+        {
+            file.seekg(lastPos);
+            m_lineNumber--;
+            break;
+        }
+
+        // Parse element IDs
+        std::vector<std::string> tokens = splitString(line, ',');
+        for (const auto& token : tokens)
+        {
+            std::string trimmed = trimString(token);
+            if (!trimmed.empty())
+            {
+                elemIds.push_back(std::stoi(trimmed));
+            }
+        }
+        lastPos = file.tellg();
+    }
+
+    partIns.elementSets[elsetName] = elemIds;
+    // RgLog("    Read element set '%s' with %d elements\n", elsetName.c_str(), (int)elemIds.size());
     return true;
 }
 
@@ -531,7 +697,7 @@ bool AbaqusImport::parseSurface(std::ifstream& file, AbaqusPart& part, const std
     }
 
     part.surfaces[surfaceName] = surfaceData;
-    //feLog("    Read surface '%s' with %d faces\n", surfaceName.c_str(), (int)surfaceData.size());
+    //RgLog("    Read surface '%s' with %d faces\n", surfaceName.c_str(), (int)surfaceData.size());
     return true;
 }
 
@@ -551,7 +717,7 @@ bool AbaqusImport::parseMaterial(std::ifstream& file, const std::string& keyword
     }
 
     m_currentMaterial = material.name;
-    //feLog("  Parsing material: %s\n", material.name.c_str());
+    //RgLog("  Parsing material: %s\n", material.name.c_str());
 
     std::string line;
     std::streampos lastPos = file.tellg();
@@ -645,7 +811,7 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
     StepInfo step;
     step.name = "Step-" + std::to_string(m_currentStep + 1);
 
-    //feLog("  Parsing step %d\n", m_currentStep + 1);
+    //RgLog("  Parsing step %d\n", m_currentStep + 1);
 
     std::string line;
     std::streampos lastPos = file.tellg();
@@ -726,129 +892,419 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
 //-----------------------------------------------------------------------------
 bool AbaqusImport::parseBoundary(std::ifstream& file)
 {
+    RgLog("Parsing *Boundary section...\n");
+
+    // Read lines until we hit another keyword or EOF
+    std::vector<std::string> lines;
+
+    // The *Boundary keyword line should already be consumed by the caller
+    // So we add it manually
+    lines.push_back("*Boundary");
+
     std::string line;
-    std::streampos lastPos = file.tellg();
+    std::streampos lastValidPos = file.tellg();
+
+    int dataLineCount = 0;
 
     while (std::getline(file, line))
     {
-        m_lineNumber++;
-        line = trimString(line);
+        // Check if this line is a keyword (starts with * but not **)
+        std::string trimmed = line;
 
-        if (line.empty())
+        // Trim leading whitespace
+        size_t firstNonSpace = trimmed.find_first_not_of(" \t\r\n");
+        if (firstNonSpace != std::string::npos)
         {
-            lastPos = file.tellg();
-            continue;
+            trimmed = trimmed.substr(firstNonSpace);
         }
-        if (line[0] == '*')
+        else
         {
-            file.seekg(lastPos);
-            m_lineNumber--;
+            trimmed.clear();
+        }
+
+        // Check for keyword
+        bool isKeyword = false;
+        if (!trimmed.empty() && trimmed[0] == '*')
+        {
+            if (trimmed.size() == 1)
+            {
+                // Just '*' - treat as keyword
+                isKeyword = true;
+            }
+            else if (trimmed[1] != '*')
+            {
+                // Starts with * but not ** - it's a keyword
+                isKeyword = true;
+            }
+            // else: ** is a comment, not a keyword
+        }
+
+        if (isKeyword)
+        {
+            // We've hit the next keyword, stop reading
+            // Seek back to before this line
+            file.seekg(lastValidPos);
             break;
         }
 
-        // Parse boundary condition: node_set, first_dof, last_dof, magnitude
-        std::vector<std::string> tokens = splitString(line, ',');
-        if (tokens.size() >= 3)
+        // Count non-comment, non-empty lines
+        if (!trimmed.empty() && (trimmed.size() < 2 || trimmed.substr(0, 2) != "**"))
         {
-            BoundaryCondition bc;
-            bc.nodeSetName = trimString(tokens[0]);
-            bc.dof = std::stoi(trimString(tokens[1]));
-            bc.value = (tokens.size() >= 4) ? std::stod(trimString(tokens[3])) : 0.0;
-            bc.step = m_currentStep;
-            m_boundaryConditions.push_back(bc);
+            // Add this line to our collection
+            lines.push_back(line);
+            dataLineCount++;
         }
-        lastPos = file.tellg();
+
+        // Save position for potential seek back
+        lastValidPos = file.tellg();
     }
 
-    return true;
+    if (dataLineCount == 0)
+    {
+        RgLogWarning("*Boundary section has no data lines");
+        return false;
+    }
+
+    // Create parser
+    AbaqusBoundaryParser parser(m_model);
+
+    // Parse the boundary conditions
+    int linesConsumed = parser.ParseBoundary(lines, 0);
+
+    if (linesConsumed == 0)
+    {
+        RgLogError("Failed to parse *Boundary section");
+        return false;
+    }
+
+    // Create FE boundary condition objects
+    if (!parser.CreateBoundaryConditions())
+    {
+        RgLogError("Failed to create boundary condition objects");
+        return false;
+    }
+
+    // Report results
+    const auto& bcData = parser.GetBoundaryData();
+    RgLog("  Parsed %d boundary condition entries from %d data lines\n", (int)bcData.size(), dataLineCount);
+
+    // Detailed logging (optional - can be controlled by verbosity level)
+#ifdef VERBOSE_LOGGING
+    for (size_t i = 0; i < bcData.size(); ++i)
+    {
+        const auto& data = bcData[i];
+        if (data.isEncastre)
+        {
+            RgLog("    [%d] ENCASTRE: %s\n", (int)i + 1, data.nodeSetName.c_str());
+        }
+        else
+        {
+            RgLog("    [%d] %s: DOF %d-%d = %g\n", (int)i + 1, data.nodeSetName.c_str(), data.firstDOF, data.lastDOF,
+                  data.magnitude);
+        }
+    }
+#endif
+
+    RgLog("  *Boundary section parsed successfully\n");
 }
 
-//-----------------------------------------------------------------------------
-bool AbaqusImport::parseLoad(std::ifstream& file)
-{
-    // Generic load parsing - delegates to specific load types
-    return true;
-}
 
-//-----------------------------------------------------------------------------
+// Parse *Cload (Concentrated Load)
 bool AbaqusImport::parseCload(std::ifstream& file)
 {
+    RgLog("Parsing *Cload section...\n");
+
+    // Read lines until we hit another keyword or EOF
+    std::vector<std::string> lines;
+
+    // Add the *Cload keyword line
+    lines.push_back("*Cload");
+
     std::string line;
-    std::streampos lastPos = file.tellg();
+    std::streampos lastValidPos = file.tellg();
+
+    int dataLineCount = 0;
 
     while (std::getline(file, line))
     {
-        m_lineNumber++;
-        line = trimString(line);
-
-        if (line.empty())
+        // Trim and check for keyword
+        std::string trimmed = line;
+        size_t firstNonSpace = trimmed.find_first_not_of(" \t\r\n");
+        if (firstNonSpace != std::string::npos)
         {
-            lastPos = file.tellg();
-            continue;
+            trimmed = trimmed.substr(firstNonSpace);
         }
-        if (line[0] == '*')
+        else
         {
-            file.seekg(lastPos);
-            m_lineNumber--;
+            trimmed.clear();
+        }
+
+        // Check for keyword
+        bool isKeyword = false;
+        if (!trimmed.empty() && trimmed[0] == '*')
+        {
+            if (trimmed.size() == 1 || trimmed[1] != '*')
+            {
+                isKeyword = true;
+            }
+        }
+
+        if (isKeyword)
+        {
+            file.seekg(lastValidPos);
             break;
         }
 
-        // Parse concentrated load: node_set, dof, magnitude
-        std::vector<std::string> tokens = splitString(line, ',');
-        if (tokens.size() >= 3)
+        lines.push_back(line);
+
+        if (!trimmed.empty() && (trimmed.size() < 2 || trimmed.substr(0, 2) != "**"))
         {
-            ConcentratedLoad load;
-            load.nodeSetName = trimString(tokens[0]);
-            load.dof = std::stoi(trimString(tokens[1]));
-            load.magnitude = std::stod(trimString(tokens[2]));
-            load.step = m_currentStep;
-            m_concentratedLoads.push_back(load);
+            dataLineCount++;
         }
-        lastPos = file.tellg();
+
+        lastValidPos = file.tellg();
     }
 
-    return true;
+    if (dataLineCount == 0)
+    {
+        RgLogWarning("*Cload section has no data lines");
+        return false;
+    }
+
+    // Create parser
+    AbaqusLoadParser parser(m_model);
+
+    // Parse concentrated loads
+    int linesConsumed = parser.ParseCload(lines, 0);
+
+    if (linesConsumed == 0)
+    {
+        RgLogError("Failed to parse *Cload section");
+        return false;
+    }
+
+    // Create load objects
+    if (!parser.CreateLoads())
+    {
+        RgLogError("Failed to create concentrated loads");
+        return false;
+    }
+
+    // Report results
+    const auto& loadData = parser.GetLoadData();
+    RgLog("  Parsed %d concentrated load entries from %d data lines\n", (int)loadData.size(), dataLineCount);
+
+#ifdef VERBOSE_LOGGING
+    for (size_t i = 0; i < loadData.size(); ++i)
+    {
+        const auto& data = loadData[i];
+        RgLog("    [%d] %s: DOF %d = %g\n", (int)i + 1, data.targetName.c_str(), data.dof, data.magnitude);
+    }
+#endif
+
+    RgLog("  *Cload section parsed successfully\n");
 }
 
 //-----------------------------------------------------------------------------
+// Parse *Dload (Distributed Load)
 bool AbaqusImport::parseDload(std::ifstream& file)
 {
+    RgLog("Parsing *Dload section...\n");
+
+    // Read lines until we hit another keyword or EOF
+    std::vector<std::string> lines;
+
+    // Add the *Dload keyword line
+    lines.push_back("*Dload");
+
     std::string line;
-    std::streampos lastPos = file.tellg();
+    std::streampos lastValidPos = file.tellg();
+
+    int dataLineCount = 0;
 
     while (std::getline(file, line))
     {
-        m_lineNumber++;
-        line = trimString(line);
-
-        if (line.empty())
+        // Trim and check for keyword
+        std::string trimmed = line;
+        size_t firstNonSpace = trimmed.find_first_not_of(" \t\r\n");
+        if (firstNonSpace != std::string::npos)
         {
-            lastPos = file.tellg();
-            continue;
+            trimmed = trimmed.substr(firstNonSpace);
         }
-        if (line[0] == '*')
+        else
         {
-            file.seekg(lastPos);
-            m_lineNumber--;
+            trimmed.clear();
+        }
+
+        // Check for keyword
+        bool isKeyword = false;
+        if (!trimmed.empty() && trimmed[0] == '*')
+        {
+            if (trimmed.size() == 1 || trimmed[1] != '*')
+            {
+                isKeyword = true;
+            }
+        }
+
+        if (isKeyword)
+        {
+            file.seekg(lastValidPos);
             break;
         }
 
-        // Parse distributed load: surface, load_type, magnitude
-        std::vector<std::string> tokens = splitString(line, ',');
-        if (tokens.size() >= 3)
+        lines.push_back(line);
+
+        if (!trimmed.empty() && (trimmed.size() < 2 || trimmed.substr(0, 2) != "**"))
         {
-            DistributedLoad load;
-            load.surfaceName = trimString(tokens[0]);
-            load.loadType = trimString(tokens[1]);
-            load.magnitude = std::stod(trimString(tokens[2]));
-            load.step = m_currentStep;
-            m_distributedLoads.push_back(load);
+            dataLineCount++;
         }
-        lastPos = file.tellg();
+
+        lastValidPos = file.tellg();
     }
 
-    return true;
+    if (dataLineCount == 0)
+    {
+        RgLogWarning("*Dload section has no data lines");
+        return false;
+    }
+
+    // Create parser
+    AbaqusLoadParser parser(m_model);
+
+    // Parse distributed loads
+    int linesConsumed = parser.ParseDload(lines, 0);
+
+    if (linesConsumed == 0)
+    {
+        RgLogError("Failed to parse *Dload section");
+        return false;
+    }
+
+    // Create load objects
+    if (!parser.CreateLoads())
+    {
+        RgLogError("Failed to create distributed loads");
+        return false;
+    }
+
+    // Report results
+    const auto& loadData = parser.GetLoadData();
+    RgLog("  Parsed %d distributed load entries from %d data lines\n", (int)loadData.size(), dataLineCount);
+
+#ifdef VERBOSE_LOGGING
+    for (size_t i = 0; i < loadData.size(); ++i)
+    {
+        const auto& data = loadData[i];
+        RgLog("    [%d] %s on %s: type=%s, magnitude=%g\n", (int)i + 1, data.name.c_str(), data.targetName.c_str(),
+              data.loadType.c_str(), data.magnitude);
+    }
+#endif
+
+    RgLog("  *Dload section parsed successfully\n");
 }
+
+//-----------------------------------------------------------------------------
+// Generic parseLoad that can handle both *Cload and *Dload
+// Call this if you want a unified interface
+//bool AbaqusImport::parseLoad(std::ifstream& file, const std::string& loadType)
+//{
+//    // Convert to uppercase for comparison
+//    std::string upperType = loadType;
+//    std::transform(upperType.begin(), upperType.end(), upperType.begin(), ::toupper);
+//
+//    if (upperType.find("CLOAD") != std::string::npos)
+//    {
+//        parseCload(file);
+//    }
+//    else if (upperType.find("DLOAD") != std::string::npos)
+//    {
+//        parseDload(file);
+//    }
+//    else
+//    {
+//        RgLogError("Unknown load type: %s", loadType.c_str());
+//    }
+//}
+
+////-----------------------------------------------------------------------------
+//bool AbaqusImport::parseCload(std::ifstream& file)
+//{
+//    std::string line;
+//    std::streampos lastPos = file.tellg();
+//
+//    while (std::getline(file, line))
+//    {
+//        m_lineNumber++;
+//        line = trimString(line);
+//
+//        if (line.empty())
+//        {
+//            lastPos = file.tellg();
+//            continue;
+//        }
+//        if (line[0] == '*')
+//        {
+//            file.seekg(lastPos);
+//            m_lineNumber--;
+//            break;
+//        }
+//
+//        // Parse concentrated load: node_set, dof, magnitude
+//        std::vector<std::string> tokens = splitString(line, ',');
+//        if (tokens.size() >= 3)
+//        {
+//            ConcentratedLoad load;
+//            load.nodeSetName = trimString(tokens[0]);
+//            load.dof = std::stoi(trimString(tokens[1]));
+//            load.magnitude = std::stod(trimString(tokens[2]));
+//            load.step = m_currentStep;
+//            m_concentratedLoads.push_back(load);
+//        }
+//        lastPos = file.tellg();
+//    }
+//
+//    return true;
+//}
+//
+////-----------------------------------------------------------------------------
+//bool AbaqusImport::parseDload(std::ifstream& file)
+//{
+//    std::string line;
+//    std::streampos lastPos = file.tellg();
+//
+//    while (std::getline(file, line))
+//    {
+//        m_lineNumber++;
+//        line = trimString(line);
+//
+//        if (line.empty())
+//        {
+//            lastPos = file.tellg();
+//            continue;
+//        }
+//        if (line[0] == '*')
+//        {
+//            file.seekg(lastPos);
+//            m_lineNumber--;
+//            break;
+//        }
+//
+//        // Parse distributed load: surface, load_type, magnitude
+//        std::vector<std::string> tokens = splitString(line, ',');
+//        if (tokens.size() >= 3)
+//        {
+//            DistributedLoad load;
+//            load.surfaceName = trimString(tokens[0]);
+//            load.loadType = trimString(tokens[1]);
+//            load.magnitude = std::stod(trimString(tokens[2]));
+//            load.step = m_currentStep;
+//            m_distributedLoads.push_back(load);
+//        }
+//        lastPos = file.tellg();
+//    }
+//
+//    return true;
+//}
 
 //-----------------------------------------------------------------------------
 bool AbaqusImport::parseHeading(std::ifstream& file)
@@ -873,7 +1329,7 @@ bool AbaqusImport::parseHeading(std::ifstream& file)
             break;
         }
 
-        //feLog("Heading: %s\n", line.c_str());
+        //RgLog("Heading: %s\n", line.c_str());
         lastPos = file.tellg();
     }
 
@@ -902,6 +1358,16 @@ bool AbaqusImport::parseAssembly(std::ifstream& file)
                 if (!parseInstance(file, line))
                     return false;
             }
+            else if (keyword.find("NSET") == 0)
+            {
+                if (!parseNset(file, line))
+                    return false;
+            }
+            else if (keyword.find("ELSET") == 0)
+            {
+                if (!parseElset(file, line))
+                    return false;
+            }
             else if (keyword.find("END ASSEMBLY") == 0)
             {
                 break;
@@ -928,7 +1394,7 @@ bool AbaqusImport::parseInstance(std::ifstream& file, const std::string& keyword
         return false;
     }
 
-    //feLog("  Parsing instance: %s (part: %s)\n", instance.name.c_str(), instance.partName.c_str());
+    //RgLog("  Parsing instance: %s (part: %s)\n", instance.name.c_str(), instance.partName.c_str());
 
     // Initialize transformation to identity
     instance.translation[0] = instance.translation[1] = instance.translation[2] = 0.0;
@@ -992,9 +1458,9 @@ bool AbaqusImport::processData(FEModel* fem)
 {
     FEMesh& mesh = fem->GetMesh();
 
-    //feLog("Converting Abaqus data to FEModel...\n");
+    //RgLog("Converting Abaqus data to FEModel...\n");
 
-    // º∆À„◊‹Ω⁄µ„ ˝∫Õ◊‹µ•‘™ ˝
+    // ËÆ°ÁÆóÊÄªËäÇÁÇπÊï∞ÂíåÊÄªÂçïÂÖÉÊï∞
     int totalNodes = 0;
     int totalElements = 0;
     for (const auto& instance : m_instances)
@@ -1010,10 +1476,10 @@ bool AbaqusImport::processData(FEModel* fem)
         }
     }
 
-    // ¥¥Ω®À˘”–Ω⁄µ„
+    // ÂàõÂª∫ÊâÄÊúâËäÇÁÇπ
     mesh.CreateNodes(totalNodes);
 
-    // ≥ı ºªØ»´æ÷∆´“∆
+    // ÂàùÂßãÂåñÂÖ®Â±ÄÂÅèÁßª
     m_globalNodeOffset = 0;
     m_globalElemOffset = 0;
 
@@ -1043,7 +1509,7 @@ bool AbaqusImport::processData(FEModel* fem)
             return false;
 
         // Create nodes with global mapping
-        std::map<int, int> nodeMap;  // Abaqusæ÷≤øID -> FEM»´æ÷À˜“˝
+        std::map<int, int> nodeMap;  // AbaqusÂ±ÄÈÉ®ID -> FEMÂÖ®Â±ÄÁ¥¢Âºï
         if (!createNodes(*part, &mesh, nodeMap, instance))
             return false;
 
@@ -1052,11 +1518,11 @@ bool AbaqusImport::processData(FEModel* fem)
             return false;
 
         // Create node sets
-        if (!createNodeSets(*part, &mesh, nodeMap))
+        if (!createNodeSets(instance, &mesh, nodeMap))
             return false;
 
         // Create element sets
-        if (!createElementSets(*part, &mesh, domain))
+        if (!createElementSets(instance, &mesh, domain))
             return false;
 
         // Create surfaces
@@ -1071,13 +1537,13 @@ bool AbaqusImport::processData(FEModel* fem)
         m_globalElemOffset += part->elements.size();
     }
 
-    // Create boundary conditions
-    if (!createBoundaryConditions(fem))
-        return false;
+    //// Create boundary conditions
+    //if (!createBoundaryConditions(fem))
+    //    return false;
 
-    // Create loads
-    if (!createLoads(fem))
-        return false;
+    //// Create loads
+    //if (!createLoads(fem))
+    //    return false;
 
     // Update mesh bounding box
     mesh.UpdateBox();
@@ -1094,31 +1560,32 @@ bool AbaqusImport::createNodes(const AbaqusPart& part, FEMesh* mesh,
     {
         const AbaqusNode& abqNode = part.nodes[i];
 
-        // º∆À„»´æ÷Ω⁄µ„À˜“˝
+        // ËÆ°ÁÆóÂÖ®Â±ÄËäÇÁÇπÁ¥¢Âºï
         int globalIndex = m_globalNodeOffset + i;
 
-        // Ω®¡¢Abaqusæ÷≤øIDµΩFEM»´æ÷À˜“˝µƒ”≥…‰
+        // Âª∫Á´ãAbaqusÂ±ÄÈÉ®IDÂà∞FEMÂÖ®Â±ÄÁ¥¢ÂºïÁöÑÊò†Â∞Ñ
         nodeMap[abqNode.id] = globalIndex;
 
-        // ªÒ»°mesh÷–µƒΩ⁄µ„
+        // Ëé∑Âèñmesh‰∏≠ÁöÑËäÇÁÇπ
         FENode& meshNode = mesh->Node(globalIndex);
 
-        // ”¶”√instanceµƒ±‰ªª£®∆Ω“∆∫Õ–˝◊™£©
+        // Â∫îÁî®instanceÁöÑÂèòÊç¢ÔºàÂπ≥ÁßªÂíåÊóãËΩ¨Ôºâ
         Vector3d pos(abqNode.x, abqNode.y, abqNode.z);
 
-        // ”¶”√∆Ω“∆
+        // Â∫îÁî®Âπ≥Áßª
         pos.x += instance.translation[0];
         pos.y += instance.translation[1];
         pos.z += instance.translation[2];
 
-        // TODO: »Áπ˚–Ë“™£¨”¶”√–˝◊™±‰ªª
+        // TODO: Â¶ÇÊûúÈúÄË¶ÅÔºåÂ∫îÁî®ÊóãËΩ¨ÂèòÊç¢
         // applyRotation(pos, instance.rotation);
 
         meshNode.m_r0 = pos;
         meshNode.m_rt = pos;
-        meshNode.SetID(globalIndex + 1);  // ID¥”1ø™ º
 
-        // ÃÌº”µΩ»´æ÷”≥…‰
+        meshNode.SetID(globalIndex + 1);  // ID‰ªé1ÂºÄÂßã
+
+        // Ê∑ªÂä†Âà∞ÂÖ®Â±ÄÊò†Â∞Ñ
         m_globalNodeMap[abqNode.id] = globalIndex;
     }
 
@@ -1130,26 +1597,26 @@ bool AbaqusImport::createNodes(const AbaqusPart& part, FEMesh* mesh,
 bool AbaqusImport::createElements(const AbaqusPart& part, RgDomain* domain,
     const std::map<int, int>& nodeMap)
 {
-    // Œ™domain∑÷≈‰µ•‘™
-    domain->Create(part.elements.size());
+    // ‰∏∫domainÂàÜÈÖçÂçïÂÖÉ
+    domain->Create(part.elements.size(), ElementType::FE_HEX8G8);
 
     for (size_t i = 0; i < part.elements.size(); i++)
     {
         const AbaqusElement& abqElem = part.elements[i];
 
-        // ∏˘æ›µ•‘™¿‡–Õ¥¥Ω®≤ªÕ¨µƒµ•‘™
+        // Ê†πÊçÆÂçïÂÖÉÁ±ªÂûãÂàõÂª∫‰∏çÂêåÁöÑÂçïÂÖÉ
         RgElement* elem = nullptr;
 
         switch (abqElem.type)
         {
-        case FE_HEX8:  // ºŸ…Ëƒ˙“—æ≠∂®“Â¡À’‚–©≥£¡ø
+        case FE_HEX8:  // ÂÅáËÆæÊÇ®Â∑≤ÁªèÂÆö‰πâ‰∫ÜËøô‰∫õÂ∏∏Èáè
         {
             RgHex8Element* hex8 = dynamic_cast<RgHex8Element*>(&domain->ElementRef(i));
             if (hex8)
             {
                 elem = hex8;
 
-                // …Ë÷√Ω⁄µ„¡¨Ω”–‘£® π”√»´æ÷Ω⁄µ„À˜“˝£©
+                // ËÆæÁΩÆËäÇÁÇπËøûÊé•ÊÄßÔºà‰ΩøÁî®ÂÖ®Â±ÄËäÇÁÇπÁ¥¢ÂºïÔºâ
                 if (abqElem.nodes.size() != 8)
                 {
                     m_lastError = "HEX8 element must have 8 nodes";
@@ -1166,7 +1633,7 @@ bool AbaqusImport::createElements(const AbaqusPart& part, RgDomain* domain,
                         return false;
                     }
 
-                    // …Ë÷√µ•‘™µƒΩ⁄µ„À˜“˝
+                    // ËÆæÁΩÆÂçïÂÖÉÁöÑËäÇÁÇπÁ¥¢Âºï
                     hex8->setNodeId(j, it->second);
                 }
             }
@@ -1175,25 +1642,25 @@ bool AbaqusImport::createElements(const AbaqusPart& part, RgDomain* domain,
 
         case FE_TET4:
         {
-            // ¿‡À∆¥¶¿ÌTET4µ•‘™
+            // Á±ª‰ººÂ§ÑÁêÜTET4ÂçïÂÖÉ
             // RgTet4Element* tet4 = ...
         }
         break;
 
-        // ÃÌº”∆‰À˚µ•‘™¿‡–Õ...
+        // Ê∑ªÂä†ÂÖ∂‰ªñÂçïÂÖÉÁ±ªÂûã...
 
         default:
-            //feLogWarning("Unsupported element type: %d", abqElem.type);
+            //RgLogWarning("Unsupported element type: %d", abqElem.type);
             continue;
         }
 
         if (elem)
         {
-            // …Ë÷√µ•‘™ID£®»´æ÷±‡∫≈£©
+            // ËÆæÁΩÆÂçïÂÖÉIDÔºàÂÖ®Â±ÄÁºñÂè∑Ôºâ
             int globalElemId = m_globalElemOffset + i;
-            elem->setId(globalElemId + 1);  // ID¥”1ø™ º
+            elem->setId(globalElemId + 1);  // ID‰ªé1ÂºÄÂßã
 
-            // ÃÌº”µΩ»´æ÷”≥…‰
+            // Ê∑ªÂä†Âà∞ÂÖ®Â±ÄÊò†Â∞Ñ
             m_globalElemMap[abqElem.id] = globalElemId;
         }
     }
@@ -1203,7 +1670,7 @@ bool AbaqusImport::createElements(const AbaqusPart& part, RgDomain* domain,
 }
 
 //-----------------------------------------------------------------------------
-bool AbaqusImport::createNodeSets(const AbaqusPart& part, FEMesh* mesh,
+bool AbaqusImport::createNodeSets(const AbaqusInstance& part, FEMesh* mesh,
     const std::map<int, int>& nodeMap)
 {
     for (const auto& nset : part.nodeSets)
@@ -1217,19 +1684,19 @@ bool AbaqusImport::createNodeSets(const AbaqusPart& part, FEMesh* mesh,
             auto it = nodeMap.find(abqNodeId);
             if (it != nodeMap.end())
             {
-                //  π”√»´æ÷Ω⁄µ„À˜“˝
+                // ‰ΩøÁî®ÂÖ®Â±ÄËäÇÁÇπÁ¥¢Âºï
                 nodeIndices.push_back(it->second);
             }
             else
             {
-                //feLogWarning("Node ID %d not found in node set %s", abqNodeId, nset.first.c_str());
+                //RgLogWarning("Node ID %d not found in node set %s", abqNodeId, nset.first.c_str());
             }
         }
 
-        // ∏˘æ›ƒ˙µƒFENodeSet API…Ë÷√Ω⁄µ„
-        // ºŸ…Ë”–»Áœ¬∑Ω∑®£®–Ë“™∏˘æ› µº APIµ˜’˚£©:
+        // Ê†πÊçÆÊÇ®ÁöÑFENodeSet APIËÆæÁΩÆËäÇÁÇπ
+        // ÂÅáËÆæÊúâÂ¶Ç‰∏ãÊñπÊ≥ïÔºàÈúÄË¶ÅÊ†πÊçÆÂÆûÈôÖAPIË∞ÉÊï¥Ôºâ:
         // nodeSet->SetNodes(nodeIndices);
-        // ªÚ’ﬂ
+        // ÊàñËÄÖ
         // for (int idx : nodeIndices) {
         //     nodeSet->AddNode(idx);
         // }
@@ -1241,7 +1708,7 @@ bool AbaqusImport::createNodeSets(const AbaqusPart& part, FEMesh* mesh,
 }
 
 //-----------------------------------------------------------------------------
-bool AbaqusImport::createElementSets(const AbaqusPart& part, FEMesh* mesh,
+bool AbaqusImport::createElementSets(const AbaqusInstance& part, FEMesh* mesh,
     RgDomain* domain)
 {
     for (const auto& elset : part.elementSets)
@@ -1252,21 +1719,21 @@ bool AbaqusImport::createElementSets(const AbaqusPart& part, FEMesh* mesh,
         std::vector<int> elemIndices;
         for (int abqElemId : elset.second)
         {
-            // ‘⁄µ±«∞partµƒelements÷–≤È’“
-            for (size_t i = 0; i < part.elements.size(); i++)
-            {
-                if (part.elements[i].id == abqElemId)
-                {
-                    int globalElemIndex = m_globalElemOffset - part.elements.size() + i;
-                    elemIndices.push_back(globalElemIndex);
-                    break;
-                }
-            }
+            //// Âú®ÂΩìÂâçpartÁöÑelements‰∏≠Êü•Êâæ
+            //for (size_t i = 0; i < part.elements.size(); i++)
+            //{
+            //    if (part.elements[i].id == abqElemId)
+            //    {
+            //        int globalElemIndex = m_globalElemOffset - part.elements.size() + i;
+            //        elemIndices.push_back(globalElemIndex);
+            //        break;
+            //    }
+            //}
         }
 
-        // ∏˘æ›ƒ˙µƒRgElementSet API…Ë÷√µ•‘™
+        // Ê†πÊçÆÊÇ®ÁöÑRgElementSet APIËÆæÁΩÆÂçïÂÖÉ
         // elemSet->SetElements(elemIndices);
-        // ªÚ’ﬂ¥”domain÷–ÃÌº”
+        // ÊàñËÄÖ‰ªédomain‰∏≠Ê∑ªÂä†
         // for (int idx : elemIndices) {
         //     elemSet->AddElement(&domain->ElementRef(idx));
         // }
@@ -1280,8 +1747,8 @@ bool AbaqusImport::createElementSets(const AbaqusPart& part, FEMesh* mesh,
 //-----------------------------------------------------------------------------
 RgDomain* AbaqusImport::createDomain(const AbaqusPart& part, FEMesh* mesh)
 {
-    // ∏˘æ›part÷–µƒµ•‘™¿‡–Õ¥¥Ω®∂‘”¶µƒdomain
-    // ’‚¿ÔºŸ…Ë“ª∏ˆpart÷–µƒÀ˘”–µ•‘™¿‡–Õœ‡Õ¨
+    // Ê†πÊçÆpart‰∏≠ÁöÑÂçïÂÖÉÁ±ªÂûãÂàõÂª∫ÂØπÂ∫îÁöÑdomain
+    // ËøôÈáåÂÅáËÆæ‰∏Ä‰∏™part‰∏≠ÁöÑÊâÄÊúâÂçïÂÖÉÁ±ªÂûãÁõ∏Âêå
 
     if (part.elements.empty())
     {
@@ -1289,32 +1756,32 @@ RgDomain* AbaqusImport::createDomain(const AbaqusPart& part, FEMesh* mesh)
         return nullptr;
     }
 
-    // ºÏ≤Èµ⁄“ª∏ˆµ•‘™µƒ¿‡–Õ¿¥»∑∂®domain¿‡–Õ
+    // Ê£ÄÊü•Á¨¨‰∏Ä‰∏™ÂçïÂÖÉÁöÑÁ±ªÂûãÊù•Á°ÆÂÆödomainÁ±ªÂûã
     int elemType = part.elements[0].type;
 
     RgDomain* domain = nullptr;
 
-    // ∏˘æ›µ•‘™¿‡–Õ¥¥Ω®domain
+    // Ê†πÊçÆÂçïÂÖÉÁ±ªÂûãÂàõÂª∫domain
     if (elemType == FE_HEX8 || elemType == FE_HEX20 || elemType == FE_HEX27 ||
         elemType == FE_TET4 || elemType == FE_TET10 ||
         elemType == FE_PENTA6 || elemType == FE_PENTA15)
     {
-        //  µÃÂµ•‘™ ->  µÃÂ”Ú
+        // ÂÆû‰ΩìÂçïÂÖÉ -> ÂÆû‰ΩìÂüü
         domain = new RgSolidDomain(mesh->GetFEModel());
-        //feLog("  Creating solid domain: %s\n", part.name.c_str());
+        //RgLog("  Creating solid domain: %s\n", part.name.c_str());
     }
     else if (elemType == FE_QUAD4 || elemType == FE_QUAD8 ||
         elemType == FE_TRI3 || elemType == FE_TRI6)
     {
-        // ø«µ•‘™ -> ø«”Ú
+        // Â£≥ÂçïÂÖÉ -> Â£≥Âüü
         // domain = new RgShellDomain(mesh->GetFEModel());
-        //feLog("  Creating shell domain: %s\n", part.name.c_str());
+        //RgLog("  Creating shell domain: %s\n", part.name.c_str());
     }
     else if (elemType == FE_LINE2)
     {
-        // ¡∫/ËÏº‹µ•‘™ -> ËÏº‹”Ú
+        // Ê¢Å/Ê°ÅÊû∂ÂçïÂÖÉ -> Ê°ÅÊû∂Âüü
         // domain = new RgTrussDomain(mesh->GetFEModel());
-        //feLog("  Creating truss domain: %s\n", part.name.c_str());
+        //RgLog("  Creating truss domain: %s\n", part.name.c_str());
     }
     else
     {
@@ -1331,47 +1798,23 @@ RgDomain* AbaqusImport::createDomain(const AbaqusPart& part, FEMesh* mesh)
 }
 
 //-----------------------------------------------------------------------------
-// ∏®÷˙∫Ø ˝£∫”¶”√–˝◊™±‰ªª£®»Áπ˚–Ë“™£©
+// ËæÖÂä©ÂáΩÊï∞ÔºöÂ∫îÁî®ÊóãËΩ¨ÂèòÊç¢ÔºàÂ¶ÇÊûúÈúÄË¶ÅÔºâ
 void AbaqusImport::applyRotation(Vector3d& pos, const double rotation[7])
 {
-    // »Áπ˚rotation∂®“ÂŒ™÷·-Ω«±Ì æ£∫rotation[0-2] «÷·£¨rotation[3] «Ω«∂»
-    // ªÚ’ﬂrotation[0-6] «Àƒ‘™ ˝
-    // ∏˘æ›AbaqusµƒæﬂÃÂ∏Ò Ω µœ÷–˝◊™
+    // Â¶ÇÊûúrotationÂÆö‰πâ‰∏∫ËΩ¥-ËßíË°®Á§∫Ôºörotation[0-2]ÊòØËΩ¥Ôºårotation[3]ÊòØËßíÂ∫¶
+    // ÊàñËÄÖrotation[0-6]ÊòØÂõõÂÖÉÊï∞
+    // Ê†πÊçÆAbaqusÁöÑÂÖ∑‰ΩìÊ†ºÂºèÂÆûÁé∞ÊóãËΩ¨
 
-    //  æ¿˝£∫»Áπ˚ «÷·-Ω«±Ì æ
+    // Á§∫‰æãÔºöÂ¶ÇÊûúÊòØËΩ¥-ËßíË°®Á§∫
     // Vector3d axis(rotation[0], rotation[1], rotation[2]);
     // double angle = rotation[3];
-    // ”¶”√–˝◊™æÿ’Û...
+    // Â∫îÁî®ÊóãËΩ¨Áü©Èòµ...
 
-    // TODO: ∏˘æ› µº –Ë“™ µœ÷
+    // TODO: Ê†πÊçÆÂÆûÈôÖÈúÄË¶ÅÂÆûÁé∞
 }
 
-
 // ============================================================================
-// µ•‘™¿‡–Õ≥£¡ø∂®“Â£®»Áπ˚ªπ√ª”–£¨–Ë“™‘⁄ƒ≥∏ˆÕ∑Œƒº˛÷–∂®“Â£©
-// ============================================================================
-
-
-enum ElementType
-{
-    FE_HEX8 = 0,
-    FE_HEX20,
-    FE_HEX27,
-    FE_TET4,
-    FE_TET10,
-    FE_PENTA6,
-    FE_PENTA15,
-    FE_QUAD4,
-    FE_QUAD8,
-    FE_TRI3,
-    FE_TRI6,
-    FE_LINE2,
-    // ... ∆‰À˚¿‡–Õ
-};
-
-
-// ============================================================================
-// convertElementType∫Ø ˝–Ë“™∑µªÿ µº µƒ√∂æŸ÷µ
+// convertElementTypeÂáΩÊï∞ÈúÄË¶ÅËøîÂõûÂÆûÈôÖÁöÑÊûö‰∏æÂÄº
 // ============================================================================
 
 
@@ -1411,12 +1854,12 @@ int AbaqusImport::convertElementType(const std::string& abqType)
     if (type == "B31" || type == "B32")
         return FE_LINE2;
 
-    //feLogWarning("Unknown element type: %s", abqType.c_str());
+    //RgLogWarning("Unknown element type: %s", abqType.c_str());
     return -1;
 }
 
 // ============================================================================
-// getElementNodeCount∫Ø ˝–Ë“™∑µªÿ µº µƒΩ⁄µ„ ˝
+// getElementNodeCountÂáΩÊï∞ÈúÄË¶ÅËøîÂõûÂÆûÈôÖÁöÑËäÇÁÇπÊï∞
 // ============================================================================
 
 int AbaqusImport::getElementNodeCount(int elemType)
@@ -1452,171 +1895,6 @@ int AbaqusImport::getElementNodeCount(int elemType)
     }
 }
 
-
-//-----------------------------------------------------------------------------
-bool AbaqusImport::processData(FEModel* fem)
-{
-    FEMesh& mesh = fem->GetMesh();
-
-    //feLog("Converting Abaqus data to FEModel...\n");
-
-    // Process each part/instance
-    for (const auto& instance : m_instances)
-    {
-        // Find the corresponding part
-        AbaqusPart* part = nullptr;
-        for (auto& p : m_parts)
-        {
-            if (p.name == instance.partName)
-            {
-                part = &p;
-                break;
-            }
-        }
-
-        if (!part)
-        {
-            m_lastError = "Part not found for instance: " + instance.partName;
-            return false;
-        }
-
-        // Create domain for this part
-        RgDomain* domain = createDomain(*part, &mesh);
-        if (!domain)
-            return false;
-
-        // Create nodes
-        std::map<int, int> nodeMap;
-        if (!createNodes(*part, &mesh, nodeMap))
-            return false;
-
-        // Create elements
-        if (!createElements(*part, domain, nodeMap))
-            return false;
-
-        // Create node sets
-        if (!createNodeSets(*part, &mesh, nodeMap))
-            return false;
-
-        // Create element sets
-        if (!createElementSets(*part, &mesh, domain))
-            return false;
-
-        // Create surfaces
-        if (!createSurfaces(*part, &mesh, domain))
-            return false;
-
-        // Add domain to mesh
-        mesh.AddDomain(domain);
-    }
-
-    // Create boundary conditions
-    if (!createBoundaryConditions(fem))
-        return false;
-
-    // Create loads
-    if (!createLoads(fem))
-        return false;
-
-    // Update mesh bounding box
-    mesh.UpdateBox();
-
-    return true;
-}
-
-//-----------------------------------------------------------------------------
-RgDomain* AbaqusImport::createDomain(const AbaqusPart& part, FEMesh* mesh)
-{
-    // For now, create a solid domain
-    // TODO: Detect domain type based on element types
-    RgSolidDomain* domain = new RgSolidDomain(mesh->GetFEModel());
-    domain->SetName(part.name);
-
-    //feLog("  Creating domain: %s\n", part.name.c_str());
-    return domain;
-}
-
-//-----------------------------------------------------------------------------
-bool AbaqusImport::createNodes(const AbaqusPart& part, FEMesh* mesh, std::map<int, int>& nodeMap)
-{
-    int nodeOffset = m_totalNodes;
-
-    for (const auto& node : part.nodes)
-    {
-        FENode feNode;
-        feNode.m_r0 = Vector3d(node.x, node.y, node.z);
-        feNode.m_rt = feNode.m_r0;
-        feNode.SetID(node.id);
-
-        // Map Abaqus node ID to FEModel node index
-        nodeMap[node.id] = nodeOffset + (&node - &part.nodes[0]);
-    }
-
-    // Add nodes to mesh
-    int currentNodeCount = mesh->Nodes();
-    mesh->AddNodes(part.nodes.size());
-
-    for (size_t i = 0; i < part.nodes.size(); i++)
-    {
-        FENode& meshNode = mesh->Node(currentNodeCount + i);
-        meshNode.m_r0 = Vector3d(part.nodes[i].x, part.nodes[i].y, part.nodes[i].z);
-        meshNode.m_rt = meshNode.m_r0;
-        meshNode.SetID(part.nodes[i].id);
-    }
-
-    m_totalNodes += part.nodes.size();
-    return true;
-}
-
-//-----------------------------------------------------------------------------
-bool AbaqusImport::createElements(const AbaqusPart& part, RgDomain* domain, const std::map<int, int>& nodeMap)
-{
-    // TODO: Create actual elements and add to domain
-    // This requires knowledge of your element class hierarchy
-    m_totalElements += part.elements.size();
-    return true;
-}
-
-//-----------------------------------------------------------------------------
-bool AbaqusImport::createNodeSets(const AbaqusPart& part, FEMesh* mesh, const std::map<int, int>& nodeMap)
-{
-    for (const auto& nset : part.nodeSets)
-    {
-        FENodeSet* nodeSet = new FENodeSet(mesh->GetFEModel());
-        nodeSet->SetName(nset.first);
-
-        std::vector<int> nodeIndices;
-        for (int abqId : nset.second)
-        {
-            auto it = nodeMap.find(abqId);
-            if (it != nodeMap.end())
-            {
-                nodeIndices.push_back(it->second);
-            }
-        }
-
-        // TODO: Set node indices to nodeSet based on your FENodeSet API
-        mesh->AddNodeSet(nodeSet);
-    }
-
-    return true;
-}
-
-//-----------------------------------------------------------------------------
-bool AbaqusImport::createElementSets(const AbaqusPart& part, FEMesh* mesh, RgDomain* domain)
-{
-    for (const auto& elset : part.elementSets)
-    {
-        RgElementSet* elemSet = new RgElementSet(mesh->GetFEModel());
-        elemSet->SetName(elset.first);
-
-        // TODO: Add elements to set based on your RgElementSet API
-        mesh->AddElementSet(elemSet);
-    }
-
-    return true;
-}
-
 //-----------------------------------------------------------------------------
 bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain* domain)
 {
@@ -1632,115 +1910,692 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
     return true;
 }
 
+////=============================================================================
+//// Create Boundary Conditions
+////=============================================================================
+//
+//bool AbaqusImport::createBoundaryConditions(FEModel* fem)
+//{
+//    RgLog("\n");
+//    RgLog("=================================================\n");
+//    RgLog("Creating Boundary Conditions\n");
+//    RgLog("=================================================\n");
+//
+//    if (m_boundaryData.empty())
+//    {
+//        RgLogWarning("No boundary conditions to create\n");
+//        return true;  // Not an error, just no BCs
+//    }
+//
+//    FEMesh& mesh = fem->GetMesh();
+//    int successCount = 0;
+//    int failCount = 0;
+//
+//    // Process each parsed boundary condition
+//    for (size_t i = 0; i < m_boundaryData.size(); ++i)
+//    {
+//        const BoundaryData& bcData = m_boundaryData[i];
+//
+//        // Find the node set
+//        FENodeSet* nodeSet = mesh.FindNodeSet(bcData.nodeSetName);
+//        if (!nodeSet)
+//        {
+//            RgLogError("Node set '%s' not found for boundary condition %d", bcData.nodeSetName.c_str(), (int)i + 1);
+//            failCount++;
+//            continue;
+//        }
+//
+//        // Create appropriate boundary condition based on type
+//        RgBoundaryCondition* bc = nullptr;
+//
+//        if (bcData.isEncastre)
+//        {
+//            // ENCASTRE - fix all DOFs
+//            bc = RgBCFactory::CreateEncastre(fem, nodeSet);
+//            bc->SetName(bcData.name.empty() ? bcData.nodeSetName + "_ENCASTRE" : bcData.name);
+//
+//            RgLog("  [%d] Created ENCASTRE BC on node set '%s'\n", successCount + 1, bcData.nodeSetName.c_str());
+//        }
+//        else
+//        {
+//            // Check if it's a fixed BC or prescribed BC
+//            bool isFixed = (fabs(bcData.magnitude) < 1e-20);
+//
+//            // Create BC for each DOF in the range
+//            for (int dof = bcData.firstDOF; dof <= bcData.lastDOF; ++dof)
+//            {
+//                int internalDOF = ConvertAbaqusDOF(dof);
+//
+//                if (isFixed)
+//                {
+//                    // Fixed BC (zero displacement/rotation)
+//                    int dofMask = (1 << internalDOF);
+//                    RgFixedBC* fixedBC = RgBCFactory::CreateFixed(fem, nodeSet, dofMask);
+//
+//                    std::string name = bcData.name.empty() ? bcData.nodeSetName + "_Fixed_DOF" + std::to_string(dof)
+//                                                           : bcData.name + "_DOF" + std::to_string(dof);
+//                    fixedBC->SetName(name);
+//
+//                    fem->AddBoundaryCondition(fixedBC);
+//
+//                    RgLog("  [%d] Created Fixed BC on '%s', DOF %d (internal %d)\n", successCount + 1,
+//                          bcData.nodeSetName.c_str(), dof, internalDOF);
+//                }
+//                else
+//                {
+//                    // Prescribed BC (non-zero value)
+//                    if (internalDOF < 3)
+//                    {
+//                    // Displacement
+//                    RgPrescribedDisplacement* presBC =
+//                        RgBCFactory::CreatePrescribed(fem, nodeSet, internalDOF, bcData.magnitude);
+//
+//                    std::string name = bcData.name.empty() ? bcData.nodeSetName + "_Disp_DOF" + std::to_string(dof)
+//                                                           : bcData.name + "_DOF" + std::to_string(dof);
+//                    presBC->SetName(name);
+//
+//                    fem->AddBoundaryCondition(presBC);
+//
+//                    RgLog("  [%d] Created Prescribed Displacement BC on '%s', "
+//                          "DOF %d = %g\n",
+//                          successCount + 1, bcData.nodeSetName.c_str(), dof, bcData.magnitude);
+//                    }
+//                    else
+//                    {
+//                    // Rotation
+//                    RgPrescribedRotation* rotBC = new RgPrescribedRotation(fem);
+//                    rotBC->SetNodeSet(nodeSet);
+//                    rotBC->SetDOF(internalDOF);
+//                    rotBC->SetScale(bcData.magnitude);
+//
+//                    std::string name = bcData.name.empty() ? bcData.nodeSetName + "_Rot_DOF" + std::to_string(dof)
+//                                                           : bcData.name + "_DOF" + std::to_string(dof);
+//                    rotBC->SetName(name);
+//
+//                    fem->AddBoundaryCondition(rotBC);
+//
+//                    RgLog("  [%d] Created Prescribed Rotation BC on '%s', "
+//                          "DOF %d = %g\n",
+//                          successCount + 1, bcData.nodeSetName.c_str(), dof, bcData.magnitude);
+//                    }
+//                }
+//
+//                successCount++;
+//            }
+//
+//            continue;  // Skip the successCount++ at the end
+//        }
+//
+//        // Add the BC to the model
+//        if (bc)
+//        {
+//            fem->AddBoundaryCondition(bc);
+//            successCount++;
+//        }
+//    }
+//
+//    // Summary
+//    RgLog("-------------------------------------------------\n");
+//    RgLog("Boundary Conditions Summary:\n");
+//    RgLog("  Total entries parsed: %d\n", (int)m_boundaryData.size());
+//    RgLog("  Successfully created: %d\n", successCount);
+//    RgLog("  Failed: %d\n", failCount);
+//    RgLog("  Total BCs in model: %d\n", fem->BoundaryConditions());
+//    RgLog("=================================================\n\n");
+//
+//    return (failCount == 0);
+//}
+//
+////=============================================================================
+//// Create Loads
+////=============================================================================
+//
+//bool AbaqusImport::createLoads(FEModel* fem)
+//{
+//    RgLog("\n");
+//    RgLog("=================================================\n");
+//    RgLog("Creating Loads\n");
+//    RgLog("=================================================\n");
+//
+//    if (m_loadData.empty())
+//    {
+//        RgLogWarning("No loads to create\n");
+//        return true;  // Not an error, just no loads
+//    }
+//
+//    FEMesh& mesh = fem->GetMesh();
+//    int successCount = 0;
+//    int failCount = 0;
+//
+//    // Process each parsed load
+//    for (size_t i = 0; i < m_loadData.size(); ++i)
+//    {
+//        const LoadData& loadData = m_loadData[i];
+//
+//        RgLoad* load = nullptr;
+//
+//        if (loadData.isConcentrated)
+//        {
+//            // Concentrated (nodal) load
+//            load = CreateConcentratedLoad(fem, loadData);
+//            if (load)
+//            {
+//                RgLog("  [%d] Created concentrated load on '%s'\n", successCount + 1, loadData.targetName.c_str());
+//            }
+//        }
+//        else if (loadData.isDistributed)
+//        {
+//            // Distributed load
+//            load = CreateDistributedLoad(fem, loadData);
+//            if (load)
+//            {
+//                RgLog("  [%d] Created distributed load '%s' on '%s'\n", successCount + 1, loadData.loadType.c_str(),
+//                      loadData.targetName.c_str());
+//            }
+//        }
+//
+//        if (load)
+//        {
+//            // Set name
+//            std::string name = loadData.name.empty() ? loadData.targetName + "_Load" : loadData.name;
+//            load->SetName(name);
+//
+//            // Add to model
+//            fem->AddModelLoad(load);
+//            successCount++;
+//        }
+//        else
+//        {
+//            RgLogError("Failed to create load %d", (int)i + 1);
+//            failCount++;
+//        }
+//    }
+//
+//    // Summary
+//    RgLog("-------------------------------------------------\n");
+//    RgLog("Loads Summary:\n");
+//    RgLog("  Total entries parsed: %d\n", (int)m_loadData.size());
+//    RgLog("  Successfully created: %d\n", successCount);
+//    RgLog("  Failed: %d\n", failCount);
+//    RgLog("  Total loads in model: %d\n", fem->ModelLoads());
+//    RgLog("=================================================\n\n");
+//
+//    return (failCount == 0);
+//}
+//
+////=============================================================================
+//// Helper: Create Concentrated Load
+////=============================================================================
+//
+//RgLoad* AbaqusImport::CreateConcentratedLoad(FEModel* fem, const LoadData& data)
+//{
+//    FEMesh& mesh = fem->GetMesh();
+//
+//    // Find node set
+//    FENodeSet* nodeSet = mesh.FindNodeSet(data.targetName);
+//    if (!nodeSet)
+//    {
+//        RgLogError("Node set '%s' not found for concentrated load", data.targetName.c_str());
+//        return nullptr;
+//    }
+//
+//    int internalDOF = ConvertAbaqusDOF(data.dof);
+//
+//    if (internalDOF < 3)
+//    {
+//        // Force
+//        RgNodalLoad* load = RgLoadFactory::CreateNodalLoad(fem, nodeSet, internalDOF, data.magnitude);
+//
+//        RgLog("    Type: Nodal Force, DOF %d (Abaqus DOF %d), Magnitude %g\n", internalDOF, data.dof, data.magnitude);
+//
+//        return load;
+//    }
+//    else
+//    {
+//        // Moment
+//        RgMomentLoad* load = new RgMomentLoad(fem);
+//        load->SetNodeSet(nodeSet);
+//
+//        Vector3d moment(0, 0, 0);
+//        moment[internalDOF - 3] = data.magnitude;
+//        load->SetMoment(moment);
+//        load->SetMagnitude(1.0);
+//
+//        RgLog("    Type: Moment, DOF %d (Abaqus DOF %d), Magnitude %g\n", internalDOF, data.dof, data.magnitude);
+//
+//        return load;
+//    }
+//}
+//
+////=============================================================================
+//// Helper: Create Distributed Load
+////=============================================================================
+//
+//RgLoad* AbaqusImport::CreateDistributedLoad(FEModel* fem, const LoadData& data)
+//{
+//    FEMesh& mesh = fem->GetMesh();
+//    std::string loadType = data.loadType;
+//
+//    // Convert to uppercase for comparison
+//    std::transform(loadType.begin(), loadType.end(), loadType.begin(), ::toupper);
+//
+//    if (loadType == "P")
+//    {
+//        // Pressure load
+//        return CreatePressureLoad(fem, data);
+//    }
+//    else if (loadType == "TRVEC")
+//    {
+//        // Traction vector
+//        return CreateTractionLoad(fem, data);
+//    }
+//    else if (loadType == "GRAV")
+//    {
+//        // Gravity
+//        return CreateGravityLoad(fem, data);
+//    }
+//    else if (loadType == "CENTRIF")
+//    {
+//        // Centrifugal
+//        return CreateCentrifugalLoad(fem, data);
+//    }
+//    else
+//    {
+//        RgLogError("Unknown distributed load type: %s", loadType.c_str());
+//        return nullptr;
+//    }
+//}
+//
+////=============================================================================
+//// Helper: Create Pressure Load
+////=============================================================================
+//
+//RgLoad* AbaqusImport::CreatePressureLoad(FEModel* fem, const LoadData& data)
+//{
+//    FEMesh& mesh = fem->GetMesh();
+//
+//    // Try to find as facet set first
+//    FEFacetSet* facetSet = mesh.FindFacetSet(data.targetName);
+//    if (facetSet)
+//    {
+//        RgSurfaceLoad* load = RgLoadFactory::CreatePressure(fem, facetSet, data.magnitude);
+//
+//        RgLog("    Type: Pressure, Magnitude %g Pa\n", data.magnitude);
+//
+//        return load;
+//    }
+//
+//    // Try to find as surface
+//    FESurface* surface = mesh.FindSurface(data.targetName);
+//    if (surface)
+//    {
+//        RgSurfaceLoad* load = RgLoadFactory::CreatePressure(fem, surface, data.magnitude);
+//
+//        RgLog("    Type: Pressure, Magnitude %g Pa\n", data.magnitude);
+//
+//        return load;
+//    }
+//
+//    RgLogError("Surface/Facet set '%s' not found for pressure load", data.targetName.c_str());
+//    return nullptr;
+//}
+//
+////=============================================================================
+//// Helper: Create Traction Load
+////=============================================================================
+//
+//RgLoad* AbaqusImport::CreateTractionLoad(FEModel* fem, const LoadData& data)
+//{
+//    FEMesh& mesh = fem->GetMesh();
+//
+//    // Find facet set
+//    FEFacetSet* facetSet = mesh.FindFacetSet(data.targetName);
+//    if (!facetSet)
+//    {
+//        RgLogError("Facet set '%s' not found for traction load", data.targetName.c_str());
+//        return nullptr;
+//    }
+//
+//    // Create surface from facet set
+//    FESurface* surface = mesh.CreateSurface(*facetSet);
+//    if (!surface)
+//    {
+//        RgLogError("Failed to create surface from facet set '%s'", data.targetName.c_str());
+//        return nullptr;
+//    }
+//
+//    Vector3d traction(data.x, data.y, data.z);
+//
+//    RgSurfaceLoad* load = RgLoadFactory::CreateTraction(fem, surface, traction);
+//    load->SetMagnitude(data.magnitude);
+//
+//    RgLog("    Type: Traction, Direction (%g, %g, %g), Magnitude %g\n", data.x, data.y, data.z, data.magnitude);
+//
+//    return load;
+//}
+//
+////=============================================================================
+//// Helper: Create Gravity Load
+////=============================================================================
+//
+//RgLoad* AbaqusImport::CreateGravityLoad(FEModel* fem, const LoadData& data)
+//{
+//    // Create gravity vector
+//    Vector3d direction(data.x, data.y, data.z);
+//    direction.unit();  // Normalize
+//
+//    Vector3d g = direction * data.magnitude;
+//
+//    RgBodyLoad* load = RgLoadFactory::CreateGravity(fem, g);
+//
+//    RgLog("    Type: Gravity, g = (%g, %g, %g) m/s¬≤\n", g.x, g.y, g.z);
+//
+//    return load;
+//}
+//
+////=============================================================================
+//// Helper: Create Centrifugal Load
+////=============================================================================
+//
+//RgLoad* AbaqusImport::CreateCentrifugalLoad(FEModel* fem, const LoadData& data)
+//{
+//    // In Abaqus, CENTRIF format is:
+//    // name, CENTRIF, omega^2, x0, y0, z0, x1, y1, z1
+//    // where (x0,y0,z0) is a point on the axis
+//    // and (x1,y1,z1) is the axis direction
+//
+//    Vector3d origin(data.x, data.y, data.z);
+//
+//    // For now, we'll use a default Z-axis
+//    // In a complete implementation, you'd need to extend LoadData
+//    // to store the axis direction separately
+//    Vector3d axis(0, 0, 1);
+//
+//    // TODO: Parse axis direction from additional data
+//    // This would require extending the LoadData structure
+//
+//    // Abaqus stores omega^2, we need omega
+//    double omega = sqrt(fabs(data.magnitude));
+//
+//    RgBodyLoad* load = RgLoadFactory::CreateCentrifugal(fem, axis, origin, omega);
+//
+//    RgLog("    Type: Centrifugal, omega = %g rad/s, origin = (%g, %g, %g)\n", omega, origin.x, origin.y, origin.z);
+//    RgLogWarning("    Note: Axis direction defaulted to Z-axis (0,0,1)\n");
+//
+//    return load;
+//}
+//
+////=============================================================================
+//// Helper: Convert Abaqus DOF to Internal DOF
+////=============================================================================
+//
+//int AbaqusImport::ConvertAbaqusDOF(int abaqusDOF)
+//{
+//    // Abaqus: 1,2,3 = X,Y,Z displacement; 4,5,6 = X,Y,Z rotation
+//    // Internal: 0,1,2 = X,Y,Z displacement; 3,4,5 = X,Y,Z rotation
+//
+//    if (abaqusDOF < 1 || abaqusDOF > 6)
+//    {
+//        RgLogWarning("Invalid Abaqus DOF: %d, using 0", abaqusDOF);
+//        return 0;
+//    }
+//
+//    return abaqusDOF - 1;
+//}
+//
+////=============================================================================
+//// Optional: Attach Load Controllers
+////=============================================================================
+//
+//bool AbaqusImport::attachLoadControllers(FEModel* fem)
+//{
+//    RgLog("\n");
+//    RgLog("=================================================\n");
+//    RgLog("Attaching Load Controllers\n");
+//    RgLog("=================================================\n");
+//
+//    // This is optional - you can attach load curves to BCs and loads
+//    // after they've been created
+//
+//    // Example: Create a default ramp load curve
+//    if (fem->LoadControllers() == 0)
+//    {
+//        RgLoadCurve* defaultCurve = new RgLoadCurve();
+//        defaultCurve->AddPoint(0.0, 0.0);
+//        defaultCurve->AddPoint(1.0, 1.0);
+//        defaultCurve->SetName("DefaultRamp");
+//        defaultCurve->SetInterpolation(RgLoadController::INTERP_LINEAR);
+//        fem->AddLoadController(defaultCurve);
+//
+//        RgLog("  Created default ramp load curve\n");
+//    }
+//
+//    // Attach to prescribed BCs if needed
+//    int attachCount = 0;
+//    int nbc = fem->BoundaryConditions();
+//    for (int i = 0; i < nbc; ++i)
+//    {
+//        RgBoundaryCondition* bc = dynamic_cast<RgBoundaryCondition*>(fem->BoundaryCondition(i));
+//
+//        // Check if it's a prescribed BC with non-zero magnitude
+//        RgPrescribedDisplacement* presBC = dynamic_cast<RgPrescribedDisplacement*>(bc);
+//
+//        if (presBC && fabs(presBC->GetScale()) > 1e-12)
+//        {
+//            // Attach default load curve if no controller set
+//            if (!presBC->GetLoadController())
+//            {
+//                presBC->SetLoadController(dynamic_cast<RgLoadController*>(fem->GetLoadController(0)));
+//                attachCount++;
+//            }
+//        }
+//    }
+//
+//    if (attachCount > 0)
+//    {
+//        RgLog("  Attached load controller to %d prescribed BCs\n", attachCount);
+//    }
+//
+//    // Attach to loads if needed
+//    attachCount = 0;
+//    int nloads = fem->ModelLoads();
+//    for (int i = 0; i < nloads; ++i)
+//    {
+//        RgLoad* load = dynamic_cast<RgLoad*>(fem->ModelLoad(i));
+//
+//        if (load && !load->GetLoadController())
+//        {
+//            load->SetLoadController(dynamic_cast<RgLoadController*>(fem->GetLoadController(0)));
+//            attachCount++;
+//        }
+//    }
+//
+//    if (attachCount > 0)
+//    {
+//        RgLog("  Attached load controller to %d loads\n", attachCount);
+//    }
+//
+//    RgLog("=================================================\n\n");
+//
+//    return true;
+//}
+//
+////=============================================================================
+//// Validation
+////=============================================================================
+//
+//bool AbaqusImport::validateBCsAndLoads(FEModel* fem)
+//{
+//    RgLog("\n");
+//    RgLog("=================================================\n");
+//    RgLog("Validating Boundary Conditions and Loads\n");
+//    RgLog("=================================================\n");
+//
+//    bool success = true;
+//    FEMesh& mesh = fem->GetMesh();
+//
+//    // Validate BCs
+//    int nbc = fem->BoundaryConditions();
+//    RgLog("Checking %d boundary conditions...\n", nbc);
+//
+//    for (int i = 0; i < nbc; ++i)
+//    {
+//        RgBoundaryCondition* bc = dynamic_cast<RgBoundaryCondition*>(fem->BoundaryCondition(i));
+//
+//        if (!bc)
+//        {
+//            RgLogError("  BC %d: Invalid BC pointer", i);
+//            success = false;
+//            continue;
+//        }
+//
+//        FENodeSet* nodeSet = bc->GetNodeSet();
+//        if (!nodeSet)
+//        {
+//            RgLogError("  BC %d (%s): No node set assigned", i, bc->GetName().c_str());
+//            success = false;
+//            continue;
+//        }
+//
+//        if (nodeSet->Size() == 0)
+//        {
+//            RgLogWarning("  BC %d (%s): Node set '%s' is empty", i, bc->GetName().c_str(), nodeSet->GetName().c_str());
+//        }
+//    }
+//
+//    // Validate Loads
+//    int nloads = fem->ModelLoads();
+//    RgLog("Checking %d loads...\n", nloads);
+//
+//    for (int i = 0; i < nloads; ++i)
+//    {
+//        RgLoad* load = dynamic_cast<RgLoad*>(fem->ModelLoad(i));
+//
+//        if (!load)
+//        {
+//            RgLogError("  Load %d: Invalid load pointer", i);
+//            success = false;
+//            continue;
+//        }
+//
+//        // Check nodal loads
+//        RgNodalLoad* nodalLoad = dynamic_cast<RgNodalLoad*>(load);
+//        if (nodalLoad)
+//        {
+//            FENodeSet* nodeSet = nodalLoad->GetNodeSet();
+//            if (!nodeSet)
+//            {
+//                RgLogError("  Load %d (%s): No node set assigned", i, load->GetName().c_str());
+//                success = false;
+//            }
+//            else if (nodeSet->Size() == 0)
+//            {
+//                RgLogWarning("  Load %d (%s): Node set '%s' is empty", i, load->GetName().c_str(),
+//                             nodeSet->GetName().c_str());
+//            }
+//        }
+//
+//        // Check surface loads
+//        RgSurfaceLoad* surfLoad = dynamic_cast<RgSurfaceLoad*>(load);
+//        if (surfLoad)
+//        {
+//            if (!surfLoad->GetSurface() && !surfLoad->GetFacetSet())
+//            {
+//                RgLogError("  Load %d (%s): No surface/facet set assigned", i, load->GetName().c_str());
+//                success = false;
+//            }
+//        }
+//    }
+//
+//    if (success)
+//    {
+//        RgLog("  All boundary conditions and loads are valid\n");
+//    }
+//    else
+//    {
+//        RgLogError("  Validation failed - some BCs/loads are invalid\n");
+//    }
+//
+//    RgLog("=================================================\n\n");
+//
+//    return success;
+//}
+
+
 //-----------------------------------------------------------------------------
-bool AbaqusImport::createBoundaryConditions(FEModel* fem)
-{
-    for (const auto& bc : m_boundaryConditions)
-    {
-        // TODO: Create FEBoundaryCondition objects
-        // This depends on your boundary condition class implementation
-        ////feLog("  Creating BC for node set '%s', DOF %d\n", bc.nodeSetName.c_str(), bc.dof);
-    }
+//int AbaqusImport::convertElementType(const std::string& abqType)
+//{
+//    std::string type = toUpper(abqType);
+//
+//    //// Solid elements
+//    //if (type == "C3D8" || type == "C3D8R" || type == "C3D8I")
+//    //    return FE_HEX8;
+//    //if (type == "C3D20" || type == "C3D20R")
+//    //    return FE_HEX20;
+//    //if (type == "C3D27")
+//    //    return FE_HEX27;
+//    //if (type == "C3D4")
+//    //    return FE_TET4;
+//    //if (type == "C3D10" || type == "C3D10M")
+//    //    return FE_TET10;
+//    //if (type == "C3D15")
+//    //    return FE_PENTA15;
+//    //if (type == "C3D6")
+//    //    return FE_PENTA6;
+//
+//    //// Shell elements
+//    //if (type == "S4" || type == "S4R")
+//    //    return FE_QUAD4;
+//    //if (type == "S8R" || type == "S8R5")
+//    //    return FE_QUAD8;
+//    //if (type == "S3" || type == "S3R")
+//    //    return FE_TRI3;
+//    //if (type == "S6")
+//    //    return FE_TRI6;
+//
+//    //// Beam/Truss
+//    //if (type == "T3D2" || type == "T2D2")
+//    //    return FE_LINE2;
+//    //if (type == "B31" || type == "B32")
+//    //    return FE_LINE2;
+//
+//    ////RgLogWarning("Unknown element type: %s", abqType.c_str());
+//    return -1;
+//}
 
-    return true;
-}
-
-//-----------------------------------------------------------------------------
-bool AbaqusImport::createLoads(FEModel* fem)
-{
-    // Create concentrated loads
-    for (const auto& load : m_concentratedLoads)
-    {
-        // TODO: Create concentrated load objects
-        ////feLog("  Creating concentrated load for node set '%s', DOF %d, magnitude %g\n", load.nodeSetName.c_str(),
-        //      load.dof, load.magnitude);
-    }
-
-    // Create distributed loads
-    for (const auto& load : m_distributedLoads)
-    {
-        // TODO: Create distributed load (pressure) objects
-        ////feLog("  Creating distributed load for surface '%s', type %s, magnitude %g\n", load.surfaceName.c_str(),
-        //      load.loadType.c_str(), load.magnitude);
-    }
-
-    return true;
-}
-
-//-----------------------------------------------------------------------------
-int AbaqusImport::convertElementType(const std::string& abqType)
-{
-    std::string type = toUpper(abqType);
-
-    //// Solid elements
-    //if (type == "C3D8" || type == "C3D8R" || type == "C3D8I")
-    //    return FE_HEX8;
-    //if (type == "C3D20" || type == "C3D20R")
-    //    return FE_HEX20;
-    //if (type == "C3D27")
-    //    return FE_HEX27;
-    //if (type == "C3D4")
-    //    return FE_TET4;
-    //if (type == "C3D10" || type == "C3D10M")
-    //    return FE_TET10;
-    //if (type == "C3D15")
-    //    return FE_PENTA15;
-    //if (type == "C3D6")
-    //    return FE_PENTA6;
-
-    //// Shell elements
-    //if (type == "S4" || type == "S4R")
-    //    return FE_QUAD4;
-    //if (type == "S8R" || type == "S8R5")
-    //    return FE_QUAD8;
-    //if (type == "S3" || type == "S3R")
-    //    return FE_TRI3;
-    //if (type == "S6")
-    //    return FE_TRI6;
-
-    //// Beam/Truss
-    //if (type == "T3D2" || type == "T2D2")
-    //    return FE_LINE2;
-    //if (type == "B31" || type == "B32")
-    //    return FE_LINE2;
-
-    ////feLogWarning("Unknown element type: %s", abqType.c_str());
-    return -1;
-}
-
-//-----------------------------------------------------------------------------
-int AbaqusImport::getElementNodeCount(int elemType)
-{
-    switch (elemType)
-    {
-        /*case FE_HEX8:
-            return 8;
-        case FE_HEX20:
-            return 20;
-        case FE_HEX27:
-            return 27;
-        case FE_TET4:
-            return 4;
-        case FE_TET10:
-            return 10;
-        case FE_PENTA6:
-            return 6;
-        case FE_PENTA15:
-            return 15;
-        case FE_QUAD4:
-            return 4;
-        case FE_QUAD8:
-            return 8;
-        case FE_TRI3:
-            return 3;
-        case FE_TRI6:
-            return 6;
-        case FE_LINE2:
-            return 2;*/
-    default:
-        return 0;
-    }
-}
+////-----------------------------------------------------------------------------
+//int AbaqusImport::getElementNodeCount(int elemType)
+//{
+//    switch (elemType)
+//    {
+//        /*case FE_HEX8:
+//            return 8;
+//        case FE_HEX20:
+//            return 20;
+//        case FE_HEX27:
+//            return 27;
+//        case FE_TET4:
+//            return 4;
+//        case FE_TET10:
+//            return 10;
+//        case FE_PENTA6:
+//            return 6;
+//        case FE_PENTA15:
+//            return 15;
+//        case FE_QUAD4:
+//            return 4;
+//        case FE_QUAD8:
+//            return 8;
+//        case FE_TRI3:
+//            return 3;
+//        case FE_TRI6:
+//            return 6;
+//        case FE_LINE2:
+//            return 2;*/
+//    default:
+//        return 0;
+//    }
+//}
 
 //-----------------------------------------------------------------------------
 bool AbaqusImport::validatePart(const AbaqusPart& part)

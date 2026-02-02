@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
 #pragma once
-#include <FEMLib/FSProject.h>
+#include <MeshTools/FEProject.h>
 #include <list>
 #include <vector>
 #include <map>
@@ -96,8 +96,8 @@ public:
 	// Element set
 	struct ELEMENT_SET
 	{
-		char szname[Max_Name + 1] = { 0 };	// element set name
-		PART*			part = nullptr;
+		char szname[Max_Name + 1];	// element set name
+		PART*			part;
 		vector<int>		elem;
 	};
 
@@ -116,16 +116,6 @@ public:
 		char	szmat[Max_Name + 1];
 		char	szorient[Max_Name + 1];
 		PART*	part;
-	};
-
-	// Shell section
-	struct SHELL_SECTION
-	{
-		char	szelset[Max_Name + 1];
-		char	szmat[Max_Name + 1];
-		char	szorient[Max_Name + 1];
-		PART*	part = nullptr;
-		double	m_shellThickness = 0.0;
 	};
 
 	struct Orientation
@@ -152,31 +142,12 @@ public:
 		vector<ENTRY>	m_data;
 	};
 
-	class Amplitude
-	{
-	public:
-		enum AmplitudeType {
-			AMP_TABULAR,
-			AMP_SMOOTH_STEP
-		};
-
-	public:
-		Amplitude() { m_type = 0; }
-
-	public:
-		string	m_name;
-		int		m_type;
-		std::vector<vec2d>	m_points;
-	};
-
 	// part
 	class PART
 	{
 	public:
 		// constructor
-		PART();
-
-		~PART();
+		PART() { m_po = 0; }
 
 		// return the part's name
 		const char* GetName() { return m_szname; }
@@ -201,28 +172,25 @@ public:
 		Telem_itr FindElement(int id);
 
 		// find an element set with a particular name
-		ELEMENT_SET* FindElementSet(const char* szname);
+		list<ELEMENT_SET>::iterator FindElementSet(const char* szname);
 
 		// adds an element set
-		ELEMENT_SET* AddElementSet(const char* szname);
+		list<ELEMENT_SET>::iterator AddElementSet(const char* szname);
 
 		// find a node set with a particular name
-		NODE_SET* FindNodeSet(const char* szname);
+		map<string, NODE_SET>::iterator FindNodeSet(const char* szname);
 
 		// adds a node set
-		NODE_SET* AddNodeSet(const char* szname);
+		map<string, NODE_SET>::iterator AddNodeSet(const char* szname);
 
 		// find a surface with a particular name
-		SURFACE* FindSurface(const char* szname);
+		list<SURFACE>::iterator FindSurface(const char* szname);
 
 		// add a surface
-		SURFACE* AddSurface(const char* szname);
+		list<SURFACE>::iterator AddSurface(const char* szname);
 
 		// add a solid section
 		list<SOLID_SECTION>::iterator AddSolidSection(const char* szset, const char* szmat, const char* szorient);
-
-		// add a solid section
-		list<SHELL_SECTION>::iterator AddShellSection(const char* szset, const char* szmat, const char* szorient);
 
 		// number of nodes
 		int Nodes() { return (int)m_Node.size(); }
@@ -244,16 +212,15 @@ public:
 
 	public:
 		char m_szname[256];
-		vector<NODE>				m_Node;		// list of nodes
-		vector<ELEMENT>				m_Elem;		// list of elements
-		list<SPRING>				m_Spring;	// list of springs
-		map<string, NODE_SET*>		m_NSet;		// node sets
-		map<string, ELEMENT_SET*>	m_ESet;		// element sets
-		map<string, SURFACE*>		m_Surf;		// surfaces
-		list<SOLID_SECTION>			m_Solid;	// solid sections
-		list<SHELL_SECTION>			m_Shell;	// shell sections
-		list<Orientation>			m_Orient;
-		list<Distribution>			m_Distr;
+		vector<NODE>			m_Node;		// list of nodes
+		vector<ELEMENT>			m_Elem;		// list of elements
+		list<SPRING>			m_Spring;	// list of springs
+		map<string, NODE_SET>	m_NSet;		// node sets
+		list<ELEMENT_SET>		m_ElSet;	// element sets
+		list<SURFACE>			m_Surf;		// surfaces
+		list<SOLID_SECTION>		m_Solid;	// solid section
+		list<Orientation>		m_Orient;
+		list<Distribution>		m_Distr;
 
 		vector<Tnode_itr>	m_NLT;	// Node look-up table
 		int					m_ioff;	// node id offset (min node id)
@@ -295,9 +262,8 @@ public:
 		char	szname[256];
 		int		mattype;
 		int		ntype;
-		int		nparam;
 		double	dens;
-		double	d[10];
+		double	d[5];
 	};
 
 	// surface loads
@@ -312,6 +278,14 @@ public:
 
 	public:
 		DSLOAD(){}
+		DSLOAD(const DSLOAD& d)
+		{
+			m_surf = d.m_surf;
+		}
+		void operator = (const DSLOAD& d)
+		{
+			m_surf = d.m_surf;
+		}
 
 		void add(SURFACE* s, double p)
 		{
@@ -321,7 +295,6 @@ public:
 
 	public:
 		vector<SURF>	m_surf;
-		int				m_ampl = -1;
 	};
 
 	// Boundary conditions
@@ -330,13 +303,21 @@ public:
 	public:
 		struct NSET
 		{
-			double		load = 0.0;
-			int			ndof = -1;
-			NODE_SET*	nodeSet = nullptr;
+			double		load;
+			int			ndof;
+			NODE_SET*	nodeSet;
 		};
 
 	public:
 		BOUNDARY(){}
+		BOUNDARY(const BOUNDARY& d)
+		{
+			m_nodeSet = d.m_nodeSet;
+		}
+		void operator = (const BOUNDARY& d)
+		{
+			m_nodeSet = d.m_nodeSet;
+		}
 
 		void add(NODE_SET* ns, int ndof, double v)
 		{
@@ -346,16 +327,6 @@ public:
 
 	public:
 		vector<NSET>	m_nodeSet;
-		int				m_ampl = -1;
-	};
-
-	struct CONTACT_PAIR
-	{
-		string	name;
-		string surf1;
-		string surf2;
-
-		double friction = 0.0;
 	};
 
 	// Steps
@@ -365,31 +336,6 @@ public:
 
 		double	dt0;
 		double	time;
-	};
-
-	class ASSEMBLY
-	{
-	public:
-		ASSEMBLY();
-
-		~ASSEMBLY();
-
-		// add an instance
-		INSTANCE* AddInstance();
-
-		// Get the current instance
-		INSTANCE* CurrentInstance() { return m_currentInstance; }
-
-		// clear the current instance
-		void ClearCurrentInstance();
-
-		// get instance list
-		list<INSTANCE*>& InstanceList() { return m_Instance; }
-
-	public:
-		std::string	m_name;
-		list<INSTANCE*>	m_Instance;		// list of instances
-		INSTANCE*	m_currentInstance;	// current active instance
 	};
 
 public:
@@ -414,11 +360,26 @@ public:
 	// find a part with a particular element set
 	ELEMENT_SET* FindElementSet(const char* szelemset);
 
+	// add an instance
+	INSTANCE* AddInstance();
+
+	// find the instance
+	INSTANCE* FindInstance(const char* sz);
+
+	// Get the current instance
+	INSTANCE* CurrentInstance() { return m_pInst; }
+
+	// clear the current instance
+	void ClearCurrentInstance();
+
 	// get the current part
-	PART* CurrentPart() { return m_currentPart; }
+	PART* CurrentPart() { return m_pPart; }
 
 	// set the current part
-	void SetCurrentPart(PART* part) { m_currentPart = part; }
+	void SetCurrentPart(PART* part) { m_pPart = part; }
+
+	// get instance list
+	list<INSTANCE*>& InstanceList() { return m_Inst; }
 
 	// get part list
 	list<PART*>&	PartList() { return m_Part; }
@@ -451,48 +412,23 @@ public:
 	void SetCurrentStep(STEP* p);
 
 	// get the current step
-	STEP* CurrentStep() { return m_currentStep; }
+	STEP* CurrentStep() { return m_pStep; }
 
 	list<STEP>& StepList() { return m_Step; }
 
-	// get the Assembly
-	ASSEMBLY* GetAssembly() { return m_Assembly; }
-
-	// add an assembly
-	ASSEMBLY* CreateAssembly();
-
-	void SetCurrentAssembly(ASSEMBLY* a) { m_currentAssembly = a; }
-	ASSEMBLY* GetCurrentAssembly() { return m_currentAssembly; }
-
-	// find the instance
-	INSTANCE* FindInstance(const char* sz);
-
-public:
-	void AddAmplitude(const Amplitude& a);
-	int Amplitudes() const;
-	const Amplitude& GetAmplitude(int n) const;
-	int FindAmplitude(const char* szname) const;
-
-public:
-	void AddContactPair(CONTACT_PAIR& cp);
-	int ContactPairs() const;
-	const CONTACT_PAIR& GetContactPair(int n) const;
-
 private:
-	FSModel*	m_fem;		// the model
+	FEModel*	m_fem;		// the model
 
 	list<PART*>	m_Part;		// list of parts
-	PART*		m_currentPart;	// current part
+	PART*		m_pPart;	// current part
 
-	ASSEMBLY*	m_Assembly;	// the assembly
-	ASSEMBLY*	m_currentAssembly;	// the current assembly (is not nullptr between ASSEMBLY and END ASSEMBLY
+	list<INSTANCE*>	m_Inst;		// list of instances
+	INSTANCE*		m_pInst;	// current active instance
 
 private:	// physics
 	list<MATERIAL>		m_Mat;			// materials
 	list<DSLOAD>		m_SLoads;		// surface loads
 	list<BOUNDARY>		m_Boundary;		// boundary conditions
 	list<STEP>			m_Step;			// steps
-	STEP*				m_currentStep;	// current step
-	std::vector<Amplitude>		m_Amp;
-	std::vector<CONTACT_PAIR>	m_ContactPair;
+	STEP*				m_pStep;		// current step
 };

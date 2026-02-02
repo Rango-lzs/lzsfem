@@ -26,94 +26,31 @@ SOFTWARE.*/
 
 #include "AbaqusModel.h"
 
-#ifdef LINUX // same for Linux and Mac OS X
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
-#endif
-
-#ifdef __APPLE__ // same for Linux and Mac OS X
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
-#endif
-
 // in AbaqusImport.cpp
 bool szicmp(const char* sz1, const char* sz2);
 
 //-----------------------------------------------------------------------------
-AbaqusModel::ASSEMBLY::ASSEMBLY()
-{
-	m_currentInstance = nullptr;
-}
-
-//-----------------------------------------------------------------------------
-AbaqusModel::ASSEMBLY::~ASSEMBLY()
-{
-	list<INSTANCE*>::iterator ii;
-	for (ii = m_Instance.begin(); ii != m_Instance.end(); ++ii) delete (*ii);
-	m_Instance.clear();
-	m_currentInstance = nullptr;
-}
-
-//-----------------------------------------------------------------------------
-// add an instance
-AbaqusModel::INSTANCE* AbaqusModel::ASSEMBLY::AddInstance()
-{
-	// create a new instance
-	m_currentInstance = new AbaqusModel::INSTANCE;
-	m_Instance.push_back(m_currentInstance);
-	return m_currentInstance;
-}
-
-//-----------------------------------------------------------------------------
-void AbaqusModel::ASSEMBLY::ClearCurrentInstance()
-{
-	m_currentInstance = nullptr;
-}
-
-//=============================================================================
 AbaqusModel::AbaqusModel()
 {
-	m_Assembly = nullptr;
-	m_currentPart = nullptr;
-	m_currentStep = nullptr;
-	m_currentAssembly = nullptr;
-	m_fem = nullptr;
+	m_pPart = 0;
+	m_pInst = 0;
+	m_pStep = 0;
 }
 
 //-----------------------------------------------------------------------------
 AbaqusModel::~AbaqusModel()
 {
-	// delete the assembly
-	delete m_Assembly;
-	m_Assembly = nullptr;
+	// delete all instances
+	list<INSTANCE*>::iterator ii;
+	for (ii = m_Inst.begin(); ii != m_Inst.end(); ++ii) delete (*ii);
+	m_Inst.clear();
+	m_pInst = 0;
 
 	// delete all parts
 	list<PART*>::iterator pi;
 	for (pi = m_Part.begin(); pi != m_Part.end(); ++pi) delete (*pi);
 	m_Part.clear();
-	m_currentPart = nullptr;
-}
-
-//-----------------------------------------------------------------------------
-// add an assembly
-AbaqusModel::ASSEMBLY* AbaqusModel::CreateAssembly()
-{
-	assert(m_Assembly == nullptr);
-	if (m_Assembly == nullptr) m_Assembly = new ASSEMBLY;
-	return m_Assembly;
-}
-
-//-----------------------------------------------------------------------------
-AbaqusModel::INSTANCE* AbaqusModel::FindInstance(const char* sz)
-{
-	if (m_Assembly == nullptr) return nullptr;
-	list<INSTANCE*>::iterator pg;
-	for (pg = m_Assembly->m_Instance.begin(); pg != m_Assembly->m_Instance.end(); ++pg)
-	{
-		INSTANCE* pi = *pg;
-		if (szicmp(pi->GetName(), sz)) return pi;
-	}
-	return nullptr;
+	m_pPart = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -143,6 +80,29 @@ AbaqusModel::PART* AbaqusModel::FindPart(const char* sz)
 	return 0;
 }
 
+//-----------------------------------------------------------------------------
+// add an instance
+AbaqusModel::INSTANCE* AbaqusModel::AddInstance()
+{
+	// create a new instance
+	m_pInst = new AbaqusModel::INSTANCE;
+	m_Inst.push_back(m_pInst);
+
+	return m_pInst;
+}
+
+//-----------------------------------------------------------------------------
+AbaqusModel::INSTANCE* AbaqusModel::FindInstance(const char* sz)
+{
+	list<INSTANCE*>::iterator pg;
+	for (pg = m_Inst.begin(); pg != m_Inst.end(); ++pg)
+	{
+		INSTANCE* pi = *pg;
+		if (szicmp(pi->GetName(), sz)) return pi;
+	}
+	return 0;
+}
+
 // find a node set based on a name
 AbaqusModel::NODE_SET* AbaqusModel::FindNodeSet(const char* sznset)
 {
@@ -150,8 +110,11 @@ AbaqusModel::NODE_SET* AbaqusModel::FindNodeSet(const char* sznset)
 	for (it = m_Part.begin(); it != m_Part.end(); ++it)
 	{
 		AbaqusModel::PART& part = *(*it);
-		NODE_SET* ns = part.FindNodeSet(sznset);
-		if (ns != nullptr) return ns;
+		map<string, NODE_SET>::iterator ns = part.FindNodeSet(sznset);
+		if (ns != part.m_NSet.end())
+		{
+			return &((*ns).second);
+		}
 	}
 
 	return 0;
@@ -161,32 +124,14 @@ AbaqusModel::NODE_SET* AbaqusModel::FindNodeSet(const char* sznset)
 // find a part with a particular element set
 AbaqusModel::ELEMENT_SET* AbaqusModel::FindElementSet(const char* szelemset)
 {
-	char szbuf[256] = { 0 };
-	const char* ch = strchr(szelemset, '.');
-	if (ch)
+	list<AbaqusModel::PART*>::iterator it;
+	for (it = m_Part.begin(); it != m_Part.end(); ++it)
 	{
-		strncpy(szbuf, szelemset, (int)(ch - szelemset));
-		AbaqusModel::INSTANCE* inst = FindInstance(szbuf);
-		if (inst == nullptr) return nullptr;
-
-		AbaqusModel::PART* pg = inst->GetPart();
-		ELEMENT_SET* ps = pg->FindElementSet(ch+1);
-		if (ps != nullptr)
+		AbaqusModel::PART& part = *(*it);
+		list<AbaqusModel::ELEMENT_SET>::iterator ps = part.FindElementSet(szelemset);
+		if (ps != part.m_ElSet.end())
 		{
-			return ps;
-		}
-	}
-	else
-	{
-		list<AbaqusModel::PART*>::iterator it;
-		for (it = m_Part.begin(); it != m_Part.end(); ++it)
-		{
-			AbaqusModel::PART& part = *(*it);
-			ELEMENT_SET* ps = part.FindElementSet(szelemset);
-			if (ps != nullptr)
-			{
-				return ps;
-			}
+			return &(*ps);
 		}
 	}
 
@@ -200,10 +145,10 @@ AbaqusModel::SURFACE* AbaqusModel::FindSurface(const char* szname)
 	for (it = m_Part.begin(); it != m_Part.end(); ++it)
 	{
 		AbaqusModel::PART& part = *(*it);
-		SURFACE* ps = part.FindSurface(szname);
-		if (ps != nullptr)
+		list<SURFACE>::iterator ps = part.FindSurface(szname);
+		if (ps != part.m_Surf.end())
 		{
-			return ps;
+			return &(*ps);
 		}
 	}
 	return 0;
@@ -212,8 +157,15 @@ AbaqusModel::SURFACE* AbaqusModel::FindSurface(const char* szname)
 //-----------------------------------------------------------------------------
 AbaqusModel::PART* AbaqusModel::GetActivePart(bool bcreate)
 {
-	if ((m_currentPart == nullptr) && bcreate) m_currentPart = CreatePart();
-	return m_currentPart;
+	if ((m_pPart == 0) && bcreate) m_pPart = CreatePart();
+	return m_pPart;
+}
+
+//-----------------------------------------------------------------------------
+void AbaqusModel::ClearCurrentInstance()
+{
+	m_pPart = 0;
+	m_pInst = 0;
 }
 
 // Add a material
@@ -252,31 +204,17 @@ AbaqusModel::STEP* AbaqusModel::AddStep(const char* szname)
 	step.time = 1.0;
 
 	m_Step.push_back(step);
-	m_currentStep = &(m_Step.back());
-	return m_currentStep;
+	m_pStep = &(m_Step.back());
+	return m_pStep;
 }
 
 // set the current step
 void AbaqusModel::SetCurrentStep(STEP* p)
 {
-	m_currentStep = p;
+	m_pStep = p;
 }
 
 //=============================================================================
-
-AbaqusModel::PART::PART() 
-{ 
-	m_po = nullptr; 
-	m_szname[0] = 0;
-	m_ioff = 0;
-}
-
-AbaqusModel::PART::~PART()
-{
-	for (auto it : m_NSet) delete it.second; m_NSet.clear();
-	for (auto it : m_ESet) delete it.second; m_ESet.clear();
-	for (auto it : m_Surf) delete it.second; m_Surf.clear();
-}
 
 //-----------------------------------------------------------------------------
 void AbaqusModel::PART::SetName(const char* sz)
@@ -358,55 +296,55 @@ void AbaqusModel::PART::AddElement(AbaqusModel::ELEMENT& newElem)
 
 vector<AbaqusModel::ELEMENT>::iterator AbaqusModel::PART::FindElement(int id)
 {
-	if ((id < 0) || (id >= m_Elem.size())) return m_Elem.end();
 	return m_Elem.begin() + id;
 }
 
 //-----------------------------------------------------------------------------
-AbaqusModel::ELEMENT_SET* AbaqusModel::PART::FindElementSet(const char* szname)
-{
-	auto it = m_ESet.find(szname);
-	if (it != m_ESet.end()) return it->second;
-	return nullptr;
-}
 
-//-----------------------------------------------------------------------------
-AbaqusModel::ELEMENT_SET* AbaqusModel::PART::AddElementSet(const char* szname)
+list<AbaqusModel::ELEMENT_SET>::iterator AbaqusModel::PART::FindElementSet(const char* szname)
 {
-	ELEMENT_SET* es = new ELEMENT_SET;
-	es->part = this;
-	strcpy(es->szname, szname);
-	m_ESet[szname] = es;
-	return es;
+	size_t n = m_ElSet.size();
+	list<ELEMENT_SET>::iterator pe = m_ElSet.begin();
+	for (size_t i = 0; i<n; ++i, ++pe) if (strcmp(pe->szname, szname) == 0) return pe;
+	return m_ElSet.end();
 }
 
 //-----------------------------------------------------------------------------
 
-AbaqusModel::NODE_SET* AbaqusModel::PART::FindNodeSet(const char* szname)
+list<AbaqusModel::ELEMENT_SET>::iterator AbaqusModel::PART::AddElementSet(const char* szname)
 {
-	map<string, AbaqusModel::NODE_SET*>::iterator it = m_NSet.find(szname);
-	if (it != m_NSet.end()) return it->second;
-	return nullptr;
+	ELEMENT_SET es;
+	strcpy(es.szname, szname);
+	m_ElSet.push_back(es);
+	return --m_ElSet.end();
 }
 
 //-----------------------------------------------------------------------------
 
-AbaqusModel::NODE_SET* AbaqusModel::PART::AddNodeSet(const char* szname)
+map<string, AbaqusModel::NODE_SET>::iterator AbaqusModel::PART::FindNodeSet(const char* szname)
 {
-	NODE_SET* ns = new NODE_SET;
-	ns->part = this;
-	strcpy(ns->szname, szname);
+	map<string, AbaqusModel::NODE_SET>::iterator it = m_NSet.find(szname);
+	return it;
+}
+
+//-----------------------------------------------------------------------------
+
+map<string, AbaqusModel::NODE_SET>::iterator AbaqusModel::PART::AddNodeSet(const char* szname)
+{
+	NODE_SET ns;
+	strcpy(ns.szname, szname);
 	m_NSet[szname] = ns;
-	return ns;
+	return m_NSet.find(szname);
 }
 
 //-----------------------------------------------------------------------------
 
-AbaqusModel::SURFACE* AbaqusModel::PART::FindSurface(const char* szname)
+list<AbaqusModel::SURFACE>::iterator AbaqusModel::PART::FindSurface(const char* szname)
 {
-	auto it = m_Surf.find(szname);
-	if (it != m_Surf.end()) return it->second;
-	return nullptr;
+	size_t n = m_Surf.size();
+	list<SURFACE>::iterator ps = m_Surf.begin();
+	for (size_t i = 0; i<n; ++i, ++ps) if (strcmp(ps->szname, szname) == 0) return ps;
+	return m_Surf.end();
 }
 
 //-----------------------------------------------------------------------------
@@ -423,27 +361,15 @@ list<AbaqusModel::SOLID_SECTION>::iterator AbaqusModel::PART::AddSolidSection(co
 }
 
 //-----------------------------------------------------------------------------
-// add a shell section
-list<AbaqusModel::SHELL_SECTION>::iterator AbaqusModel::PART::AddShellSection(const char* szset, const char* szmat, const char* szorient)
+
+list<AbaqusModel::SURFACE>::iterator AbaqusModel::PART::AddSurface(const char* szname)
 {
-	SHELL_SECTION ss;
-	strcpy(ss.szelset, szset);
-	if (szmat) strcpy(ss.szmat, szmat); else ss.szmat[0] = 0;
-	if (szorient) strcpy(ss.szorient, szorient); else ss.szorient[0] = 0;
-	ss.part = this;
-	m_Shell.push_back(ss);
-	return --m_Shell.end();
+	SURFACE surf;
+	strcpy(surf.szname, szname);
+	m_Surf.push_back(surf);
+	return --m_Surf.end();
 }
 
-//-----------------------------------------------------------------------------
-AbaqusModel::SURFACE* AbaqusModel::PART::AddSurface(const char* szname)
-{
-	SURFACE* surf = new SURFACE;
-	surf->part = this;
-	strcpy(surf->szname, szname);
-	m_Surf[szname] = surf;
-	return surf;
-}
 
 //-----------------------------------------------------------------------------
 bool AbaqusModel::PART::BuildNLT()
@@ -497,7 +423,7 @@ AbaqusModel::Orientation* AbaqusModel::PART::FindOrientation(const char* szname)
 	list<Orientation>::iterator it;
 	for (it = m_Orient.begin(); it != m_Orient.end(); ++it)
 	{
-		if (stricmp(it->szname, szname) == 0) return &(*it);
+		if (strcmp(it->szname, szname) == 0) return &(*it);
 	}
 	return 0;
 }
@@ -509,7 +435,7 @@ AbaqusModel::Distribution* AbaqusModel::PART::FindDistribution(const char* sznam
 	list<Distribution>::iterator it;
 	for (it = m_Distr.begin(); it != m_Distr.end(); ++it)
 	{
-		if (stricmp(it->m_szname, szname) == 0) return &(*it);
+		if (strcmp(it->m_szname, szname) == 0) return &(*it);
 	}
 	return 0;
 }
@@ -563,47 +489,4 @@ void AbaqusModel::INSTANCE::GetRotation(double t[7])
 	t[0] = m_rot[0]; t[1] = m_rot[1]; t[2] = m_rot[2];
 	t[3] = m_rot[3]; t[4] = m_rot[4]; t[5] = m_rot[5];
 	t[6] = m_rot[6];
-}
-
-//-----------------------------------------------------------------------------
-void AbaqusModel::AddAmplitude(const AbaqusModel::Amplitude& a)
-{
-	m_Amp.push_back(a);
-}
-
-int AbaqusModel::Amplitudes() const
-{
-	return (int)m_Amp.size();
-}
-
-const AbaqusModel::Amplitude& AbaqusModel::GetAmplitude(int n) const
-{
-	return m_Amp[n];
-}
-
-int AbaqusModel::FindAmplitude(const char* szname) const
-{
-	for (int i = 0; i < m_Amp.size(); ++i)
-	{
-		if (szicmp(szname, m_Amp[i].m_name.c_str()))
-		{
-			return i;
-		}
-	}
-	return -1;
-}
-
-void AbaqusModel::AddContactPair(CONTACT_PAIR& cp)
-{
-	m_ContactPair.push_back(cp);
-}
-
-int AbaqusModel::ContactPairs() const
-{
-	return (int)m_ContactPair.size();
-}
-
-const AbaqusModel::CONTACT_PAIR& AbaqusModel::GetContactPair(int n) const
-{
-	return m_ContactPair[n];
 }
