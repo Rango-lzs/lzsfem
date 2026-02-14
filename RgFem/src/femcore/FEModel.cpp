@@ -5,18 +5,16 @@
 #include "basicio/DumpStream.h"
 #include "basicio/FEPlotDataStore.h"
 #include "Domain/RgDomain.h"
-#include "FEBoundaryCondition.h"
+#include "femcore/BoundaryCondition/RgBoundaryCondition.h"
 #include "FEException.h"
 #include "FEGlobalData.h"
 #include "FEInitialCondition.h"
 #include "FELinearConstraintManager.h"
 #include "FELoadController.h"
 #include "femcore/Callback.h"
-#include "femcore/AnalysisStep/AnalysisStep.h"
 #include "femcore/AnalysisStep/RgAnalysis.h"
 #include "femcore/FEMesh.h"
-#include "FEModelLoad.h"
-#include "FEModelObserver.h"
+#include "femcore/Load/RgLoad.h"
 #include "FEModelParam.h"
 #include "FEModule.h"
 #include "FENLConstraint.h"
@@ -24,12 +22,14 @@
 #include "FESurfaceLoad.h"
 #include "FESurfacePairConstraint.h"
 #include "logger/log.h"
-#include "materials/FEMaterial.h"
+#include "materials/RgMaterial.h"
 #include "Timer.h"
 
 #include <map>
 #include <stdarg.h>
 #include <string>
+#include "FEModelObserver.h"
+#include "femcore/NewtonSolver/SolverBase.h"
 
 using namespace std;
 
@@ -38,61 +38,14 @@ using namespace std;
 class FEModel::Impl
 {
 public:
-    struct LoadParam
-    {
-        FEParam* param;
-        int lc;
-
-        double m_scl;
-        Vector3d m_vscl;
-
-        LoadParam()
-        {
-            m_scl = 1.0;
-            m_vscl = Vector3d(0, 0, 0);
-        }
-
-        void Serialize(DumpStream& ar)
-        {
-            ar& lc;
-            ar& m_scl& m_vscl;
-
-            if (ar.IsShallow() == false)
-            {
-                // we can't save the FEParam* directly, so we need to store meta data and try to find it on loading
-                if (ar.IsSaving())
-                {
-                    FEObjectBase* pc = dynamic_cast<FEObjectBase*>(param->owner());
-                    assert(pc);
-                    ar << pc;
-                    ar << param->name();
-                }
-                else
-                {
-                    FEObjectBase* pc = nullptr;
-                    ar >> pc;
-                    assert(pc);
-
-                    char name[256] = {0};
-                    ar >> name;
-
-                    param = pc->FindParameter(name);
-                    assert(param);
-                }
-            }
-            else
-                param = nullptr;
-        }
-    };
-
-public:
     Impl(FEModel* fem)
         : m_fem(fem)
         , m_mesh(fem)
         , m_dmp(*fem)
-        , m_analysis(fem)  // initialize RgAnalysis with model pointer
     {
         // --- Analysis Data ---
+        mp_CurStep = 0;
+        m_nStep = 0;
         m_ftime0 = 0;
 
         m_nupdates = 0;
@@ -115,21 +68,22 @@ public:                     // TODO: Find a better place for these parameters
     int m_nupdates;  //!< number of calls to FEModel::Update
 
 public:
-    std::vector<FEMaterial*> m_MAT;              //!< array of materials
-    std::vector<FEBoundaryCondition*> m_BC;      //!< boundary conditions
-    std::vector<FEModelLoad*> m_ML;              //!< model loads
+    std::vector<RgMaterial*> m_MAT;              //!< array of materials
+    std::vector<RgBoundaryCondition*> m_BC;      //!< boundary conditions
+    std::vector<RgLoad*> m_ML;                   //!< model loads
     std::vector<FEInitialCondition*> m_IC;       //!< initial conditions
     std::vector<FESurfacePairConstraint*> m_CI;  //!< contact interface array
     std::vector<FENLConstraint*> m_NLC;          //!< nonlinear constraints
     std::vector<FELoadController*> m_LC;         //!< load controller data
-    std::vector<LoadParam> m_Param;              //!< list of parameters controller by load controllers
+    std::vector<RgAnalysis*> m_Step;             //!< array of analysis steps
     std::vector<Timer> m_timers;                 // list of timers
 
 public:
-    RgAnalysis m_analysis;  //!< analysis manager (manages all analysis steps and solvers)
-    bool m_printParams;     //!< print parameters
-    bool m_meshUpdate;      //!< mesh update flag
-    std::string m_units;    // units string
+    RgAnalysis* mp_CurStep;  //!< pointer to current analysis step
+    int m_nStep;             //!< current index of analysis step
+    bool m_printParams;      //!< print parameters
+    bool m_meshUpdate;       //!< mesh update flag
+    std::string m_units;     // units string
 
 public:
     FEModel* m_fem;
@@ -201,13 +155,13 @@ void FEModel::Clear()
     m_imp->m_dofs.Reset();
 
     // clear all properties
-    for (FEMaterial* mat : m_imp->m_MAT)
+    for (RgMaterial* mat : m_imp->m_MAT)
         delete mat;
     m_imp->m_MAT.clear();
-    for (FEBoundaryCondition* bc : m_imp->m_BC)
+    for (RgBoundaryCondition* bc : m_imp->m_BC)
         delete bc;
     m_imp->m_BC.clear();
-    for (FEModelLoad* ml : m_imp->m_ML)
+    for (RgLoad* ml : m_imp->m_ML)
         delete ml;
     m_imp->m_ML.clear();
     for (FEInitialCondition* ic : m_imp->m_IC)
@@ -222,9 +176,23 @@ void FEModel::Clear()
     for (FELoadController* lc : m_imp->m_LC)
         delete lc;
     m_imp->m_LC.clear();
+    /*for (FEMeshDataGenerator* md : m_imp->m_MD)
+        delete md;
+    m_imp->m_MD.clear();*/
+    for (RgAnalysis* step : m_imp->m_Step)
+        delete step;
+    m_imp->m_Step.clear();
 
-    // Clear analysis steps (managed by RgAnalysis)
-    m_imp->m_analysis.clearSteps();
+    // global data
+    /* for (size_t i = 0; i < m_imp->m_GD.size(); ++i)
+         delete m_imp->m_GD[i];
+     m_imp->m_GD.clear();
+     m_imp->m_Const.clear();*/
+
+    // global variables (TODO: Should I delete the corresponding parameters?)
+    /*for (size_t i = 0; i < m_imp->m_Var.size(); ++i)
+        delete m_imp->m_Var[i];
+    m_imp->m_Var.clear();*/
 
     // clear the linear constraints
     if (m_imp->m_LCM)
@@ -232,6 +200,9 @@ void FEModel::Clear()
 
     // clear the mesh
     m_imp->m_mesh.Clear();
+
+    // clear load parameters
+    /*m_imp->m_Param.clear();*/
 }
 
 //-----------------------------------------------------------------------------
@@ -239,6 +210,10 @@ void FEModel::Clear()
 void FEModel::SetActiveModule(const std::string& moduleName)
 {
     m_imp->m_moduleName = moduleName;
+    // FECoreKernel& fecore = FECoreKernel::GetInstance();
+    // fecore.SetActiveModule(moduleName.c_str());
+    // FEModule* pmod = fecore.GetActiveModule();
+    // pmod->InitModel(this);
 
     FEModule* pmod = new FESolidModule();
     pmod->InitModel(this);
@@ -258,13 +233,13 @@ int FEModel::BoundaryConditions() const
 }
 
 //-----------------------------------------------------------------------------
-FEBoundaryCondition* FEModel::BoundaryCondition(int i)
+RgBoundaryCondition* FEModel::BoundaryCondition(int i)
 {
     return m_imp->m_BC[i];
 }
 
 //-----------------------------------------------------------------------------
-void FEModel::AddBoundaryCondition(FEBoundaryCondition* pbc)
+void FEModel::AddBoundaryCondition(RgBoundaryCondition* pbc)
 {
     m_imp->m_BC.push_back(pbc);
 }
@@ -294,54 +269,64 @@ void FEModel::AddInitialCondition(FEInitialCondition* pbc)
 }
 
 //-----------------------------------------------------------------------------
-// --- Analysis management (delegates to RgAnalysis) ---
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-RgAnalysis& FEModel::GetAnalysis()
-{
-    return m_imp->m_analysis;
-}
-
-//-----------------------------------------------------------------------------
-const RgAnalysis& FEModel::GetAnalysis() const
-{
-    return m_imp->m_analysis;
-}
-
-//-----------------------------------------------------------------------------
 //! retrieve the number of steps
-size_t FEModel::Steps() const
+int FEModel::Steps() const
 {
-    return m_imp->m_analysis.getNumberOfSteps();
+    return (int)m_imp->m_Step.size();
 }
 
 //-----------------------------------------------------------------------------
 //! clear the steps
 void FEModel::ClearSteps()
 {
-    m_imp->m_analysis.clearSteps();
+    m_imp->m_Step.clear();
 }
 
 //-----------------------------------------------------------------------------
 //! Add an analysis step
-void FEModel::AddStep(std::shared_ptr<AnalysisStep> step)
+void FEModel::AddStep(RgAnalysis* pstep)
 {
-    m_imp->m_analysis.addStep(step);
+    m_imp->m_Step.push_back(pstep);
 }
 
 //-----------------------------------------------------------------------------
 //! Get a particular step
-std::shared_ptr<AnalysisStep> FEModel::GetStep(size_t i)
+RgAnalysis* FEModel::GetStep(int i)
 {
-    return m_imp->m_analysis.getStep(i);
+    return m_imp->m_Step[i];
 }
 
 //-----------------------------------------------------------------------------
-//! Get the current step index
+//! Get the current step
+RgAnalysis* FEModel::GetCurrentStep()
+{
+    return m_imp->mp_CurStep;
+}
+
+const RgAnalysis* FEModel::GetCurrentStep() const
+{
+    return m_imp->mp_CurStep;
+}
+
+//-----------------------------------------------------------------------------
+//! Set the current step
+void FEModel::SetCurrentStep(RgAnalysis* pstep)
+{
+    m_imp->mp_CurStep = pstep;
+}
+
+//-----------------------------------------------------------------------------
+//! Set the current step index
 int FEModel::GetCurrentStepIndex() const
 {
-    return m_imp->m_analysis.getCurrentStep();
+    return m_imp->m_nStep;
+}
+
+//-----------------------------------------------------------------------------
+//! Set the current step index
+void FEModel::SetCurrentStepIndex(int n)
+{
+    m_imp->m_nStep = n;
 }
 
 //-----------------------------------------------------------------------------
@@ -395,14 +380,14 @@ int FEModel::ModelLoads()
 
 //-----------------------------------------------------------------------------
 //! retrieve a model load
-FEModelLoad* FEModel::ModelLoad(int i)
+RgLoad* FEModel::ModelLoad(int i)
 {
     return m_imp->m_ML[i];
 }
 
 //-----------------------------------------------------------------------------
 //! Add a model load
-void FEModel::AddModelLoad(FEModelLoad* pml)
+void FEModel::AddModelLoad(RgLoad* pml)
 {
     m_imp->m_ML.push_back(pml);
 }
@@ -424,7 +409,7 @@ FELinearConstraintManager& FEModel::GetLinearConstraintManager()
 bool FEModel::Init()
 {
     // make sure there is something to do
-    if (m_imp->m_analysis.getNumberOfSteps() == 0)
+    if (m_imp->m_Step.size() == 0)
         return false;
 
     // intitialize time
@@ -433,7 +418,7 @@ bool FEModel::Init()
     m_imp->m_ftime0 = 0;
 
     // evaluate all load controllers at the initial time
-    for (int i = 0; i < LoadControllers(); ++i)
+    /*for (int i = 0; i < LoadControllers(); ++i)
     {
         FELoadController* plc = m_imp->m_LC[i];
         if (plc->Init() == false)
@@ -444,21 +429,44 @@ bool FEModel::Init()
             return false;
         }
         plc->Evaluate(0);
-    }
+    }*/
+
+    // check step data
+    /*for (int i = 0; i < (int)m_imp->m_Step.size(); ++i)
+    {
+        RgAnalysis& step = *m_imp->m_Step[i];
+        if (step.Init() == false)
+        {
+            std::string s = step.GetName();
+            const char* sz = (s.empty() ? "<unnamed>" : s.c_str());
+            feLogError("Step %d (%s) failed to initialize", i + 1, sz);
+            return false;
+        }
+    }*/
+
+    if (initDofs() == false)
+        return false;
 
     // validate BC's
     if (InitBCs() == false)
         return false;
 
     // initialize material data
+    // NOTE: This must be called after the rigid system is initialiazed since the rigid materials will
+    //       reference the rigid bodies
     if (InitMaterials() == false)
         return false;
 
     // initialize mesh data
+    // NOTE: this must be done AFTER the elements have been assigned material point data !
+    // this is because the mesh data is reset
+    // TODO: perhaps I should not reset the mesh data during the initialization
     if (InitMesh() == false)
         return false;
 
     // initialize model loads
+    // NOTE: This must be called after the InitMaterials since the COM of the rigid bodies
+    //       are set in that function.
     if (InitModelLoads() == false)
         return false;
 
@@ -470,7 +478,13 @@ bool FEModel::Init()
     if (InitConstraints() == false)
         return false;
 
+    // evaluate all load parameters
+    // Do this last in case any model components redefined their load curves.
+    /*if (EvaluateLoadParameters() == false)
+        return false;*/
+
     // activate all permanent dofs
+    // Activate();
     for (auto pbc : m_imp->m_BC)
     {
         if (pbc)
@@ -494,6 +508,7 @@ bool FEModel::Init()
     auto obser = new OutputObserver();
     obser->setOutputStrategy(std::make_unique<VTKOutput>());
     mp_model_sbj->attach(obser);
+
 
     // do the callback
     return ret;
@@ -533,7 +548,7 @@ void FEModel::Update()
     int nvel = BoundaryConditions();
     for (int i = 0; i < nvel; ++i)
     {
-        FEBoundaryCondition& bc = *BoundaryCondition(i);
+        RgBoundaryCondition& bc = *BoundaryCondition(i);
         if (bc.IsActive())
             bc.UpdateModel();
     }
@@ -541,7 +556,7 @@ void FEModel::Update()
     // update all model loads
     for (int i = 0; i < ModelLoads(); ++i)
     {
-        FEModelLoad* pml = ModelLoad(i);
+        RgLoad* pml = ModelLoad(i);
         if (pml && pml->IsActive())
             pml->Update();
     }
@@ -595,7 +610,7 @@ bool FEModel::InitBCs()
     int NBC = BoundaryConditions();
     for (int i = 0; i < NBC; ++i)
     {
-        FEBoundaryCondition* pbc = BoundaryCondition(i);
+        RgBoundaryCondition* pbc = BoundaryCondition(i);
         if (pbc->Init() == false)
         {
             std::string s = pbc->GetName();
@@ -613,7 +628,7 @@ bool FEModel::InitBCs()
 }
 
 //-----------------------------------------------------------------------------
-void FEModel::AddMaterial(FEMaterial* pm)
+void FEModel::AddMaterial(RgMaterial* pm)
 {
     m_imp->m_MAT.push_back(pm);
 }
@@ -627,31 +642,31 @@ int FEModel::Materials()
 
 //-----------------------------------------------------------------------------
 //! return a pointer to a material
-FEMaterial* FEModel::GetMaterial(int i)
+RgMaterial* FEModel::GetMaterial(int i)
 {
     return m_imp->m_MAT[i];
 }
 
 //-----------------------------------------------------------------------------
-FEMaterial* FEModel::FindMaterial(int nid)
+RgMaterial* FEModel::FindMaterial(int nid)
 {
     for (int i = 0; i < Materials(); ++i)
     {
-        FEMaterial* pm = GetMaterial(i);
+       /* RgMaterial* pm = GetMaterial(i);
         if (pm->GetID() == nid)
-            return pm;
+            return pm;*/
     }
     return 0;
 }
 
 //-----------------------------------------------------------------------------
-FEMaterial* FEModel::FindMaterial(const std::string& matName)
+RgMaterial* FEModel::FindMaterial(const std::string& matName)
 {
     for (int i = 0; i < Materials(); ++i)
     {
-        FEMaterial* mat = GetMaterial(i);
+       /* RgMaterial* mat = GetMaterial(i);
         if (mat->GetName() == matName)
-            return mat;
+            return mat;*/
     }
     return 0;
 }
@@ -664,14 +679,14 @@ bool FEModel::InitMaterials()
     for (int i = 0; i < Materials(); ++i)
     {
         // get the material
-        FEMaterial* pmat = GetMaterial(i);
+        RgMaterial* pmat = GetMaterial(i);
 
         // initialize material data
-        if (pmat->Init() == false)
+        /*if (pmat->Init() == false)
         {
             feLogError("Failed initializing material %d (name=\"%s\")", i + 1, pmat->GetName().c_str());
             return false;
-        }
+        }*/
     }
 
     return true;
@@ -685,106 +700,26 @@ bool FEModel::ValidateMaterials()
     for (int i = 0; i < Materials(); ++i)
     {
         // get the material
-        FEMaterial* pmat = GetMaterial(i);
+        RgMaterial* pmat = GetMaterial(i);
 
         // initialize material data
-        if (pmat->Validate() == false)
+        /*if (pmat->Validate() == false)
         {
             feLogError("Failed validating material %d (name=\"%s\")", i + 1, pmat->GetName().c_str());
             return false;
-        }
+        }*/
     }
 
     return true;
 }
 
-//-----------------------------------------------------------------------------
-//! Add a loadcurve to the model
-void FEModel::AddLoadController(FELoadController* plc)
-{
-    m_imp->m_LC.push_back(plc);
-}
-
-//-----------------------------------------------------------------------------
-void FEModel::ReplaceLoadController(int n, FELoadController* plc)
-{
-    assert((n >= 0) && (n < LoadControllers()));
-    delete m_imp->m_LC[n];
-    m_imp->m_LC[n] = plc;
-}
-
-//-----------------------------------------------------------------------------
-//! get a loadcurve
-FELoadController* FEModel::GetLoadController(int i)
-{
-    return m_imp->m_LC[i];
-}
-
-//-----------------------------------------------------------------------------
-//! get the number of loadcurves
-int FEModel::LoadControllers() const
-{
-    return (int)m_imp->m_LC.size();
-}
-
-//-----------------------------------------------------------------------------
-//! Attach a load controller to a parameter
-void FEModel::AttachLoadController(FEParam* param, int lc)
-{
-    Impl::LoadParam lp;
-    lp.param = param;
-    lp.lc = lc;
-
-    switch (param->type())
-    {
-        case FE_PARAM_DOUBLE:
-            lp.m_scl = param->value<double>();
-            break;
-        case FE_PARAM_VEC3D:
-            lp.m_vscl = param->value<Vector3d>();
-            break;
-    }
-
-    m_imp->m_Param.push_back(lp);
-}
-
-//-----------------------------------------------------------------------------
-void FEModel::AttachLoadController(FEParam* p, FELoadController* plc)
-{
-    AttachLoadController(p, plc->GetID());
-}
-
-//-----------------------------------------------------------------------------
-//! Detach a load controller from a parameter
-bool FEModel::DetachLoadController(FEParam* p)
-{
-    for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
-    {
-        Impl::LoadParam& pi = m_imp->m_Param[i];
-        if (pi.param == p)
-        {
-            m_imp->m_Param.erase(m_imp->m_Param.begin() + i);
-            return true;
-        }
-    }
-    return false;
-}
-
-//-----------------------------------------------------------------------------
-//! Get a load controller for a parameter (returns null if the param is not under load control)
-FELoadController* FEModel::GetLoadController(FEParam* p)
-{
-    return nullptr;
-}
-
-//-----------------------------------------------------------------------------
 //! Initialize rigid force data
 bool FEModel::InitModelLoads()
 {
     // call the Init() function of all rigid forces
     for (int i = 0; i < ModelLoads(); ++i)
     {
-        FEModelLoad& FC = *ModelLoad(i);
+        RgLoad& FC = *ModelLoad(i);
         if (FC.Init() == false)
         {
             std::string s = FC.GetName();
@@ -793,6 +728,33 @@ bool FEModel::InitModelLoads()
             return false;
         }
     }
+    return true;
+}
+
+bool FEModel::initDofs()
+{
+    FEMesh& mesh = GetMesh();
+    // gather all the active dofs
+    RgDofSet dofs;
+    for (int i = 0; i < mesh.Domains(); ++i)
+    {
+        RgDomain& dom = mesh.Domain(i);
+        const RgDofSet& curdof = dom.dofSet();
+        for (auto dof : curdof.GetDofs())
+        {
+            dofs.AddDof(dof);
+        }
+    }
+    dofs.Sort();
+    m_dof_schema.SetSchema(dofs);
+
+    // reset nodal data
+    for (int i = 0; i < mesh.Nodes(); ++i)
+    {
+        FENode& node = mesh.Node(i);
+        node.SetDOFS(m_dof_schema.GetDofsPerNode());
+    }
+
     return true;
 }
 
@@ -813,7 +775,13 @@ bool FEModel::InitMesh()
             feLogWarning("%d isolated vertices removed.", ni);
     }
 
+
+    //// Initialize shell data
+    //// This has to be done before the domains are initialized below
+    // InitShells();
+
     // reset data
+    // TODO: Not sure why this is here
     try
     {
         mesh.Reset();
@@ -826,6 +794,9 @@ bool FEModel::InitMesh()
 
     // initialize all domains
     // Initialize shell domains first (in order to establish SSI)
+    // TODO: I'd like to move the initialization of the SSI to InitShells, but I can't
+    //       do that because FESSIShellDomain::FindSSI depends on the RgDomain::m_Node array which is
+    //       initialized in RgDomain::Init.
     for (int i = 0; i < mesh.Domains(); ++i)
     {
         RgDomain& dom = mesh.Domain(i);
@@ -841,6 +812,14 @@ bool FEModel::InitMesh()
             if (dom.Init() == false)
                 return false;
     }
+
+ 
+    //// initialize surfaces
+    // for (int i = 0; i < mesh.Surfaces(); ++i)
+    //{
+    //     if (mesh.Surface(i).Init() == false)
+    //         return false;
+    // }
 
     // All done
     return true;
@@ -871,6 +850,7 @@ bool FEModel::InitContact()
 
 //-----------------------------------------------------------------------------
 //! Initialize the nonlinear constraints.
+//! This function is called during model initialization (\sa FEModel::Init)
 bool FEModel::InitConstraints()
 {
     for (int i = 0; i < NonlinearConstraints(); ++i)
@@ -891,15 +871,46 @@ bool FEModel::InitConstraints()
 }
 
 //-----------------------------------------------------------------------------
-//! This function solves the FE problem by delegating to RgAnalysis.
+//! This function solves the FE problem by calling the solve method for each step.
 bool FEModel::Solve()
 {
     TRACK_TIME(Timer_ModelSolve);
 
-    // Delegate to RgAnalysis to run all steps
-    bool bOk = m_imp->m_analysis.run();
+    // error flag
+    bool bOk = true;
 
-    m_imp->m_bsolved = bOk;
+    // loop over all analysis steps
+    // Note that we don't necessarily from step 0 as user can use restart~
+    for (size_t iStep = m_imp->m_nStep; iStep < Steps(); ++iStep)
+    {
+        // set the current analysis step
+        m_imp->m_nStep = iStep;
+        m_imp->mp_CurStep = m_imp->m_Step[(int)iStep];
+
+        // intitialize step data
+        /*if (m_imp->mp_CurStep->Activate() == false)
+        {
+            bOk = false;
+            break;
+        }*/
+
+        DoCallback(CB_STEP_ACTIVE);
+
+        // solve the analaysis step
+        bOk = m_imp->mp_CurStep->Solve();
+
+        if (iStep + 1 == Steps())  // the last step
+        {
+            m_imp->m_bsolved = bOk;
+        }
+
+        // do callbacks
+        DoCallback(CB_STEP_SOLVED);
+
+        // break if the step has failed
+        if (!bOk)
+            break;
+    }
 
     // do the callbacks
     DoCallback(CB_SOLVED);
@@ -941,22 +952,21 @@ void FEModel::SetCurrentTime(double t)
 //-----------------------------------------------------------------------------
 void FEModel::SetCurrentTimeStep(double dt)
 {
-    // With the new design, time step is managed by the AnalysisStep's StepControl.
-    // Get the current step from RgAnalysis and update if possible.
-    int idx = m_imp->m_analysis.getCurrentStep();
-    auto step = m_imp->m_analysis.getStep(idx);
+   /* RgAnalysis* step = GetCurrentStep();
+    assert(step);
     if (step)
-    {
-        StepControl ctrl = step->getStepControl();
-        ctrl.initialTimeIncrement = dt;
-        step->setStepControl(ctrl);
-    }
+        step->m_dt = dt;*/
 }
 
 //-----------------------------------------------------------------------------
 DOFS& FEModel::GetDOFS()
 {
     return m_imp->m_dofs;
+}
+
+const RgDofSchema& FEModel::GetDofSchema()
+{
+    return m_dof_schema;
 }
 
 //-----------------------------------------------------------------------------
@@ -1010,18 +1020,21 @@ bool FEModel::DoCallback(unsigned int nevent)
 //-----------------------------------------------------------------------------
 void FEModel::SetGlobalConstant(const string& s, double v)
 {
+    // m_imp->m_Const[s] = v;
     return;
 }
 
 //-----------------------------------------------------------------------------
 double FEModel::GetGlobalConstant(const string& s)
 {
+    // return (m_imp->m_Const.count(s) ? m_imp->m_Const.find(s)->second : 0);
     return 0;
 }
 
 //-----------------------------------------------------------------------------
 int FEModel::GlobalVariables() const
 {
+    // return (int)m_imp->m_Var.size();
     return 0;
 }
 
@@ -1032,41 +1045,129 @@ void FEModel::AddGlobalVariable(const string& s, double v)
     var->v = v;
     var->name = s;
     AddParameter(var->v, var->name.c_str());
+    // m_imp->m_Var.push_back(var);
 }
 
 const FEGlobalVariable& FEModel::GetGlobalVariable(int n)
 {
+    // return *m_imp->m_Var[n];
     return FEGlobalVariable();
 }
 
 //-----------------------------------------------------------------------------
 void FEModel::AddGlobalData(FEGlobalData* psd)
 {
+    // m_imp->m_GD.push_back(psd);
 }
 
 //-----------------------------------------------------------------------------
 FEGlobalData* FEModel::GetGlobalData(int i)
 {
+    // return m_imp->m_GD[i];
     return nullptr;
 }
 
 //-----------------------------------------------------------------------------
 FEGlobalData* FEModel::FindGlobalData(const char* szname)
 {
+    /*for (int i = 0; i < m_imp->m_GD.size(); ++i)
+    {
+        if (m_imp->m_GD[i]->GetName() == szname)
+            return m_imp->m_GD[i];
+    }*/
     return nullptr;
 }
 
 //-----------------------------------------------------------------------------
 int FEModel::FindGlobalDataIndex(const char* szname)
 {
+    /*for (int i = 0; i < m_imp->m_GD.size(); ++i)
+    {
+        if (m_imp->m_GD[i]->GetName() == szname)
+            return i;
+    }*/
     return -1;
 }
 
 //-----------------------------------------------------------------------------
 int FEModel::GlobalDataItems()
 {
+    // return (int)m_imp->m_GD.size();
     return 0;
 }
+
+//-----------------------------------------------------------------------------
+// This function serializes data to a stream.
+// This is used for running and cold restarts.
+// void FEModel::Impl::Serialize(DumpStream& ar)
+//{
+//    if (ar.IsShallow())
+//    {
+//        // stream model data
+//        ar& m_timeInfo;
+//
+//        // stream mesh
+//        m_fem->SerializeGeometry(ar);
+//
+//        // serialize contact
+//        ar& m_CI;
+//
+//        // serialize nonlinear constraints
+//        ar& m_NLC;
+//
+//        // serialize step and solver data
+//        ar& m_Step;
+//    }
+//    else
+//    {
+//        if (ar.IsLoading())
+//            m_fem->Clear();
+//
+//        ar& m_moduleName;
+//
+//        if (ar.IsLoading())
+//        {
+//            FECoreKernel::GetInstance().SetActiveModule(m_moduleName.c_str());
+//        }
+//
+//        ar& m_timeInfo;
+//        ar& m_dofs;
+//        ar& m_Const;
+//        ar& m_GD;
+//        ar& m_ftime0;
+//        ar& m_bsolved;
+//
+//        // we have to stream materials before the mesh
+//        ar& m_MAT;
+//
+//        // we have to stream the mesh before any boundary conditions
+//        m_fem->SerializeGeometry(ar);
+//
+//        // stream all boundary conditions
+//        ar& m_BC;
+//        ar& m_ML;
+//        ar& m_IC;
+//        ar& m_CI;
+//        ar& m_NLC;
+//
+//        // stream step data next
+//        ar& m_nStep;
+//        ar& m_Step;
+//        ar& mp_CurStep;  // This must be streamed after m_Step
+//
+//        // serialize linear constraints
+//        if (m_LCM)
+//            m_LCM->Serialize(ar);
+//
+//        // serialize data generators
+//        ar& m_MD;
+//
+//        // load controllers and load parameters are streamed last
+//        // since they can depend on other model parameters.
+//        ar& m_LC;
+//        ar& m_Param;
+//    }
+//}
 
 //-----------------------------------------------------------------------------
 //! This is called to serialize geometry.
@@ -1083,21 +1184,16 @@ void FEModel::Serialize(DumpStream& ar)
 {
     TRACK_TIME(TimerID::Timer_Update);
 
+    // m_imp->Serialize(ar);
     DoCallback(ar.IsSaving() ? CB_SERIALIZE_SAVE : CB_SERIALIZE_LOAD);
 }
 
 //-----------------------------------------------------------------------------
 void FEModel::BuildMatrixProfile(FEGlobalMatrix& G, bool breset)
 {
-    // Get the solver from the current analysis step
-    int idx = m_imp->m_analysis.getCurrentStep();
-    auto step = m_imp->m_analysis.getStep(idx);
-    if (step)
-    {
-        FESolver* solver = step->getSolver();
-        if (solver)
-            solver->BuildMatrixProfile(G, breset);
-    }
+    RgAnalysis* pstep = GetCurrentStep();
+    FESolver* solver = pstep->getSolver("");
+    solver->BuildMatrixProfile(G, breset);
 }
 
 //-----------------------------------------------------------------------------
@@ -1166,106 +1262,6 @@ const char* FEModel::GetUnits() const
         return nullptr;
     else
         return m_imp->m_units.c_str();
-}
-
-
-//! Evaluates all load curves at the specified time
-void FEModel::EvaluateLoadControllers(double time)
-{
-    const int NLC = LoadControllers();
-    for (int i = 0; i < NLC; ++i)
-        GetLoadController(i)->Evaluate(time);
-}
-
-//-----------------------------------------------------------------------------
-bool FEModel::EvaluateLoadParameters()
-{
-    feLog("\n");
-    int NLC = LoadControllers();
-    for (int i = 0; i < (int)m_imp->m_Param.size(); ++i)
-    {
-        Impl::LoadParam& pi = m_imp->m_Param[i];
-        int nlc = pi.lc;
-        if ((nlc >= 0) && (nlc < NLC))
-        {
-            double s = GetLoadController(nlc)->Value();
-            FEParam* p = pi.param;
-            FEObjectBase* parent = dynamic_cast<FEObjectBase*>(p->owner());
-            if (m_imp->m_printParams)
-            {
-                if (parent && (parent->GetName().empty() == false))
-                {
-                    const char* pname = parent->GetName().c_str();
-                    feLog("Setting parameter \"%s.%s\" to : ", pname, p->name());
-                }
-                else
-                    feLog("Setting parameter \"%s\" to : ", p->name());
-            };
-            assert(p->IsVolatile());
-            switch (p->type())
-            {
-                case FE_PARAM_INT:
-                {
-                    p->value<int>() = (int)s;
-                    if (m_imp->m_printParams)
-                        feLog("%d\n", p->value<int>());
-                }
-                break;
-                case FE_PARAM_DOUBLE:
-                {
-                    p->value<double>() = pi.m_scl * s;
-                    if (m_imp->m_printParams)
-                        feLog("%lg\n", p->value<double>());
-                }
-                break;
-                case FE_PARAM_BOOL:
-                {
-                    p->value<bool>() = (s > 0 ? true : false);
-                    if (m_imp->m_printParams)
-                        feLog("%s\n", (p->value<bool>() ? "true" : "false"));
-                }
-                break;
-                case FE_PARAM_VEC3D:
-                {
-                    Vector3d& v = p->value<Vector3d>();
-                    p->value<Vector3d>() = pi.m_vscl * s;
-                    if (m_imp->m_printParams)
-                        feLog("%lg, %lg, %lg\n", v.x, v.y, v.z);
-                }
-                break;
-                case FE_PARAM_DOUBLE_MAPPED:
-                {
-                    FEParamDouble& v = p->value<FEParamDouble>();
-                    double c = 1.0;
-                    if (v.isConst())
-                        c = v.constValue();
-                    v.SetScaleFactor(s * pi.m_scl);
-                    if (m_imp->m_printParams)
-                        feLog("%lg\n", c * p->value<FEParamDouble>().GetScaleFactor());
-                }
-                break;
-                case FE_PARAM_VEC3D_MAPPED:
-                {
-                    FEParamVec3& v = p->value<FEParamVec3>();
-                    v.SetScaleFactor(s * pi.m_scl);
-                    if (m_imp->m_printParams)
-                        feLog("%lg\n", v.GetScaleFactor());
-                }
-                break;
-                default:
-                    feLog("\n");
-                    assert(false);
-            }
-        }
-        else
-        {
-            feLogError("Invalid load curve ID");
-            return false;
-        }
-    }
-    feLog("\n");
-
-    return true;
 }
 
 void FEModel::notify()

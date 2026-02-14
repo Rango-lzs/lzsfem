@@ -1,18 +1,19 @@
-/*****************************************************************/ /**
-                                                                     * \file   FEModel.h
-                                                                     * \brief  This class define the FE model.
-                                                                     *
-                                                                     * \author 11914
-                                                                     * \date   December 2024
-                                                                     *********************************************************************/
+/**
+ * \file   FEModel.h
+ * \brief  This class define the FE model.
+ *
+ * \author 11914
+ * \date   December 2024
+ */
 
 #pragma once
 #include "femcore/FEObjectBase.h"
 
 #include <memory>
 #include <string>
+#include "RgDofSchema.h"
 
-                                                                     // helper class for managing global (user-defined) variables.
+// helper class for managing global (user-defined) variables.
 class FEGlobalVariable
 {
 public:
@@ -21,15 +22,13 @@ public:
 };
 
 class FELoadController;
-class FEBoundaryCondition;
+class RgBoundaryCondition;
 class FEInitialCondition;
 class FEAnalysis;
-class AnalysisStep;
-class RgAnalysis;
 class FESurfacePairConstraint;
-class FEModelLoad;
+class RgLoad;
 class FEMesh;
-class FEMaterial;
+class RgMaterial;
 class FELinearConstraintManager;
 class FEGlobalMatrix;
 class FETimeInfo;
@@ -70,41 +69,31 @@ public:
     bool InitMesh();
 
     //! Build the Matrix profile for this model
+    /**
+     * @~English
+     * @brief brief-description-about-BuildMatrixProfile .
+     * @param[??] G brief-description-about-G .
+     * @param[??] breset brief-description-about-breset .
+     * @return void brief-description-about-void .
+     */
     virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);
-
-public:
-    void AddLoadController(FELoadController* plc);
-    void ReplaceLoadController(int n, FELoadController* plc);
-    FELoadController* GetLoadController(int i);
-
-    int LoadControllers() const;
-
-    void AttachLoadController(FEParam* p, int lc);
-    void AttachLoadController(FEParam* p, FELoadController* plc);
-
-    bool DetachLoadController(FEParam* p);
-    FELoadController* GetLoadController(FEParam* p);
-
-    void EvaluateLoadControllers(double time);
-    //-----------------------------------------------------------------------------
-    bool EvaluateLoadParameters();
 
     //--- Material functions ---
 public:
     //! Add a material to the model
-    void AddMaterial(FEMaterial* pm);
+    void AddMaterial(RgMaterial* pm);
 
     //! get the number of materials
     int Materials();
 
     //! return a pointer to a material
-    FEMaterial* GetMaterial(int i);
+    RgMaterial* GetMaterial(int i);
 
     //! find a material based on its index
-    FEMaterial* FindMaterial(int nid);
+    RgMaterial* FindMaterial(int nid);
 
     //! find a material based on its name
-    FEMaterial* FindMaterial(const std::string& matName);
+    RgMaterial* FindMaterial(const std::string& matName);
 
     //! material initialization
     bool InitMaterials();
@@ -115,8 +104,8 @@ public:
 public:
     // Boundary conditions
     int BoundaryConditions() const;
-    FEBoundaryCondition* BoundaryCondition(int i);
-    void AddBoundaryCondition(FEBoundaryCondition* bc);
+    RgBoundaryCondition* BoundaryCondition(int i);
+    void AddBoundaryCondition(RgBoundaryCondition* bc);
     void ClearBoundaryConditions();
 
     // initial conditions
@@ -124,25 +113,33 @@ public:
     FEInitialCondition* InitialCondition(int i);
     void AddInitialCondition(FEInitialCondition* pbc);
 
-public:  // --- Analysis management (new design using RgAnalysis) ---
-    //! Get the analysis manager
-    RgAnalysis& GetAnalysis();
-    const RgAnalysis& GetAnalysis() const;
+public:  // --- Analysis steps functions ---
+    // the number of steps
+    int Steps() const;
 
-    //! Get the number of analysis steps
-    size_t Steps() const;
+    int currentStep() const;
 
-    //! Clear all analysis steps
+    //! clear the steps
     void ClearSteps();
 
-    //! Add an analysis step (managed by RgAnalysis)
-    void AddStep(std::shared_ptr<AnalysisStep> step);
+    //! Add an analysis step
+    void AddStep(FEAnalysis* pstep);
 
     //! Get a particular step
-    std::shared_ptr<AnalysisStep> GetStep(size_t i);
+    FEAnalysis* GetStep(int i);
 
-    //! Get the current step index
+    //! Get the current step
+    FEAnalysis* GetCurrentStep();
+    const FEAnalysis* GetCurrentStep() const;
+
+    //! Set the current step index
     int GetCurrentStepIndex() const;
+
+    //! Set the current step
+    void SetCurrentStep(FEAnalysis* pstep);
+
+    //! Set the current step index
+    void SetCurrentStepIndex(int n);
 
     //! Get the current time
     FETimeInfo& GetTime();
@@ -155,6 +152,7 @@ public:  // --- Analysis management (new design using RgAnalysis) ---
 
     //! Get the current time
     double GetCurrentTime() const;
+
 
     //! Set the current time
     void SetCurrentTime(double t);
@@ -193,13 +191,15 @@ public:  // --- Model Loads ----
     int ModelLoads();
 
     //! retrieve a model load
-    FEModelLoad* ModelLoad(int i);
+    RgLoad* ModelLoad(int i);
 
     //! Add a model load
-    void AddModelLoad(FEModelLoad* pml);
+    void AddModelLoad(RgLoad* pml);
 
     //! initialize model loads
     bool InitModelLoads();
+
+    bool initDofs();
 
 public:  // --- Miscellaneous routines ---
     //! call the callback function
@@ -210,6 +210,8 @@ public:  // --- Miscellaneous routines ---
     //! As a first step, all classes that have access to the model
     //! should get the DOFS from this function
     DOFS& GetDOFS();
+
+    const RgDofSchema& GetDofSchema();
 
     //! Get the index of a DOF
     int GetDOFIndex(const char* sz) const;
@@ -281,6 +283,8 @@ private:
     std::unique_ptr<Impl> m_imp;
 
     FEModelSubject* mp_model_sbj;
+
+    RgDofSchema m_dof_schema;
 
     DECLARE_PARAM_LIST();
 };
