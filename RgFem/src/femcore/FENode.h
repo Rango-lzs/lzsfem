@@ -31,8 +31,17 @@ using GlobalDofId = int;
 class FEM_EXPORT FENode
 {
 public:
+
+    enum DofState
+    {
+        INACTIVE = -1,
+        OPEN = 0,
+        FIXED = 1,
+        PRESCRIBED = 2
+    };
+
     // Node status flags
-    enum Status
+    enum NodeStatus
     {
         EXCLUDE = 0x01,      // exclude node from analysis
         SHELL = 0x02,        // this node belongs to a shell
@@ -70,6 +79,11 @@ public:
     const std::vector<int>& getDofs()
     {
         return m_dofs;
+    }
+
+    int getDofIdx(int idx) const
+    {
+        return m_dofs[idx];
     }
 
     //! Get the nodal ID
@@ -181,10 +195,31 @@ public:
 
 public:
     // dof functions
-    void setDofState(int idof, int bcflag)
+    void setDofState(int idof, DofState state)
     {
-        m_BC[idof] = ((m_BC[idof] & 0xF0) | bcflag);
+        m_BC[idof] = ((m_BC[idof] & 0xF0) | state);
     }
+
+    DofState getDofState(int ndof) const
+    {
+        return (DofState)(m_BC[ndof] & 0x0F);
+    }
+
+    bool IsDofFree(int idx) const
+    {
+        return m_BC[idx] == FENode::OPEN;
+    }
+
+    bool IsDofPrescribed(int idx) const
+    {
+        return m_BC[idx] == FENode::PRESCRIBED;
+    }
+
+    bool IsDofFixed(int idx) const
+    {
+        return m_BC[idx] == FENode::FIXED;
+    }
+
     void set_active(int idof)
     {
         m_BC[idof] |= 0x10;
@@ -194,10 +229,6 @@ public:
         m_BC[ndof] &= 0x0F;
     }
 
-    int get_bc(int ndof) const
-    {
-        return (m_BC[ndof] & 0x0F);
-    }
     bool is_active(int ndof) const
     {
         return ((m_BC[ndof] & 0xF0) != 0);

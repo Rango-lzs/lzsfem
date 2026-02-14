@@ -24,8 +24,8 @@ void FESurfaceLoad::SetSurface(FESurface* ps)
 
 bool FESurfaceLoad::Init()
 {
-	if (m_psurf == 0) return false;
-	if (m_psurf->Init() == false) return false;
+    /*if (m_psurf == 0) return false;
+    if (m_psurf->Init() == false) return false;*/
 	return FEModelLoad::Init();
 }
 
@@ -34,13 +34,13 @@ void FESurfaceLoad::Serialize(DumpStream& ar)
 	FEModelLoad::Serialize(ar);
 	if (ar.IsShallow()) return;
 
-	ar & m_psurf;
+	//ar & m_psurf;
 
 	// the mesh manages surfaces for surface loads
 	if (m_psurf && ar.IsLoading())
 	{
-		FEMesh* pm = m_psurf->GetMesh();
-		pm->AddSurface(m_psurf);
+		/*FEMesh* pm = m_psurf->GetMesh();
+		pm->AddSurface(m_psurf);*/
 	}
 }
 

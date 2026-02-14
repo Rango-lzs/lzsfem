@@ -40,10 +40,11 @@ void RgLinearElastic::updateLameParameters()
 RgMaterialPointData* RgLinearElastic::createRgMaterialPointData() const
 {
     // For linear elastic materials, return an instance of the specific material point data
-    return new RgLinearElasticMatData();
+    //return new RgLinearElasticMatData(nullptr);
+    return nullptr;
 }
 
-void RgLinearElastic::computeConstitutive(RgMaterialPointData* mp, Matrix& D)
+void RgLinearElastic::computeConstitutive(RgMaterialPoint* mp, Matrix& D)
 {
     if (!mp) return;
     
@@ -69,10 +70,10 @@ void RgLinearElastic::computeConstitutive(RgMaterialPointData* mp, Matrix& D)
     // For demonstration, we'll compute stress based on strain in mp
     if (mp) {
         // Use the strain from the material point
-        // Extract the SmallDefRgMaterialPointData from the RgMaterialPointData chain
-        SmallDefRgMaterialPointData* smpt = mp->ExtractData<SmallDefRgMaterialPointData>();
+        // Extract the SmallDefMaterialPointData from the RgMaterialPointData chain
+        SmallDefMaterialPointData* smpt = mp->ExtractData<SmallDefMaterialPointData>();
         if (smpt) {
-            Matrix3ds strain = smpt->strain; // Using the strain field from SmallDef::SmallDefRgMaterialPointData
+            Matrix3ds strain;// = smpt->strain; // Using the strain field from SmallDef::SmallDefMaterialPointData
             Matrix3ds stress;
             
             // Compute stress = D * strain
@@ -89,7 +90,7 @@ void RgLinearElastic::computeConstitutive(RgMaterialPointData* mp, Matrix& D)
     }
 }
 
-void RgLinearElastic::commitState(RgMaterialPointData* mp)
+void RgLinearElastic::commitState(RgMaterialPoint* mp)
 {
     if (mp) {
         // For linear elastic, no state variables to commit
@@ -98,7 +99,7 @@ void RgLinearElastic::commitState(RgMaterialPointData* mp)
     }
 }
 
-void RgLinearElastic::revertState(RgMaterialPointData* mp)
+void RgLinearElastic::revertState(RgMaterialPoint* mp)
 {
     if (mp) {
         // For linear elastic, no state variables to revert

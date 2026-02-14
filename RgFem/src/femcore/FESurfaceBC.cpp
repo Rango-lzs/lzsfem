@@ -20,7 +20,7 @@ FESurface* FESurfaceBC::GetSurface()
 
 bool FESurfaceBC::Init()
 {
-	if (m_surface == nullptr) return false;
-	if (m_surface->Init() == false) return false;
+    /*if (m_surface == nullptr) return false;
+    if (m_surface->Init() == false) return false;*/
 	return FEBoundaryCondition::Init();
 }

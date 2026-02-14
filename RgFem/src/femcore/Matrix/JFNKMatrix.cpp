@@ -1,5 +1,5 @@
 #include "JFNKMatrix.h"
-#include "femcore/Solver/FENewtonSolver.h"
+#include "femcore/NewtonSolver/NewtonSolver.h"
 #include "femcore/FEModel.h"
 #include "femcore/Domain/RgDomain.h"
 #include "../FEMesh.h"
@@ -81,7 +81,7 @@ void JFNKMatrix::SetReferenceResidual(std::vector<double>& R0)
 
 bool JFNKMatrix::mult_vector(double* x, double* r)
 {
-	int neq = (int)m_pns->m_ui.size();
+	int neq = 0;// (int)m_pns->m_ui.size();
 
 	if (m_policy == ZERO_PRESCRIBED_DOFS)
 	{

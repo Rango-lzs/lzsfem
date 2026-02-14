@@ -68,7 +68,7 @@ public: // overloads from FEElasticDomain
 	void ElementMassMatrix(RgTrussElement& el, Matrix& ke);
 
 public:
-	bool Create(int nsize, FE_Element_Spec espec) override;
+	bool Create(int nsize, ElementType espec) override;
 
 	int Elements() const override { return (int)m_Elem.size(); }
 

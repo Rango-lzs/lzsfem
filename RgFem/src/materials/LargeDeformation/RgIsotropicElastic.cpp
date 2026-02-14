@@ -1,20 +1,21 @@
 #include "materials/LargeDeformation/RgIsotropicElastic.h"
 #include "femcore/units.h"
 #include "femcore/FEParamValidator.h"
+#include "RgElasticMaterialPoint.h"
 
-DEFINE_META_CLASS(FEIsotropicElastic, FEElasticMaterial, "iso-elastic");
+//DEFINE_META_CLASS(FEIsotropicElastic, LargeDef::RgLargeDefMaterial, "iso-elastic");
 
 //-----------------------------------------------------------------------------
 // define the material parameters
-BEGIN_PARAM_DEFINE(FEIsotropicElastic, FEElasticMaterial)
-	ADD_PARAMETER(m_E, FE_RANGE_GREATER(0.0), "E")->setUnits(UNIT_PRESSURE)->setLongName("Young's modulus");
-	ADD_PARAMETER(m_v, FE_RANGE_RIGHT_OPEN(-1.0, 0.5), "v")->setLongName("Poisson's ratio");
-END_PARAM_DEFINE();
+//BEGIN_PARAM_DEFINE(FEIsotropicElastic, LargeDef::RgLargeDefMaterial)
+//	ADD_PARAMETER(m_E, FE_RANGE_GREATER(0.0), "E")->setUnits(UNIT_PRESSURE)->setLongName("Young's modulus");
+//	ADD_PARAMETER(m_v, FE_RANGE_RIGHT_OPEN(-1.0, 0.5), "v")->setLongName("Poisson's ratio");
+//END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 Matrix3ds FEIsotropicElastic::Stress(RgMaterialPoint& mp)
 {
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
+	RgElasticMaterialPoint& pt = *mp.ExtractData<RgElasticMaterialPoint>();
 
 	Matrix3d &F = pt.m_F;
 	double Ji = 1.0 / pt.m_J;
@@ -45,7 +46,7 @@ Matrix3ds FEIsotropicElastic::Stress(RgMaterialPoint& mp)
 //-----------------------------------------------------------------------------
 tens4ds FEIsotropicElastic::Tangent(RgMaterialPoint& mp)
 {
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
+	RgElasticMaterialPoint& pt = *mp.ExtractData<RgElasticMaterialPoint>();
 
 	double E =  m_E(mp);
     double v = 0.3; //m_v(mp);
@@ -67,7 +68,7 @@ tens4ds FEIsotropicElastic::Tangent(RgMaterialPoint& mp)
 //-----------------------------------------------------------------------------
 double FEIsotropicElastic::StrainEnergyDensity(RgMaterialPoint& mp)
 {
-	FEElasticMaterialPoint& pt = *mp.ExtractData<FEElasticMaterialPoint>();
+	RgElasticMaterialPoint& pt = *mp.ExtractData<RgElasticMaterialPoint>();
 
 	double mE = m_E(mp);
 	double mv = m_v(mp);

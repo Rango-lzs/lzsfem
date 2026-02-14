@@ -2,7 +2,7 @@
 #include "femcore/Solver/FELineSearch.h"
 #include "femcore/FETimeInfo.h"
 #include "FENewtonStrategy.h"
-#include "FESolver.h"
+#include "femcore/NewtonSolver/SolverBase.h"
 
 //-----------------------------------------------------------------------------
 // forward declarations

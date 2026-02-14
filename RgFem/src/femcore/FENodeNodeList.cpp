@@ -43,7 +43,7 @@ void FENodeNodeList::Create(FEMesh& mesh)
 	m_pn.resize(NN);
 
 	int nsize = 0;
-	int* en;
+	std::vector<int> en;
 	std::vector<int> buf(NN);
 	int nb;
 	for (i=0; i<NN; ++i)
@@ -55,7 +55,7 @@ void FENodeNodeList::Create(FEMesh& mesh)
 		{
 			RgElement* pel = pe[j];
 			m = pel->NodeSize();
-			en = &pel->getNodeIds()[0];
+			en = pel->getNodeIds();
 			for (k=0; k<m; ++k)
 				if ((en[k] != i) && (tag[ en[k] ] == 0))
 				{
@@ -94,7 +94,7 @@ void FENodeNodeList::Create(FEMesh& mesh)
 		{
 			RgElement* pel = pe[j];
 			m = pel->NodeSize();
-			en = &pel->getNodeIds()[0];
+			en = pel->getNodeIds();
 			for (k=0; k<m; ++k)
 				if ((en[k] != i) && (tag[ en[k] ] == 0))
 				{
@@ -136,7 +136,7 @@ void FENodeNodeList::Create(RgDomain& dom)
 	m_pn.resize(NN);
 
 	int nsize = 0;
-	int* en;
+	std::vector<int> en;
 	std::vector<int> buf(NN);
 	int nb;
 	for (i=0; i<NN; ++i)
@@ -148,7 +148,7 @@ void FENodeNodeList::Create(RgDomain& dom)
 		{
 			RgElement* pel = pe[j];
 			m = pel->NodeSize();
-			en = &pel->getNodeIds()[0];
+			en = pel->getNodeIds();
 			for (k=0; k<m; ++k)
 				if ((en[k] != i) && (tag[ en[k] ] == 0))
 				{
@@ -187,7 +187,7 @@ void FENodeNodeList::Create(RgDomain& dom)
 		{
 			RgElement* pel = pe[j];
 			m = pel->NodeSize();
-			en = &pel->getNodeIds()[0];
+			en = pel->getNodeIds();
 			for (k=0; k<m; ++k)
 				if ((en[k] != i) && (tag[ en[k] ] == 0))
 				{

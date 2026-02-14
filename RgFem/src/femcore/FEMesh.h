@@ -15,7 +15,6 @@
 #include "FENodeElemList.h"
 #include "femcore/FENodeSet.h"
 //#include "elements/FEShellElement.h"
-#include "elements/RgElementSet.h"
 #include "FESurfacePair.h"
 #include <vector>
 #include <string>
@@ -29,6 +28,7 @@ class FETimeInfo;
 class FEDataMap;
 class DumpStream;
 class RgElement;
+class RgElementSet;
 
 //---------------------------------------------------------------------------------------
 // Helper class for faster lookup of elements based on their ID
@@ -240,7 +240,7 @@ private:
     FEBoundingBox		m_box;	//!< bounding box
 };
 
-/*
+/*f
 * Domian : mesh part
 * Surface: boundary of 3d domian
 * Edge   : surface boundary

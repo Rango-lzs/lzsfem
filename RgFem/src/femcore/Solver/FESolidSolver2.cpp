@@ -34,6 +34,8 @@
 #include "femcore/FESurfacePairConstraint.h"
 #include "../FESolidModule.h"
 #include "../Domain/RgSolidDomain.h"
+#include "../BoundaryCondition/RgBoundaryCondition.h"
+#include "../Load/RgLoad.h"
 
 DEFINE_META_CLASS(FESolidSolver2, FENewtonSolver,"solid");
 
@@ -93,19 +95,6 @@ FESolidSolver2::FESolidSolver2()
     m_al_lam = 0.0;
     m_al_inc = 0.0;
     m_al_ds = 0.0;
-
-    // get the DOF indices
-    // TODO: Can this be done in Init, since there is no error checking
-    if (1)
-    {
-        m_dofU.AddVariable(GetVariableName(DISPLACEMENT));
-        m_dofSQ.AddVariable(GetVariableName(SHELL_ROTATION));
-        m_dofRQ.AddVariable(GetVariableName(RIGID_ROTATION));
-        m_dofV.AddVariable(GetVariableName(VELOCTIY));
-        m_dofSU.AddVariable(GetVariableName(SHELL_DISPLACEMENT));
-        m_dofSV.AddVariable(GetVariableName(SHELL_VELOCITY));
-        m_dofSA.AddVariable(GetVariableName(SHELL_ACCELERATION));
-    }
 }
 
 //-----------------------------------------------------------------------------
@@ -394,7 +383,7 @@ void FESolidSolver2::UpdateKinematics(std::vector<double>& ui)
     int nbcs = fem.BoundaryConditions();
     for (int i = 0; i < nbcs; ++i)
     {
-        FEBoundaryCondition& bc = *fem.BoundaryCondition(i);
+        RgBoundaryCondition& bc = *fem.BoundaryCondition(i);
         if (bc.IsActive())
             bc.Update();
     }
@@ -703,9 +692,9 @@ void FESolidSolver2::PrepStep()
     int nBC = fem.BoundaryConditions();
     for (int i = 0; i < nBC; ++i)
     {
-        FEBoundaryCondition* pBc = fem.BoundaryCondition(i);
-        if (pBc->IsActive())
-            pBc->PrepStep(ui);
+        RgBoundaryCondition* pBc = fem.BoundaryCondition(i);
+        /*if (pBc->IsActive())
+            pBc->PrepStep(ui);*/
     }
 
     // do the linear constraints
@@ -1142,9 +1131,9 @@ bool FESolidSolver2::StiffnessMatrix()
     // calculate the body force stiffness Matrix for each non-rigid domain
     for (int j = 0; j < fem.ModelLoads(); ++j)
     {
-        FEModelLoad* pml = fem.ModelLoad(j);
-        if (pml->IsActive())
-            pml->StiffnessMatrix(ls);
+        RgLoad* pml = fem.ModelLoad(j);
+        /*if (pml->IsActive())
+            pml->StiffnessMatrix(ls);*/
     }
 
     // TODO: add body force stiffness for rigid bodies
@@ -1355,9 +1344,9 @@ void FESolidSolver2::ExternalForces(FEGlobalVector& RHS)
     // apply loads
     for (int j = 0; j < fem.ModelLoads(); ++j)
     {
-        FEModelLoad* pml = fem.ModelLoad(j);
-        if (pml->IsActive())
-            pml->LoadVector(RHS);
+        RgLoad* pml = fem.ModelLoad(j);
+        /*if (pml->IsActive())
+            pml->LoadVector(RHS);*/
     }
 
     // calculate inertial forces for dynamic problems

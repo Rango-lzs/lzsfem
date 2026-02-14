@@ -25,6 +25,10 @@ void RgNLSolid3dElement::calculateDampingMatrix(Matrix& C)
     // Placeholder for actual implementation
 }
 
+void RgNLSolid3dElement::calculateStiffnessMatrix(Matrix& Kt)
+{
+}
+
 void RgNLSolid3dElement::calculateMaterialStiffnessMatrix(Matrix& Km)
 {
     // Material stiffness matrix for nonlinear analysis
@@ -412,6 +416,14 @@ void RgNLSolid3dElement::computeLinearBMatrix(const NaturalCoord& xi, Matrix& B_
     }
 }
 
+void RgNLSolid3dElement::computeLinearB0Matrix(const NaturalCoord& xi, Matrix& B_L0)
+{
+}
+
+void RgNLSolid3dElement::computeLinearB1Matrix(const NaturalCoord& xi, Matrix& B_L1)
+{
+}
+
 void RgNLSolid3dElement::computeNonlinearBMatrix(const NaturalCoord& xi, const Matrix3d& F, Matrix& B_NL)
 {
     // Compute the nonlinear B-matrix for finite strain analysis
@@ -468,6 +480,13 @@ void RgNLSolid3dElement::computeNonlinearBMatrix(const NaturalCoord& xi, const M
     }
 }
 
+void RgNLSolid3dElement::computeTotalLagrangianBMatrix(const NaturalCoord& xi, const Matrix3d& F, Matrix& B_TL)
+{
+}
+
+void RgNLSolid3dElement::computeUpdatedLagrangianBMatrix(const NaturalCoord& xi, const Matrix3d& F, Matrix& B_UL)
+{
+}
 
 /* 
 some reference

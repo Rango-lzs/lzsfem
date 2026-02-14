@@ -7,7 +7,7 @@
 namespace SmallDef {
 
 /// This class defines material point data for elastic-plastic materials.
-class RgElastoPlasticMaterialPoint : public SmallDefRgMaterialPointData {
+class RgElastoPlasticMaterialPoint : public SmallDefMaterialPointData {
 public:
     //! constructor
     RgElastoPlasticMaterialPoint(RgMaterialPointData* mp = nullptr);

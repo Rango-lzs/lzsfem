@@ -1,6 +1,6 @@
 #include "RgTrussDomain.h"
-#include "FEModel.h"
-#include "FEMesh.h"
+#include "femcore/FEModel.h"
+#include "femcore/FEMesh.h"
 #include "RgAssembler.h"
 
 BEGIN_PARAM_DEFINE(RgTrussDomain, RgDomain)
@@ -9,7 +9,7 @@ END_PARAM_DEFINE();
 
 //-----------------------------------------------------------------------------
 //! Constructor
-RgTrussDomain::RgTrussDomain(FEModel* pfem) : RgDomain(FE_DOMAIN_TRUSS, pfem), FEElasticDomain(pfem), m_dofU(pfem)
+RgTrussDomain::RgTrussDomain(FEModel* pfem) : RgDomain(pfem), m_dofU(pfem)
 {
 	m_a0 = 0.0;
 	m_pMat = 0;
@@ -32,7 +32,7 @@ RgTrussDomain& RgTrussDomain::operator = (RgTrussDomain& d)
 }
 
 //-----------------------------------------------------------------------------
-bool RgTrussDomain::Create(int nsize, FE_Element_Spec espec)
+bool RgTrussDomain::Create(int nsize, ElementType espec)
 {
 	m_Elem.resize(nsize);
 	for (int i = 0; i < nsize; ++i) m_Elem[i].SetDomain(this);
@@ -47,7 +47,7 @@ void RgTrussDomain::ForEachElement(std::function<void(RgElement& el)> f)
 }
 
 //-----------------------------------------------------------------------------
-void RgTrussDomain::ForEachTrussElement(std::function<void(FETrussElement& el)> f)
+void RgTrussDomain::ForEachTrussElement(std::function<void(RgTrussElement& el)> f)
 {
 	int NE = Elements();
 	for (int i = 0; i < NE; ++i) f(m_Elem[i]);
@@ -61,11 +61,9 @@ const FEDofList& RgTrussDomain::GetDOFList() const
 }
 
 //-----------------------------------------------------------------------------
-void RgTrussDomain::SetMaterial(FEMaterial* pmat)
+void RgTrussDomain::SetMaterial(RgMaterial* pmat)
 {
 	RgDomain::SetMaterial(pmat);
-	m_pMat = dynamic_cast<FETrussMaterial*>(pmat);
-	assert(m_pMat);
 }
 
 //-----------------------------------------------------------------------------
@@ -80,7 +78,7 @@ bool RgTrussDomain::Init()
 	{
 		for (int i = 0; i < Elements(); ++i)
 		{
-			FETrussElement& el = Element(i);
+			RgTrussElement& el = Element(i);
 			el.m_a0 = m_a0;
 		}
 	}
@@ -88,7 +86,7 @@ bool RgTrussDomain::Init()
 	for (int i = 0; i < (int)m_Elem.size(); ++i)
 	{
 		// unpack the element
-		FETrussElement& el = m_Elem[i];
+		RgTrussElement& el = m_Elem[i];
 
 		// nodal coordinates
 		Vector3d r0[2];
@@ -110,7 +108,7 @@ void RgTrussDomain::Reset()
 }
 
 //-----------------------------------------------------------------------------
-void RgTrussDomain::UnpackLM(RgElement &el, vector<int>& lm)
+void RgTrussDomain::UnpackLM(RgElement &el, std::vector<int>& lm)
 {
 	lm.resize(6);
 	FENode& n1 = m_pMesh->Node(el.m_node[0]);
@@ -146,7 +144,7 @@ void RgTrussDomain::PreSolveUpdate(const FETimeInfo& timeInfo)
 {
 	for (int i=0; i<(int) m_Elem.size(); ++i)
 	{
-		FETrussElement& el = m_Elem[i];
+		RgTrussElement& el = m_Elem[i];
 		el.m_ra = m_pMesh->Node(el.m_node[0]).m_rt;
 		el.m_rb = m_pMesh->Node(el.m_node[1]).m_rt;
 	}
@@ -168,20 +166,20 @@ void RgTrussDomain::InternalForces(FEGlobalVector& R)
 	}
 	
 	// fall back to direct implementation
-	vector<int> lm;
+	std::vector<int> lm;
 
 	for (int i=0; i<(int) m_Elem.size(); ++i)
 	{
-		FETrussElement& el = m_Elem[i];
+		RgTrussElement& el = m_Elem[i];
 
-		// get the element force vector
-		vector<double> fe;
+		// get the element force std::vector
+		std::vector<double> fe;
 		ElementInternalForces(el, fe);
 
-		// get the element's LM vector
+		// get the element's LM std::vector
 		UnpackLM(el, lm);
 
-		// add element force vector to global force vector
+		// add element force std::vector to global force std::vector
 		R.Assemble(el.m_node, lm, fe);
 	}
 }
@@ -197,20 +195,20 @@ void RgTrussDomain::StiffnessMatrix(FELinearSystem& LS)
 	}
 	
 	// fall back to direct implementation
-	vector<int> lm;
+	std::vector<int> lm;
 	for (int i=0; i<(int) m_Elem.size(); ++i)
 	{
-		FETrussElement& el = m_Elem[i];
+		RgTrussElement& el = m_Elem[i];
 
-		// element stiffness matrix
-		matrix ke;
+		// element stiffness Matrix
+		Matrix ke;
 		ElementStiffness(i, ke);
 
-		// get the element's LM vector
+		// get the element's LM std::vector
 		UnpackLM(el, lm);
 		ke.SetIndices(lm);
 
-		// assemble element matrix in global stiffness matrix
+		// assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
 	}
 }
@@ -226,37 +224,37 @@ void RgTrussDomain::MassMatrix(FELinearSystem& LS, double scale)
 	}
 	
 	// fall back to direct implementation
-	vector<int> lm;
+	std::vector<int> lm;
 	for (int i = 0; i < (int)m_Elem.size(); ++i)
 	{
-		FETrussElement& el = m_Elem[i];
+		RgTrussElement& el = m_Elem[i];
 
-		// element stiffness matrix
-		matrix ke;
+		// element stiffness Matrix
+		Matrix ke;
 		ElementMassMatrix(el, ke);
 
-		// get the element's LM vector
+		// get the element's LM std::vector
 		UnpackLM(el, lm);
 		ke.SetIndices(lm);
 
-		// assemble element matrix in global stiffness matrix
+		// assemble element Matrix in global stiffness Matrix
 		LS.Assemble(ke);
 	}
 }
 
 //-----------------------------------------------------------------------------
-//! calculates the truss element stiffness matrix
-void RgTrussDomain::ElementStiffness(int iel, matrix& ke)
+//! calculates the truss element stiffness Matrix
+void RgTrussDomain::ElementStiffness(int iel, Matrix& ke)
 {
-	FETrussElement& el = m_Elem[iel];
+	RgTrussElement& el = m_Elem[iel];
 
 	// get the material
 	FETrussMaterial* pmat = dynamic_cast<FETrussMaterial*>(GetMaterial());
 	double E = pmat->m_E;
 
 	// get the nodes
-	vec3d& r1 = el.m_ra;
-	vec3d& r2 = el.m_rb;
+	Vector3d& r1 = el.m_ra;
+	Vector3d& r2 = el.m_rb;
 	double L = (r2 - r1).norm();
 
 	// get the cross-sectional area
@@ -292,16 +290,16 @@ void RgTrussDomain::ElementStiffness(int iel, matrix& ke)
 }
 
 //-----------------------------------------------------------------------------
-//! Calculates the internal stress vector for solid elements
-void RgTrussDomain::ElementInternalForces(FETrussElement& el, vector<double>& fe)
+//! Calculates the internal stress std::vector for solid elements
+void RgTrussDomain::ElementInternalForces(RgTrussElement& el, std::vector<double>& fe)
 {
 	// get the material
 	FETrussMaterial* pmat = dynamic_cast<FETrussMaterial*>(GetMaterial());
 
 	// get the nodes
-	vec3d& r1 = el.m_ra;
-	vec3d& r2 = el.m_rb;
-	vec3d e12 = r2 - r1;
+	Vector3d& r1 = el.m_ra;
+	Vector3d& r2 = el.m_rb;
+	Vector3d e12 = r2 - r1;
 	double L = e12.norm();
 
 	// get the cross-sectional area
@@ -312,9 +310,9 @@ void RgTrussDomain::ElementInternalForces(FETrussElement& el, vector<double>& fe
 	double f = k*(L - el.m_L0);
 
 	// get the direction
-	vec3d q12 = e12/L;
+	Vector3d q12 = e12/L;
 
-	// calculate internal force vector
+	// calculate internal force std::vector
 	fe.resize(6);
 
 	fe[0] =  f*q12.x;
@@ -327,14 +325,14 @@ void RgTrussDomain::ElementInternalForces(FETrussElement& el, vector<double>& fe
 }
 
 //-----------------------------------------------------------------------------
-void RgTrussDomain::ElementMassMatrix(FETrussElement& el, Matrix& ke)
+void RgTrussDomain::ElementMassMatrix(RgTrussElement& el, Matrix& ke)
 {
 	// get the material
 	FETrussMaterial* pmat = dynamic_cast<FETrussMaterial*>(GetMaterial());
 
 	// get the nodes
-	vec3d& r1 = el.m_ra;
-	vec3d& r2 = el.m_rb;
+	Vector3d& r1 = el.m_ra;
+	Vector3d& r2 = el.m_rb;
 	double L = (r2 - r1).norm();
 
 	// get the cross-sectional area
@@ -364,12 +362,12 @@ void RgTrussDomain::ElementMassMatrix(FETrussElement& el, Matrix& ke)
 }
 
 //-----------------------------------------------------------------------------
-Vector3d RgTrussDomain::TrussNormal(FETrussElement& el)
+Vector3d RgTrussDomain::TrussNormal(RgTrussElement& el)
 {
-	vec3d r1 = m_pMesh->Node(el.m_node[0]).m_rt;
-	vec3d r2 = m_pMesh->Node(el.m_node[1]).m_rt;
+	Vector3d r1 = m_pMesh->Node(el.m_node[0]).m_rt;
+	Vector3d r2 = m_pMesh->Node(el.m_node[1]).m_rt;
 
-	vec3d a = r2 - r1;
+	Vector3d a = r2 - r1;
 	double L = a.unit();
 
 	// get the cross-sectional area

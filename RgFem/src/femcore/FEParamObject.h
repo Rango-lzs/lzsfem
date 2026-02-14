@@ -29,7 +29,7 @@ class FEDataArray;
 
 /* 参数类的几种设计计方式
 * 1、每个Object对象有一个ParamList，定义Object需要的参数，Object本身没有数据成员，可拓展，无成员访问不方便
-* 2、每个Object对象有一个ParamList，每个Param和Object的数据成员绑定，访问方便，内存占比较大
+* 2、每个Object对象有一个ParamList，Object本身有数据成员，每个Param和Object的数据成员绑定，访问方便，内存占比较大
 * 3、每个Object类有一个ParamList用于定义参数元信息，ParamList通过类提供的get/set函数和具体实例参数交互
 *    ，注册参数信息的时候，需要提供get/set函数， 内存占比小，需要提供get/set函数
 */

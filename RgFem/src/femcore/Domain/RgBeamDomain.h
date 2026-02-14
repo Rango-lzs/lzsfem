@@ -1,6 +1,6 @@
 #pragma once
 #include "RgDomain.h"
-#include "elements/FEBeamElement.h"
+#include "elements/RgElement/RgBeamElement.h"
 
 // Forward declaration
 class RgAssembler;

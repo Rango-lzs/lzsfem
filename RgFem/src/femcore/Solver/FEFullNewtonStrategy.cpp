@@ -1,8 +1,8 @@
 
 #include "FEFullNewtonStrategy.h"
-#include "FESolver.h"
+#include "femcore/NewtonSolver/SolverBase.h"
 #include "femcore/FEException.h"
-#include "FENewtonSolver.h"
+#include "femcore/NewtonSolver/NewtonSolver.h"
 
 //-----------------------------------------------------------------------------
 FEFullNewtonStrategy::FEFullNewtonStrategy() : FENewtonStrategy()

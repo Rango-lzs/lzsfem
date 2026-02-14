@@ -1,5 +1,5 @@
 #include "RgElementSet.h"
-#include "elements/RgElement.h"
+#include "elements/RgElement/RgElement.h"
 #include "femcore/FEMesh.h"
 #include "femcore/Domain/RgDomain.h"
 #include "basicio/DumpStream.h"
@@ -21,7 +21,7 @@ RgElementSet::RgElementSet(FEMesh* mesh) : FEItemList(mesh)
 //-----------------------------------------------------------------------------
 void RgElementSet::Create(const std::vector<int>& elemList)
 {
-	m_dom.Clear();
+	//m_dom->Clear();
 	m_Elem = elemList;
 	BuildLUT();
 }
@@ -29,8 +29,8 @@ void RgElementSet::Create(const std::vector<int>& elemList)
 //-----------------------------------------------------------------------------
 void RgElementSet::Create(RgDomain* dom, const std::vector<int>& elemList)
 {
-	m_dom.Clear();
-	m_dom.AddDomain(dom);
+	//m_dom.();
+	m_dom->Add(dom);
 	m_Elem = elemList;
 	BuildLUT();
 }
@@ -38,20 +38,20 @@ void RgElementSet::Create(RgDomain* dom, const std::vector<int>& elemList)
 //-----------------------------------------------------------------------------
 void RgElementSet::CopyFrom(RgElementSet& eset)
 {
-	SetName(eset.GetName());
+    /*SetName(eset.GetName());
 
-	m_Elem = eset.m_Elem;
+    m_Elem = eset.m_Elem;
 
-	FEMesh* mesh = GetMesh(); assert(mesh);
+    FEMesh* mesh = GetMesh(); assert(mesh);
 
-	m_dom.Clear();
-	FEDomainList& dl = eset.GetDomainList();
-	for (int i = 0; i < dl.Domains(); ++i)
-	{
-		RgDomain* di = dl.GetDomain(i);
-		RgDomain* newdi = mesh->FindDomain(di->GetName()); assert(newdi);
-		m_dom.AddDomain(newdi);
-	}
+    m_dom.Clear();
+    RgDomainList& dl = eset.GetDomainList();
+    for (int i = 0; i < dl.Domains(); ++i)
+    {
+        RgDomain* di = dl.GetDomain(i);
+        RgDomain* newdi = mesh->FindDomain(di->GetName()); assert(newdi);
+        m_dom.AddDomain(newdi);
+    }*/
 
 	BuildLUT();
 }
@@ -59,8 +59,8 @@ void RgElementSet::CopyFrom(RgElementSet& eset)
 //-----------------------------------------------------------------------------
 void RgElementSet::Create(RgDomain* dom)
 {
-	m_dom.Clear();
-	m_dom.AddDomain(dom);
+	//m_dom.Clear();
+	m_dom->Add(dom);
 	SetMesh(dom->GetMesh());
 
 	int NE = dom->Elements();
@@ -79,7 +79,7 @@ void RgElementSet::Create(RgDomain* dom)
 void RgElementSet::Add(const RgElementSet& set)
 {
 	// add the domain list
-	m_dom.AddDomainList(set.GetDomainList());
+	//m_dom.AddDomainList(set.GetDomainList());
 
 	// add the elements
 	m_Elem.insert(m_Elem.end(), set.m_Elem.begin(), set.m_Elem.end());
@@ -88,22 +88,22 @@ void RgElementSet::Add(const RgElementSet& set)
 }
 
 //-----------------------------------------------------------------------------
-void RgElementSet::Create(FEDomainList& domList)
+void RgElementSet::Create(RgDomainList& domList)
 {
 	int NT = 0;
-	m_dom.Clear();
-	for (int n = 0; n < domList.Domains(); ++n)
+	//m_dom.Clear();
+	for (int n = 0; n < domList.Size(); ++n)
 	{
-		RgDomain* dom = domList.GetDomain(n);
-		m_dom.AddDomain(dom);
+		RgDomain* dom = domList.Get(n);
+		m_dom->Add(dom);
 		NT += dom->Elements();
 	}
 
 	m_Elem.resize(NT, -1);
 	NT = 0;
-	for (int n = 0; n < domList.Domains(); ++n)
+	for (int n = 0; n < domList.Size(); ++n)
 	{
-		RgDomain* dom = domList.GetDomain(n);
+		RgDomain* dom = domList.Get(n);
 		int NE = dom->Elements();
 		for (int i = 0; i < NE; ++i)
 		{

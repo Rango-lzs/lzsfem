@@ -7,7 +7,6 @@
 
 //! Forward declarations
 class RgSolidElementTraits;
-
 class NaturalCoord;
 
 //! Corresponds to Abaqus Continuum(Solid) elements, which are multidimensional (3D)
@@ -46,8 +45,6 @@ public:
 	virtual void calculateDampingMatrix(Matrix& C) override;
 	virtual void calculateInternalForceVector(std::vector<double>& F) override;
 
-	virtual void computeBMatrix(const NaturalCoord& xi, Matrix& B) const = 0;
-
     virtual void calculateStress(RgMaterialPoint& matPt, StressTensor& stress) override;
     virtual void calculateStrain(RgMaterialPoint& matPt, StrainTensor& strain) override;
 
@@ -60,6 +57,7 @@ public:
     virtual Matrix3d evaluateJacobianInverse(const NaturalCoord& naturalCoord) const;
 
 protected:
+    virtual void computeBMatrix(const NaturalCoord& xi, Matrix& B) = 0;
 	virtual void computeBMatrixAtGauss(int gp, Matrix& B) const;
 	virtual void getConstitutiveTangentAtGauss(int gp, Matrix& D) const;
 };

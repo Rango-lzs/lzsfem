@@ -6,7 +6,7 @@
 namespace SmallDef {
 
 RgElastoPlasticMaterialPoint::RgElastoPlasticMaterialPoint(RgMaterialPointData* mp) 
-    : SmallDefRgMaterialPointData(mp), m_ep_bar(0.0), m_bPlastic(false), m_yield_stress(0.0)
+    : SmallDefMaterialPointData(mp), m_ep_bar(0.0), m_bPlastic(false), m_yield_stress(0.0)
 {
     // Initialize matrices to zero
     m_e.resize(6, 1);
@@ -25,7 +25,7 @@ RgElastoPlasticMaterialPoint::RgElastoPlasticMaterialPoint(RgMaterialPointData* 
 void RgElastoPlasticMaterialPoint::init()
 {
     // Initialize base class
-    SmallDefRgMaterialPointData::init();
+    SmallDefMaterialPointData::init();
     
     // Reset all data
     m_e.zero();
@@ -48,7 +48,7 @@ void RgElastoPlasticMaterialPoint::serialize(DumpStream& ar)
     RgMaterialPointData::serialize(ar);
     
     // Serialize plasticity data
-    if (ar.isSaving()) {
+    if (ar.IsSaving()) {
         ar << m_e << m_ep << m_ee << m_stress << m_ep_bar << m_bPlastic << m_yield_stress;
     } else {
         ar >> m_e >> m_ep >> m_ee >> m_stress >> m_ep_bar >> m_bPlastic >> m_yield_stress;

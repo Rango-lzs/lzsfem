@@ -171,7 +171,7 @@ void RgLinearSolid2dElement::getStress(RgMaterialPoint& matPt, StressTensor& str
 {
     // Try to extract stress from the material point data if available
     // Look for specialized material point data that contains stress information
-    auto* plasticData = matPt.ExtractData<SmallDef::SmallDefRgMaterialPointData>();
+    auto* plasticData = matPt.ExtractData<SmallDef::SmallDefMaterialPointData>();
     if (plasticData)
     {
         // If we have plastic material point data, get the stress from there
@@ -202,7 +202,7 @@ void RgLinearSolid2dElement::getStrain(RgMaterialPoint& matPt, StrainTensor& str
 {
     // Try to extract strain from the material point data if available
     // Look for specialized material point data that contains strain information
-    auto* plasticData = matPt.ExtractData<SmallDef::SmallDefRgMaterialPointData>();
+    auto* plasticData = matPt.ExtractData<SmallDef::SmallDefMaterialPointData>();
     if (plasticData)
     {
         // If we have plastic material point data, get the strain from there

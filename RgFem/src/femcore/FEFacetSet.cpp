@@ -34,28 +34,28 @@ void FEFacetSet::Create(int n)
 // create from a surface
 void FEFacetSet::Create(const FESurface& surf)
 {
-	int NE = surf.Elements();
-	m_Face.resize(NE);
-	for (int i = 0; i < NE; ++i)
-	{
-		const RgSurfaceElement& el = surf.Element(i);
-		FACET& face = m_Face[i];
-		switch (el.Shape())
-		{
-		case ET_TRI3 : face.ntype = 3; break;
-		case ET_QUAD4: face.ntype = 4; break;
-		case ET_TRI6 : face.ntype = 6; break;
-		case ET_TRI7 : face.ntype = 7; break;
-		case ET_QUAD8: face.ntype = 8; break;
-		default:
-			assert(false);
-		}
+    /*int NE = surf.Elements();
+    m_Face.resize(NE);
+    for (int i = 0; i < NE; ++i)
+    {
+        const RgSurfaceElement& el = surf.Element(i);
+        FACET& face = m_Face[i];
+        switch (el.shapeType())
+        {
+        case ET_TRI3 : face.ntype = 3; break;
+        case ET_QUAD4: face.ntype = 4; break;
+        case ET_TRI6 : face.ntype = 6; break;
+        case ET_TRI7 : face.ntype = 7; break;
+        case ET_QUAD8: face.ntype = 8; break;
+        default:
+            assert(false);
+        }
 
-		for (int j = 0; j < el.NodeSize(); ++j)
-		{
-			face.node[j] = el.getNodeId(j);
-		}
-	}
+        for (int j = 0; j < el.NodeSize(); ++j)
+        {
+            face.node[j] = el.getNodeId(j);
+        }
+    }*/
 }
 
 //-----------------------------------------------------------------------------

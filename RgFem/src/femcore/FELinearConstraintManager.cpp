@@ -4,7 +4,7 @@
 #include "femcore/FEAnalysis/FEAnalysis.h"
 #include "basicio/DumpStream.h"
 #include "femcore/Domain/RgDomain.h"
-#include "FEGlobalMatrix.h"
+#include "femcore/Matrix/FEGlobalMatrix.h"
 #include "femcore/RTTI/MetaClass.h"
 
 //-----------------------------------------------------------------------------

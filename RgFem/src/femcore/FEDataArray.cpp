@@ -2,7 +2,7 @@
 #include "basicio/DumpStream.h"
 #include "fecore_type.h"
 #include "FENodeDataMap.h"
-#include "femcore/Domain/FEDomainMap.h"
+//#include "femcore/Domain/RgDomainMap.h"
 #include "FESurfaceMap.h"
 
 //-----------------------------------------------------------------------------
@@ -118,7 +118,7 @@ FEDataArray* FEDataArray::LoadClass(DumpStream& ar, FEDataArray* p)
 	switch (ntype)
 	{
 	case FE_NODE_DATA_MAP: p = new FENodeDataMap; break;
-	case FE_DOMAIN_MAP   : p = new FEDomainMap; break;
+	//case FE_DOMAIN_MAP   : p = new FEDomainMap; break;
 	case FE_SURFACE_MAP  : p = new FESurfaceMap; break;
 	default:
 		assert(false);

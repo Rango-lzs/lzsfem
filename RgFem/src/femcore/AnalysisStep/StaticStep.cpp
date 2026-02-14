@@ -1,26 +1,30 @@
+/*********************************************************************
+ * \file   StaticStep.cpp
+ * \brief  Static analysis step implementation
+ *
+ * \author Integration
+ * \date   February 2025
+ *********************************************************************/
+
 #include "StaticStep.h"
+#include "femcore/NewtonSolver/StaticSolver.h"
+#include "femcore/NewtonSolver/NewtonSolver.h"
 #include "femcore/FEModel.h"
-#include "femcore/FEMesh.h"
+#include "logger/log.h"
 #include <iostream>
 #include <cmath>
-#include <algorithm>
 #include <iomanip>
 
 StaticStep::StaticStep(const std::string& name)
     : loadMultiplier_(1.0)
     , nonlinear_(false)
-    , largeDisplacement_(false)
-    , useLineSearch_(false)
-    , lineSearchMaxIter_(10)
-    , displacementNorm_(0.0)
-    , forceNorm_(0.0)
-    , energyNorm_(0.0)
-    , initialForceNorm_(0.0)
+    , currentTimeIncrement_(0.0)
 {
     stepName_ = name;
     currentTime_ = 0.0;
     currentIncrement_ = 0;
     outputFrequency_ = 1;
+    solver_ = nullptr;
 }
 
 void StaticStep::initialize(FEModel* model)
@@ -28,48 +32,54 @@ void StaticStep::initialize(FEModel* model)
     std::cout << "\n========================================" << std::endl;
     std::cout << "Initializing Static Step: " << stepName_ << std::endl;
     std::cout << "========================================" << std::endl;
-    
+
     if (nonlinear_) {
         std::cout << "Analysis type: Nonlinear Static" << std::endl;
-        if (largeDisplacement_) {
-            std::cout << "Geometric nonlinearity: Enabled" << std::endl;
-        }
-    } else {
+    }
+    else {
         std::cout << "Analysis type: Linear Static" << std::endl;
     }
-    
+
+    // Check if solver is assigned
+    if (!solver_) {
+        RgLogError("No solver assigned to step!");
+        throw std::runtime_error("No solver assigned");
+    }
+
+    // Verify solver type
+    FEStaticSolver* staticSolver = getStaticSolver();
+    if (!staticSolver) {
+        RgLogError("Solver is not FEStaticSolver!");
+        throw std::runtime_error("Wrong solver type");
+    }
+
+    // Initialize solver
+    if (!solver_->Init()) {
+        RgLogError("Solver initialization failed!");
+        throw std::runtime_error("Solver initialization failed");
+    }
+
     currentTime_ = 0.0;
     currentIncrement_ = 0;
-    
-    // Initialize solution vectors
-    int nDOF = model->getNumberOfDOFs();
-    displacement_.assign(nDOF, 0.0);
-    internalForce_.assign(nDOF, 0.0);
-    externalForce_.assign(nDOF, 0.0);
-    residual_.assign(nDOF, 0.0);
-    reactionForces_.assign(nDOF, 0.0);
-    
-    std::cout << "Number of DOFs: " << nDOF << std::endl;
-    std::cout << "Initialization complete.\n" << std::endl;
+    currentTimeIncrement_ = control_.initialTimeIncrement;
+
+    RgLog("Load multiplier: %.4f\n", loadMultiplier_);
+    RgLog("Initialization complete.\n");
 }
 
 bool StaticStep::execute(FEModel* model)
 {
-    std::cout << "Executing static analysis..." << std::endl;
-    
+    RgLog("Executing static analysis...\n");
+
     bool success = false;
-    
+
     if (nonlinear_) {
-        success = solveNonlinearSystem(model);
-    } else {
-        success = solveLinearSystem(model);
+        success = executeNonlinear(model);
     }
-    
-    if (success) {
-        calculateReactionForces(model);
-        updateStressStrain(model);
+    else {
+        success = executeLinear(model);
     }
-    
+
     return success;
 }
 
@@ -80,416 +90,175 @@ void StaticStep::finalize(FEModel* model)
     std::cout << "========================================" << std::endl;
     std::cout << "Total increments: " << currentIncrement_ << std::endl;
     std::cout << "Final load factor: " << currentTime_ << std::endl;
-    
-    // Output summary statistics
-    double maxDisp = 0.0;
-    double maxReaction = 0.0;
-    
-    for (double d : displacement_) {
-        maxDisp = std::max(maxDisp, std::abs(d));
+
+    // Get statistics from solver
+    FENewtonSolver* newtonSolver = getNewtonSolver();
+    if (newtonSolver) {
+        std::cout << "Total iterations: " << newtonSolver->m_niter << std::endl;
+        std::cout << "Total reformations: " << newtonSolver->m_ntotref << std::endl;
     }
-    for (double r : reactionForces_) {
-        maxReaction = std::max(maxReaction, std::abs(r));
-    }
-    
-    std::cout << std::scientific << std::setprecision(4);
-    std::cout << "Max displacement: " << maxDisp << std::endl;
-    std::cout << "Max reaction force: " << maxReaction << std::endl;
+
     std::cout << std::endl;
 }
 
-bool StaticStep::solveLinearSystem(FEModel* model)
+bool StaticStep::executeLinear(FEModel* model)
 {
-    std::cout << "\n--- Linear Static Analysis ---\n" << std::endl;
-    
-    // Step 1: Assemble global stiffness matrix
-    std::cout << "Assembling global stiffness matrix..." << std::endl;
-    assembleStiffnessMatrix(model, false);
-    
-    // Step 2: Assemble load vector
-    std::cout << "Assembling load vector..." << std::endl;
-    assembleLoadVector(model, loadMultiplier_);
-    
-    // Step 3: Apply boundary conditions
-    std::cout << "Applying boundary conditions..." << std::endl;
-    applyBoundaryConditions(model);
-    
-    // Step 4: Solve linear system K*u = F
-    std::cout << "Solving linear system..." << std::endl;
-    
-    // TODO: Call actual linear solver
-    // For now, placeholder - in real implementation would call:
-    // model->getSolver()->solve(K, F, displacement_);
-    
-    std::cout << "Linear solution obtained." << std::endl;
-    
-    currentIncrement_ = 1;
-    currentTime_ = loadMultiplier_;
-    reportProgress(1);
-    
-    return true;
+    RgLog("\n--- Linear Static Analysis ---\n");
+
+    FEStaticSolver* staticSolver = getStaticSolver();
+
+    // Initialize the step in solver
+    if (!staticSolver->InitStep(loadMultiplier_)) {
+        RgLogError("InitStep failed!");
+        return false;
+    }
+
+    // Solve single step (solver does Newton iteration internally)
+    bool success = staticSolver->SolveStep();
+
+    if (success) {
+        RgLog("Linear solution obtained.\n");
+        currentIncrement_ = 1;
+        currentTime_ = loadMultiplier_;
+        reportProgress(staticSolver->m_niter);
+    }
+    else {
+        RgLogError("Linear solve failed!\n");
+    }
+
+    return success;
 }
 
-bool StaticStep::solveNonlinearSystem(FEModel* model)
+bool StaticStep::executeNonlinear(FEModel* model)
 {
-    std::cout << "\n--- Nonlinear Static Analysis (Newton-Raphson) ---\n" << std::endl;
-    
-    double timeIncrement = control_.initialTimeIncrement;
+    RgLog("\n--- Nonlinear Static Analysis ---\n");
+    RgLog("Load stepping with adaptive control\n\n");
+
+    FEStaticSolver* staticSolver = getStaticSolver();
+    FENewtonSolver* newtonSolver = getNewtonSolver();
+
+    // Print header
+    std::cout << std::setw(10) << "Increment"
+        << std::setw(12) << "Time"
+        << std::setw(10) << "Iters"
+        << std::setw(15) << "Res Norm"
+        << std::setw(15) << "Energy Norm"
+        << std::setw(12) << "dt" << std::endl;
+    std::cout << std::string(74, '-') << std::endl;
+
     currentTime_ = 0.0;
-    
-    std::cout << std::setw(10) << "Increment" 
-              << std::setw(12) << "Time/Load" 
-              << std::setw(10) << "Iters" 
-              << std::setw(15) << "Disp Norm"
-              << std::setw(15) << "Force Norm" << std::endl;
-    std::cout << std::string(72, '-') << std::endl;
-    
+    currentTimeIncrement_ = control_.initialTimeIncrement;
+
+    // Load stepping loop
     while (currentTime_ < control_.totalTime) {
         currentIncrement_++;
-        double nextTime = std::min(currentTime_ + timeIncrement, control_.totalTime);
-        double lambda = nextTime / control_.totalTime * loadMultiplier_;
-        
-        // Newton-Raphson iteration loop
-        bool converged = false;
-        int iteration = 0;
-        
-        for (iteration = 0; iteration < control_.maxIterations; ++iteration) {
-            // Perform one Newton-Raphson iteration
-            converged = performNewtonIteration(model, lambda);
-            
-            reportProgress(iteration + 1);
-            
-            if (converged) {
-                currentTime_ = nextTime;
-                
-                std::cout << std::setw(10) << currentIncrement_ 
-                          << std::setw(12) << std::fixed << std::setprecision(4) << currentTime_
-                          << std::setw(10) << (iteration + 1)
-                          << std::setw(15) << std::scientific << displacementNorm_
-                          << std::setw(15) << forceNorm_ << std::endl;
-                break;
-            }
-        }
-        
-        // Check if converged
-        if (!converged) {
-            std::cout << "\n*** WARNING: Failed to converge in " 
-                      << control_.maxIterations << " iterations ***" << std::endl;
-            
-            // Try adaptive time stepping
-            if (control_.useAdaptiveTimeStep && 
-                timeIncrement > control_.minimumTimeIncrement) {
-                
-                timeIncrement *= control_.cutbackFactor;
-                currentIncrement_--;
-                
-                std::cout << "Reducing time increment to " << timeIncrement 
-                          << " and retrying..." << std::endl;
-                
-                // Restore previous solution
-                // In real implementation: restore displacement_ from backup
-                continue;
-            } else {
-                std::cerr << "\nERROR: Analysis failed - no convergence!" << std::endl;
+
+        // Calculate time for this increment
+        double nextTime = std::min(currentTime_ + currentTimeIncrement_,
+            control_.totalTime);
+
+        // Perform increment
+        bool success = performIncrement(model, nextTime);
+
+        if (!success) {
+            // Handle non-convergence
+            if (!handleNonConvergence()) {
+                RgLogError("\nAnalysis failed!\n");
                 return false;
             }
+            // Retry will happen in next loop iteration
+            continue;
         }
-        
-        // Adaptive time step increase for good convergence
-        if (control_.useAdaptiveTimeStep && 
-            iteration < control_.minIterationsForIncrease &&
-            timeIncrement < control_.maximumTimeIncrement) {
-            
-            timeIncrement = std::min(timeIncrement * control_.increaseFactorGood, 
-                                    control_.maximumTimeIncrement);
+
+        // Print results
+        std::cout << std::setw(10) << currentIncrement_
+            << std::setw(12) << std::fixed << std::setprecision(4) << currentTime_
+            << std::setw(10) << newtonSolver->m_niter
+            << std::setw(15) << std::scientific << newtonSolver->m_residuNorm.normi
+            << std::setw(15) << newtonSolver->m_energyNorm.normi
+            << std::setw(12) << std::fixed << currentTimeIncrement_
+            << std::endl;
+
+        // Update time
+        currentTime_ = nextTime;
+
+        // Adaptive time step increase
+        if (control_.useAdaptiveTimeStep &&
+            newtonSolver->m_niter <= control_.minIterationsForIncrease &&
+            currentTimeIncrement_ < control_.maximumTimeIncrement) {
+
+            currentTimeIncrement_ = std::min(
+                currentTimeIncrement_ * control_.increaseFactorGood,
+                control_.maximumTimeIncrement
+            );
         }
-        
-        // Check if we've reached the end
+
+        // Check if done
         if (currentTime_ >= control_.totalTime) {
             break;
         }
     }
-    
-    std::cout << std::string(72, '-') << std::endl;
-    std::cout << "Nonlinear analysis completed successfully." << std::endl;
-    
+
+    std::cout << std::string(74, '-') << std::endl;
+    RgLog("Nonlinear analysis completed successfully.\n");
+
     return true;
 }
 
-bool StaticStep::performNewtonIteration(FEModel* model, double lambda)
+bool StaticStep::performIncrement(FEModel* model, double time)
 {
-    // Step 1: Assemble tangent stiffness matrix
-    assembleStiffnessMatrix(model, largeDisplacement_);
-    
-    // Step 2: Calculate residual: R = F_ext - F_int
-    calculateResidual(model, lambda);
-    
-    // Step 3: Check convergence before solving
-    if (currentIncrement_ > 1 && checkConvergence(0)) {
-        return true;
+    FEStaticSolver* staticSolver = getStaticSolver();
+
+    // Scale load by time factor
+    double scaleFactor = time / control_.totalTime * loadMultiplier_;
+
+    // Initialize the step in solver
+    if (!staticSolver->InitStep(scaleFactor)) {
+        RgLogError("InitStep failed at time %.4f\n", time);
+        return false;
     }
-    
-    // Step 4: Apply boundary conditions
-    applyBoundaryConditions(model);
-    
-    // Step 5: Solve for displacement increment: K_t * delta_u = R
-    std::vector<double> deltaU(displacement_.size(), 0.0);
-    
-    // TODO: Call actual solver
-    // model->getSolver()->solve(K_tangent, residual_, deltaU);
-    
-    // Step 6: Line search (optional)
-    double alpha = 1.0;
-    if (useLineSearch_) {
-        alpha = performLineSearch(model, deltaU);
+
+    // Solve step (Newton iteration happens inside)
+    bool success = staticSolver->SolveStep();
+
+    if (success) {
+        reportProgress(staticSolver->m_niter);
     }
-    
-    // Step 7: Update solution
-    for (size_t i = 0; i < displacement_.size(); ++i) {
-        displacement_[i] += alpha * deltaU[i];
-    }
-    
-    // Update displacement norm for convergence check
-    displacementNorm_ = 0.0;
-    for (double du : deltaU) {
-        displacementNorm_ += du * du;
-    }
-    displacementNorm_ = std::sqrt(displacementNorm_);
-    
-    // Step 8: Check convergence
-    return checkConvergence(1);
+
+    return success;
 }
 
-void StaticStep::assembleStiffnessMatrix(FEModel* model, bool geometric)
+bool StaticStep::handleNonConvergence()
 {
-    // Assemble global stiffness matrix from element stiffness matrices
-    
-    // TODO: Actual implementation would:
-    // 1. Loop over all elements
-    // 2. Calculate element stiffness matrix (material + geometric if needed)
-    // 3. Assemble into global matrix
-    
-    /*
-    model->clearStiffnessMatrix();
-    
-    for (auto& element : model->getMesh()->getElements()) {
-        MatrixXd Ke = element->getStiffnessMatrix();
-        
-        if (geometric) {
-            MatrixXd Kg = element->getGeometricStiffness();
-            Ke += Kg;
-        }
-        
-        std::vector<int> dofs = element->getDOFs();
-        model->assembleElementMatrix(Ke, dofs);
+    // Try adaptive cutback
+    if (control_.useAdaptiveTimeStep &&
+        currentTimeIncrement_ > control_.minimumTimeIncrement) {
+
+        currentTimeIncrement_ *= control_.cutbackFactor;
+        currentIncrement_--;  // Decrement because we'll retry
+
+        RgLog("*** Cutback: reducing increment to %.6e\n", currentTimeIncrement_);
+        return true;  // Retry
     }
-    */
+
+    return false;  // Give up
 }
 
-void StaticStep::assembleLoadVector(FEModel* model, double lambda)
+FEStaticSolver* StaticStep::getStaticSolver() const
 {
-    // Assemble global load vector
-    
-    // TODO: Actual implementation would:
-    // 1. Apply nodal loads
-    // 2. Apply distributed loads
-    // 3. Apply body forces
-    // 4. Multiply by load factor lambda
-    
-    /*
-    externalForce_.assign(externalForce_.size(), 0.0);
-    
-    // Nodal loads
-    for (auto& load : model->getNodalLoads()) {
-        int dof = load.getDOF();
-        externalForce_[dof] += lambda * load.getValue();
-    }
-    
-    // Distributed loads on elements
-    for (auto& element : model->getMesh()->getElements()) {
-        VectorXd Fe = element->getEquivalentNodalForces();
-        std::vector<int> dofs = element->getDOFs();
-        
-        for (size_t i = 0; i < dofs.size(); ++i) {
-            externalForce_[dofs[i]] += lambda * Fe[i];
-        }
-    }
-    */
+    return dynamic_cast<FEStaticSolver*>(solver_);
 }
 
-void StaticStep::calculateResidual(FEModel* model, double lambda)
+FENewtonSolver* StaticStep::getNewtonSolver() const
 {
-    // Calculate residual: R = F_ext - F_int
-    
-    assembleLoadVector(model, lambda);
-    
-    // Calculate internal forces from current displacement
-    internalForce_.assign(internalForce_.size(), 0.0);
-    
-    // TODO: Actual implementation would:
-    /*
-    for (auto& element : model->getMesh()->getElements()) {
-        VectorXd Fint = element->getInternalForces(displacement_);
-        std::vector<int> dofs = element->getDOFs();
-        
-        for (size_t i = 0; i < dofs.size(); ++i) {
-            internalForce_[dofs[i]] += Fint[i];
-        }
-    }
-    */
-    
-    // Calculate residual
-    forceNorm_ = 0.0;
-    for (size_t i = 0; i < residual_.size(); ++i) {
-        residual_[i] = externalForce_[i] - internalForce_[i];
-        forceNorm_ += residual_[i] * residual_[i];
-    }
-    forceNorm_ = std::sqrt(forceNorm_);
-    
-    // Store initial force norm for relative convergence check
-    if (initialForceNorm_ == 0.0) {
-        initialForceNorm_ = forceNorm_;
-    }
+    return dynamic_cast<FENewtonSolver*>(solver_);
 }
 
-void StaticStep::applyBoundaryConditions(FEModel* model)
+std::vector<double> StaticStep::getDisplacement() const
 {
-    // Apply displacement boundary conditions
-    
-    // TODO: Actual implementation would:
-    /*
-    for (auto& bc : model->getBoundaryConditions()) {
-        int dof = bc.getDOF();
-        double value = bc.getValue();
-        
-        // Modify stiffness matrix and load vector for prescribed DOF
-        // Common methods:
-        // 1. Penalty method
-        // 2. Lagrange multiplier
-        // 3. Direct elimination
+    FENewtonSolver* newtonSolver = getNewtonSolver();
+    if (newtonSolver) {
+        return newtonSolver->GetSolutionVector();
     }
-    */
-}
-
-bool StaticStep::checkConvergence(int iteration)
-{
-    bool converged = true;
-    
-    // Displacement norm convergence
-    if (control_.checkDisplacementNorm) {
-        double dispNormRef = 0.0;
-        for (double d : displacement_) {
-            dispNormRef += d * d;
-        }
-        dispNormRef = std::sqrt(dispNormRef);
-        
-        if (dispNormRef > 1e-10) {
-            double relDispNorm = displacementNorm_ / dispNormRef;
-            if (relDispNorm > control_.displacementTolerance) {
-                converged = false;
-            }
-        } else {
-            if (displacementNorm_ > control_.displacementTolerance) {
-                converged = false;
-            }
-        }
-    }
-    
-    // Force norm convergence
-    if (control_.checkForceNorm) {
-        double relForceNorm = initialForceNorm_ > 1e-10 ? 
-                             forceNorm_ / initialForceNorm_ : forceNorm_;
-        
-        if (relForceNorm > control_.forceTolerance) {
-            converged = false;
-        }
-    }
-    
-    // Energy norm convergence
-    if (control_.checkEnergyNorm) {
-        energyNorm_ = 0.0;
-        for (size_t i = 0; i < residual_.size(); ++i) {
-            energyNorm_ += residual_[i] * displacement_[i];
-        }
-        energyNorm_ = std::abs(energyNorm_);
-        
-        if (energyNorm_ > control_.energyTolerance) {
-            converged = false;
-        }
-    }
-    
-    return converged;
-}
-
-void StaticStep::updateSolution(FEModel* model, const std::vector<double>& deltaU)
-{
-    for (size_t i = 0; i < displacement_.size(); ++i) {
-        displacement_[i] += deltaU[i];
-    }
-}
-
-double StaticStep::performLineSearch(FEModel* model, const std::vector<double>& direction)
-{
-    // Simple backtracking line search
-    double alpha = 1.0;
-    double rho = 0.5;      // Reduction factor
-    double c = 0.5;        // Armijo constant
-    
-    // Save current displacement
-    std::vector<double> u_old = displacement_;
-    
-    // Calculate initial residual norm
-    double residual0 = forceNorm_;
-    
-    for (int i = 0; i < lineSearchMaxIter_; ++i) {
-        // Try step with current alpha
-        displacement_ = u_old;
-        for (size_t j = 0; j < displacement_.size(); ++j) {
-            displacement_[j] += alpha * direction[j];
-        }
-        
-        // Recalculate residual
-        calculateResidual(model, currentTime_ / control_.totalTime * loadMultiplier_);
-        
-        // Check Armijo condition
-        if (forceNorm_ <= (1.0 - c * alpha) * residual0) {
-            return alpha;
-        }
-        
-        // Reduce alpha
-        alpha *= rho;
-    }
-    
-    // Restore original displacement if line search failed
-    displacement_ = u_old;
-    return 1.0;
-}
-
-void StaticStep::calculateReactionForces(FEModel* model)
-{
-    // Calculate reaction forces at constrained DOFs
-    
-    // TODO: Actual implementation would:
-    /*
-    reactionForces_.assign(reactionForces_.size(), 0.0);
-    
-    for (auto& bc : model->getBoundaryConditions()) {
-        int dof = bc.getDOF();
-        
-        // Reaction = Internal force at constrained DOF
-        reactionForces_[dof] = internalForce_[dof];
-    }
-    */
-}
-
-void StaticStep::updateStressStrain(FEModel* model)
-{
-    // Update stresses and strains in all elements
-    
-    // TODO: Actual implementation would:
-    /*
-    for (auto& element : model->getMesh()->getElements()) {
-        element->updateStressStrain(displacement_);
-    }
-    */
+    return std::vector<double>();
 }

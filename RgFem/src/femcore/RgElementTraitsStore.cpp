@@ -1,7 +1,7 @@
-#include "RgElementTraitsStore.h"
+#include "femcore/RgElementTraitsStore.h"
 #include "elements/RgElement/RgElement.h"
 #include "elements/ElementTraits/RgSolidElementTraits.h"
-#include "elements/ElementTraits/RgSurfaceElementTraits.h"
+//#include "elements/ElementTraits/RgSurfaceElementTraits.h"
 
 RgElementTraitsStore* RgElementTraitsStore::m_pThis = 0;
 
@@ -110,7 +110,7 @@ void RgElementTraitsStore::SetElementTraits(RgElement& el, int nid)
     if (nid >= 0 && nid < (int)m_TraitsMap.size()) {
         auto it = m_TraitsMap.begin();
         std::advance(it, nid);
-        el.SetTraits(it->second);
+        //el.SetTraits(it->second);
     }
 }
 
@@ -127,15 +127,21 @@ RgElementTraits* RgElementTraitsStore::GetElementTraits(int ntype)
 
 bool RgElementTraitsStore::IsValid(const FE_Element_Spec& c)
 {
-    if (c.eclass == FE_ELEM_INVALID_CLASS) return false;
-    if (c.eshape == FE_ELEM_INVALID_SHAPE) return false;
-    if (c.etype == FE_ELEM_INVALID_TYPE) return false;
-    
+    if (c.eclass == FE_ELEM_INVALID_CLASS)
+        return false;
+    if (c.eshape == FE_ELEM_INVALID_SHAPE)
+        return false;
+    if (c.etype == FE_ELEM_INVALID_TYPE)
+        return false;
+
     auto it = m_TraitsMap.find((ElementType)c.etype);
-    if (it == m_TraitsMap.end()) return false;
-    
-    if (c.eclass != it->second->Class()) return false;
-    if (c.eshape != it->second->Shape()) return false;
+    if (it == m_TraitsMap.end())
+        return false;
+
+    if (c.eclass != it->second->Class())
+        return false;
+    if (c.eshape != it->second->Shape())
+        return false;
     return true;
 }
 
@@ -147,7 +153,8 @@ FE_Element_Spec RgElementTraitsStore::GetElementSpecFromType(ElementType elemTyp
     if (elemType != FE_ELEM_INVALID_TYPE)
     {
         auto it = m_TraitsMap.find(elemType);
-        if (it != m_TraitsMap.end()) {
+        if (it != m_TraitsMap.end())
+        {
             espec.eclass = it->second->Class();
             espec.eshape = it->second->Shape();
         }

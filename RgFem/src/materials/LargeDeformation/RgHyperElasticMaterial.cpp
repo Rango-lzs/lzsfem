@@ -1,4 +1,4 @@
-#include "FEElasticMaterial.h"
+#include "materials/LargeDeformation/RgHyperElasticMaterial.h"
 #include "femcore/FEModel.h"
 
 DEFINE_META_CLASS(FEElasticMaterial, FESolidMaterial, "");

@@ -24,13 +24,13 @@ public:
     RgMaterialPointData* createRgMaterialPointData() const override;
 
     /// Compute constitutive response
-    void computeConstitutive(RgMaterialPointData* mp, Matrix& D) override;
+    void computeConstitutive(RgMaterialPoint* mp, Matrix& D) override;
 
     /// Commit state variables
-    void commitState(RgMaterialPointData* mp) override;
+    void commitState(RgMaterialPoint* mp) override;
 
     /// Revert state variables
-    void revertState(RgMaterialPointData* mp) override;
+    void revertState(RgMaterialPoint* mp) override;
 
     /// Get material name
     std::string getName() const override;

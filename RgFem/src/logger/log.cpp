@@ -1,5 +1,6 @@
 #include "logger/log.h"
 #include "femcore/FEModel.h"
+#include "logger/logger.h"
 #include <stdarg.h>
 
 void write_log(FEModel* fem, int ntag, const char* szmsg, ...)
@@ -17,4 +18,18 @@ void write_log(FEModel* fem, int ntag, const char* szmsg, ...)
 	va_end(args);
 	//Rango TODO
 	fem->Log(ntag, sztxt);
+}
+
+void write_log(int ntag, const char* szmsg, ...)
+{
+	// get a pointer to the argument list
+	va_list	args;
+
+	// make the message
+	char sztxt[2048] = { 0 };
+	va_start(args, szmsg);
+	vsprintf(sztxt, szmsg, args);
+	va_end(args);
+
+	// Map ntag to corresponding log level and write directly to logger
 }

@@ -1,18 +1,12 @@
 #ifndef RGHEX8ELEMENT_H
 #define RGHEX8ELEMENT_H
 
-#include "RgLinearSolid3dElement.h"
-#include "datastructure/Matrix3d.h"
 #include "datastructure/Vector3d.h"
+#include "RgLinearSolid3dElement.h"
+
 #include <array>
-#include <vector>
 #include <string>
-
-
-class Matrix3ds;
-
-    // forward declarations for project types
-    class RgMaterial;
+#include <vector>
 
 /*
     RgHex8Element
@@ -24,7 +18,8 @@ class Matrix3ds;
       * Supports small strain and geometrically nonlinear analysis
       * Suitable for 3D continuum mechanics problems
 */
-class RgHex8Element : public RgLinearSolid3dElement {
+class RgHex8Element : public RgLinearSolid3dElement
+{
 public:
     static constexpr int kNodeCount = 8;
 
@@ -41,10 +36,10 @@ public:
 
     // Serialization
     virtual void Serialize(DumpStream& ar) override;
-   
+
 protected:
     // Compute B matrix (strain-displacement matrix) at natural coordinates
-    void computeBMatrix(const NaturalCoord& naturalCoord, Matrix& B);
+    void computeBMatrix(const NaturalCoord& naturalCoord, Matrix& B) override;
 };
 
-#endif // RGHEX8ELEMENT_H
+#endif  // RGHEX8ELEMENT_H

@@ -1,5 +1,4 @@
 #include "FESolidLinearSystem.h"
-#include "femcore/Solver/FESolidSolver2.h"
 #include "femcore/FELinearConstraintManager.h"
 #include "femcore/FEModel.h"
 

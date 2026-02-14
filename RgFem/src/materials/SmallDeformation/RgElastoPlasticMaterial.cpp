@@ -16,7 +16,7 @@ RgMaterialPointData* RgElastoPlastic::createRgMaterialPointData() const
     return new RgElastoPlasticMaterialPoint();
 }
 
-void RgElastoPlastic::computeConstitutive(RgMaterialPointData* mp, Matrix& D)
+void RgElastoPlastic::computeConstitutive(RgMaterialPoint* mp, Matrix& D)
 {
     // Cast to our specific material point type
     RgElastoPlasticMaterialPoint* ep_pt = dynamic_cast<RgElastoPlasticMaterialPoint*>(mp);
@@ -89,12 +89,12 @@ void RgElastoPlastic::computeConstitutive(RgMaterialPointData* mp, Matrix& D)
     }
 }
 
-void RgElastoPlastic::commitState(RgMaterialPointData* mp)
+void RgElastoPlastic::commitState(RgMaterialPoint* mp)
 {
     
 }
 
-void RgElastoPlastic::revertState(RgMaterialPointData* mp)
+void RgElastoPlastic::revertState(RgMaterialPoint* mp)
 {
     //mp->revert();
 }
@@ -104,7 +104,7 @@ std::string RgElastoPlastic::getName() const
     return "RgElastoPlastic";
 }
 
-void RgElastoPlastic::updateState(RgMaterialPointData* mp, const Matrix& strainIncrement)
+void RgElastoPlastic::updateState(RgMaterialPoint* mp, const Matrix& strainIncrement)
 {
     // Cast to our specific material point type
     RgElastoPlasticMaterialPoint* ep_pt = dynamic_cast<RgElastoPlasticMaterialPoint*>(mp);

@@ -72,6 +72,10 @@ ElementCategory RgTet4Element::elementCategory() const
 }
 
 
+void RgTet4Element::Serialize(DumpStream& ar)
+{
+}
+
 void RgTet4Element::computeBMatrix(const NaturalCoord& naturalCoord, Matrix& B)
 {
     // Compute strain-displacement matrix B

@@ -47,9 +47,9 @@ void FEFixedBC::Activate()
 		for (int j=0; j<dofs; ++j)
 		{
 			int dofj = m_dof[j];
-			if (node.get_bc(dofj) == DOF_OPEN)
+			if (node.getDofState(dofj) == FENode::OPEN)
 			{
-				node.setDofState(dofj, DOF_FIXED);
+				node.setDofState(dofj, FENode::FIXED);
 				node.set(dofj, 0.0);
 			}
 		}

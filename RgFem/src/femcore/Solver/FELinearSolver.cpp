@@ -16,6 +16,8 @@
 #include "../FEMesh.h"
 #include "../FEException.h"
 #include "femcore/Callback.h"
+#include "../BoundaryCondition/RgBoundaryCondition.h"
+#include "../Load/RgLoad.h"
 
 //-----------------------------------------------------------------------------
 //! constructor
@@ -157,8 +159,8 @@ bool FELinearSolver::SolveStep()
 	int nbc = fem.BoundaryConditions();
 	for (int i=0; i<nbc; ++i)
 	{
-		FEBoundaryCondition& bc = *fem.BoundaryCondition(i);
-		if (bc.IsActive()) bc.PrepStep(m_u, false);
+		RgBoundaryCondition& bc = *fem.BoundaryCondition(i);
+		//if (bc.IsActive()) bc.PrepStep(m_u, false);
 	}
 
 	// build the right-hand side
@@ -327,8 +329,8 @@ void FELinearSolver::ForceVector(FEGlobalVector& R)
 	int nml = fem.ModelLoads();
 	for (int i = 0; i < nml; ++i)
 	{
-		FEModelLoad& ml = *fem.ModelLoad(i);
-		if (ml.IsActive()) ml.LoadVector(R);
+		RgLoad& ml = *fem.ModelLoad(i);
+		//if (ml.IsActive()) ml.LoadVector(R);
 	}
 }
 
@@ -374,7 +376,7 @@ void FELinearSolver::Update(std::vector<double>& u)
 	for (int i=0; i<mesh.Domains(); ++i)
 	{
 		RgDomain& dom = mesh.Domain(i);
-		dom.Update(tp);
+		//dom.Update(tp);
 	}
 
 	fem.IncrementUpdateCounter();

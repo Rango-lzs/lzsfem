@@ -1,5 +1,5 @@
 #pragma once
-#include "femcore/Solver/FESolver.h"
+#include "femcore/NewtonSolver/SolverBase.h"
 #include "FEStepComponent.h"
 #include "FEGlobalVector.h"
 #include "femcore/Matrix/FEGlobalMatrix.h"

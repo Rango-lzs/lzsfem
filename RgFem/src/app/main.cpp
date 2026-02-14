@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     } mpi_manager(&argc, &argv);
 #endif
 
-    RgFemApp* theApp = RgFemApp::Instance();
+RgFemApp* theApp = RgFemApp::Instance();
     if (!theApp) {
         return 1;
     }

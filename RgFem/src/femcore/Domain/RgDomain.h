@@ -7,6 +7,7 @@
 
 #include <assert.h>
 #include <functional>
+#include "../RgDofSchema.h"
 
 //-----------------------------------------------------------------------------
 // forward declarations
@@ -45,7 +46,7 @@ public:
     RgDomain& operator=(const RgDomain& d);
 
     //! Create domain data structures
-    virtual bool Create(int nsize, FE_Element_Spec espec) = 0;
+    virtual bool Create(int nsize, ElementType espec) = 0;
 
     virtual int domType()
     {
@@ -82,6 +83,11 @@ public:
     const FENode& Node(int i) const
     {
         return *m_Node[i];
+    }
+
+    void AddNode(FENode* pNode)
+    {
+        m_Node.push_back(pNode);
     }
 
     ////! return a node index
@@ -150,6 +156,8 @@ public:
 
     virtual void BuildMatrixProfile(FEGlobalMatrix& M);
 
+    const RgDofSet& dofSet();
+
 protected:
     FEModel* m_pfem;              //!< pointer to model
     FEMesh* m_pMesh;              //!< pointer to mesh
@@ -157,4 +165,6 @@ protected:
     std::vector<FENode*> m_Node;  //!< list of nodes
     std::vector<int> m_lnode;     //!< local node indices
     std::string m_szname;         //!< domain name
+    std::vector<RgElement*> m_elems;
+    RgDofSet m_dof_set;
 };

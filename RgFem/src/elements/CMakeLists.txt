@@ -102,9 +102,9 @@ set(ELEMENT_SOURCES
     # Core element source files
     elements/RgElement/RgElement.cpp
     elements/RgElement/RgSolidElement.cpp
-    elements/RgElement/RgLinearSolid2dElement.cpp
+    #elements/RgElement/RgLinearSolid2dElement.cpp
     elements/RgElement/RgLinearSolid3dElement.cpp
-    elements/RgElement/RgNLSolid2dElement.cpp
+    #elements/RgElement/RgNLSolid2dElement.cpp
     elements/RgElement/RgNLSolid3dElement.cpp
     elements/RgElement/RgSolid3dElement.cpp
     #elements/RgElement/RgLinearShellElement.cpp

@@ -28,10 +28,9 @@ public:
     virtual ~RgBeamElement();
 
     // Element Type Identification
-    virtual ElementCategory elementClass() const override { return ElementCategory::FE_ELEM_BEAM; }
+    virtual ElementCategory elementCategory() const override { return ElementCategory::FE_ELEM_BEAM; }
 
     // Element Properties
-    virtual int getNumberOfNodes() const override = 0;
     virtual int getNumberOfGaussPoints() const = 0;
     virtual int getDofsPerNode() const = 0;
     virtual int getTotalDofs() const = 0;
@@ -45,13 +44,13 @@ public:
     virtual void evaluateShapeDerivatives(double r, std::vector<double>& dN_dr) const = 0;
 
     // FEM Matrix Calculations
-    virtual void calculateStiffnessMatrix(Matrix& K) const override = 0;
-    virtual void calculateMassMatrix(Matrix& M) const override = 0;
-    virtual void calculateDampingMatrix(Matrix& C) const override = 0;
+    virtual void calculateStiffnessMatrix(Matrix& K) override;
+    virtual void calculateMassMatrix(Matrix& M) override ;
+    virtual void calculateDampingMatrix(Matrix& C) override;
 
-    // Strain and Stress Calculations
-    virtual void calculateStress(FEMaterialPoint& matPt, Matrix3ds& stress) override = 0;
-    virtual void calculateStrain(FEMaterialPoint& matPt, Matrix3ds& strain) override = 0;
+    //// Strain and Stress Calculations
+    //virtual void calculateStress(FEMaterialPoint& matPt, Matrix3ds& stress) override;
+    //virtual void calculateStrain(FEMaterialPoint& matPt, Matrix3ds& strain) override;
 
     // Loading Operations
     virtual void applyBodyForce(const Vector3d& force, Vector& F) const = 0;
@@ -74,4 +73,3 @@ protected:
     virtual void initializeGaussPoints() = 0;
 };
 
-#endif // RGBEAMELEMENT_H

@@ -1,7 +1,7 @@
 #include "femcore/Solver/BFGSSolver.h"
-#include "femcore/Solver/FESolver.h"
+#include "femcore/NewtonSolver/SolverBase.h"
 #include "femcore/FEException.h"
-#include "femcore/Solver/FENewtonSolver.h"
+#include "femcore/NewtonSolver/NewtonSolver.h"
 #include "logger/log.h"
 
 DEFINE_META_CLASS(BFGSSolver, FENewtonStrategy,"BFGS");

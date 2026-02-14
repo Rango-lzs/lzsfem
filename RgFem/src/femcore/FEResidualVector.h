@@ -14,7 +14,7 @@ public:
 	~FEResidualVector();
 
 	//Assemble the element vector into this global vector
-	void Assemble(std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe, bool bdom = false) override;
+	void Assemble(std::vector<int>& en, std::vector<int>& elm, std::vector<double>& fe, bool bdom = false);
 	//Assemble into this global vector
 	void Assemble(int node, int dof, double f) override;
 };

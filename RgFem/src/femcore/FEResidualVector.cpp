@@ -3,7 +3,6 @@
 #include "femcore/DOFS.h"
 #include <femcore/FELinearConstraintManager.h>
 #include "femcore/FEAnalysis/FEAnalysis.h"
-#include "femcore/Solver/FESolidSolver2.h"
 #include "FEGlobalVector.h"
 #include "FEModel.h"
 #include "FEMesh.h"
@@ -188,11 +187,11 @@ void FEResidualVector::Assemble(int node_id, int dof, double f)
 		m_R[n] += f;
 	}
 	else {
-		FESolidSolver2* solver = dynamic_cast<FESolidSolver2*>(m_fem.GetCurrentStep()->GetFESolver());
-		if (solver)
-		{
-			FERigidSolver* rigidSolver = solver->GetRigidSolver();
-			/*rigidSolver->AssembleResidual(node_id, dof, f, m_R);*/
-		}
+		//FESolidSolver2* solver = dynamic_cast<FESolidSolver2*>(m_fem.GetCurrentStep()->GetFESolver());
+		//if (solver)
+		//{
+		//	FERigidSolver* rigidSolver = solver->GetRigidSolver();
+		//	/*rigidSolver->AssembleResidual(node_id, dof, f, m_R);*/
+		//}
 	}
 }

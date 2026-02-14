@@ -10,18 +10,18 @@ struct StepControl {
     double minimumTimeIncrement;     ///< Minimum allowed time increment
     double maximumTimeIncrement;     ///< Maximum allowed time increment
     double totalTime;                ///< Total analysis time/load factor
-    
+
     // Iteration control
     int maxIterations;               ///< Maximum iterations per increment
     double convergenceTolerance;     ///< Convergence tolerance
-    
+
     // Adaptive control
     bool useAdaptiveTimeStep;        ///< Enable adaptive time stepping
     double cutbackFactor;            ///< Factor for reducing time step on non-convergence
     double increaseFactorGood;       ///< Factor for increasing time step on good convergence
     int minIterationsForIncrease;    ///< Min iterations to allow time step increase
     int maxIterationsForCutback;     ///< Max iterations before cutback
-    
+
     // Convergence criteria
     bool checkDisplacementNorm;      ///< Check displacement norm convergence
     bool checkForceNorm;             ///< Check force residual norm convergence
@@ -29,7 +29,7 @@ struct StepControl {
     double displacementTolerance;    ///< Displacement convergence tolerance
     double forceTolerance;           ///< Force convergence tolerance
     double energyTolerance;          ///< Energy convergence tolerance
-    
+
     /**
      * @brief Default constructor with reasonable defaults
      */

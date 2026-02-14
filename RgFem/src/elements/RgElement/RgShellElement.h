@@ -19,23 +19,6 @@ public:
 	//! assignment operator
 	RgShellElement& operator = (const RgShellElement& el);
 
-	virtual void SetTraits(FEElementTraits* ptraits) override;
-
-	double gr(int n) { return ((FEShellElementTraits*)(m_pTraits))->gr[n]; }
-	double gs(int n) { return ((FEShellElementTraits*)(m_pTraits))->gs[n]; }
-	double gt(int n) { return ((FEShellElementTraits*)(m_pTraits))->gt[n]; }
-
-	double* GaussWeights() { return &((FEShellElementTraits*)(m_pTraits))->gw[0]; }	// weights of integration points
-
-	double* Hr(int n) { return ((FEShellElementTraits*)(m_pTraits))->Hr[n]; }	// shape function derivative to r
-	double* Hs(int n) { return ((FEShellElementTraits*)(m_pTraits))->Hs[n]; }	// shape function derivative to s
-
-																			//! values of shape functions
-	void shape_fnc(double* H, double r, double s) const { ((FEShellElementTraits*)(m_pTraits))->shape_fnc(H, r, s); }
-
-	//! values of shape function derivatives
-	void shape_deriv(double* Hr, double* Hs, double r, double s) const { ((FEShellElementTraits*)(m_pTraits))->shape_deriv(Hr, Hs, r, s); }
-
 	//! serialize data associated with this element
 	void Serialize(DumpStream &ar) override;
 
@@ -71,9 +54,6 @@ public:
 	//! assignment operator
 	RgShellElementOld& operator = (const RgShellElementOld& el);
 
-	// set the element traits class
-	void SetTraits(FEElementTraits* ptraits) override;
-
 	//! serialize data associated with this element
 	void Serialize(DumpStream &ar) override;
 
@@ -93,9 +73,6 @@ public:
 
 	//! assignment operator
 	RgShellElementNew& operator = (const RgShellElementNew& el);
-
-	// set the element traits class
-	void SetTraits(FEElementTraits* ptraits) override;
 
 	//! serialize data associated with this element
 	void Serialize(DumpStream &ar) override;

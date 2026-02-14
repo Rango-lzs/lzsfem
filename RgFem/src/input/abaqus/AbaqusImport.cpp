@@ -1,25 +1,28 @@
 ﻿#include "AbaqusImport.h"
-#include "femcore/FEModel.h"
-#include "femcore/FEMesh.h"
-#include "femcore/FENode.h"
+
+#include "AbaqusBoundaryParser.h"
+#include "AbaqusLoadParser.h"
+#include "elements/RgElement/RgHex8Element.h"
+#include "elements/RgElementSet.h"
+#include "femcore/BoundaryCondition/RgBoundaryCondition.h"
 #include "femcore/Domain/RgDomain.h"
 #include "femcore/Domain/RgSolidDomain.h"
-#include "elements/RgElementSet.h"
-#include "femcore/FENodeSet.h"
 #include "femcore/FEFacetSet.h"
-#include "femcore/FEBoundaryCondition.h"
+#include "femcore/FEMesh.h"
+#include "femcore/FEModel.h"
 #include "femcore/FEModelLoad.h"
+#include "femcore/FENode.h"
+#include "femcore/FENodeSet.h"
+#include "femcore/FESolidAnalysis.h"
+#include "femcore/Load/RgLoad.h"
+#include "femcore/RgLoadController.h"
 #include "logger/log.h"
 
 #include <algorithm>
 #include <cctype>
-#include <sstream>
 #include <iostream>
-#include "elements/RgElement/RgHex8Element.h"
-#include "femcore/Load/RgLoad.h"
-#include "femcore/RgLoadController.h"
-#include "AbaqusLoadParser.h"
-#include "AbaqusBoundaryParser.h"
+#include <sstream>
+#include "AbaqusMaterialConverter.h"
 
 // ============================================================================
 // 单元类型常量定义（如果还没有，需要在某个头文件中定义）
@@ -64,13 +67,13 @@ bool AbaqusImport::load(const char* filename, FEModel* fem)
     if (!filename || !fem)
     {
         m_lastError = "Invalid input parameters";
-        //RgLogError(m_lastError.c_str());
+        // RgLogError(m_lastError.c_str());
         return false;
     }
 
     m_model = fem;
 
-    //RgLog("Reading Abaqus INP file: %s\n", filename);
+    // RgLog("Reading Abaqus INP file: %s\n", filename);
 
     // Clear previous data
     m_parts.clear();
@@ -92,8 +95,8 @@ bool AbaqusImport::load(const char* filename, FEModel* fem)
         return false;
     }
 
-    //RgLog("Successfully imported %d nodes and %d elements from %d parts\n", m_totalNodes, m_totalElements,
-    //      (int)m_parts.size());
+    // RgLog("Successfully imported %d nodes and %d elements from %d parts\n", m_totalNodes, m_totalElements,
+    //       (int)m_parts.size());
 
     return true;
 }
@@ -154,9 +157,9 @@ bool AbaqusImport::parseFile(const char* filename)
             {
                 parseMaterial(file, line);
             }
-            if (keyword.find("*BOUNDARY") == 0)
+            else if (keyword.find("*BOUNDARY") == 0)
             {
-                parseBoundary(file); 
+                parseBoundary(file);
             }
             else if (keyword.find("*CLOAD") == 0)
             {
@@ -193,7 +196,7 @@ bool AbaqusImport::parsePart(std::ifstream& file, const std::string& keywordLine
     }
 
     m_currentPart = part.name;
-    //RgLog("  Parsing part: %s\n", part.name.c_str());
+    // RgLog("  Parsing part: %s\n", part.name.c_str());
 
     std::string line;
 
@@ -244,7 +247,7 @@ bool AbaqusImport::parsePart(std::ifstream& file, const std::string& keywordLine
                 std::string elsetName = sectionParams["ELSET"];
                 std::string materialName = sectionParams["MATERIAL"];
 
-                //RgLog("    Section: ELSET=%s, MATERIAL=%s\n", elsetName.c_str(), materialName.c_str());
+                // RgLog("    Section: ELSET=%s, MATERIAL=%s\n", elsetName.c_str(), materialName.c_str());
 
                 // Store section information (you may want to create a dedicated structure)
                 // For now, we'll skip reading section data lines
@@ -324,7 +327,7 @@ bool AbaqusImport::parseNode(std::ifstream& file, AbaqusPart& part)
         lastPos = file.tellg();
     }
 
-    //RgLog("    Read %d nodes\n", nodeCount);
+    // RgLog("    Read %d nodes\n", nodeCount);
     return true;
 }
 
@@ -414,7 +417,7 @@ bool AbaqusImport::parseElement(std::ifstream& file, AbaqusPart& part, const std
         lastPos = file.tellg();
     }
 
-    //RgLog("    Read %d %s elements\n", elemCount, elemType.c_str());
+    // RgLog("    Read %d %s elements\n", elemCount, elemType.c_str());
     return true;
 }
 
@@ -466,7 +469,7 @@ bool AbaqusImport::parseNset(std::ifstream& file, AbaqusPart& part, const std::s
     }
 
     part.nodeSets[nsetName] = nodeIds;
-    //RgLog("    Read node set '%s' with %d nodes\n", nsetName.c_str(), (int)nodeIds.size());
+    // RgLog("    Read node set '%s' with %d nodes\n", nsetName.c_str(), (int)nodeIds.size());
     return true;
 }
 
@@ -582,7 +585,7 @@ bool AbaqusImport::parseElset(std::ifstream& file, AbaqusPart& part, const std::
     }
 
     part.elementSets[elsetName] = elemIds;
-    //RgLog("    Read element set '%s' with %d elements\n", elsetName.c_str(), (int)elemIds.size());
+    // RgLog("    Read element set '%s' with %d elements\n", elsetName.c_str(), (int)elemIds.size());
     return true;
 }
 
@@ -689,7 +692,7 @@ bool AbaqusImport::parseSurface(std::ifstream& file, AbaqusPart& part, const std
             // First token might be element ID or element set name
             // For simplicity, we'll store as placeholder
             // TODO: Properly handle element set references
-            faceData.push_back(0);  // Placeholder for element/elset reference
+            faceData.push_back(0);                                 // Placeholder for element/elset reference
             faceData.push_back(std::stoi(trimString(tokens[1])));  // Face ID
             surfaceData.push_back(faceData);
         }
@@ -697,11 +700,111 @@ bool AbaqusImport::parseSurface(std::ifstream& file, AbaqusPart& part, const std
     }
 
     part.surfaces[surfaceName] = surfaceData;
-    //RgLog("    Read surface '%s' with %d faces\n", surfaceName.c_str(), (int)surfaceData.size());
+    // RgLog("    Read surface '%s' with %d faces\n", surfaceName.c_str(), (int)surfaceData.size());
     return true;
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//bool AbaqusImport::parseMaterial(std::ifstream& file, const std::string& keywordLine)
+//{
+//    std::map<std::string, std::string> params;
+//    parseKeywordParams(keywordLine, params);
+//
+//    MaterialProperty material;
+//    material.name = params["NAME"];
+//
+//    if (material.name.empty())
+//    {
+//        m_lastError = "Material name is required";
+//        return false;
+//    }
+//
+//    m_currentMaterial = material.name;
+//    // RgLog("  Parsing material: %s\n", material.name.c_str());
+//
+//    std::string line;
+//    std::streampos lastPos = file.tellg();
+//
+//    while (std::getline(file, line))
+//    {
+//        m_lineNumber++;
+//        line = trimString(line);
+//
+//        if (line.empty() || (line.size() >= 2 && line[0] == '*' && line[1] == '*'))
+//        {
+//            lastPos = file.tellg();
+//            continue;
+//        }
+//
+//        if (line[0] == '*')
+//        {
+//            std::string keyword = toUpper(line.substr(1));
+//
+//            if (keyword.find("ELASTIC") == 0)
+//            {
+//                // Read elastic properties
+//                lastPos = file.tellg();
+//                if (std::getline(file, line))
+//                {
+//                    m_lineNumber++;
+//                    line = trimString(line);
+//                    if (!line.empty() && line[0] != '*')
+//                    {
+//                        std::vector<std::string> tokens = splitString(line, ',');
+//                        if (tokens.size() >= 2)
+//                        {
+//                            std::vector<double> elasticProps;
+//                            elasticProps.push_back(std::stod(trimString(tokens[0])));  // E
+//                            elasticProps.push_back(std::stod(trimString(tokens[1])));  // nu
+//                            material.properties["ELASTIC"] = elasticProps;
+//                            material.type = "ELASTIC";
+//                        }
+//                        lastPos = file.tellg();
+//                    }
+//                    else
+//                    {
+//                        file.seekg(lastPos);
+//                        m_lineNumber--;
+//                    }
+//                }
+//            }
+//            else if (keyword.find("DENSITY") == 0)
+//            {
+//                // Read density
+//                lastPos = file.tellg();
+//                if (std::getline(file, line))
+//                {
+//                    m_lineNumber++;
+//                    line = trimString(line);
+//                    if (!line.empty() && line[0] != '*')
+//                    {
+//                        std::vector<double> densityProp;
+//                        densityProp.push_back(std::stod(trimString(line)));
+//                        material.properties["DENSITY"] = densityProp;
+//                        lastPos = file.tellg();
+//                    }
+//                    else
+//                    {
+//                        file.seekg(lastPos);
+//                        m_lineNumber--;
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                // Unknown material property, return to process next material/keyword
+//                file.seekg(lastPos);
+//                m_lineNumber--;
+//                break;
+//            }
+//        }
+//    }
+//
+//    m_materials.push_back(material);
+//    m_currentMaterial.clear();
+//    return true;
+//}
+
 bool AbaqusImport::parseMaterial(std::ifstream& file, const std::string& keywordLine)
 {
     std::map<std::string, std::string> params;
@@ -717,29 +820,33 @@ bool AbaqusImport::parseMaterial(std::ifstream& file, const std::string& keyword
     }
 
     m_currentMaterial = material.name;
-    //RgLog("  Parsing material: %s\n", material.name.c_str());
+    RgLog("  Parsing material: %s\n", material.name.c_str());
 
     std::string line;
     std::streampos lastPos = file.tellg();
 
+    // Main parsing loop for this material
     while (std::getline(file, line))
     {
         m_lineNumber++;
         line = trimString(line);
 
+        // Skip empty lines and comments
         if (line.empty() || (line.size() >= 2 && line[0] == '*' && line[1] == '*'))
         {
             lastPos = file.tellg();
             continue;
         }
 
+        // Check for keyword line
         if (line[0] == '*')
         {
             std::string keyword = toUpper(line.substr(1));
 
+            // === ELASTIC PROPERTIES ===
             if (keyword.find("ELASTIC") == 0)
             {
-                // Read elastic properties
+                // Read elastic properties: E, nu
                 lastPos = file.tellg();
                 if (std::getline(file, line))
                 {
@@ -754,7 +861,15 @@ bool AbaqusImport::parseMaterial(std::ifstream& file, const std::string& keyword
                             elasticProps.push_back(std::stod(trimString(tokens[0])));  // E
                             elasticProps.push_back(std::stod(trimString(tokens[1])));  // nu
                             material.properties["ELASTIC"] = elasticProps;
-                            material.type = "ELASTIC";
+
+                            // Only set type if not already set (plastic takes precedence)
+                            if (material.type.empty())
+                            {
+                                material.type = "ELASTIC";
+                            }
+
+                            RgLog("    Elastic: E=%s, nu=%s\n", trimString(tokens[0]).c_str(),
+                                  trimString(tokens[1]).c_str());
                         }
                         lastPos = file.tellg();
                     }
@@ -765,6 +880,63 @@ bool AbaqusImport::parseMaterial(std::ifstream& file, const std::string& keyword
                     }
                 }
             }
+            // === PLASTIC PROPERTIES ===
+            else if (keyword.find("PLASTIC") == 0)
+            {
+                // Read plastic properties (hardening curve)
+                // Format: yield_stress, plastic_strain (one or more lines)
+                std::vector<double> plasticProps;
+
+                lastPos = file.tellg();
+                while (std::getline(file, line))
+                {
+                    m_lineNumber++;
+                    line = trimString(line);
+
+                    if (line.empty())
+                    {
+                        lastPos = file.tellg();
+                        continue;
+                    }
+
+                    if (line[0] == '*')
+                    {
+                        // Next keyword, put it back and break
+                        file.seekg(lastPos);
+                        m_lineNumber--;
+                        break;
+                    }
+
+                    // Parse plastic data: yield_stress, plastic_strain
+                    std::vector<std::string> tokens = splitString(line, ',');
+                    if (tokens.size() >= 2)
+                    {
+                        plasticProps.push_back(std::stod(trimString(tokens[0])));  // stress
+                        plasticProps.push_back(std::stod(trimString(tokens[1])));  // plastic strain
+                    }
+                    else if (tokens.size() == 1)
+                    {
+                        // Only yield stress given (perfectly plastic)
+                        plasticProps.push_back(std::stod(trimString(tokens[0])));
+                        plasticProps.push_back(0.0);  // zero plastic strain
+                    }
+
+                    lastPos = file.tellg();
+                }
+
+                if (!plasticProps.empty())
+                {
+                    material.properties["PLASTIC"] = plasticProps;
+                    material.type = "PLASTIC";
+
+                    RgLog("    Plastic: %d hardening points\n", (int)(plasticProps.size() / 2));
+                    if (plasticProps.size() >= 2)
+                    {
+                        RgLog("      Initial yield: %g at eps_p = %g\n", plasticProps[0], plasticProps[1]);
+                    }
+                }
+            }
+            // === DENSITY ===
             else if (keyword.find("DENSITY") == 0)
             {
                 // Read density
@@ -776,8 +948,11 @@ bool AbaqusImport::parseMaterial(std::ifstream& file, const std::string& keyword
                     if (!line.empty() && line[0] != '*')
                     {
                         std::vector<double> densityProp;
-                        densityProp.push_back(std::stod(trimString(line)));
+                        double rho = std::stod(trimString(line));
+                        densityProp.push_back(rho);
                         material.properties["DENSITY"] = densityProp;
+
+                        RgLog("    Density: %g\n", rho);
                         lastPos = file.tellg();
                     }
                     else
@@ -787,70 +962,303 @@ bool AbaqusImport::parseMaterial(std::ifstream& file, const std::string& keyword
                     }
                 }
             }
+            // === CHECK FOR EXIT CONDITIONS ===
             else
             {
-                // Unknown material property, return to process next material/keyword
-                file.seekg(lastPos);
-                m_lineNumber--;
-                break;
+                // Check if this is a major keyword that indicates end of material definition
+                bool shouldExit = false;
+
+                // List of keywords that end the material definition
+                if (keyword.find("MATERIAL") == 0)  // Next material
+                {
+                    shouldExit = true;
+                }
+                else if (keyword.find("PART") == 0)  // Part definition
+                {
+                    shouldExit = true;
+                }
+                else if (keyword.find("ASSEMBLY") == 0)  // Assembly section
+                {
+                    shouldExit = true;
+                }
+                else if (keyword.find("STEP") == 0)  // Analysis step
+                {
+                    shouldExit = true;
+                }
+                else if (keyword.find("BOUNDARY") == 0)  // Boundary conditions
+                {
+                    shouldExit = true;
+                }
+                else if (keyword.find("CLOAD") == 0 || keyword.find("DLOAD") == 0)  // Loads
+                {
+                    shouldExit = true;
+                }
+                else if (keyword.find("OUTPUT") == 0 || keyword.find("NODE OUTPUT") == 0 ||
+                         keyword.find("ELEMENT OUTPUT") == 0)  // Output requests
+                {
+                    shouldExit = true;
+                }
+                else if (keyword.find("SECTION") == 0)  // Section definitions
+                {
+                    shouldExit = true;
+                }
+                else if (keyword.find("HEADING") == 0)  // Heading
+                {
+                    shouldExit = true;
+                }
+                else if (keyword.find("PREPRINT") == 0)  // Preprint
+                {
+                    shouldExit = true;
+                }
+
+                if (shouldExit)
+                {
+                    // Major keyword found - put it back and exit
+                    file.seekg(lastPos);
+                    m_lineNumber--;
+                    RgLog("  Material '%s' definition ended at keyword: *%s\n", material.name.c_str(), keyword.c_str());
+                    break;
+                }
+
+                // Unknown/unsupported material property keyword
+                // Skip it and its data lines
+                RgLogWarning("Unsupported material property: *%s (line %d) - skipping", keyword.c_str(), m_lineNumber);
+
+                // Skip all data lines for this unknown keyword
+                lastPos = file.tellg();
+                while (std::getline(file, line))
+                {
+                    m_lineNumber++;
+                    line = trimString(line);
+
+                    if (line.empty())
+                    {
+                        lastPos = file.tellg();
+                        continue;
+                    }
+
+                    if (line[0] == '*')
+                    {
+                        // Hit next keyword, put it back and break
+                        file.seekg(lastPos);
+                        m_lineNumber--;
+                        break;
+                    }
+
+                    // Data line for unknown keyword - just skip it
+                    RgLog("      Skipping data: %s\n", line.c_str());
+                    lastPos = file.tellg();
+                }
             }
         }
     }
 
+    // Validate material has at least elastic properties
+    if (material.properties.find("ELASTIC") == material.properties.end())
+    {
+        RgLogWarning("Material '%s' has no elastic properties defined", material.name.c_str());
+    }
+
     m_materials.push_back(material);
     m_currentMaterial.clear();
+
+    RgLog("  Material '%s' parsed successfully (%s)\n", material.name.c_str(),
+          material.type.empty() ? "UNDEFINED" : material.type.c_str());
+
     return true;
 }
+
+// ============================================================================
+// NEW function to add to AbaqusImport: Create FEModel materials
+// ============================================================================
+
+bool AbaqusImport::createMaterials(FEModel* fem, const MaterialProperty& matProp)
+{
+    RgLog("\n");
+    RgLog("=================================================\n");
+    RgLog("Creating Materials\n");
+    RgLog("=================================================\n");
+    RgLog("Converting material '%s'...\n", matProp.name.c_str());
+
+    // Use the converter to create FEModel material
+    RgMaterial* material = AbaqusMaterialConverter::ConvertMaterial(matProp, fem);
+    if (material)
+    {
+        // Set material ID based on order (1-based indexing)
+        // Note: Assuming RgMaterial or FEMaterial has SetID method
+        // If not available, you may need to add it or handle differently
+        // material->SetID(i + 1);
+
+        // Note: Assuming RgMaterial has SetName method
+        // You might need to add this to your RgMaterial base class
+        // material->SetName(matProp.name);
+
+        // Add material to model
+        fem->AddMaterial(material);
+        RgLog("    Successfully created\n");
+    }
+    else
+    {
+        RgLogError("Failed to convert material '%s'", matProp.name.c_str());
+    }
+
+    return true;
+}
+
 
 //-----------------------------------------------------------------------------
 bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine)
 {
-    m_currentStep++;
-    m_inStep = true;
+    RgLog("=================================================\n");
+    RgLog("Parsing Abaqus Step Section\n");
+    RgLog("=================================================\n");
 
-    StepInfo step;
-    step.name = "Step-" + std::to_string(m_currentStep + 1);
+    // Parse step keyword parameters
+    std::map<std::string, std::string> stepParams;
+    parseKeywordParams(keywordLine, stepParams);
 
-    //RgLog("  Parsing step %d\n", m_currentStep + 1);
+    // Create step info structure for storing parsed data
+    StepInfo stepInfo;
+    stepInfo.name = stepParams["NAME"];
+    if (stepInfo.name.empty())
+    {
+        stepInfo.name = "Step-" + std::to_string(m_currentStep + 1);
+    }
+
+    // Default values
+    stepInfo.procedure = "STATIC";
+    stepInfo.timePeriod = 1.0;
+    stepInfo.initialTimeIncrement = 0.1;
+    stepInfo.minTimeIncrement = 1e-5;
+    stepInfo.maxTimeIncrement = 0.1;
+
+    RgLog("  Step name: %s\n", stepInfo.name.c_str());
+    RgLog("  Step number: %d\n", m_currentStep);
+
+    // Create the FEAnalysis object
+    // Note: You may need to create specific analysis types based on your implementation
+    // For now, we use the base FEAnalysis class
+    FEAnalysis* analysisStep = new FESolidAnalysis();
+    analysisStep->SetName(stepInfo.name);
+
+    // Temporary storage for BCs and loads defined in this step
+    std::vector<RgBoundaryCondition*> stepBCs;
+    std::vector<RgLoad*> stepLoads;
 
     std::string line;
     std::streampos lastPos = file.tellg();
+
+    m_inStep = true;
+    bool stepConfigured = false;
 
     while (std::getline(file, line))
     {
         m_lineNumber++;
         line = trimString(line);
 
+        // Skip empty lines and comments
         if (line.empty() || (line.size() >= 2 && line[0] == '*' && line[1] == '*'))
         {
             lastPos = file.tellg();
             continue;
         }
 
+        // Check for keyword
         if (line[0] == '*')
         {
             std::string keyword = toUpper(line.substr(1));
 
-            if (keyword.find("STATIC") == 0 || keyword.find("DYNAMIC") == 0)
+            // Parse step procedure type
+            if (keyword.find("STATIC") == 0)
             {
-                step.procedure = (keyword.find("STATIC") == 0) ? "STATIC" : "DYNAMIC";
-                // Read step parameters
+                stepInfo.procedure = "STATIC";
+                analysisStep->m_nanalysis = 0;  // STATIC
+                RgLog("  Procedure: STATIC\n");
+
+                // Parse STATIC parameters
+                std::map<std::string, std::string> procParams;
+                parseKeywordParams(line, procParams);
+
+                // Read step control data (next line after *Static)
                 lastPos = file.tellg();
                 if (std::getline(file, line))
                 {
                     m_lineNumber++;
                     line = trimString(line);
+
                     if (!line.empty() && line[0] != '*')
                     {
                         std::vector<std::string> tokens = splitString(line, ',');
+
+                        // Format: initial_increment, period, min_increment, max_increment
                         if (tokens.size() >= 1)
-                            step.initialTimeIncrement = std::stod(trimString(tokens[0]));
+                        {
+                            stepInfo.initialTimeIncrement = std::stod(trimString(tokens[0]));
+                            analysisStep->m_dt0 = stepInfo.initialTimeIncrement;
+                            RgLog("    Initial time increment: %g\n", stepInfo.initialTimeIncrement);
+                        }
                         if (tokens.size() >= 2)
-                            step.timePeriod = std::stod(trimString(tokens[1]));
+                        {
+                            stepInfo.timePeriod = std::stod(trimString(tokens[1]));
+                            analysisStep->m_final_time = stepInfo.timePeriod;
+                            RgLog("    Time period: %g\n", stepInfo.timePeriod);
+                        }
                         if (tokens.size() >= 3)
-                            step.minTimeIncrement = std::stod(trimString(tokens[2]));
+                        {
+                            stepInfo.minTimeIncrement = std::stod(trimString(tokens[2]));
+                            RgLog("    Min time increment: %g\n", stepInfo.minTimeIncrement);
+                        }
                         if (tokens.size() >= 4)
-                            step.maxTimeIncrement = std::stod(trimString(tokens[3]));
+                        {
+                            stepInfo.maxTimeIncrement = std::stod(trimString(tokens[3]));
+                            RgLog("    Max time increment: %g\n", stepInfo.maxTimeIncrement);
+                        }
+
+                        stepConfigured = true;
+                        lastPos = file.tellg();
+                    }
+                    else
+                    {
+                        file.seekg(lastPos);
+                        m_lineNumber--;
+                    }
+                }
+            }
+            else if (keyword.find("DYNAMIC") == 0)
+            {
+                stepInfo.procedure = "DYNAMIC";
+                analysisStep->m_nanalysis = 1;  // DYNAMIC
+                RgLog("  Procedure: DYNAMIC\n");
+
+                // Parse DYNAMIC parameters
+                std::map<std::string, std::string> procParams;
+                parseKeywordParams(line, procParams);
+
+                // Read dynamic step parameters
+                lastPos = file.tellg();
+                if (std::getline(file, line))
+                {
+                    m_lineNumber++;
+                    line = trimString(line);
+
+                    if (!line.empty() && line[0] != '*')
+                    {
+                        std::vector<std::string> tokens = splitString(line, ',');
+
+                        if (tokens.size() >= 1)
+                        {
+                            stepInfo.initialTimeIncrement = std::stod(trimString(tokens[0]));
+                            analysisStep->m_dt0 = stepInfo.initialTimeIncrement;
+                            RgLog("    Initial time increment: %g\n", stepInfo.initialTimeIncrement);
+                        }
+                        if (tokens.size() >= 2)
+                        {
+                            stepInfo.timePeriod = std::stod(trimString(tokens[1]));
+                            analysisStep->m_final_time = stepInfo.timePeriod;
+                            RgLog("    Time period: %g\n", stepInfo.timePeriod);
+                        }
+
+                        stepConfigured = true;
                         lastPos = file.tellg();
                     }
                     else
@@ -862,31 +1270,226 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
             }
             else if (keyword.find("BOUNDARY") == 0)
             {
-                parseBoundary(file);
+                RgLog("  Parsing BOUNDARY conditions in step\n");
+
+                // Store current BC count in model
+                int bcCountBefore = m_model->BoundaryConditions();
+
+                // Parse boundary conditions
+                // Note: parseBoundary() should add BCs directly to m_model
+                if (!parseBoundary(file))
+                {
+                    RgLogWarning("    Failed to parse boundary conditions\n");
+                }
+
+                // Collect newly added BCs
+                int bcCountAfter = m_model->BoundaryConditions();
+                for (int i = bcCountBefore; i < bcCountAfter; ++i)
+                {
+                    RgBoundaryCondition* bc = m_model->BoundaryCondition(i);
+                    stepBCs.push_back(bc);
+                    RgLog("    Added BC '%s' to step\n", bc->GetName().c_str());
+                }
             }
             else if (keyword.find("CLOAD") == 0)
             {
-                parseCload(file);
+                RgLog("  Parsing CLOAD in step\n");
+
+                // Store current load count in model
+                int loadCountBefore = m_model->ModelLoads();
+
+                // Parse concentrated loads
+                if (!parseCload(file))
+                {
+                    RgLogWarning("    Failed to parse concentrated loads\n");
+                }
+
+                // Collect newly added loads
+                int loadCountAfter = m_model->ModelLoads();
+                for (int i = loadCountBefore; i < loadCountAfter; ++i)
+                {
+                    RgLoad* load = m_model->ModelLoad(i);
+                    stepLoads.push_back(load);
+                    RgLog("    Added load '%s' to step\n", load->GetName().c_str());
+                }
             }
             else if (keyword.find("DLOAD") == 0)
             {
-                parseDload(file);
+                RgLog("  Parsing DLOAD in step\n");
+
+                // Store current load count in model
+                int loadCountBefore = m_model->ModelLoads();
+
+                // Parse distributed loads
+                if (!parseDload(file))
+                {
+                    RgLogWarning("    Failed to parse distributed loads\n");
+                }
+
+                // Collect newly added loads
+                int loadCountAfter = m_model->ModelLoads();
+                for (int i = loadCountBefore; i < loadCountAfter; ++i)
+                {
+                    RgLoad* load = m_model->ModelLoad(i);
+                    stepLoads.push_back(load);
+                    RgLog("    Added load '%s' to step\n", load->GetName().c_str());
+                }
+            }
+            else if (keyword.find("OUTPUT") == 0 || keyword.find("NODE OUTPUT") == 0 ||
+                     keyword.find("ELEMENT OUTPUT") == 0 || keyword.find("CONTACT OUTPUT") == 0)
+            {
+                RgLog("  Found OUTPUT request (skipping)\n");
+                skipToNextKeyword(file);
             }
             else if (keyword.find("END STEP") == 0)
             {
+                RgLog("  End of step section\n");
                 break;
             }
             else
             {
-                // Skip unknown keywords within step
-                lastPos = file.tellg();
+                RgLogWarning("  Unknown keyword in step: %s (skipping)\n", keyword.c_str());
+                skipToNextKeyword(file);
             }
+
+            lastPos = file.tellg();
         }
     }
 
-    m_steps.push_back(step);
+    // Set default time parameters if not configured
+    if (!stepConfigured)
+    {
+        analysisStep->m_dt0 = stepInfo.initialTimeIncrement;
+        analysisStep->m_final_time = stepInfo.timePeriod;
+        RgLog("  Using default time parameters\n");
+    }
+
+    // Calculate number of time steps
+    if (analysisStep->m_dt0 > 0)
+    {
+        analysisStep->m_ntime = (int)(analysisStep->m_final_time / analysisStep->m_dt0);
+    }
+    else
+    {
+        analysisStep->m_ntime = 10;  // default
+    }
+
+    // Add BCs to the step
+    for (auto bc : stepBCs)
+    {
+        analysisStep->AddBoundaryCondition(bc);
+    }
+
+    // Add loads to the step
+    for (auto load : stepLoads)
+    {
+        analysisStep->AddLoad(load);
+    }
+
+    // Set up inheritance from previous step
+    if (m_currentStep > 0 && m_model->Steps() > 0)
+    {
+        // Get previous step
+        FEAnalysis* prevStep = m_model->GetStep(m_currentStep - 1);
+        if (prevStep)
+        {
+            analysisStep->SetPreviousStep(prevStep);
+            analysisStep->SetActivationMode(StepActivationMode::INHERITED);
+            RgLog("  Will inherit BCs and loads from previous step\n");
+        }
+    }
+    else
+    {
+        // First step - no inheritance
+        analysisStep->SetActivationMode(StepActivationMode::NEW);
+        RgLog("  First step - no inheritance\n");
+    }
+
+    // Add step to model
+    m_model->AddStep(analysisStep);
+
+    // Store step info for reference
+    m_steps.push_back(stepInfo);
+    m_currentStep++;
     m_inStep = false;
+
+    // Summary
+    RgLog("-------------------------------------------------\n");
+    RgLog("Step Summary:\n");
+    RgLog("  Name: %s\n", analysisStep->GetName().c_str());
+    RgLog("  Type: %s\n", stepInfo.procedure.c_str());
+    RgLog("  BCs defined in this step: %d\n", (int)stepBCs.size());
+    RgLog("  Loads defined in this step: %d\n", (int)stepLoads.size());
+    RgLog("  Time period: %g\n", stepInfo.timePeriod);
+    RgLog("  Initial dt: %g\n", stepInfo.initialTimeIncrement);
+    RgLog("  Number of time steps: %d\n", analysisStep->m_ntime);
+    RgLog("=================================================\n\n");
+
     return true;
+}
+
+//-----------------------------------------------------------------------------
+// Helper function to create FEAnalysis from StepInfo
+bool AbaqusImport::createFEAnalysisStep(const StepInfo& stepInfo)
+{
+    if (!m_model)
+    {
+        m_lastError = "Model pointer is null";
+        return false;
+    }
+
+    // Create FEAnalysis based on procedure type
+    FEAnalysis* analysis = nullptr;
+
+    if (stepInfo.procedure == "STATIC")
+    {
+        // Create static analysis step
+        // You may need to adjust this based on your actual FEAnalysis class hierarchy
+        // For example: analysis = new FEStaticAnalysis(m_model);
+
+        // If FEAnalysis is the base class:
+        analysis = new FESolidAnalysis();
+        analysis->SetName(stepInfo.name);
+
+        // Set time parameters
+        // Note: You'll need to check your FEAnalysis interface for exact method names
+        // These are examples based on common FE code patterns:
+
+        // analysis->SetTimeSteps(stepInfo.initialTimeIncrement);
+        // analysis->SetFinalTime(stepInfo.timePeriod);
+        // analysis->SetMinTimeStep(stepInfo.minTimeIncrement);
+        // analysis->SetMaxTimeStep(stepInfo.maxTimeIncrement);
+
+        RgLog("  Created STATIC analysis step: %s\n", stepInfo.name.c_str());
+        RgLog("    Time period: %g\n", stepInfo.timePeriod);
+        RgLog("    Initial dt: %g\n", stepInfo.initialTimeIncrement);
+    }
+    else if (stepInfo.procedure == "DYNAMIC")
+    {
+        // Create dynamic analysis step
+        // analysis = new FEDynamicAnalysis(m_model);
+
+        analysis = new FESolidAnalysis();
+        analysis->SetName(stepInfo.name);
+
+        RgLog("  Created DYNAMIC analysis step: %s\n", stepInfo.name.c_str());
+        RgLog("    Time period: %g\n", stepInfo.timePeriod);
+        RgLog("    Initial dt: %g\n", stepInfo.initialTimeIncrement);
+    }
+    else
+    {
+        RgLogError("Unsupported analysis procedure: %s\n", stepInfo.procedure.c_str());
+        return false;
+    }
+
+    if (analysis)
+    {
+        // Add step to model
+        m_model->AddStep(analysis);
+        return true;
+    }
+
+    return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1206,7 +1809,7 @@ bool AbaqusImport::parseDload(std::ifstream& file)
 //-----------------------------------------------------------------------------
 // Generic parseLoad that can handle both *Cload and *Dload
 // Call this if you want a unified interface
-//bool AbaqusImport::parseLoad(std::ifstream& file, const std::string& loadType)
+// bool AbaqusImport::parseLoad(std::ifstream& file, const std::string& loadType)
 //{
 //    // Convert to uppercase for comparison
 //    std::string upperType = loadType;
@@ -1227,84 +1830,84 @@ bool AbaqusImport::parseDload(std::ifstream& file)
 //}
 
 ////-----------------------------------------------------------------------------
-//bool AbaqusImport::parseCload(std::ifstream& file)
+// bool AbaqusImport::parseCload(std::ifstream& file)
 //{
-//    std::string line;
-//    std::streampos lastPos = file.tellg();
+//     std::string line;
+//     std::streampos lastPos = file.tellg();
 //
-//    while (std::getline(file, line))
-//    {
-//        m_lineNumber++;
-//        line = trimString(line);
+//     while (std::getline(file, line))
+//     {
+//         m_lineNumber++;
+//         line = trimString(line);
 //
-//        if (line.empty())
-//        {
-//            lastPos = file.tellg();
-//            continue;
-//        }
-//        if (line[0] == '*')
-//        {
-//            file.seekg(lastPos);
-//            m_lineNumber--;
-//            break;
-//        }
+//         if (line.empty())
+//         {
+//             lastPos = file.tellg();
+//             continue;
+//         }
+//         if (line[0] == '*')
+//         {
+//             file.seekg(lastPos);
+//             m_lineNumber--;
+//             break;
+//         }
 //
-//        // Parse concentrated load: node_set, dof, magnitude
-//        std::vector<std::string> tokens = splitString(line, ',');
-//        if (tokens.size() >= 3)
-//        {
-//            ConcentratedLoad load;
-//            load.nodeSetName = trimString(tokens[0]);
-//            load.dof = std::stoi(trimString(tokens[1]));
-//            load.magnitude = std::stod(trimString(tokens[2]));
-//            load.step = m_currentStep;
-//            m_concentratedLoads.push_back(load);
-//        }
-//        lastPos = file.tellg();
-//    }
+//         // Parse concentrated load: node_set, dof, magnitude
+//         std::vector<std::string> tokens = splitString(line, ',');
+//         if (tokens.size() >= 3)
+//         {
+//             ConcentratedLoad load;
+//             load.nodeSetName = trimString(tokens[0]);
+//             load.dof = std::stoi(trimString(tokens[1]));
+//             load.magnitude = std::stod(trimString(tokens[2]));
+//             load.step = m_currentStep;
+//             m_concentratedLoads.push_back(load);
+//         }
+//         lastPos = file.tellg();
+//     }
 //
-//    return true;
-//}
+//     return true;
+// }
 //
 ////-----------------------------------------------------------------------------
-//bool AbaqusImport::parseDload(std::ifstream& file)
+// bool AbaqusImport::parseDload(std::ifstream& file)
 //{
-//    std::string line;
-//    std::streampos lastPos = file.tellg();
+//     std::string line;
+//     std::streampos lastPos = file.tellg();
 //
-//    while (std::getline(file, line))
-//    {
-//        m_lineNumber++;
-//        line = trimString(line);
+//     while (std::getline(file, line))
+//     {
+//         m_lineNumber++;
+//         line = trimString(line);
 //
-//        if (line.empty())
-//        {
-//            lastPos = file.tellg();
-//            continue;
-//        }
-//        if (line[0] == '*')
-//        {
-//            file.seekg(lastPos);
-//            m_lineNumber--;
-//            break;
-//        }
+//         if (line.empty())
+//         {
+//             lastPos = file.tellg();
+//             continue;
+//         }
+//         if (line[0] == '*')
+//         {
+//             file.seekg(lastPos);
+//             m_lineNumber--;
+//             break;
+//         }
 //
-//        // Parse distributed load: surface, load_type, magnitude
-//        std::vector<std::string> tokens = splitString(line, ',');
-//        if (tokens.size() >= 3)
-//        {
-//            DistributedLoad load;
-//            load.surfaceName = trimString(tokens[0]);
-//            load.loadType = trimString(tokens[1]);
-//            load.magnitude = std::stod(trimString(tokens[2]));
-//            load.step = m_currentStep;
-//            m_distributedLoads.push_back(load);
-//        }
-//        lastPos = file.tellg();
-//    }
+//         // Parse distributed load: surface, load_type, magnitude
+//         std::vector<std::string> tokens = splitString(line, ',');
+//         if (tokens.size() >= 3)
+//         {
+//             DistributedLoad load;
+//             load.surfaceName = trimString(tokens[0]);
+//             load.loadType = trimString(tokens[1]);
+//             load.magnitude = std::stod(trimString(tokens[2]));
+//             load.step = m_currentStep;
+//             m_distributedLoads.push_back(load);
+//         }
+//         lastPos = file.tellg();
+//     }
 //
-//    return true;
-//}
+//     return true;
+// }
 
 //-----------------------------------------------------------------------------
 bool AbaqusImport::parseHeading(std::ifstream& file)
@@ -1329,7 +1932,7 @@ bool AbaqusImport::parseHeading(std::ifstream& file)
             break;
         }
 
-        //RgLog("Heading: %s\n", line.c_str());
+        // RgLog("Heading: %s\n", line.c_str());
         lastPos = file.tellg();
     }
 
@@ -1394,7 +1997,7 @@ bool AbaqusImport::parseInstance(std::ifstream& file, const std::string& keyword
         return false;
     }
 
-    //RgLog("  Parsing instance: %s (part: %s)\n", instance.name.c_str(), instance.partName.c_str());
+    // RgLog("  Parsing instance: %s (part: %s)\n", instance.name.c_str(), instance.partName.c_str());
 
     // Initialize transformation to identity
     instance.translation[0] = instance.translation[1] = instance.translation[2] = 0.0;
@@ -1458,7 +2061,7 @@ bool AbaqusImport::processData(FEModel* fem)
 {
     FEMesh& mesh = fem->GetMesh();
 
-    //RgLog("Converting Abaqus data to FEModel...\n");
+    // RgLog("Converting Abaqus data to FEModel...\n");
 
     // 计算总节点数和总单元数
     int totalNodes = 0;
@@ -1510,7 +2113,7 @@ bool AbaqusImport::processData(FEModel* fem)
 
         // Create nodes with global mapping
         std::map<int, int> nodeMap;  // Abaqus局部ID -> FEM全局索引
-        if (!createNodes(*part, &mesh, nodeMap, instance))
+        if (!createNodes(*part, domain, &mesh, nodeMap, instance))
             return false;
 
         // Create elements with global node mapping
@@ -1538,12 +2141,12 @@ bool AbaqusImport::processData(FEModel* fem)
     }
 
     //// Create boundary conditions
-    //if (!createBoundaryConditions(fem))
-    //    return false;
+    // if (!createBoundaryConditions(fem))
+    //     return false;
 
     //// Create loads
-    //if (!createLoads(fem))
-    //    return false;
+    // if (!createLoads(fem))
+    //     return false;
 
     // Update mesh bounding box
     mesh.UpdateBox();
@@ -1552,9 +2155,8 @@ bool AbaqusImport::processData(FEModel* fem)
 }
 
 //-----------------------------------------------------------------------------
-bool AbaqusImport::createNodes(const AbaqusPart& part, FEMesh* mesh,
-    std::map<int, int>& nodeMap,
-    const AbaqusInstance& instance)
+bool AbaqusImport::createNodes(const AbaqusPart& part, RgDomain* domain, FEMesh* mesh, std::map<int, int>& nodeMap,
+                               const AbaqusInstance& instance)
 {
     for (size_t i = 0; i < part.nodes.size(); i++)
     {
@@ -1587,6 +2189,8 @@ bool AbaqusImport::createNodes(const AbaqusPart& part, FEMesh* mesh,
 
         // 添加到全局映射
         m_globalNodeMap[abqNode.id] = globalIndex;
+
+        domain->AddNode(&meshNode);
     }
 
     m_totalNodes += part.nodes.size();
@@ -1594,8 +2198,7 @@ bool AbaqusImport::createNodes(const AbaqusPart& part, FEMesh* mesh,
 }
 
 //-----------------------------------------------------------------------------
-bool AbaqusImport::createElements(const AbaqusPart& part, RgDomain* domain,
-    const std::map<int, int>& nodeMap)
+bool AbaqusImport::createElements(const AbaqusPart& part, RgDomain* domain, const std::map<int, int>& nodeMap)
 {
     // 为domain分配单元
     domain->Create(part.elements.size(), ElementType::FE_HEX8G8);
@@ -1609,49 +2212,49 @@ bool AbaqusImport::createElements(const AbaqusPart& part, RgDomain* domain,
 
         switch (abqElem.type)
         {
-        case FE_HEX8:  // 假设您已经定义了这些常量
-        {
-            RgHex8Element* hex8 = dynamic_cast<RgHex8Element*>(&domain->ElementRef(i));
-            if (hex8)
+            case FE_HEX8:  // 假设您已经定义了这些常量
             {
-                elem = hex8;
-
-                // 设置节点连接性（使用全局节点索引）
-                if (abqElem.nodes.size() != 8)
+                RgHex8Element* hex8 = dynamic_cast<RgHex8Element*>(&domain->ElementRef(i));
+                if (hex8)
                 {
-                    m_lastError = "HEX8 element must have 8 nodes";
-                    return false;
-                }
+                    elem = hex8;
 
-                for (int j = 0; j < 8; j++)
-                {
-                    int abaqusNodeId = abqElem.nodes[j];
-                    auto it = nodeMap.find(abaqusNodeId);
-                    if (it == nodeMap.end())
+                    // 设置节点连接性（使用全局节点索引）
+                    if (abqElem.nodes.size() != 8)
                     {
-                        m_lastError = "Node ID not found: " + std::to_string(abaqusNodeId);
+                        m_lastError = "HEX8 element must have 8 nodes";
                         return false;
                     }
 
-                    // 设置单元的节点索引
-                    hex8->setNodeId(j, it->second);
+                    for (int j = 0; j < 8; j++)
+                    {
+                        int abaqusNodeId = abqElem.nodes[j];
+                        auto it = nodeMap.find(abaqusNodeId);
+                        if (it == nodeMap.end())
+                        {
+                            m_lastError = "Node ID not found: " + std::to_string(abaqusNodeId);
+                            return false;
+                        }
+
+                        // 设置单元的节点索引
+                        hex8->setNodeId(j, it->second);
+                    }
                 }
             }
-        }
-        break;
+            break;
 
-        case FE_TET4:
-        {
-            // 类似处理TET4单元
-            // RgTet4Element* tet4 = ...
-        }
-        break;
+            case FE_TET4:
+            {
+                // 类似处理TET4单元
+                // RgTet4Element* tet4 = ...
+            }
+            break;
 
-        // 添加其他单元类型...
+                // 添加其他单元类型...
 
-        default:
-            //RgLogWarning("Unsupported element type: %d", abqElem.type);
-            continue;
+            default:
+                // RgLogWarning("Unsupported element type: %d", abqElem.type);
+                continue;
         }
 
         if (elem)
@@ -1670,8 +2273,7 @@ bool AbaqusImport::createElements(const AbaqusPart& part, RgDomain* domain,
 }
 
 //-----------------------------------------------------------------------------
-bool AbaqusImport::createNodeSets(const AbaqusInstance& part, FEMesh* mesh,
-    const std::map<int, int>& nodeMap)
+bool AbaqusImport::createNodeSets(const AbaqusInstance& part, FEMesh* mesh, const std::map<int, int>& nodeMap)
 {
     for (const auto& nset : part.nodeSets)
     {
@@ -1689,7 +2291,7 @@ bool AbaqusImport::createNodeSets(const AbaqusInstance& part, FEMesh* mesh,
             }
             else
             {
-                //RgLogWarning("Node ID %d not found in node set %s", abqNodeId, nset.first.c_str());
+                // RgLogWarning("Node ID %d not found in node set %s", abqNodeId, nset.first.c_str());
             }
         }
 
@@ -1708,8 +2310,7 @@ bool AbaqusImport::createNodeSets(const AbaqusInstance& part, FEMesh* mesh,
 }
 
 //-----------------------------------------------------------------------------
-bool AbaqusImport::createElementSets(const AbaqusInstance& part, FEMesh* mesh,
-    RgDomain* domain)
+bool AbaqusImport::createElementSets(const AbaqusInstance& part, FEMesh* mesh, RgDomain* domain)
 {
     for (const auto& elset : part.elementSets)
     {
@@ -1720,15 +2321,15 @@ bool AbaqusImport::createElementSets(const AbaqusInstance& part, FEMesh* mesh,
         for (int abqElemId : elset.second)
         {
             //// 在当前part的elements中查找
-            //for (size_t i = 0; i < part.elements.size(); i++)
+            // for (size_t i = 0; i < part.elements.size(); i++)
             //{
-            //    if (part.elements[i].id == abqElemId)
-            //    {
-            //        int globalElemIndex = m_globalElemOffset - part.elements.size() + i;
-            //        elemIndices.push_back(globalElemIndex);
-            //        break;
-            //    }
-            //}
+            //     if (part.elements[i].id == abqElemId)
+            //     {
+            //         int globalElemIndex = m_globalElemOffset - part.elements.size() + i;
+            //         elemIndices.push_back(globalElemIndex);
+            //         break;
+            //     }
+            // }
         }
 
         // 根据您的RgElementSet API设置单元
@@ -1762,26 +2363,24 @@ RgDomain* AbaqusImport::createDomain(const AbaqusPart& part, FEMesh* mesh)
     RgDomain* domain = nullptr;
 
     // 根据单元类型创建domain
-    if (elemType == FE_HEX8 || elemType == FE_HEX20 || elemType == FE_HEX27 ||
-        elemType == FE_TET4 || elemType == FE_TET10 ||
-        elemType == FE_PENTA6 || elemType == FE_PENTA15)
+    if (elemType == FE_HEX8 || elemType == FE_HEX20 || elemType == FE_HEX27 || elemType == FE_TET4 ||
+        elemType == FE_TET10 || elemType == FE_PENTA6 || elemType == FE_PENTA15)
     {
         // 实体单元 -> 实体域
         domain = new RgSolidDomain(mesh->GetFEModel());
-        //RgLog("  Creating solid domain: %s\n", part.name.c_str());
+        // RgLog("  Creating solid domain: %s\n", part.name.c_str());
     }
-    else if (elemType == FE_QUAD4 || elemType == FE_QUAD8 ||
-        elemType == FE_TRI3 || elemType == FE_TRI6)
+    else if (elemType == FE_QUAD4 || elemType == FE_QUAD8 || elemType == FE_TRI3 || elemType == FE_TRI6)
     {
         // 壳单元 -> 壳域
         // domain = new RgShellDomain(mesh->GetFEModel());
-        //RgLog("  Creating shell domain: %s\n", part.name.c_str());
+        // RgLog("  Creating shell domain: %s\n", part.name.c_str());
     }
     else if (elemType == FE_LINE2)
     {
         // 梁/桁架单元 -> 桁架域
         // domain = new RgTrussDomain(mesh->GetFEModel());
-        //RgLog("  Creating truss domain: %s\n", part.name.c_str());
+        // RgLog("  Creating truss domain: %s\n", part.name.c_str());
     }
     else
     {
@@ -1854,7 +2453,7 @@ int AbaqusImport::convertElementType(const std::string& abqType)
     if (type == "B31" || type == "B32")
         return FE_LINE2;
 
-    //RgLogWarning("Unknown element type: %s", abqType.c_str());
+    // RgLogWarning("Unknown element type: %s", abqType.c_str());
     return -1;
 }
 
@@ -1914,7 +2513,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Create Boundary Conditions
 ////=============================================================================
 //
-//bool AbaqusImport::createBoundaryConditions(FEModel* fem)
+// bool AbaqusImport::createBoundaryConditions(FEModel* fem)
 //{
 //    RgLog("\n");
 //    RgLog("=================================================\n");
@@ -2050,7 +2649,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Create Loads
 ////=============================================================================
 //
-//bool AbaqusImport::createLoads(FEModel* fem)
+// bool AbaqusImport::createLoads(FEModel* fem)
 //{
 //    RgLog("\n");
 //    RgLog("=================================================\n");
@@ -2127,7 +2726,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Helper: Create Concentrated Load
 ////=============================================================================
 //
-//RgLoad* AbaqusImport::CreateConcentratedLoad(FEModel* fem, const LoadData& data)
+// RgLoad* AbaqusImport::CreateConcentratedLoad(FEModel* fem, const LoadData& data)
 //{
 //    FEMesh& mesh = fem->GetMesh();
 //
@@ -2171,7 +2770,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Helper: Create Distributed Load
 ////=============================================================================
 //
-//RgLoad* AbaqusImport::CreateDistributedLoad(FEModel* fem, const LoadData& data)
+// RgLoad* AbaqusImport::CreateDistributedLoad(FEModel* fem, const LoadData& data)
 //{
 //    FEMesh& mesh = fem->GetMesh();
 //    std::string loadType = data.loadType;
@@ -2210,7 +2809,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Helper: Create Pressure Load
 ////=============================================================================
 //
-//RgLoad* AbaqusImport::CreatePressureLoad(FEModel* fem, const LoadData& data)
+// RgLoad* AbaqusImport::CreatePressureLoad(FEModel* fem, const LoadData& data)
 //{
 //    FEMesh& mesh = fem->GetMesh();
 //
@@ -2244,7 +2843,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Helper: Create Traction Load
 ////=============================================================================
 //
-//RgLoad* AbaqusImport::CreateTractionLoad(FEModel* fem, const LoadData& data)
+// RgLoad* AbaqusImport::CreateTractionLoad(FEModel* fem, const LoadData& data)
 //{
 //    FEMesh& mesh = fem->GetMesh();
 //
@@ -2278,7 +2877,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Helper: Create Gravity Load
 ////=============================================================================
 //
-//RgLoad* AbaqusImport::CreateGravityLoad(FEModel* fem, const LoadData& data)
+// RgLoad* AbaqusImport::CreateGravityLoad(FEModel* fem, const LoadData& data)
 //{
 //    // Create gravity vector
 //    Vector3d direction(data.x, data.y, data.z);
@@ -2297,7 +2896,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Helper: Create Centrifugal Load
 ////=============================================================================
 //
-//RgLoad* AbaqusImport::CreateCentrifugalLoad(FEModel* fem, const LoadData& data)
+// RgLoad* AbaqusImport::CreateCentrifugalLoad(FEModel* fem, const LoadData& data)
 //{
 //    // In Abaqus, CENTRIF format is:
 //    // name, CENTRIF, omega^2, x0, y0, z0, x1, y1, z1
@@ -2329,7 +2928,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Helper: Convert Abaqus DOF to Internal DOF
 ////=============================================================================
 //
-//int AbaqusImport::ConvertAbaqusDOF(int abaqusDOF)
+// int AbaqusImport::ConvertAbaqusDOF(int abaqusDOF)
 //{
 //    // Abaqus: 1,2,3 = X,Y,Z displacement; 4,5,6 = X,Y,Z rotation
 //    // Internal: 0,1,2 = X,Y,Z displacement; 3,4,5 = X,Y,Z rotation
@@ -2347,7 +2946,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Optional: Attach Load Controllers
 ////=============================================================================
 //
-//bool AbaqusImport::attachLoadControllers(FEModel* fem)
+// bool AbaqusImport::attachLoadControllers(FEModel* fem)
 //{
 //    RgLog("\n");
 //    RgLog("=================================================\n");
@@ -2424,7 +3023,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //// Validation
 ////=============================================================================
 //
-//bool AbaqusImport::validateBCsAndLoads(FEModel* fem)
+// bool AbaqusImport::validateBCsAndLoads(FEModel* fem)
 //{
 //    RgLog("\n");
 //    RgLog("=================================================\n");
@@ -2459,7 +3058,8 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //
 //        if (nodeSet->Size() == 0)
 //        {
-//            RgLogWarning("  BC %d (%s): Node set '%s' is empty", i, bc->GetName().c_str(), nodeSet->GetName().c_str());
+//            RgLogWarning("  BC %d (%s): Node set '%s' is empty", i, bc->GetName().c_str(),
+//            nodeSet->GetName().c_str());
 //        }
 //    }
 //
@@ -2523,7 +3123,7 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 
 
 //-----------------------------------------------------------------------------
-//int AbaqusImport::convertElementType(const std::string& abqType)
+// int AbaqusImport::convertElementType(const std::string& abqType)
 //{
 //    std::string type = toUpper(abqType);
 //
@@ -2564,38 +3164,38 @@ bool AbaqusImport::createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain
 //}
 
 ////-----------------------------------------------------------------------------
-//int AbaqusImport::getElementNodeCount(int elemType)
+// int AbaqusImport::getElementNodeCount(int elemType)
 //{
-//    switch (elemType)
-//    {
-//        /*case FE_HEX8:
-//            return 8;
-//        case FE_HEX20:
-//            return 20;
-//        case FE_HEX27:
-//            return 27;
-//        case FE_TET4:
-//            return 4;
-//        case FE_TET10:
-//            return 10;
-//        case FE_PENTA6:
-//            return 6;
-//        case FE_PENTA15:
-//            return 15;
-//        case FE_QUAD4:
-//            return 4;
-//        case FE_QUAD8:
-//            return 8;
-//        case FE_TRI3:
-//            return 3;
-//        case FE_TRI6:
-//            return 6;
-//        case FE_LINE2:
-//            return 2;*/
-//    default:
-//        return 0;
-//    }
-//}
+//     switch (elemType)
+//     {
+//         /*case FE_HEX8:
+//             return 8;
+//         case FE_HEX20:
+//             return 20;
+//         case FE_HEX27:
+//             return 27;
+//         case FE_TET4:
+//             return 4;
+//         case FE_TET10:
+//             return 10;
+//         case FE_PENTA6:
+//             return 6;
+//         case FE_PENTA15:
+//             return 15;
+//         case FE_QUAD4:
+//             return 4;
+//         case FE_QUAD8:
+//             return 8;
+//         case FE_TRI3:
+//             return 3;
+//         case FE_TRI6:
+//             return 6;
+//         case FE_LINE2:
+//             return 2;*/
+//     default:
+//         return 0;
+//     }
+// }
 
 //-----------------------------------------------------------------------------
 bool AbaqusImport::validatePart(const AbaqusPart& part)

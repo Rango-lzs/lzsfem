@@ -4,7 +4,3 @@
 RgElementShape::RgElementShape(ElementShape shape, int nodes) : mShpType(shape), mNodes(nodes)
 {
 }
-
-RgElementShape::~RgElementShape()
-{
-}

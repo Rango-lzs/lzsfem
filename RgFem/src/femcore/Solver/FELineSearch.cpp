@@ -1,5 +1,5 @@
 #include "FELineSearch.h"
-#include "FENewtonSolver.h"
+#include "femcore/NewtonSolver/NewtonSolver.h"
 #include "basicio/DumpStream.h"
 #include <vector>
 using namespace std;
@@ -39,9 +39,9 @@ double FELineSearch::DoLineSearch(double s)
 	int n = 0;
 
 	// vectors
-	vector<double>& ui = m_pns->m_ui;
-	vector<double>& R0 = m_pns->m_R0;
-	vector<double>& R1 = m_pns->m_R1;
+    vector<double>& ui = m_pns->m_ui;
+    vector<double>& R0 = m_pns->m_R0;
+    vector<double>& R1 = m_pns->m_R1;
 
 	// initial energy
 	r0 = ui*R0;

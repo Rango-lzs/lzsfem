@@ -71,19 +71,24 @@ set(PROJECT_SOURCES
 source_group("app" FILES ${APP_HEADERS} ${APP_SOURCES})
 
 
-
 # add femcore sources
 set(FEMCORE_HEADERS
     femcore/Callback.h
     femcore/FEModelObserver.h
     femcore/DOFS.h
 
+    femcore/RgDofSchema.h
+    femcore/RgDofSchema.cpp
+
+    femcore/Equation/RgEquationNumbering.h
+    femcore/Equation/RgEquationNumbering.cpp
+
     #femcore/DataRecord.h
     #femcore/Domain/DomainDataRecord.h
     #femcore/Domain/Rg3FieldElasticShellDomain.h
     #femcore/Domain/Rg3FieldElasticSolidDomain.h
     femcore/Domain/RgAssembler.h
-    femcore/Domain/RgBeamDomain.h
+    #femcore/Domain/RgBeamDomain.h
     femcore/Domain/RgDomain.h
     #femcore/Domain/RgDomain2D.h
     femcore/Domain/RgDomainList.h
@@ -97,13 +102,37 @@ set(FEMCORE_HEADERS
     femcore/Domain/RgShellDomain.h
     femcore/Domain/RgSolidDomain.h
     #femcore/Domain/RgSolidDomainFactory.h
-    femcore/Domain/RgTrussDomain.h
+    #femcore/Domain/RgTrussDomain.h
     #femcore/DomainDataRecord.h
     #femcore/ElementDataRecord.h
     #femcore/FE3FieldElasticSolidDomain.h
 
-    femcore/FEAnalysis/FEAnalysis.h
-    femcore/FEAnalysis/RgAnalysis.h
+    #femcore/AnalysisStep/RgAnalysisStep.h
+    #femcore/AnalysisStep/RgAnalysisStep.cpp
+    #femcore/FEAnalysis/FEAnalysis.h
+    #femcore/FEAnalysis/FEAnalysis.cpp
+
+    femcore/AnalysisStep/RgAnalysis.h
+    femcore/AnalysisStep/RgAnalysis.cpp
+
+    femcore/AnalysisStep/AnalysisStep.h
+
+    femcore/AnalysisStep/StaticStep.h
+    femcore/AnalysisStep/StaticStep.cpp
+
+    femcore/AnalysisStep/StepControl.h
+    
+    
+
+
+    femcore/BoundaryCondition/RgBoundaryCondition.h
+    femcore/BoundaryCondition/RgBoundaryCondition.cpp
+    femcore/Load/RgLoad.h
+    femcore/Load/RgLoad.cpp
+
+    femcore/RgLoadController.h
+    femcore/RgLoadController.cpp
+
     femcore/FEBodyLoad.h
     femcore/FEBoundaryCondition.h
     #femcore/FECore.h
@@ -138,7 +167,7 @@ set(FEMCORE_HEADERS
     femcore/FENLConstraint.h
     femcore/FENode.h
     femcore/FENodeDataMap.h
-    femcore/FENodeElemList.h
+    #femcore/FENodeElemList.h
     femcore/FENodeList.h
     femcore/FENodeNodeList.h
     femcore/FENodeSet.h
@@ -214,17 +243,25 @@ set(FEMCORE_HEADERS
     femcore/Solver/FELineSearch.h
     femcore/Solver/FELinearSolver.h
     #femcore/Solver/FEModifiedNewtonStrategy.cpp
-    femcore/Solver/FENewtonSolver.cpp
+    #femcore/Solver/FENewtonSolver.cpp
     femcore/Solver/FENewtonStrategy.h
     femcore/Solver/FENodeReorder.h
     #femcore/Solver/FERigidSolver.h
-    femcore/Solver/FESolidSolver2.h
-    femcore/Solver/FESolver.h
+    #femcore/Solver/FESolidSolver2.h
+    #femcore/Solver/FESolver.h
     #femcore/Solver/JFNKStrategy.h
     femcore/Solver/LUSolver.h
     femcore/Solver/LinearSolver.h
     femcore/Solver/SkylineSolver.h
     femcore/Solver/FELevelStructure.h
+
+    femcore/NewtonSolver/SolverBase.h
+    femcore/NewtonSolver/SolverBase.cpp
+    femcore/NewtonSolver/StaticSolver.h
+    femcore/NewtonSolver/StaticSolver.cpp
+    femcore/NewtonSolver/NewtonSolver.h
+    femcore/NewtonSolver/NewtonSolver.cpp
+
 
     femcore/TimeStep/FETimeInfo.h
     femcore/TimeStep/FETimeStepController.h
@@ -279,7 +316,7 @@ set(FEMCORE_SOURCES
 
     #femcore/Domain/DomainDataRecord.cpp
     femcore/Domain/RgAssembler.cpp
-    femcore/Domain/RgBeamDomain.cpp
+    #femcore/Domain/RgBeamDomain.cpp
     femcore/Domain/RgDomain.cpp
     femcore/Domain/RgDomainList.cpp
     femcore/Domain/RgDomainParameter.cpp
@@ -292,9 +329,9 @@ set(FEMCORE_SOURCES
     femcore/Domain/RgShellDomain.cpp
     femcore/Domain/RgSolidDomain.cpp
     #femcore/Domain/RgSolidDomainFactory.cpp
-    femcore/Domain/RgTrussDomain.cpp
+    #femcore/Domain/RgTrussDomain.cpp
 
-    femcore/FEAnalysis/FEAnalysis.cpp
+    #femcore/FEAnalysis/FEAnalysis.cpp
     femcore/FEBodyLoad.cpp
     femcore/FEBoundaryCondition.cpp
     #femcore/FECore.cpp
@@ -382,13 +419,13 @@ set(FEMCORE_SOURCES
     femcore/Solver/FELineSearch.cpp
     femcore/Solver/FELinearSolver.cpp
     #femcore/Solver/FEModifiedNewtonStrategy.cpp
-    femcore/Solver/FENewtonSolver.cpp
+    #femcore/Solver/FENewtonSolver.cpp
     femcore/Solver/FENewtonStrategy.cpp
     femcore/Solver/FENodeReorder.cpp
 
     #femcore/Solver/FERigidSolver.cpp
-    femcore/Solver/FESolidSolver2.cpp
-    femcore/Solver/FESolver.cpp
+    #femcore/Solver/FESolidSolver2.cpp
+    #femcore/Solver/FESolver.cpp
     #femcore/Solver/JFNKStrategy.cpp
     femcore/Solver/LUSolver.cpp
     femcore/Solver/LinearSolver.cpp
@@ -553,10 +590,14 @@ source_group("basicio" FILES ${BASICIO_HEADERS} ${BASICIO_SOURCES})
 
 #add input sources
 set(INPUT_HEADERS
+    input/FileReader.h
     input/XML/XMLReader.h
     input/XML/XMLWriter.h
     #input/abaqus/AbaqusExport.h
-    #input/abaqus/AbaqusImport.h
+    input/abaqus/AbaqusImport.h
+    input/abaqus/AbaqusBoundaryParser.h
+    input/abaqus/AbaqusLoadParser.h
+    input/abaqus/AbaqusMaterialConverter.h
     #input/abaqus/AbaqusModel.h
     #input/abaqus/AbaqusParser.h
     #input/febio/FEBModel.h
@@ -610,7 +651,11 @@ set(INPUT_SOURCES
     input/XML/XMLReader.cpp
     input/XML/XMLWriter.cpp
     #input/abaqus/AbaqusExport.cpp
-    #input/abaqus/AbaqusImport.cpp
+    input/FileReader.cpp
+    input/abaqus/AbaqusImport.cpp
+    input/abaqus/AbaqusBoundaryParser.cpp
+    input/abaqus/AbaqusLoadParser.cpp
+    input/abaqus/AbaqusMaterialConverter.cpp
     #input/abaqus/AbaqusModel.cpp
     #input/febio/FEBModel.cpp
     #input/febio/FEBioBoundarySection.cpp

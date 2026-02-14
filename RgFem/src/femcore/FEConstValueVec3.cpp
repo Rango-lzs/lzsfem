@@ -1,7 +1,6 @@
 #include "femcore/FEModel.h"
 #include "FEConstValueVec3.h"
 #include "materials/RgMaterialPoint.h"
-#include "FEMeshPartition.h"
 #include "FENode.h"
 #include "datastructure/quatd.h"
 #include <assert.h>
@@ -137,9 +136,9 @@ bool FEMappedValueVec3::Init()
 	{
 		FEModel& fem = *GetFEModel();
 		FEMesh& mesh = fem.GetMesh();
-		FEDataMap* map = mesh.FindDataMap(m_mapName);
+		/*FEDataMap* map = mesh.FindDataMap(m_mapName);
 		if (map == nullptr) return false;
-		setDataMap(map);
+		setDataMap(map);*/
 	}
 	return FEVec3dValuator::Init();
 }
@@ -169,7 +168,7 @@ Vector3d FELocalVectorGenerator::operator () (const RgMaterialPoint& mp)
 {
 	RgElement* el = mp.m_elem; assert(el);
 
-	FEMeshPartition* dom = el->GetMeshPartition();
+	RgDomain* dom = el->getDomain();
 	Vector3d r0 = dom->Node(el->getLocNodeId(m_n[0]-1)).m_r0;
 	Vector3d r1 = dom->Node(el->getLocNodeId(m_n[1]-1)).m_r0;
 

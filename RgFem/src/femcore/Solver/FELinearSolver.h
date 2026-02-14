@@ -1,5 +1,5 @@
 #pragma once
-#include "FESolver.h"
+#include "femcore/NewtonSolver/SolverBase.h"
 
 //-----------------------------------------------------------------------------
 // forward declarations

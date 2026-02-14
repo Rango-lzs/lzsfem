@@ -21,8 +21,8 @@
 class FEM_EXPORT RgMaterialPointData
 {
 public:
-    RgMaterialPointData(RgMaterialPointData* pParant = nullptr);
-    virtual ~RgMaterialPointData();
+    RgMaterialPointData(RgMaterialPointData* pParant = nullptr) {}
+    virtual ~RgMaterialPointData() = default;
 
 public:
     //! The init function is used to intialize data
@@ -74,6 +74,18 @@ protected:
     friend class RgMaterialPoint;
 };
 
+template <class T>
+T* RgMaterialPointData::ExtractData()
+{
+    return nullptr;
+}
+
+
+template <class T>
+const T* RgMaterialPointData::ExtractData() const
+{
+    return nullptr;
+}
 
 namespace LargeDef
 {
@@ -128,7 +140,7 @@ namespace LargeDef
 namespace SmallDef
 {
     /// Data structure for storing kinematic and stress state at a material point
-    class SmallDefRgMaterialPointData : public RgMaterialPointData
+    class SmallDefMaterialPointData : public RgMaterialPointData
     {
     public:
         /// Kinematic variables
@@ -148,8 +160,8 @@ namespace SmallDef
         tens4d C;  ///< Fourth-order elasticity tensor (material tangent stiffness)
 
     public:
-        SmallDefRgMaterialPointData(RgMaterialPointData* ppt = nullptr);
-        virtual ~SmallDefRgMaterialPointData() = default;
+        SmallDefMaterialPointData(RgMaterialPointData* ppt = nullptr);
+        virtual ~SmallDefMaterialPointData() = default;
 
         /// Update kinematic variables from displacement gradient
         void updateKinematicsFromGradU(const Matrix3d& gradU_new);

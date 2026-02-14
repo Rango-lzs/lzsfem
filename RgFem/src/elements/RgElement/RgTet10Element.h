@@ -5,11 +5,6 @@
 #include <array>
 #include <vector>
 
-
-
-// forward declarations
-class Matrix3ds;
-
 /*
     RgTet10Element
     - 10-node quadratic tetrahedral solid element

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SparseMatrix.h"
-#include "femcore/Solver/FESolver.h"
+#include "femcore/NewtonSolver/SolverBase.h"
 #include <vector>
 
 //-----------------------------------------------------------------------------

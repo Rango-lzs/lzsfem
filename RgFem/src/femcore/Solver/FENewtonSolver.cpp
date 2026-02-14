@@ -18,6 +18,7 @@
 #include "femcore/fecore_enum.h"
 #include "FELineSearch.h"
 #include "SkylineSolver.h"
+#include "../BoundaryCondition/RgBoundaryCondition.h"
 
 DEFINE_META_CLASS(FENewtonSolver, FESolver, "");
 
@@ -770,9 +771,9 @@ void FENewtonSolver::PrepStep()
     int nbc = fem.BoundaryConditions();
     for (int i = 0; i < nbc; ++i)
     {
-        FEBoundaryCondition& dc = *fem.BoundaryCondition(i);
-        if (dc.IsActive())
-            dc.PrepStep(ui);
+        RgBoundaryCondition& dc = *fem.BoundaryCondition(i);
+        /*if (dc.IsActive())
+            dc.PrepStep(ui);*/
     }
 
     // intialize material point data
@@ -1059,7 +1060,7 @@ void FENewtonSolver::Update(std::vector<double>& ui)
     int nbc = fem.BoundaryConditions();
     for (int i = 0; i < nbc; ++i)
     {
-        FEBoundaryCondition& dc = *fem.BoundaryCondition(i);
+        RgBoundaryCondition& dc = *fem.BoundaryCondition(i);
         if (dc.IsActive())
             dc.Update();
     }

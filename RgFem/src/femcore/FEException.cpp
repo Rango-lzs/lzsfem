@@ -1,5 +1,5 @@
 #include "FEException.h"
-#include "femcore/Solver/FESolver.h" // for FENodalDofInfo
+#include "femcore/NewtonSolver/SolverBase.h" // for FENodalDofInfo
 #include <stdarg.h>
 
 //////////////////////////////////////////////////////////////////////

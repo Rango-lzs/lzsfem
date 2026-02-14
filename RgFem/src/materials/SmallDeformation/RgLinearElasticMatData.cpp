@@ -1,6 +1,5 @@
 #include "materials/SmallDeformation/RgLinearElasticMatData.h"
 
-namespace RgFem {
 namespace SmallDef {
 
 RgLinearElasticMatData::RgLinearElasticMatData(RgMaterialPointData* ppt)
@@ -48,4 +47,4 @@ void RgLinearElasticMatData::serialize(DumpStream& ar)
 }
 
 } // namespace SmallDef
-} // namespace RgFem
+

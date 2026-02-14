@@ -1,8 +1,9 @@
 #pragma once
-#include <map>
-#include "fecore_enum.h"
-#include "fecore_api.h"
+
+#include "femcore/fem_export.h"
 #include "elements/RgElemTypeDefine.h"
+
+#include <map>
 
 // Forward declarations
 class RgElement;

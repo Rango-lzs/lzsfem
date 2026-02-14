@@ -64,7 +64,7 @@ public:
 
 protected:
     // ========== B矩阵相关接口 ==========
-    virtual void computeBMatrix(const NaturalCoord& xi, Matrix& B) const override = 0;
+    virtual void computeBMatrix(const NaturalCoord& xi, Matrix& B) override = 0;
 
     //refer to Bathe  ： THe B matrix divided to linear and quadratic of the u incrementation
     virtual void computeLinearBMatrix(const NaturalCoord& xi, Matrix& B_L0);

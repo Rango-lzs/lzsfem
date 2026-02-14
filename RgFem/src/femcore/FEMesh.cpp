@@ -438,7 +438,7 @@ void FEMesh::Clear()
 
     m_Domain.clear();
     m_Surf.clear();
-    m_NodeSet.clear();
+    //m_NodeSet.clear();
     // m_LineSet.clear();
     m_ElemSet.clear();
     m_DiscSet.clear();
@@ -699,7 +699,10 @@ void FEMesh::AddSurfacePair(FESurfacePair* ps)
 FENodeElemList& FEMesh::NodeElementList()
 {
     if (m_NEL.Size() != m_Node.size())
-        m_NEL.Create(*this);
+    {
+        //m_NEL.Create(*this);  why link error
+    }
+        
     return m_NEL;
 }
 

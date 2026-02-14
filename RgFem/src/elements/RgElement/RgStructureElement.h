@@ -35,8 +35,6 @@ class DumpStream;
  * 4、
  */
 
-
-
 class FEM_EXPORT RgStructureElement: public RgElement
 {
 public:
@@ -49,25 +47,11 @@ public:
     RgStructureElement(const RgStructureElement& other) = default;
     RgStructureElement& operator=(const RgStructureElement& other) = default;
 
-    // Ԫ
     int getId() const;
     void setId(int n);
 
-    // ϱ
     int getMatId() const;
     void setMatId(int id);
-
-    // Get the mesh partition that contains this element
-    FEMeshPartition* GetMeshPartition() const
-    {
-        return m_part;
-    }
-
-    // Set the mesh partition that contains this element
-    void SetMeshPartition(FEMeshPartition* part)
-    {
-        m_part = part;
-    }
 
     void setLocalId(int lid);
     int getLocalId() const;
@@ -92,27 +76,10 @@ public:
         return nullptr;
     }
 
-    //! Set the type of the element and initialize the traits by type
-    void setType(int ntype)
-    {
-        FEElementLibrary::SetElementTraits(*this, ntype);
-    }
-
-    virtual int getType() const;
-
-    //Set the traits of an element
-    virtual void SetTraits(FEElementTraits* ptraits);
-
-    //Get the element traits
-    FEElementTraits* GetTraits()
-    {
-        return m_pTraits;
-    }
-
     //return number of nodes
     int NodeSize() const
     {
-        return m_pTraits->m_neln;
+        return 0;
     }
 
     bool isActive() const
@@ -196,21 +163,6 @@ public:  // Filed evalulate
 
     virtual void calcStress(FEMaterialPoint& matPt, StressTensor& stress) {}
     virtual void calcStrain(FEMaterialPoint& matPt, StrainTensor& strain) {}
-
-    std::vector<NodeId> m_node;      //!< connectivity
-    std::vector<NodeId> m_loc_node;  //!< local connectivity
-
-protected:
-    //�����local��ָ��һ��Domain�����
-    ElemId m_id;                     //!< element Id
-    ElemId m_loc_id;                 //!< local Id
-    MatId m_mat_id;                  //!< material index
-    
-    
-    FEMeshPartition* m_part;
-
-    FEElementState m_state;
-    FEElementTraits* m_pTraits;  //!< pointer to element traits
 };
 
 

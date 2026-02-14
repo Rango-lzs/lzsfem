@@ -23,6 +23,13 @@ class FENodeSet;
 class RgElementSet;
 class FEFacetSet;
 
+struct MaterialProperty
+{
+    std::string name;
+    std::string type;  // ELASTIC, PLASTIC, etc.
+    std::map<std::string, std::vector<double>> properties;
+};
+
 /**
  * @brief Abaqus INP file importer
  *
@@ -34,13 +41,13 @@ class FEFacetSet;
  *  * Nset, Eset
  *  * Section
  * Assemble Section
- *  *Instance 
+ *  *Instance
  *  * Element
  *  * Nset, Eset
  * Material Section
  * Step section
- *  * Boundary 
- *  * Load 
+ *  * Boundary
+ *  * Load
  *  * outPut
  */
 class FEM_EXPORT AbaqusImport
@@ -81,13 +88,6 @@ private:
         double magnitude;
         Vector3d direction;
         int step;
-    };
-
-    struct MaterialProperty
-    {
-        std::string name;
-        std::string type;  // ELASTIC, PLASTIC, etc.
-        std::map<std::string, std::vector<double>> properties;
     };
 
     struct StepInfo
@@ -154,10 +154,12 @@ private:
     bool parseNset(std::ifstream& file, const std::string& keywordLine);
     bool parseElset(std::ifstream& file, const std::string& keywordLine);
     bool parseSurface(std::ifstream& file, AbaqusPart& part, const std::string& keywordLine);
+
     bool parseMaterial(std::ifstream& file, const std::string& keywordLine);
+    bool createMaterials(FEModel* fem, const MaterialProperty& matProp);
+
     bool parseStep(std::ifstream& file, const std::string& keywordLine);
     bool parseBoundary(std::ifstream& file);
-    //bool parseLoad(std::ifstream& file);
     bool parseCload(std::ifstream& file);
     bool parseDload(std::ifstream& file);
 
@@ -170,15 +172,15 @@ private:
     // Conversion functions
     RgDomain* createDomain(const AbaqusPart& part, FEMesh* mesh);
 
-    bool createNodes(const AbaqusPart& part, FEMesh* mesh, std::map<int, int>& nodeMap, const AbaqusInstance& instance);
+    bool createNodes(const AbaqusPart& part, RgDomain* domain, FEMesh* mesh, std::map<int, int>& nodeMap, const AbaqusInstance& instance);
     bool createElements(const AbaqusPart& part, RgDomain* domain, const std::map<int, int>& nodeMap);
     bool createNodeSets(const AbaqusInstance& part, FEMesh* mesh, const std::map<int, int>& nodeMap);
     bool createElementSets(const AbaqusInstance& part, FEMesh* mesh, RgDomain* domain);
 
     bool createSurfaces(const AbaqusPart& part, FEMesh* mesh, RgDomain* domain);
-    /*Create boundary and load by the parser*/
-    //bool createBoundaryConditions(FEModel* fem);
-    //bool createLoads(FEModel* fem);
+
+    // Step conversion
+    bool createFEAnalysisStep(const StepInfo& stepInfo);
 
     // Element type conversion
     int convertElementType(const std::string& abqType);
@@ -228,15 +230,10 @@ private:
     std::string m_lastError;
     int m_lineNumber;
 
-    //int m_globalNodeOffset;  // 全局节点偏移
-    //int m_globalElemOffset;  // 全局单元偏移
+    // Global offset management
+    int m_globalNodeOffset;
+    int m_globalElemOffset;
 
-    private:
-    // 全局编号管理
-    int m_globalNodeOffset;  // 当前全局节点偏移
-    int m_globalElemOffset;  // 当前全局单元偏移
-
-    // 辅助函数
+    // Helper functions
     void applyRotation(Vector3d& pos, const double rotation[7]);
-
 };

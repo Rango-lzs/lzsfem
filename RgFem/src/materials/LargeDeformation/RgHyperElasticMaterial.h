@@ -1,12 +1,12 @@
 #pragma once
-#include "materials/FESolidMaterial.h"
+#include "materials/RgSolidMaterial.h"
 #include "FEElasticMaterialPoint.h"
 #include "femcore/Domain/FEDomainParameter.h"
 
 //-----------------------------------------------------------------------------
 //! Base class for (hyper-)elastic materials
 
-class FEM_EXPORT FEElasticMaterial : public FESolidMaterial
+class FEM_EXPORT FEElasticMaterial : public RgSolidMaterial
 {
     DECLARE_META_CLASS(FEElasticMaterial, FESolidMaterial);
 
@@ -18,7 +18,7 @@ public:
 	~FEElasticMaterial();
 
 	//! create material point data for this material
-	RgMaterialPointData* CreateRgMaterialPointData() override;
+	RgMaterialPointData* CreateMaterialPointData() override;
 
 	//! calculate strain energy density at material point
 	virtual double StrainEnergyDensity(RgMaterialPoint& pt);
@@ -39,7 +39,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-class FEM_EXPORT FEElasticStress : public FEDomainParameter
+class FEM_EXPORT FEElasticStress : public RgDomainParameter
 {
 public:
 	FEElasticStress();

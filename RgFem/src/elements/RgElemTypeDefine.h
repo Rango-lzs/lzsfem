@@ -20,7 +20,7 @@ enum ElementCategory
 // This defines the general element shape classes. This classification differs from the
 // element types below, in that the latter is defined by a shape and integration rule.
 // Do not change the order of these enums!
-enum ElementShape
+enum ElementShape : int
 {
     ET_INVALID,
     // 3D elements

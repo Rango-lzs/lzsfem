@@ -12,15 +12,18 @@ class FEM_EXPORT RgSolidDomain : public RgDomain
     DECLARE_META_CLASS(RgSolidDomain, RgDomain);
 
 public:
+	RgSolidDomain();
 	RgSolidDomain(FEModel* pm);
+	~RgSolidDomain();
 
 public:
-	virtual bool Create(int nsize, FE_Element_Spec espec) = 0;
+	virtual bool Create(int nsize, ElementType espec);
+	RgSolidElement* CreateSolidElement(ElementType type);
 
-	virtual int Elements() const = 0;
+	virtual int Elements() const;
 
-	virtual RgElement& ElementRef(int n) = 0;
-	virtual const RgElement& ElementRef(int n) const = 0;
+	virtual RgElement& ElementRef(int n);
+	virtual const RgElement& ElementRef(int n) const;
 
 	virtual void ForEachElement(std::function<void(RgElement& el)> f);
 

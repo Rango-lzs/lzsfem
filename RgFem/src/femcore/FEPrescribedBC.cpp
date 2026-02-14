@@ -184,32 +184,32 @@ FEPrescribedSurface::FEPrescribedSurface() : FESurfaceBC()
 
 void FEPrescribedSurface::Activate()
 {
-	FESurfaceBC::Activate();
+	//FESurfaceBC::Activate();
 
-	FESurface* surface = GetSurface();
-	if (surface == nullptr) return;
+	//FESurface* surface = GetSurface();
+	//if (surface == nullptr) return;
 
-	m_nodeList = surface->GetNodeList();
-	
-	int N = m_nodeList.Size();
-	int dofs = m_dof.Size();
-	if (m_brelative) m_rval.assign(N * dofs, 0.0);
-	for (int i = 0; i < N; ++i)
-	{
-		// get the node
-		FENode& node = *m_nodeList.Node(i);
+	//m_nodeList = surface->GetNodeList();
+	//
+	//int N = m_nodeList.Size();
+	//int dofs = m_dof.Size();
+	//if (m_brelative) m_rval.assign(N * dofs, 0.0);
+	//for (int i = 0; i < N; ++i)
+	//{
+	//	// get the node
+	//	FENode& node = *m_nodeList.Node(i);
 
-		// set the dofs to prescribed
-		for (size_t j = 0; j < dofs; ++j)
-		{
-			node.setDofState(m_dof[j], DOF_PRESCRIBED);
+	//	// set the dofs to prescribed
+	//	for (size_t j = 0; j < dofs; ++j)
+	//	{
+	//		node.setDofState(m_dof[j], DOF_PRESCRIBED);
 
-			if (m_brelative)
-			{
-				m_rval[i * dofs + j] = node.get(m_dof[j]);
-			}
-		}
-	}
+	//		if (m_brelative)
+	//		{
+	//			m_rval[i * dofs + j] = node.get(m_dof[j]);
+	//		}
+	//	}
+	//}
 }
 
 //-----------------------------------------------------------------------------

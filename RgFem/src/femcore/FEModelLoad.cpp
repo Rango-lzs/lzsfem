@@ -1,5 +1,4 @@
 #include "femcore/FEModelLoad.h"
-#include "femcore/Solver/FESolver.h"
 #include "basicio/DumpStream.h"
 
 DEFINE_META_CLASS(FEModelLoad, FEStepComponent, "");

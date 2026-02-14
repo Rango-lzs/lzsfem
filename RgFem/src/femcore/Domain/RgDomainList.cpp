@@ -2,7 +2,7 @@
 #include "femcore/FEModel.h"
 
 //-----------------------------------------------------------------------------
-RgDomainList::RgDomainList(FEModel* pfem) : m_pfem(pfem)
+RgDomainList::RgDomainList()
 {
 }
 
@@ -16,14 +16,12 @@ RgDomainList::~RgDomainList()
 //-----------------------------------------------------------------------------
 RgDomainList::RgDomainList(const RgDomainList& dl)
 {
-	m_pfem = dl.m_pfem;
 	m_Dom = dl.m_Dom;
 }
 
 //-----------------------------------------------------------------------------
 RgDomainList& RgDomainList::operator = (const RgDomainList& dl)
 {
-	m_pfem = dl.m_pfem;
 	m_Dom = dl.m_Dom;
 	return (*this);
 }

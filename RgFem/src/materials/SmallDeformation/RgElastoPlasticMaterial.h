@@ -22,19 +22,19 @@ public:
     RgMaterialPointData* createRgMaterialPointData() const override;
 
     /// Compute constitutive response
-    void computeConstitutive(RgMaterialPointData* mp, Matrix& D) override;
+    void computeConstitutive(RgMaterialPoint* mp, Matrix& D) override;
 
     /// Commit state variables
-    void commitState(RgMaterialPointData* mp) override;
+    void commitState(RgMaterialPoint* mp) override;
 
     /// Revert state variables
-    void revertState(RgMaterialPointData* mp) override;
+    void revertState(RgMaterialPoint* mp) override;
 
     /// Get material name
     std::string getName() const override;
 
     /// Update material state with strain increment
-    void updateState(RgMaterialPointData* mp, const Matrix& strainIncrement);
+    void updateState(RgMaterialPoint* mp, const Matrix& strainIncrement);
 
 private:
     /// Compute elastic matrix based on material properties

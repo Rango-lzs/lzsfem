@@ -444,6 +444,12 @@ int RgHex20_::Nodes(int order)
     }
 }
 
+
+RgHex20_::RgHex20_(int ni, ElementType et)
+    :RgSolidElementTraits(20,ni,ElementShape::ET_HEX20, et)
+{
+}
+
 void RgHex20_::init()
 {
     // TODO: Implementation for shape classes allocation if needed

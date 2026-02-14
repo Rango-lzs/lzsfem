@@ -49,8 +49,9 @@ bool FaceDataRecord::Initialize()
 //-----------------------------------------------------------------------------
 double FaceDataRecord::Evaluate(int item, int ndata)
 {
-	int nface = item - 1;
-	return m_Data[ndata]->value(m_surface->Element(nface));
+	/*int nface = item - 1;
+	return m_Data[ndata]->value(m_surface->Element(nface));*/
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -61,7 +62,7 @@ void FaceDataRecord::SelectAllItems()
 
 void FaceDataRecord::SetItemList(FEItemList* itemList, const std::vector<int>& selection)
 {
-	FEFacetSet* facetSet = dynamic_cast<FEFacetSet*>(itemList); assert(facetSet);
+	/*FEFacetSet* facetSet = dynamic_cast<FEFacetSet*>(itemList); assert(facetSet);
 	m_surface = facetSet->GetSurface(); assert(m_surface);
 	int n = m_surface->Elements();
 	if (selection.empty())
@@ -72,5 +73,5 @@ void FaceDataRecord::SetItemList(FEItemList* itemList, const std::vector<int>& s
 	else
 	{
 		m_item = selection;
-	}
+	}*/
 }

@@ -15,7 +15,7 @@ class FETimeStepController;
 
 //-----------------------------------------------------------------------------
 //! 有限元分析步骤基类（职责分离、模块化设计）
-class FEM_EXPORT FEAnalysis : public FEObjectBase
+class FEM_EXPORT RgAnalysis : public FEObjectBase
 {
     //---------------------- 嵌套结构定义 ----------------------
     struct TimeStepData
@@ -47,8 +47,8 @@ class FEM_EXPORT FEAnalysis : public FEObjectBase
 
     //---------------------- 核心接口 ----------------------
 public:
-    explicit FEAnalysis(FEModel* model);
-    virtual ~FEAnalysis();
+    explicit RgAnalysis(FEModel* model);
+    virtual ~RgAnalysis();
 
     // 生命周期管理
     bool initialize() override;

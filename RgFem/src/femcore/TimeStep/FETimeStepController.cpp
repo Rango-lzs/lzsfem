@@ -79,39 +79,39 @@ bool FETimeStepController::Init()
 	// steal the load curve param from the dtmax parameter
 	FEParam* p = FindParameterFromData((void*) &m_dtmax); assert(p);
 	FEModel* fem = GetFEModel();
-	FELoadController* plc = fem->GetLoadController(p);
-	if (plc)
-	{
-		m_nmplc = plc->GetID();
-		fem->DetachLoadController(p);
+	//FELoadController* plc = fem->GetLoadController(p);
+	//if (plc)
+	//{
+	//	m_nmplc = plc->GetID();
+	//	fem->DetachLoadController(p);
 
-		// print a warning that dtmax is ignored
-		if (m_dtmax != 0)
-		{
-			feLogWarning("dtmax is ignored when specifying must points.");
-		}
+	//	// print a warning that dtmax is ignored
+	//	if (m_dtmax != 0)
+	//	{
+	//		feLogWarning("dtmax is ignored when specifying must points.");
+	//	}
 
-		// if a must-point curve is defined and the must-points are empty,
-		// we copy the load curve points to the must-points
-		if (m_must_points.empty())
-		{
-			FELoadCurve* lc = dynamic_cast<FELoadCurve*>(plc);
-			if (lc)
-			{
-				PointCurve& f = lc->GetFunction();
-				// make sure we have at least two points
-				if (f.Points() < 2) return false;
-				for (int i = 0; i < f.Points(); ++i)
-				{
-					double ti = f.Point(i).x();
-					m_must_points.push_back(ti);
-				}
+	//	// if a must-point curve is defined and the must-points are empty,
+	//	// we copy the load curve points to the must-points
+	//	if (m_must_points.empty())
+	//	{
+	//		FELoadCurve* lc = dynamic_cast<FELoadCurve*>(plc);
+	//		if (lc)
+	//		{
+	//			PointCurve& f = lc->GetFunction();
+	//			// make sure we have at least two points
+	//			if (f.Points() < 2) return false;
+	//			for (int i = 0; i < f.Points(); ++i)
+	//			{
+	//				double ti = f.Point(i).x();
+	//				m_must_points.push_back(ti);
+	//			}
 
-				// check for repeat setting
-				if (f.GetExtendMode() == PointCurve::REPEAT) m_mp_repeat = true;
-			}
-		}
-	}
+	//			// check for repeat setting
+	//			if (f.GetExtendMode() == PointCurve::REPEAT) m_mp_repeat = true;
+	//		}
+	//	}
+	//}
 
 	// initialize "previous" time step
 	m_dtp = m_step->m_dt0;
@@ -187,9 +187,9 @@ void FETimeStepController::AutoTimeStep(int niter)
 	// we take the max step size from the lc
 	if (m_nmplc >= 0)
 	{
-		FELoadCurve& mpc = *(dynamic_cast<FELoadCurve*>(fem->GetLoadController(m_nmplc)));
-		PointCurve& lc = mpc.GetFunction();
-		dtmax = lc.value(told);
+        /*FELoadCurve& mpc = *(dynamic_cast<FELoadCurve*>(fem->GetLoadController(m_nmplc)));
+        PointCurve& lc = mpc.GetFunction();
+        dtmax = lc.value(told);*/
 	}
 
 	// adjust time step size

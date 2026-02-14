@@ -32,7 +32,7 @@ FEElementMatrix::FEElementMatrix(const FEElementMatrix& ke, double scale)
 //-----------------------------------------------------------------------------
 FEElementMatrix::FEElementMatrix(const RgElement& el, const std::vector<int>& lmi) : Matrix((int)lmi.size(), (int)lmi.size())
 {
-	m_node = el.m_node;
+	m_node = el.getNodeIds();
 	m_lmi = lmi;
 	m_lmj = lmi;
 }
@@ -40,7 +40,7 @@ FEElementMatrix::FEElementMatrix(const RgElement& el, const std::vector<int>& lm
 //-----------------------------------------------------------------------------
 FEElementMatrix::FEElementMatrix(const RgElement& el, std::vector<int>& lmi, std::vector<int>& lmj) : Matrix((int)lmi.size(), (int)lmj.size())
 {
-	m_node = el.m_node;
+	m_node = el.getNodeIds();
 	m_lmi = lmi;
 	m_lmj = lmj;
 };

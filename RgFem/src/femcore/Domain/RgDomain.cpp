@@ -6,6 +6,7 @@
 #include "logger/log.h"
 #include "../Matrix/FEGlobalMatrix.h"
 
+DEFINE_META_CLASS(RgDomain, FEObjectBase, "");
 
 //-----------------------------------------------------------------------------
 RgDomain::RgDomain(FEModel* pfem) : m_pfem(pfem)
@@ -64,14 +65,14 @@ bool RgDomain::Init()
 	// get the mesh
 	m_pMesh = &m_pfem->GetMesh();
 
-	// allocate node list
-	int NN = (int)m_lnode.size();
-	m_Node.resize(NN);
-	for (int i = 0; i < NN; ++i)
-	{
-		int nid = m_lnode[i];
-		m_Node[i] = &m_pMesh->Node(nid);
-	}
+	//// allocate node list
+	//int NN = (int)m_lnode.size();
+	//m_Node.resize(NN);
+	//for (int i = 0; i < NN; ++i)
+	//{
+	//	int nid = m_lnode[i];
+	//	m_Node[i] = &m_pMesh->Node(nid);
+	//}
 
 	return true;
 }
@@ -104,8 +105,14 @@ void RgDomain::BuildMatrixProfile(FEGlobalMatrix& M)
     }
 }
 
+
+const RgDofSet& RgDomain::dofSet()
+{
+	return m_dof_set;
+}
+
 //-----------------------------------------------------------------------------
-void RgDomain::SetMaterial(FEMaterial* pmat)
+void RgDomain::SetMaterial(RgMaterial* pmat)
 {
 	m_pMat = pmat;
 }

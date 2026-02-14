@@ -8,7 +8,7 @@
 #include "femcore/Domain/RgDomain.h"
 
 #include <vector>
-#include "materials/FEElasticMaterialPoint.h"
+#include "materials/LargeDeformation/RgElasticMaterialPoint.h"
 
 #define SPACE2 "  "
 #define SPACE4 "    "
@@ -55,7 +55,7 @@ void VTUWriter::write(const std::vector<NodeData>& nodes,
     {
         auto stressGeter = [](const RgMaterialPoint& mp)
         {
-            const FEElasticMaterialPoint& ep = *mp.ExtractData<FEElasticMaterialPoint>();
+            const RgElasticMaterialPoint& ep = *mp.ExtractData<RgElasticMaterialPoint>();
             Matrix3ds s = ep.m_s;
             //Matrix3ds S = ep.pull_back(s);
             return s;
@@ -66,7 +66,7 @@ void VTUWriter::write(const std::vector<NodeData>& nodes,
             RgElement& el = dom->ElementRef(i);
             Matrix3ds s(0.0);
             for (int j = 0; j < el.GaussPointSize(); ++j)
-                s += stressGeter(*el.GetMaterialPoint(j));
+                s += stressGeter(*el.getMaterialPoint(j));
             s /= (double)el.GaussPointSize();
 
             m_out << "          ";      

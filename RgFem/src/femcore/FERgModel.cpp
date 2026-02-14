@@ -1,13 +1,12 @@
 #include "FERgModel.h"
 
-#include "input/febio/FEBioImport.h"
-#include "input/febio/FEBioModelBuilder.h"
 #include "femcore/Callback.h"
 #include "logger/log.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include "input/abaqus/AbaqusImport.h"
 
 //-----------------------------------------------------------------------------
 BEGIN_PARAM_DEFINE(FERgModel, FEModel)
@@ -146,19 +145,20 @@ bool FERgModel::Input(const char* szfile)
     TimerTracker t(&m_InputTime);
 
     // create file reader
-    FEBioImport fim;
+    //FEBioImport fim;
 
     // override the default model builder
-    fim.SetModelBuilder(new FEBioModelBuilder(*this));
+    //fim.SetModelBuilder(new FEBioModelBuilder(*this));
 
+    AbaqusImport importer;
     feLog("Reading file %s ...", szfile);
 
-    // Load the file
-    if (fim.Load(*this, szfile) == false)
+    //Load the file
+    if (!importer.load(szfile, this))
     {
         feLog("FAILED!\n");
         char szerr[256];
-        fim.GetErrorMessage(szerr);
+        //fim.GetErrorMessage(szerr);
         feLogError(szerr);
 
         return false;

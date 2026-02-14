@@ -96,7 +96,7 @@ void LargeDefRgMaterialPointData::serialize(DumpStream& ar)
 
 namespace SmallDef {
 
-SmallDefRgMaterialPointData::SmallDefRgMaterialPointData(RgMaterialPointData* ppt)
+SmallDefMaterialPointData::SmallDefMaterialPointData(RgMaterialPointData* ppt)
     : RgMaterialPointData(ppt)
 {
     gradU.zero();
@@ -107,7 +107,7 @@ SmallDefRgMaterialPointData::SmallDefRgMaterialPointData(RgMaterialPointData* pp
     C.zero();   
 }
 
-void SmallDefRgMaterialPointData::updateKinematicsFromGradU(const Matrix3d& gradU_new)
+void SmallDefMaterialPointData::updateKinematicsFromGradU(const Matrix3d& gradU_new)
 {
     gradU = gradU_new;
     
@@ -115,19 +115,19 @@ void SmallDefRgMaterialPointData::updateKinematicsFromGradU(const Matrix3d& grad
     strain = 0.5 * (gradU + gradU.transpose());
 }
 
-void SmallDefRgMaterialPointData::commit()
+void SmallDefMaterialPointData::commit()
 {
     strain_prev = strain;
     stress_prev = stress;
 }
 
-void SmallDefRgMaterialPointData::revert()
+void SmallDefMaterialPointData::revert()
 {
     strain = strain_prev;
     stress = stress_prev;
 }
 
-void SmallDefRgMaterialPointData::init()
+void SmallDefMaterialPointData::init()
 {
     RgMaterialPointData::init();
     
@@ -140,7 +140,7 @@ void SmallDefRgMaterialPointData::init()
     C.zero();               // Initialize elasticity tensor to zero 
 }
 
-void SmallDefRgMaterialPointData::update(const FETimeInfo& timeInfo)
+void SmallDefMaterialPointData::update(const FETimeInfo& timeInfo)
 {
     RgMaterialPointData::update(timeInfo);
     
@@ -149,7 +149,7 @@ void SmallDefRgMaterialPointData::update(const FETimeInfo& timeInfo)
     // This is handled in commit() method
 }
 
-void SmallDefRgMaterialPointData::serialize(DumpStream& ar)
+void SmallDefMaterialPointData::serialize(DumpStream& ar)
 {
     RgMaterialPointData::serialize(ar);
     
@@ -159,3 +159,23 @@ void SmallDefRgMaterialPointData::serialize(DumpStream& ar)
 
 } // namespace SmallDef
 
+
+void RgMaterialPointData::init()
+{
+}
+
+void RgMaterialPointData::update(const FETimeInfo& timeInfo)
+{
+}
+
+void RgMaterialPointData::serialize(DumpStream& ar)
+{
+}
+
+void RgMaterialPointData::setParent(RgMaterialPointData* pt)
+{
+}
+
+void RgMaterialPointData::addChild(RgMaterialPointData* pt)
+{
+}

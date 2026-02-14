@@ -3,7 +3,7 @@
 #include "RgDomain.h"
 
 //-----------------------------------------------------------------------------
-class RgDomainParameter : public FEParam
+class RgDomainParameter
 {
 public:
 	RgDomainParameter(RgDomain* pdom = 0);

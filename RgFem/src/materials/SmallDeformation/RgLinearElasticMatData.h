@@ -5,7 +5,6 @@
 #include "datastructure/Matrix3d.h"
 #include "basicio/DumpStream.h"
 
-namespace RgFem {
 namespace SmallDef {
 
 /// Material point data for linear elastic materials
@@ -41,4 +40,3 @@ public:
 };
 
 } // namespace SmallDef
-} // namespace RgFem

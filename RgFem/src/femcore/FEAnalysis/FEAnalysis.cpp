@@ -1,12 +1,11 @@
 #include "femcore/FEAnalysis/FEAnalysis.h"
 #include "basicio/DumpMemStream.h"
 #include "femcore/DOFS.h"
-#include "femcore/FEBoundaryCondition.h"
+#include "femcore/BoundaryCondition/RgBoundaryCondition.h"
 #include "femcore/FELinearConstraintManager.h"
 #include "femcore/FEModel.h"
 #include "femcore/FEModule.h"
 #include "femcore/Matrix/MatrixProfile.h"
-#include "femcore/Solver/FESolver.h"
 #include "femcore/TimeStep/FETimeStepController.h"
 #include "logger/log.h"
 #include "femcore/Callback.h"
@@ -18,6 +17,9 @@
 #include "femcore/RTTI/MetaClass.h"
 #include "../FEProperty.h"
 #include "../Domain/RgDomain.h"
+#include "femcore/Load/RgLoad.h"
+#include <vector>
+#include "femcore/NewtonSolver/StaticSolver.h"
 
 DEFINE_META_CLASS(FEAnalysis, FEObjectBase, "");
 
@@ -78,7 +80,7 @@ FEAnalysis::FEAnalysis()
     m_ntime = 10;
     m_final_time = 0.0;
     m_dt0 = 0.1;
-    m_dt = 0;
+    m_dt = 0.1;
 
     // initialize counters
     m_ntotref = 0;     // total nr of stiffness reformations
@@ -254,6 +256,7 @@ bool FEAnalysis::InitSolver()
     FEModel& fem = *GetFEModel();
 
     // initialize equations
+    SetFESolver(new FEStaticSolver());
     FESolver* pSolver = GetFESolver();
     if (pSolver == nullptr)
         return false;
@@ -626,9 +629,8 @@ bool FEAnalysis::Activate()
     // Activate all domains
     for (int i = 0; i < mesh.Domains(); ++i)
     {
-        /*RgDomain& dom = mesh.Domain(i);
-        if (dom.Class() != FE_DOMAIN_SHELL)
-            dom.Activate();*/
+        RgDomain& dom = mesh.Domain(i);       
+        dom.Activate();
     }
     // but activate shell domains last (to deal with sandwiched shells)
     for (int i = 0; i < mesh.Domains(); ++i)
@@ -642,4 +644,247 @@ bool FEAnalysis::Activate()
     fem.GetLinearConstraintManager().Activate();
 
     return true;
+}
+
+//-----------------------------------------------------------------------------
+// Boundary Condition Management
+//-----------------------------------------------------------------------------
+
+void FEAnalysis::AddBoundaryCondition(RgBoundaryCondition* bc)
+{
+    if (bc)
+    {
+        m_BC.push_back(bc);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void FEAnalysis::RemoveBoundaryCondition(RgBoundaryCondition* bc)
+{
+    auto it = std::find(m_BC.begin(), m_BC.end(), bc);
+    if (it != m_BC.end())
+    {
+        m_BC.erase(it);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void FEAnalysis::RemoveBoundaryCondition(const std::string& name)
+{
+    RgBoundaryCondition* bc = FindBoundaryCondition(name);
+    if (bc)
+    {
+        RemoveBoundaryCondition(bc);
+    }
+}
+
+//-----------------------------------------------------------------------------
+RgBoundaryCondition* FEAnalysis::FindBoundaryCondition(const std::string& name)
+{
+    for (auto bc : m_BC)
+    {
+        if (bc->GetName() == name)
+            return bc;
+    }
+    return nullptr;
+}
+
+//-----------------------------------------------------------------------------
+std::vector<RgBoundaryCondition*> FEAnalysis::GetAllActiveBCs()
+{
+    std::vector<RgBoundaryCondition*> allBCs;
+
+    // Add inherited BCs
+    allBCs.insert(allBCs.end(), m_inheritedBC.begin(), m_inheritedBC.end());
+
+    // Add BCs defined in this step
+    allBCs.insert(allBCs.end(), m_BC.begin(), m_BC.end());
+
+    return allBCs;
+}
+
+//-----------------------------------------------------------------------------
+// Load Management
+//-----------------------------------------------------------------------------
+
+void FEAnalysis::AddLoad(RgLoad* load)
+{
+    if (load)
+    {
+        m_Loads.push_back(load);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void FEAnalysis::RemoveLoad(RgLoad* load)
+{
+    auto it = std::find(m_Loads.begin(), m_Loads.end(), load);
+    if (it != m_Loads.end())
+    {
+        m_Loads.erase(it);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void FEAnalysis::RemoveLoad(const std::string& name)
+{
+    RgLoad* load = FindLoad(name);
+    if (load)
+    {
+        RemoveLoad(load);
+    }
+}
+
+//-----------------------------------------------------------------------------
+RgLoad* FEAnalysis::FindLoad(const std::string& name)
+{
+    for (auto load : m_Loads)
+    {
+        if (load->GetName() == name)
+            return load;
+    }
+    return nullptr;
+}
+
+//-----------------------------------------------------------------------------
+std::vector<RgLoad*> FEAnalysis::GetAllActiveLoads()
+{
+    std::vector<RgLoad*> allLoads;
+
+    // Add inherited loads
+    allLoads.insert(allLoads.end(), m_inheritedLoads.begin(), m_inheritedLoads.end());
+
+    // Add loads defined in this step
+    allLoads.insert(allLoads.end(), m_Loads.begin(), m_Loads.end());
+
+    return allLoads;
+}
+
+//-----------------------------------------------------------------------------
+// Inheritance Management
+//-----------------------------------------------------------------------------
+
+void FEAnalysis::InheritFromPreviousStep()
+{
+    // Clear inherited lists
+    m_inheritedBC.clear();
+    m_inheritedLoads.clear();
+
+    if (!m_previousStep)
+        return;
+
+    switch (m_activationMode)
+    {
+        case StepActivationMode::NEW:
+            // Don't inherit anything
+            RgLog("  Activation mode: NEW (no inheritance)\n");
+            break;
+
+        case StepActivationMode::INHERITED:
+        {
+            RgLog("  Activation mode: INHERITED\n");
+
+            // Inherit all active BCs from previous step
+            std::vector<RgBoundaryCondition*> prevBCs = m_previousStep->GetAllActiveBCs();
+            for (auto bc : prevBCs)
+            {
+                // Check if this BC is not redefined in current step
+                if (!FindBoundaryCondition(bc->GetName()))
+                {
+                    m_inheritedBC.push_back(bc);
+                    RgLog("    Inherited BC: %s\n", bc->GetName().c_str());
+                }
+                else
+                {
+                    RgLog("    BC '%s' redefined in current step (overriding)\n", bc->GetName().c_str());
+                }
+            }
+
+            // Inherit all active loads from previous step
+            std::vector<RgLoad*> prevLoads = m_previousStep->GetAllActiveLoads();
+            for (auto load : prevLoads)
+            {
+                // Check if this load is not redefined in current step
+                if (!FindLoad(load->GetName()))
+                {
+                    m_inheritedLoads.push_back(load);
+                    RgLog("    Inherited load: %s\n", load->GetName().c_str());
+                }
+                else
+                {
+                    RgLog("    Load '%s' redefined in current step (overriding)\n", load->GetName().c_str());
+                }
+            }
+        }
+        break;
+
+        case StepActivationMode::REPLACE:
+            // Only use BCs and loads defined in this step
+            RgLog("  Activation mode: REPLACE (no inheritance)\n");
+            break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+// Activate all BCs and loads for this step
+bool FEAnalysis::ActivateBCsAndLoads()
+{
+    RgLog("Activating BCs and loads for step '%s'...\n", GetName().c_str());
+
+    // Get all active BCs and loads
+    std::vector<RgBoundaryCondition*> allBCs = GetAllActiveBCs();
+    std::vector<RgLoad*> allLoads = GetAllActiveLoads();
+
+    // Activate all BCs
+    for (auto bc : allBCs)
+    {
+        if (bc)
+        {
+            bc->Activate();
+            RgLog("  Activated BC: %s\n", bc->GetName().c_str());
+        }
+    }
+
+    // Activate all loads
+    for (auto load : allLoads)
+    {
+        if (load)
+        {
+            load->Activate();
+            RgLog("  Activated load: %s\n", load->GetName().c_str());
+        }
+    }
+
+    RgLog("  Total BCs activated: %d\n", (int)allBCs.size());
+    RgLog("  Total loads activated: %d\n", (int)allLoads.size());
+
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+// Deactivate BCs and loads defined in this step
+void FEAnalysis::DeactivateBCsAndLoads()
+{
+    RgLog("Deactivating BCs and loads for step '%s'...\n", GetName().c_str());
+
+    // Deactivate BCs defined in this step
+    // (inherited ones remain active for next step)
+    for (auto bc : m_BC)
+    {
+        if (bc)
+        {
+            bc->Deactivate();
+            RgLog("  Deactivated BC: %s\n", bc->GetName().c_str());
+        }
+    }
+
+    // Deactivate loads defined in this step
+    for (auto load : m_Loads)
+    {
+        if (load)
+        {
+            load->Deactivate();
+            RgLog("  Deactivated load: %s\n", load->GetName().c_str());
+        }
+    }
 }

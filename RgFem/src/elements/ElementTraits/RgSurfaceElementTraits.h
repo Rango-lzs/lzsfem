@@ -54,7 +54,7 @@ public:
 
 public:
 	// gauss-points
-	std::vector<RgFem::RgGaussPoint> gaussPoints;
+	std::vector<RgGaussPoint> gaussPoints;
 
 	// local derivatives of shape functions at gauss points
 	Matrix Gr, Gs;
@@ -795,3 +795,4 @@ public:
 
 public:
 	Rg2DQuad8_(int ni, ElementType et) : Rg2DElementTraits(ni, NELN, ET_QUAD8, et) {}
+};

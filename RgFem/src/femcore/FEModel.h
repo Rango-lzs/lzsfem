@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 
-// helper class for managing global (user-defined) variables.
+                                                                     // helper class for managing global (user-defined) variables.
 class FEGlobalVariable
 {
 public:
@@ -24,6 +24,8 @@ class FELoadController;
 class FEBoundaryCondition;
 class FEInitialCondition;
 class FEAnalysis;
+class AnalysisStep;
+class RgAnalysis;
 class FESurfacePairConstraint;
 class FEModelLoad;
 class FEMesh;
@@ -68,13 +70,6 @@ public:
     bool InitMesh();
 
     //! Build the Matrix profile for this model
-    /**
-     * @~English
-     * @brief brief-description-about-BuildMatrixProfile .
-     * @param[??] G brief-description-about-G .
-     * @param[??] breset brief-description-about-breset .
-     * @return void brief-description-about-void .
-     */
     virtual void BuildMatrixProfile(FEGlobalMatrix& G, bool breset);
 
 public:
@@ -129,33 +124,25 @@ public:
     FEInitialCondition* InitialCondition(int i);
     void AddInitialCondition(FEInitialCondition* pbc);
 
-public:  // --- Analysis steps functions ---
-    // the number of steps
-    int Steps() const;
+public:  // --- Analysis management (new design using RgAnalysis) ---
+    //! Get the analysis manager
+    RgAnalysis& GetAnalysis();
+    const RgAnalysis& GetAnalysis() const;
 
-    int currentStep() const;
+    //! Get the number of analysis steps
+    size_t Steps() const;
 
-    //! clear the steps
+    //! Clear all analysis steps
     void ClearSteps();
 
-    //! Add an analysis step
-    void AddStep(FEAnalysis* pstep);
+    //! Add an analysis step (managed by RgAnalysis)
+    void AddStep(std::shared_ptr<AnalysisStep> step);
 
     //! Get a particular step
-    FEAnalysis* GetStep(int i);
+    std::shared_ptr<AnalysisStep> GetStep(size_t i);
 
-    //! Get the current step
-    FEAnalysis* GetCurrentStep();
-    const FEAnalysis* GetCurrentStep() const;
-
-    //! Set the current step index
+    //! Get the current step index
     int GetCurrentStepIndex() const;
-
-    //! Set the current step
-    void SetCurrentStep(FEAnalysis* pstep);
-
-    //! Set the current step index
-    void SetCurrentStepIndex(int n);
 
     //! Get the current time
     FETimeInfo& GetTime();
@@ -168,7 +155,6 @@ public:  // --- Analysis steps functions ---
 
     //! Get the current time
     double GetCurrentTime() const;
-
 
     //! Set the current time
     void SetCurrentTime(double t);

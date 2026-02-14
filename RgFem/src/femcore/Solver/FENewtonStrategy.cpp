@@ -1,5 +1,5 @@
 #include "FENewtonStrategy.h"
-#include "FENewtonSolver.h"
+#include "femcore/NewtonSolver/NewtonSolver.h"
 #include "LinearSolver.h"
 #include "../fecore_enum.h"
 #include "basicio/DumpStream.h"
@@ -32,9 +32,9 @@ SparseMatrix* FENewtonStrategy::CreateSparseMatrix(const MatrixType& mtype)
 {
 	if (m_pns == 0) return 0;
 
-	LinearSolver* plinsolve = m_pns->m_plinsolve;
+	LinearSolver* plinsolve = m_pns->GetLinearSolver();
 
-	SparseMatrix* pS = plinsolve->CreateSparseMatrix(mtype);
+    SparseMatrix* pS = plinsolve->CreateSparseMatrix(mtype);
 
 	return pS;
 }

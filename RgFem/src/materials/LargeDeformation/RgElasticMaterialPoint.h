@@ -1,23 +1,23 @@
 #pragma once
-#include "materials/RgMaterialPoint.h"
+#include "materials/RgMaterialPointData.h"
 #include "datastructure/tens4ds.hpp"
 
 //-----------------------------------------------------------------------------
 //! This class defines material point data for elastic materials.
-class FEM_EXPORT FEElasticMaterialPoint : public RgMaterialPointData
+class FEM_EXPORT RgElasticMaterialPoint : public RgMaterialPointData
 {
 public:
 	//! constructor
-	FEElasticMaterialPoint(RgMaterialPointData* mp = nullptr);
+	RgElasticMaterialPoint(RgMaterialPointData* mp = nullptr);
 
 	//! Initialize material point data
-	void Init() override;
+	void init() override;
 
 	//! create a shallow copy
-	RgMaterialPointData* Copy() override;
+	RgMaterialPointData* copy() override;
 
 	//! serialize material point data
-	void Serialize(DumpStream& ar) override;
+	void serialize(DumpStream& ar) override;
 
 public:
 	Matrix3ds Strain() const;

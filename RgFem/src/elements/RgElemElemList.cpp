@@ -1,7 +1,7 @@
 
-#include "FEElemElemList.h"
+#include "RgElemElemList.h"
 #include "femcore/FENodeElemList.h"
-#include "femcore/Domain/FESolidDomain.h"
+#include "femcore/Domain/RgSolidDomain.h"
 #include "femcore/FESurface.h"
 #include "femcore/FEMesh.h"
 
@@ -32,10 +32,10 @@ void FEElemElemList::Init()
 		RgDomain& dom = m.Domain(i);
 		for (int j=0; j<dom.Elements(); ++j, ++n)
 		{
-			RgElement& el = dom.ElementRef(j);
-			nf = el.Faces();
-			if (n != 0) m_ref[n] = m_ref[n-1] + nf;
-			NN += nf;
+            /*RgElement& el = dom.ElementRef(j);
+            nf = el.Faces();
+            if (n != 0) m_ref[n] = m_ref[n-1] + nf;
+            NN += nf;*/
 		}
 	}
 
@@ -48,96 +48,96 @@ void FEElemElemList::Init()
 //-----------------------------------------------------------------------------
 bool FEElemElemList::Create(FEMesh* pmesh)
 {
-	// store a pointer to the mesh
-	m_pmesh = pmesh;
-	FEMesh& m = *m_pmesh;
+	//// store a pointer to the mesh
+	//m_pmesh = pmesh;
+	//FEMesh& m = *m_pmesh;
 
-	// initialize data structures
-	Init();
+	//// initialize data structures
+	//Init();
 
-	// create the node element list
-	FENodeElemList NEL;
-	NEL.Create(m);
+	//// create the node element list
+	//FENodeElemList NEL;
+	//NEL.Create(m);
 
-	// loop over all solid elements first
-	int en0[RgElement::MAX_NODES], en1[RgElement::MAX_NODES], n0, n1, M = 0;
-	int nf0, nf1;
-	for (int nd=0; nd<m.Domains(); ++nd)
-	{
-		RgDomain& dom = m.Domain(nd);
-		for (int i=0; i<dom.Elements(); ++i)
-		{
-			RgElement& el = dom.ElementRef(i);
-			
-			// get the number of neighbors
-			nf0 = el.Faces();
+	//// loop over all solid elements first
+	//int en0[RgElement::MAX_NODES], en1[RgElement::MAX_NODES], n0, n1, M = 0;
+	//int nf0, nf1;
+	//for (int nd=0; nd<m.Domains(); ++nd)
+	//{
+	//	RgDomain& dom = m.Domain(nd);
+	//	for (int i=0; i<dom.Elements(); ++i)
+	//	{
+	//		RgElement& el = dom.ElementRef(i);
+	//		
+	//		// get the number of neighbors
+	//		nf0 = el.Faces();
 
-			// loop over all neighbors
-			for (int j=0; j<nf0; ++j, ++M)
-			{
-				// get the face nodes
-				n0 = el.GetFace(j, en0);
+	//		// loop over all neighbors
+	//		for (int j=0; j<nf0; ++j, ++M)
+	//		{
+	//			// get the face nodes
+	//			n0 = el.GetFace(j, en0);
 
-				// find the neighbor element
-				m_pel[M] = 0;
-				m_peli[M] = -1;
+	//			// find the neighbor element
+	//			m_pel[M] = 0;
+	//			m_peli[M] = -1;
 
-				// loop over all possible candidates
-				int nval = NEL.Valence(en0[0]);
-				RgElement** pne = NEL.ElementList(en0[0]);
-				int* pnei = NEL.ElementIndexList(en0[0]);
-				for (int k=0; k<nval; ++k)
-				{
-					// make sure we don't compare the current element
-					if (pne[k] != &el)
-					{
-						// get the number of faces
-						nf1 = pne[k]->Faces();
+	//			// loop over all possible candidates
+	//			int nval = NEL.Valence(en0[0]);
+	//			RgElement** pne = NEL.ElementList(en0[0]);
+	//			int* pnei = NEL.ElementIndexList(en0[0]);
+	//			for (int k=0; k<nval; ++k)
+	//			{
+	//				// make sure we don't compare the current element
+	//				if (pne[k] != &el)
+	//				{
+	//					// get the number of faces
+	//					nf1 = pne[k]->Faces();
 
-						// see if any of these faces match en0
-						for (int l=0; l<nf1; ++l)
-						{
-							n1 = pne[k]->GetFace(l, en1);
+	//					// see if any of these faces match en0
+	//					for (int l=0; l<nf1; ++l)
+	//					{
+	//						n1 = pne[k]->GetFace(l, en1);
 
-							// make sure the faces have the same nr of nodes
-							if (n1 == n0)
-							{
-								// check triangles
-								if ((n0 == 3) || (n0 == 6) || (n0 ==7))
-								{
-									if (((en0[0] == en1[0]) || (en0[0] == en1[1]) || (en0[0] == en1[2])) &&
-										((en0[1] == en1[0]) || (en0[1] == en1[1]) || (en0[1] == en1[2])) &&
-										((en0[2] == en1[0]) || (en0[2] == en1[1]) || (en0[2] == en1[2])))
-									{
-										// found it!
-										m_pel[M] = pne[k];
-										m_peli[M] = pnei[k];
-										break;
-									}
-								}
-								// check quads
-								else if ((n0 == 4) || (n0 == 8) || (n0 == 9))
-								{
-									if (((en0[0] == en1[0]) || (en0[0] == en1[1]) || (en0[0] == en1[2]) || (en0[0] == en1[3])) &&
-										((en0[1] == en1[0]) || (en0[1] == en1[1]) || (en0[1] == en1[2]) || (en0[1] == en1[3])) &&
-										((en0[2] == en1[0]) || (en0[2] == en1[1]) || (en0[2] == en1[2]) || (en0[2] == en1[3])) &&
-										((en0[3] == en1[0]) || (en0[3] == en1[1]) || (en0[3] == en1[2]) || (en0[3] == en1[3])))
-									{
-										// found it!
-										m_pel[M] = pne[k];
-										m_peli[M] = pnei[k];
-										break;
-									}
-								}
-							}
+	//						// make sure the faces have the same nr of nodes
+	//						if (n1 == n0)
+	//						{
+	//							// check triangles
+	//							if ((n0 == 3) || (n0 == 6) || (n0 ==7))
+	//							{
+	//								if (((en0[0] == en1[0]) || (en0[0] == en1[1]) || (en0[0] == en1[2])) &&
+	//									((en0[1] == en1[0]) || (en0[1] == en1[1]) || (en0[1] == en1[2])) &&
+	//									((en0[2] == en1[0]) || (en0[2] == en1[1]) || (en0[2] == en1[2])))
+	//								{
+	//									// found it!
+	//									m_pel[M] = pne[k];
+	//									m_peli[M] = pnei[k];
+	//									break;
+	//								}
+	//							}
+	//							// check quads
+	//							else if ((n0 == 4) || (n0 == 8) || (n0 == 9))
+	//							{
+	//								if (((en0[0] == en1[0]) || (en0[0] == en1[1]) || (en0[0] == en1[2]) || (en0[0] == en1[3])) &&
+	//									((en0[1] == en1[0]) || (en0[1] == en1[1]) || (en0[1] == en1[2]) || (en0[1] == en1[3])) &&
+	//									((en0[2] == en1[0]) || (en0[2] == en1[1]) || (en0[2] == en1[2]) || (en0[2] == en1[3])) &&
+	//									((en0[3] == en1[0]) || (en0[3] == en1[1]) || (en0[3] == en1[2]) || (en0[3] == en1[3])))
+	//								{
+	//									// found it!
+	//									m_pel[M] = pne[k];
+	//									m_peli[M] = pnei[k];
+	//									break;
+	//								}
+	//							}
+	//						}
 
-							if (m_pel[M] != 0) break;
-						}
-					}
-				}
-			}
-		}
-	}
+	//						if (m_pel[M] != 0) break;
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 
 	// TODO: do the same for shells
 
@@ -149,79 +149,79 @@ bool FEElemElemList::Create(FEMesh* pmesh)
 //! surface elements (i.e. FESurfaceElement).
 bool FEElemElemList::Create(const FESurface* psurf)
 {
-	// allocate storage
-	int NE = psurf->Elements();
-	m_ref.resize(NE);
+	//// allocate storage
+	//int NE = psurf->Elements();
+	//m_ref.resize(NE);
 
-	// count nr of neighbors
-	int NN = 0;
-	m_ref[0] = 0;
-	for (int j=0; j<NE; ++j)
-	{
-		const FESurfaceElement& el = psurf->Element(j);
+	//// count nr of neighbors
+	//int NN = 0;
+	//m_ref[0] = 0;
+	//for (int j=0; j<NE; ++j)
+	//{
+	//	const FESurfaceElement& el = psurf->Element(j);
 
-		int nf = el.facet_edges();
+	//	int nf = el.facet_edges();
 
-		if (j != NE-1) m_ref[j+1] = m_ref[j] + nf;
-		NN += nf;
-	}
+	//	if (j != NE-1) m_ref[j+1] = m_ref[j] + nf;
+	//	NN += nf;
+	//}
 
-	m_pel.resize(NN);
+	//m_pel.resize(NN);
 
-	// create the node element list
-	FENodeElemList NEL;
-	NEL.Create(*psurf);
+	//// create the node element list
+	//FENodeElemList NEL;
+	//NEL.Create(*psurf);
 
-	// loop over all facets
-	int en0[3], en1[3], M = 0;
-	int nf0, nf1;
-	for (int i=0; i<NE; ++i)
-	{
-		const FESurfaceElement& el = psurf->Element(i);
-			
-		// get the number of neighbors
-		nf0 = el.facet_edges();
+	//// loop over all facets
+	//int en0[3], en1[3], M = 0;
+	//int nf0, nf1;
+	//for (int i=0; i<NE; ++i)
+	//{
+	//	const FESurfaceElement& el = psurf->Element(i);
+	//		
+	//	// get the number of neighbors
+	//	nf0 = el.facet_edges();
 
-		// loop over all neighbors
-		for (int j=0; j<nf0; ++j, ++M)
-		{
-			// get the edge nodes
-			el.facet_edge(j, en0);
+	//	// loop over all neighbors
+	//	for (int j=0; j<nf0; ++j, ++M)
+	//	{
+	//		// get the edge nodes
+	//		el.facet_edge(j, en0);
 
-			// find the neighbor element
-			m_pel[M] = 0;
+	//		// find the neighbor element
+	//		m_pel[M] = 0;
 
-			// loop over all possible candidates
-			int nval = NEL.Valence(en0[0]);
-			RgElement** pne = NEL.ElementList(en0[0]);
-			for (int k=0; k<nval; ++k)
-			{
-				// make sure we don't compare the current element
-				if (pne[k] != &el)
-				{
-					// get the number of edges
-					FESurfaceElement& me = dynamic_cast<FESurfaceElement&>(*pne[k]);
-					nf1 = me.facet_edges();
+	//		// loop over all possible candidates
+	//		int nval = NEL.Valence(en0[0]);
+	//		RgElement** pne = NEL.ElementList(en0[0]);
+	//		for (int k=0; k<nval; ++k)
+	//		{
+	//			// make sure we don't compare the current element
+	//			if (pne[k] != &el)
+	//			{
+	//				// get the number of edges
+	//				FESurfaceElement& me = dynamic_cast<FESurfaceElement&>(*pne[k]);
+	//				nf1 = me.facet_edges();
 
-					// see if any of these edges match en0
-					for (int l=0; l<nf1; ++l)
-					{
-						me.facet_edge(l, en1);
+	//				// see if any of these edges match en0
+	//				for (int l=0; l<nf1; ++l)
+	//				{
+	//					me.facet_edge(l, en1);
 
-						if (((en0[0] == en1[0]) || (en0[0] == en1[1])) &&
-							((en0[1] == en1[0]) || (en0[1] == en1[1])))
-							{
-								// found it!
-								m_pel[M] = pne[k];
-								break;
-							}
-					}
+	//					if (((en0[0] == en1[0]) || (en0[0] == en1[1])) &&
+	//						((en0[1] == en1[0]) || (en0[1] == en1[1])))
+	//						{
+	//							// found it!
+	//							m_pel[M] = pne[k];
+	//							break;
+	//						}
+	//				}
 
-					if (m_pel[M] != 0) break;
-				}
-			}
-		}
-	}
+	//				if (m_pel[M] != 0) break;
+	//			}
+	//		}
+	//	}
+	//}
 
 	return true;
 }

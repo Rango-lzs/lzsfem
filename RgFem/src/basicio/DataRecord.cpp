@@ -1,7 +1,6 @@
 #include "basicio/DataRecord.h"
 #include "DumpStream.h"
 #include "femcore/FEModel.h"
-#include "femcore/FEAnalysis/FEAnalysis.h"
 #include "logger/log.h"
 #include <sstream>
 
