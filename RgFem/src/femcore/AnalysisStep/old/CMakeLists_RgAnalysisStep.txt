@@ -1,0 +1,60 @@
+# CMakeLists.txt for RgAnalysisStep system
+
+cmake_minimum_required(VERSION 3.10)
+
+# Add RgAnalysisStep sources to your project
+set(RGANALYSISSTEP_SOURCES
+    RgAnalysisStep.cpp
+    RgAnalysisStep.h
+)
+
+# If you have the files in a specific directory
+# set(RGANALYSISSTEP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/analysis)
+# include_directories(${RGANALYSISSTEP_DIR})
+
+# Add to your existing library or executable
+# Option 1: Add to existing FEMCore library
+# target_sources(FEMCore PRIVATE ${RGANALYSISSTEP_SOURCES})
+
+# Option 2: Create a separate library
+add_library(RgAnalysisStep STATIC ${RGANALYSISSTEP_SOURCES})
+
+# Link dependencies
+target_link_libraries(RgAnalysisStep
+    FEMCore          # Your FE model core library
+    # Add other dependencies as needed
+)
+
+# Include directories
+target_include_directories(RgAnalysisStep PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/femcore
+    ${CMAKE_CURRENT_SOURCE_DIR}/logger
+)
+
+# Optional: Build test program
+option(BUILD_RGANALYSISSTEP_TESTS "Build RgAnalysisStep tests" ON)
+
+if(BUILD_RGANALYSISSTEP_TESTS)
+    add_executable(test_RgAnalysisStep test_RgAnalysisStep.cpp)
+    target_link_libraries(test_RgAnalysisStep
+        RgAnalysisStep
+        FEMCore
+        AbaqusImport  # If you have this as a separate library
+    )
+    
+    # Add test to CTest
+    enable_testing()
+    add_test(NAME RgAnalysisStepTest COMMAND test_RgAnalysisStep)
+endif()
+
+# Installation (optional)
+install(TARGETS RgAnalysisStep
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+
+install(FILES RgAnalysisStep.h
+    DESTINATION include/analysis
+)
