@@ -3,6 +3,7 @@
 
 #include "AnalysisStep.h"
 #include <vector>
+#include <string>
 
 /**
  * @brief Dynamic implicit analysis step using Newmark time integration

@@ -1,7 +1,6 @@
 #include "FELinearConstraintManager.h"
 #include "FEMesh.h"
 #include "FEModel.h"
-#include "femcore/FEAnalysis/FEAnalysis.h"
 #include "basicio/DumpStream.h"
 #include "femcore/Domain/RgDomain.h"
 #include "femcore/Matrix/FEGlobalMatrix.h"
@@ -113,7 +112,7 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 	int nlin = (int)m_LinC.size();
 	if (nlin == 0) return;
 
-	FEAnalysis* pstep = m_fem->GetCurrentStep();
+	AnalysisStep* pstep = m_fem->GetCurrentStep().get();
 	FEMesh& mesh = m_fem->GetMesh();
 
 	// Add linear constraints to the profile
@@ -126,9 +125,9 @@ void FELinearConstraintManager::BuildMatrixProfile(FEGlobalMatrix& G)
 	// keep a list that stores for each node the list of
 	// elements connected to that node.
 	// loop over all solid elements
-	for (int nd = 0; nd<pstep->Domains(); ++nd)
-	{
-		RgDomain& dom = *pstep->Domain(nd);
+    for (int nd = 0; nd < mesh.Domains(); ++nd)
+    {
+        RgDomain& dom = mesh.Domain(nd);
 		for (int i = 0; i<dom.Elements(); ++i)
 		{
 			RgElement& el = dom.ElementRef(i);

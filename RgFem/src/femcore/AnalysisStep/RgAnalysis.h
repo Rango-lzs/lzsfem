@@ -130,6 +130,7 @@ public:
     int getCurrentStep() const { return currentStep_; }
     double getCurrentTime() const { return currentTime_; }
     const std::string& getLastError() const { return lastError_; }
+    void setCurrentStep(int step) { currentStep_ = step; }   // <-- 新增此行
 
     // Configuration
     void enableAutoRestart(bool enable) { autoRestart_ = enable; }

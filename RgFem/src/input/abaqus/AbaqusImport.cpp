@@ -13,10 +13,15 @@
 #include "femcore/FEModelLoad.h"
 #include "femcore/FENode.h"
 #include "femcore/FENodeSet.h"
-#include "femcore/FESolidAnalysis.h"
 #include "femcore/Load/RgLoad.h"
 #include "femcore/RgLoadController.h"
 #include "logger/log.h"
+
+#include "femcore/AnalysisStep/AnalysisStep.h"
+#include "femcore/AnalysisStep/StaticStep.h"
+#include "femcore/AnalysisStep/DynamicImplicitStep.h"
+#include "femcore/AnalysisStep/StepControl.h"
+#include <memory>
 
 #include <algorithm>
 #include <cctype>
@@ -1105,7 +1110,6 @@ bool AbaqusImport::createMaterials(FEModel* fem, const MaterialProperty& matProp
     return true;
 }
 
-
 //-----------------------------------------------------------------------------
 bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine)
 {
@@ -1135,13 +1139,7 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
     RgLog("  Step name: %s\n", stepInfo.name.c_str());
     RgLog("  Step number: %d\n", m_currentStep);
 
-    // Create the FEAnalysis object
-    // Note: You may need to create specific analysis types based on your implementation
-    // For now, we use the base FEAnalysis class
-    FEAnalysis* analysisStep = new FESolidAnalysis();
-    analysisStep->SetName(stepInfo.name);
-
-    // Temporary storage for BCs and loads defined in this step
+    // Temporary storage for BCs and loads defined in this step (for logging only)
     std::vector<RgBoundaryCondition*> stepBCs;
     std::vector<RgLoad*> stepLoads;
 
@@ -1172,7 +1170,6 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
             if (keyword.find("STATIC") == 0)
             {
                 stepInfo.procedure = "STATIC";
-                analysisStep->m_nanalysis = 0;  // STATIC
                 RgLog("  Procedure: STATIC\n");
 
                 // Parse STATIC parameters
@@ -1194,13 +1191,11 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
                         if (tokens.size() >= 1)
                         {
                             stepInfo.initialTimeIncrement = std::stod(trimString(tokens[0]));
-                            analysisStep->m_dt0 = stepInfo.initialTimeIncrement;
                             RgLog("    Initial time increment: %g\n", stepInfo.initialTimeIncrement);
                         }
                         if (tokens.size() >= 2)
                         {
                             stepInfo.timePeriod = std::stod(trimString(tokens[1]));
-                            analysisStep->m_final_time = stepInfo.timePeriod;
                             RgLog("    Time period: %g\n", stepInfo.timePeriod);
                         }
                         if (tokens.size() >= 3)
@@ -1227,14 +1222,9 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
             else if (keyword.find("DYNAMIC") == 0)
             {
                 stepInfo.procedure = "DYNAMIC";
-                analysisStep->m_nanalysis = 1;  // DYNAMIC
                 RgLog("  Procedure: DYNAMIC\n");
 
-                // Parse DYNAMIC parameters
-                std::map<std::string, std::string> procParams;
-                parseKeywordParams(line, procParams);
-
-                // Read dynamic step parameters
+                // Parse DYNAMIC parameters (same format as STATIC)
                 lastPos = file.tellg();
                 if (std::getline(file, line))
                 {
@@ -1246,17 +1236,13 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
                         std::vector<std::string> tokens = splitString(line, ',');
 
                         if (tokens.size() >= 1)
-                        {
                             stepInfo.initialTimeIncrement = std::stod(trimString(tokens[0]));
-                            analysisStep->m_dt0 = stepInfo.initialTimeIncrement;
-                            RgLog("    Initial time increment: %g\n", stepInfo.initialTimeIncrement);
-                        }
                         if (tokens.size() >= 2)
-                        {
                             stepInfo.timePeriod = std::stod(trimString(tokens[1]));
-                            analysisStep->m_final_time = stepInfo.timePeriod;
-                            RgLog("    Time period: %g\n", stepInfo.timePeriod);
-                        }
+                        if (tokens.size() >= 3)
+                            stepInfo.minTimeIncrement = std::stod(trimString(tokens[2]));
+                        if (tokens.size() >= 4)
+                            stepInfo.maxTimeIncrement = std::stod(trimString(tokens[3]));
 
                         stepConfigured = true;
                         lastPos = file.tellg();
@@ -1275,14 +1261,13 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
                 // Store current BC count in model
                 int bcCountBefore = m_model->BoundaryConditions();
 
-                // Parse boundary conditions
-                // Note: parseBoundary() should add BCs directly to m_model
+                // Parse boundary conditions (adds to m_model)
                 if (!parseBoundary(file))
                 {
                     RgLogWarning("    Failed to parse boundary conditions\n");
                 }
 
-                // Collect newly added BCs
+                // Collect newly added BCs for logging
                 int bcCountAfter = m_model->BoundaryConditions();
                 for (int i = bcCountBefore; i < bcCountAfter; ++i)
                 {
@@ -1298,13 +1283,13 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
                 // Store current load count in model
                 int loadCountBefore = m_model->ModelLoads();
 
-                // Parse concentrated loads
+                // Parse concentrated loads (adds to m_model)
                 if (!parseCload(file))
                 {
                     RgLogWarning("    Failed to parse concentrated loads\n");
                 }
 
-                // Collect newly added loads
+                // Collect newly added loads for logging
                 int loadCountAfter = m_model->ModelLoads();
                 for (int i = loadCountBefore; i < loadCountAfter; ++i)
                 {
@@ -1320,13 +1305,13 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
                 // Store current load count in model
                 int loadCountBefore = m_model->ModelLoads();
 
-                // Parse distributed loads
+                // Parse distributed loads (adds to m_model)
                 if (!parseDload(file))
                 {
                     RgLogWarning("    Failed to parse distributed loads\n");
                 }
 
-                // Collect newly added loads
+                // Collect newly added loads for logging
                 int loadCountAfter = m_model->ModelLoads();
                 for (int i = loadCountBefore; i < loadCountAfter; ++i)
                 {
@@ -1356,56 +1341,53 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
         }
     }
 
-    // Set default time parameters if not configured
-    if (!stepConfigured)
-    {
-        analysisStep->m_dt0 = stepInfo.initialTimeIncrement;
-        analysisStep->m_final_time = stepInfo.timePeriod;
-        RgLog("  Using default time parameters\n");
-    }
+    // --- Create AnalysisStep with StepControl ---
 
-    // Calculate number of time steps
-    if (analysisStep->m_dt0 > 0)
+    // Build StepControl from parsed parameters
+    StepControl ctrl;
+    ctrl.totalTime = stepInfo.timePeriod;
+    ctrl.initialTimeIncrement = stepInfo.initialTimeIncrement;
+    ctrl.minimumTimeIncrement = stepInfo.minTimeIncrement;
+    ctrl.maximumTimeIncrement = stepInfo.maxTimeIncrement;
+
+    // Create the appropriate AnalysisStep based on procedure type
+    std::shared_ptr<AnalysisStep> analysisStep;
+
+    if (stepInfo.procedure == "STATIC")
     {
-        analysisStep->m_ntime = (int)(analysisStep->m_final_time / analysisStep->m_dt0);
+        auto staticStep = std::make_shared<StaticStep>(stepInfo.name);
+        staticStep->setStepControl(ctrl);
+
+        // Determine if nonlinear based on time stepping
+        // If initial increment < total time, it's a multi-increment (nonlinear) analysis
+        bool isNonlinear = (stepInfo.initialTimeIncrement < stepInfo.timePeriod);
+        staticStep->enableNonlinear(isNonlinear);
+
+        analysisStep = staticStep;
+
+        RgLog("  Created %s StaticStep: %s\n", isNonlinear ? "Nonlinear" : "Linear", stepInfo.name.c_str());
+    }
+    else if (stepInfo.procedure == "DYNAMIC")
+    {
+        auto dynamicStep = std::make_shared<DynamicImplicitStep>(stepInfo.name);
+        dynamicStep->setStepControl(ctrl);
+
+        analysisStep = dynamicStep;
+
+        RgLog("  Created DynamicImplicitStep: %s\n", stepInfo.name.c_str());
     }
     else
     {
-        analysisStep->m_ntime = 10;  // default
+        RgLogError("Unsupported analysis procedure: %s\n", stepInfo.procedure.c_str());
+        m_inStep = false;
+        return false;
     }
 
-    // Add BCs to the step
-    for (auto bc : stepBCs)
-    {
-        analysisStep->AddBoundaryCondition(bc);
-    }
+    // Assign solver from RgAnalysis manager if available
+    // The solver will be created/assigned during FEModel::Init() or by user code.
+    // For now, the step is added without a solver; it will be set up later.
 
-    // Add loads to the step
-    for (auto load : stepLoads)
-    {
-        analysisStep->AddLoad(load);
-    }
-
-    // Set up inheritance from previous step
-    if (m_currentStep > 0 && m_model->Steps() > 0)
-    {
-        // Get previous step
-        FEAnalysis* prevStep = m_model->GetStep(m_currentStep - 1);
-        if (prevStep)
-        {
-            analysisStep->SetPreviousStep(prevStep);
-            analysisStep->SetActivationMode(StepActivationMode::INHERITED);
-            RgLog("  Will inherit BCs and loads from previous step\n");
-        }
-    }
-    else
-    {
-        // First step - no inheritance
-        analysisStep->SetActivationMode(StepActivationMode::NEW);
-        RgLog("  First step - no inheritance\n");
-    }
-
-    // Add step to model
+    // Add step to model (FEModel::AddStep now takes shared_ptr<AnalysisStep>)
     m_model->AddStep(analysisStep);
 
     // Store step info for reference
@@ -1416,80 +1398,15 @@ bool AbaqusImport::parseStep(std::ifstream& file, const std::string& keywordLine
     // Summary
     RgLog("-------------------------------------------------\n");
     RgLog("Step Summary:\n");
-    RgLog("  Name: %s\n", analysisStep->GetName().c_str());
+    RgLog("  Name: %s\n", stepInfo.name.c_str());
     RgLog("  Type: %s\n", stepInfo.procedure.c_str());
     RgLog("  BCs defined in this step: %d\n", (int)stepBCs.size());
     RgLog("  Loads defined in this step: %d\n", (int)stepLoads.size());
     RgLog("  Time period: %g\n", stepInfo.timePeriod);
     RgLog("  Initial dt: %g\n", stepInfo.initialTimeIncrement);
-    RgLog("  Number of time steps: %d\n", analysisStep->m_ntime);
     RgLog("=================================================\n\n");
 
     return true;
-}
-
-//-----------------------------------------------------------------------------
-// Helper function to create FEAnalysis from StepInfo
-bool AbaqusImport::createFEAnalysisStep(const StepInfo& stepInfo)
-{
-    if (!m_model)
-    {
-        m_lastError = "Model pointer is null";
-        return false;
-    }
-
-    // Create FEAnalysis based on procedure type
-    FEAnalysis* analysis = nullptr;
-
-    if (stepInfo.procedure == "STATIC")
-    {
-        // Create static analysis step
-        // You may need to adjust this based on your actual FEAnalysis class hierarchy
-        // For example: analysis = new FEStaticAnalysis(m_model);
-
-        // If FEAnalysis is the base class:
-        analysis = new FESolidAnalysis();
-        analysis->SetName(stepInfo.name);
-
-        // Set time parameters
-        // Note: You'll need to check your FEAnalysis interface for exact method names
-        // These are examples based on common FE code patterns:
-
-        // analysis->SetTimeSteps(stepInfo.initialTimeIncrement);
-        // analysis->SetFinalTime(stepInfo.timePeriod);
-        // analysis->SetMinTimeStep(stepInfo.minTimeIncrement);
-        // analysis->SetMaxTimeStep(stepInfo.maxTimeIncrement);
-
-        RgLog("  Created STATIC analysis step: %s\n", stepInfo.name.c_str());
-        RgLog("    Time period: %g\n", stepInfo.timePeriod);
-        RgLog("    Initial dt: %g\n", stepInfo.initialTimeIncrement);
-    }
-    else if (stepInfo.procedure == "DYNAMIC")
-    {
-        // Create dynamic analysis step
-        // analysis = new FEDynamicAnalysis(m_model);
-
-        analysis = new FESolidAnalysis();
-        analysis->SetName(stepInfo.name);
-
-        RgLog("  Created DYNAMIC analysis step: %s\n", stepInfo.name.c_str());
-        RgLog("    Time period: %g\n", stepInfo.timePeriod);
-        RgLog("    Initial dt: %g\n", stepInfo.initialTimeIncrement);
-    }
-    else
-    {
-        RgLogError("Unsupported analysis procedure: %s\n", stepInfo.procedure.c_str());
-        return false;
-    }
-
-    if (analysis)
-    {
-        // Add step to model
-        m_model->AddStep(analysis);
-        return true;
-    }
-
-    return false;
 }
 
 //-----------------------------------------------------------------------------

@@ -1,7 +1,6 @@
 #include "DataStore.h"
 #include "logger/log.h"
 #include "femcore/FEModel.h"
-#include "femcore/FEAnalysis/FEAnalysis.h"
 
 //-----------------------------------------------------------------------------
 DataStore::DataStore()

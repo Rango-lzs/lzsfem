@@ -1,9 +1,10 @@
 #include "DynamicImplicitStep.h"
-#include "FEModel.h"
-#include "FEMesh.h"
+#include "femcore/FEModel.h"
+#include "femcore/FEMesh.h"
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <corecrt_math_defines.h>
 
 DynamicImplicitStep::DynamicImplicitStep(const std::string& name)
     : beta_(0.25)        // Average acceleration method (unconditionally stable)
@@ -42,7 +43,7 @@ void DynamicImplicitStep::initialize(FEModel* model)
     currentTimeStep_ = control_.initialTimeIncrement;
     
     // Initialize solution vectors
-    int nDOF = model->getNumberOfDOFs();
+    int nDOF = model->GetDofSchema().GetDofsPerNode();
     
     // Current state
     if (displacement_.empty()) {

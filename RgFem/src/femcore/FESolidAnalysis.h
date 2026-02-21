@@ -1,5 +1,5 @@
 #pragma once
-#include "femcore/FEAnalysis/FEAnalysis.h"
+
 class FEM_EXPORT FESolidAnalysis : public FEAnalysis
 {
 	DECLARE_META_CLASS(FESolidAnalysis, FEAnalysis);

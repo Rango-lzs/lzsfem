@@ -119,6 +119,7 @@ set(FEMCORE_HEADERS
 
     femcore/AnalysisStep/StaticStep.h
     femcore/AnalysisStep/StaticStep.cpp
+    femcore/AnalysisStep/DynamicImplicitStep.cpp
 
     femcore/AnalysisStep/StepControl.h
     
@@ -182,7 +183,7 @@ set(FEMCORE_HEADERS
     femcore/FEPropertyT.h
     femcore/FERgModel.h
     femcore/FEScalarValuator.h
-    femcore/FESolidAnalysis.h
+    #femcore/FESolidAnalysis.h
     femcore/FEStepComponent.h
     femcore/FESurfaceBC.h
     femcore/FESurfaceLoad.h
@@ -377,7 +378,7 @@ set(FEMCORE_SOURCES
     femcore/FEProperty.cpp
     femcore/FERgModel.cpp
     femcore/FEScalarValuator.cpp
-    femcore/FESolidAnalysis.cpp
+    #femcore/FESolidAnalysis.cpp
     femcore/FEStepComponent.cpp
     femcore/FESurface.cpp
     femcore/FESurfaceBC.cpp

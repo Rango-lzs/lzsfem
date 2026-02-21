@@ -2,7 +2,6 @@
 //#include "femcore/FERigidBody.h"
 #include "femcore/DOFS.h"
 #include <femcore/FELinearConstraintManager.h>
-#include "femcore/FEAnalysis/FEAnalysis.h"
 #include "FEGlobalVector.h"
 #include "FEModel.h"
 #include "FEMesh.h"

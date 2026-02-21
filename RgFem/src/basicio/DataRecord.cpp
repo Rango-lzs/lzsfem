@@ -1,6 +1,7 @@
 #include "basicio/DataRecord.h"
 #include "DumpStream.h"
 #include "femcore/FEModel.h"
+#include "femcore/AnalysisStep/RgAnalysis.h"
 #include "logger/log.h"
 #include <sstream>
 
@@ -172,7 +173,7 @@ std::string DataRecord::printToFormatString(int i)
 bool DataRecord::Write()
 {
 	FEModel* fem = GetFEModel();
-	int nstep = fem->GetCurrentStep()->m_ntimesteps;
+	int nstep = fem->GetAnalysis().getCurrentStep();
 	double ftime = fem->GetCurrentTime();
 
 	// make a note in the log file

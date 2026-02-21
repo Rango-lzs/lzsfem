@@ -1,12 +1,17 @@
-
 #pragma once
 #include "femcore/FEObjectBase.h"
-class FEAnalysis;
+
+class AnalysisStep;
 class DumpStream;
 class FEModel;
 
 //-------------------------------------------------------------------
-// Class to control the time step
+// Class to control the time step.
+//
+// Refactored: replaces FEAnalysis* dependency with AnalysisStep* + FEModel*.
+// Time parameters (dt, dt0, tend) are now read/written through
+// AnalysisStep::getStepControl() / setStepControl() and local state.
+//-------------------------------------------------------------------
 class FEM_EXPORT FETimeStepController : public FEObjectBase
 {
     DECLARE_META_CLASS(FETimeStepController, FEObjectBase);
@@ -14,7 +19,8 @@ class FEM_EXPORT FETimeStepController : public FEObjectBase
 public:
     FETimeStepController();
 
-    void SetAnalysis(FEAnalysis* step);
+    //! Set the analysis step and model
+    void SetAnalysis(AnalysisStep* step, FEModel* fem);
 
     // initialization
     bool Init() override;
@@ -29,17 +35,43 @@ public:
     void CopyFrom(FETimeStepController* tc);
 
 public:
-    //! Do a running restart
+    //! Do a running restart (retry with smaller dt)
     void Retry();
 
-    //! Update Time step
+    //! Update Time step based on convergence info
     void AutoTimeStep(int niter);
 
     //! Adjust for must points
     double CheckMustPoints(double t, double dt);
 
+    //--- Accessors for current time step state ---
+
+    //! Get the current time step size
+    double GetTimeStep() const
+    {
+        return m_dt;
+    }
+
+    //! Set the current time step size
+    void SetTimeStep(double dt)
+    {
+        m_dt = dt;
+    }
+
+    //! Get the end time for this step
+    double GetEndTime() const
+    {
+        return m_tend;
+    }
+
 private:
-    FEAnalysis* m_step;
+    AnalysisStep* m_step;  //!< the analysis step (for StepControl access)
+    FEModel* m_fem;        //!< the FE model
+
+    // Local copies of time parameters (synced from StepControl)
+    double m_dt;    //!< current time step size
+    double m_dt0;   //!< initial time step size
+    double m_tend;  //!< end time for this step
 
 public:
     int m_nretries;                     //!< nr of retries tried so far
